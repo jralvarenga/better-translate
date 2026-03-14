@@ -9,6 +9,7 @@ import type {
   RuntimeConfigInput,
   ShortFormTranslator,
   StrictTranslationLocaleMap,
+  TranslateCall,
   TranslateOptions,
   TranslationKey,
   TranslationConfigOptions,
@@ -22,13 +23,22 @@ export type {
   DeepPartialMessages,
   DeepStringify,
   DotKeys,
+  TranslateCall,
+  TranslateFunction,
   TranslationKey,
+  TranslationParamValue,
+  TranslationParams,
+  TranslationParamsForKey,
+  TranslationPlaceholderNames,
+  TranslationValueAtKey,
   TranslateOptions,
   StrictTranslationLocaleMap,
   TranslationJsonSchema,
   TranslationJsonSchemaNode,
   TranslationJsonObjectSchema,
   TranslationJsonStringSchema,
+  TranslationKeysWithOptionalParams,
+  TranslationKeysWithRequiredParams,
   TranslationLocaleMap,
   TranslationConfigOptions,
   TranslationLeaf,
@@ -119,10 +129,15 @@ export function getTranslator(): ConfiguredTranslator<
  * Translate once and then translate from shared global state.
  */
 export function t<TKey extends TranslationKey<RegisteredMessages>>(
-  key: TKey,
-  options?: TranslateOptions<RegisteredLocale>,
+  ...args: TranslateCall<RegisteredLocale, RegisteredMessages, TKey>
 ): string {
-  return getTranslator().t(key, options);
+  const [key, options] = args;
+
+  return (
+    getTranslator() as {
+      t(key: string, options?: TranslateOptions<RegisteredLocale>): string;
+    }
+  ).t(key, options);
 }
 
 /**

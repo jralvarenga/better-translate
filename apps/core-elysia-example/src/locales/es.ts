@@ -1,0 +1,21 @@
+const es = {
+  routes: {
+    home: "Hola desde Better Translate y Elysia.",
+    hello: "Hola mundo.",
+    greeting: "Buenos dias {name}",
+    currentLocale: "Idioma actual",
+  },
+  account: {
+    balance: {
+      label: "Balance neto",
+    },
+  },
+  locale: {
+    changed: "Idioma cambiado correctamente.",
+  },
+  errors: {
+    unsupportedLocale: "Idioma no soportado.",
+  },
+} as const;
+
+export default es;

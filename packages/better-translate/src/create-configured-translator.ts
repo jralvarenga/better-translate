@@ -1,3 +1,4 @@
+import { interpolateMessage } from "./interpolate-message.js";
 import { resolveMessageValue } from "./resolve-message-value.js";
 import { snapshotMessages } from "./snapshot-messages.js";
 import { isTranslationMessages } from "./validation.js";
@@ -7,9 +8,10 @@ import type {
   DeepPartialMessages,
   InternalNormalizedConfig,
   InternalTranslationMessages,
+  TranslateCall,
+  TranslationKey,
   TranslateOptions,
   TranslationLoader,
-  TranslationKey,
   TranslationMessages,
 } from "./types.js";
 
@@ -72,32 +74,37 @@ export function createConfiguredTranslator<
       }
     };
 
+  const translate = (<TKey extends TranslationKey<TSourceMessages>>(
+    ...args: TranslateCall<TLocale, TSourceMessages, TKey>
+  ) => {
+    const [key, options] = args as unknown as [
+      string,
+      TranslateOptions<TLocale> | undefined,
+    ];
+    const locale = options?.locale ?? (config.defaultLocale as TLocale);
+    const activeValue = resolveMessageValue(messageCache[locale], key);
+
+    if (typeof activeValue === "string") {
+      return interpolateMessage(activeValue, key, options?.params);
+    }
+
+    const fallbackValue = resolveMessageValue(
+      messageCache[config.fallbackLocale as TLocale],
+      key,
+    );
+
+    if (typeof fallbackValue === "string") {
+      return interpolateMessage(fallbackValue, key, options?.params);
+    }
+
+    return key;
+  }) as ConfiguredTranslator<TLocale, TSourceMessages>["t"];
+
   return {
     defaultLocale: config.defaultLocale as TLocale,
     fallbackLocale: config.fallbackLocale as TLocale,
     supportedLocales: [...config.supportedLocales] as unknown as readonly TLocale[],
-    t<TKey extends TranslationKey<TSourceMessages>>(
-      key: TKey,
-      options?: TranslateOptions<TLocale>,
-    ) {
-      const locale = options?.locale ?? (config.defaultLocale as TLocale);
-      const activeValue = resolveMessageValue(messageCache[locale], key);
-
-      if (typeof activeValue === "string") {
-        return activeValue;
-      }
-
-      const fallbackValue = resolveMessageValue(
-        messageCache[config.fallbackLocale as TLocale],
-        key,
-      );
-
-      if (typeof fallbackValue === "string") {
-        return fallbackValue;
-      }
-
-      return key;
-    },
+    t: translate,
     loadLocale,
     getSupportedLocales() {
       return [...config.supportedLocales] as unknown as readonly TLocale[];

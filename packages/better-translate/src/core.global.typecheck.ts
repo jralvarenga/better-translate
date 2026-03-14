@@ -9,6 +9,8 @@ import {
 const en = {
   common: {
     hello: "Hello",
+    greeting: "Good morning {name}",
+    formalGreeting: "{salute} {name}",
   },
   account: {
     balance: {
@@ -33,6 +35,8 @@ await configureTranslations({
     es: {
       common: {
         hello: "Hola",
+        greeting: "Buenos dias {name}",
+        formalGreeting: "{salute} {name}",
       },
       account: {
         balance: {
@@ -52,12 +56,33 @@ await configureTranslations({
 
 t("common.hello");
 t("account.balance.label");
+t("common.greeting", {
+  params: {
+    name: "Ada",
+  },
+});
+t("common.formalGreeting", {
+  params: {
+    salute: "Dr.",
+    name: "Ada",
+  },
+});
 loadLocale("fr");
 getSupportedLocales().includes("en");
 getMessages().en?.account?.balance?.label;
 
 // @ts-expect-error invalid translation key should fail for the global helper
 t("account.balance.total");
+
+// @ts-expect-error missing params should fail for the global helper
+t("common.greeting");
+
+t("common.greeting", {
+  params: {
+    // @ts-expect-error inferred params should reject unknown placeholder names
+    user: "Ada",
+  },
+});
 
 // @ts-expect-error unsupported locale should fail for the global helper
 loadLocale("pt");

@@ -130,6 +130,101 @@ export type TranslationLocaleMap<
   TSourceMessages extends TranslationMessages,
 > = Record<TLocale, DeepStringify<TSourceMessages>>;
 
+export type TranslationParamValue = string | number | boolean;
+
+export type TranslationParams = Record<string, TranslationParamValue>;
+
+export type TranslationValueAtKey<
+  TMessages extends TranslationMessages,
+  TKey extends string,
+> = TKey extends `${infer THead}.${infer TRest}`
+  ? THead extends keyof TMessages
+    ? TMessages[THead] extends TranslationMessages
+      ? TranslationValueAtKey<TMessages[THead], TRest>
+      : never
+    : never
+  : TKey extends keyof TMessages
+    ? TMessages[TKey]
+    : never;
+
+type ExtractPlaceholderNames<TMessage extends string> = string extends TMessage
+  ? string
+  : TMessage extends `${string}{${infer TParam}}${infer TRest}`
+    ? TParam | ExtractPlaceholderNames<TRest>
+    : never;
+
+type TranslationParamsObject<TParamNames extends string> = Simplify<{
+  [TName in TParamNames]: TranslationParamValue;
+}>;
+
+export type TranslationPlaceholderNames<
+  TMessages extends TranslationMessages,
+  TKey extends string,
+> = ExtractPlaceholderNames<
+  Extract<TranslationValueAtKey<TMessages, TKey>, string>
+>;
+
+export type TranslationParamsForKey<
+  TMessages extends TranslationMessages,
+  TKey extends string,
+> = string extends TranslationPlaceholderNames<TMessages, TKey>
+  ? TranslationParams
+  : TranslationParamsObject<TranslationPlaceholderNames<TMessages, TKey>>;
+
+export type TranslationKeysWithRequiredParams<
+  TMessages extends TranslationMessages,
+> = TranslationKey<TMessages> extends infer TKey
+  ? TKey extends string
+    ? [TranslationPlaceholderNames<TMessages, TKey>] extends [never]
+      ? never
+      : string extends TranslationPlaceholderNames<TMessages, TKey>
+        ? never
+        : TKey
+    : never
+  : never;
+
+export type TranslationKeysWithOptionalParams<
+  TMessages extends TranslationMessages,
+> = Exclude<
+  TranslationKey<TMessages>,
+  TranslationKeysWithRequiredParams<TMessages>
+>;
+
+export type TranslateOptionsForKey<
+  TLocale extends string,
+  TMessages extends TranslationMessages,
+  TKey extends string,
+> = [TranslationPlaceholderNames<TMessages, TKey>] extends [never]
+  ? Simplify<TranslateOptions<TLocale> & { params?: never }>
+  : string extends TranslationPlaceholderNames<TMessages, TKey>
+    ? Simplify<TranslateOptions<TLocale> & { params?: TranslationParams }>
+    : Simplify<Omit<TranslateOptions<TLocale>, "params"> & {
+        params: TranslationParamsForKey<TMessages, TKey>;
+      }>;
+
+export type TranslateArgs<
+  TLocale extends string,
+  TMessages extends TranslationMessages,
+  TKey extends string,
+> = [TranslationPlaceholderNames<TMessages, TKey>] extends [never]
+  ? [options?: TranslateOptionsForKey<TLocale, TMessages, TKey>]
+  : string extends TranslationPlaceholderNames<TMessages, TKey>
+    ? [options?: TranslateOptionsForKey<TLocale, TMessages, TKey>]
+    : [options: TranslateOptionsForKey<TLocale, TMessages, TKey>];
+
+export type TranslateCall<
+  TLocale extends string,
+  TMessages extends TranslationMessages,
+  TKey extends TranslationKey<TMessages> = TranslationKey<TMessages>,
+> = [key: TKey, ...args: TranslateArgs<TLocale, TMessages, TKey>];
+
+export type TranslateFunction<
+  TLocale extends string,
+  TMessages extends TranslationMessages,
+> = <TKey extends TranslationKey<TMessages>>(
+  ...args: TranslateCall<TLocale, TMessages, TKey>
+) => string;
+
 export interface TranslationJsonStringSchema {
   type: "string";
 }
@@ -157,6 +252,10 @@ export interface TranslateOptions<TLocale extends string> {
    * Uses a specific locale for this call instead of the configured default locale.
    */
   locale?: TLocale;
+  /**
+   * Replaces `{token}` placeholders found in the translation string.
+   */
+  params?: TranslationParams;
 }
 
 /**
@@ -187,10 +286,7 @@ export interface ConfiguredTranslator<
    * If a key is missing in the active locale, it falls back to the configured
    * fallback locale. If the key is still missing, the key itself is returned.
    */
-  t<TKey extends TranslationKey<TSourceMessages>>(
-    key: TKey,
-    options?: TranslateOptions<TLocale>,
-  ): string;
+  t: TranslateFunction<TLocale, TSourceMessages>;
   /**
    * Loads a locale through its registered async loader and caches the result.
    *
@@ -279,7 +375,7 @@ export type CachedMessages<
 export type ShortFormTranslator<TMessages extends Record<string, TranslationMessages>> =
   ConfiguredTranslator<
     Extract<keyof TMessages, string>,
-    AsTranslationMessages<DeepStringify<MergeUnion<TMessages[keyof TMessages & string]>>>
+    AsTranslationMessages<MergeUnion<TMessages[keyof TMessages & string]>>
   >;
 
 export type StrictTranslationLocaleMap<
@@ -292,5 +388,5 @@ export type OptionsFormTranslator<
   TDefaultLocale extends TLocales[number],
 > = ConfiguredTranslator<
   TLocales[number],
-  AsTranslationMessages<DeepStringify<Extract<TMessages[TDefaultLocale], TranslationMessages>>>
+  Extract<TMessages[TDefaultLocale], TranslationMessages>
 >;

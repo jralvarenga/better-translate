@@ -11,6 +11,8 @@ const translator = await configureTranslations({
     en: {
       common: {
         hello: "Hello",
+        greeting: "Good morning {name}",
+        formalGreeting: "{salute} {name}",
       },
       account: {
         balance: {
@@ -21,6 +23,8 @@ const translator = await configureTranslations({
     es: {
       common: {
         hello: "Hola",
+        greeting: "Buenos dias {name}",
+        formalGreeting: "{salute} {name}",
       },
       account: {
         balance: {
@@ -43,6 +47,17 @@ function Consumer() {
 
   translations.t("common.hello");
   translations.t("account.balance.label");
+  translations.t("common.greeting", {
+    params: {
+      name: "Ada",
+    },
+  });
+  translations.t("common.formalGreeting", {
+    params: {
+      salute: "Dr.",
+      name: "Ada",
+    },
+  });
   void translations.setLocale("es");
   void translations.loadLocale("fr");
   translations.messages.en;
@@ -50,6 +65,16 @@ function Consumer() {
 
   // @ts-expect-error invalid translation key should fail
   translations.t("account.balance.total");
+
+  // @ts-expect-error messages with placeholders should require params
+  translations.t("common.greeting");
+
+  translations.t("common.greeting", {
+    params: {
+      // @ts-expect-error placeholder names should be inferred from the source message
+      user: "Ada",
+    },
+  });
 
   // @ts-expect-error unsupported locale should fail
   void translations.setLocale("pt");

@@ -2,12 +2,13 @@ import type {
   CachedMessages,
   ConfiguredTranslator,
   DeepPartialMessages,
+  TranslateFunction,
   TranslationMessages,
 } from "better-translate/core";
 import type { ReactNode } from "react";
 
 export type AnyBetterTranslateTranslator = ConfiguredTranslator<
-  string,
+  any,
   TranslationMessages
 >;
 
@@ -17,7 +18,7 @@ export type InferLocale<TTranslator extends AnyBetterTranslateTranslator> =
     : never;
 
 export type InferMessages<TTranslator extends AnyBetterTranslateTranslator> =
-  TTranslator extends ConfiguredTranslator<string, infer TSourceMessages>
+  TTranslator extends ConfiguredTranslator<any, infer TSourceMessages>
     ? TSourceMessages
     : TranslationMessages;
 
@@ -51,9 +52,7 @@ export interface UseTranslationsValue<
   >;
   setLocale(locale: InferLocale<TTranslator>): Promise<void>;
   supportedLocales: readonly InferLocale<TTranslator>[];
-  t(
-    key: Parameters<TTranslator["t"]>[0],
-  ): string;
+  t: TranslateFunction<InferLocale<TTranslator>, InferMessages<TTranslator>>;
   translator: TTranslator;
 }
 

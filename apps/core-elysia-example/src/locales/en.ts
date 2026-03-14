@@ -1,0 +1,21 @@
+const en = {
+  routes: {
+    home: "Hello from Better Translate and Elysia.",
+    hello: "Hello world.",
+    greeting: "Good morning {name}",
+    currentLocale: "Current locale",
+  },
+  account: {
+    balance: {
+      label: "Net balance",
+    },
+  },
+  locale: {
+    changed: "Locale changed successfully.",
+  },
+  errors: {
+    unsupportedLocale: "Unsupported locale.",
+  },
+} as const;
+
+export default en;

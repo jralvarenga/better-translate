@@ -10,6 +10,8 @@ import { useTranslations } from "./use-translations.js";
 const en = {
   common: {
     hello: "Hello",
+    greeting: "Good morning {name}",
+    formalGreeting: "{salute} {name}",
   },
   account: {
     balance: {
@@ -21,6 +23,13 @@ const en = {
 const es = {
   common: {
     hello: "Hola",
+    greeting: "Buenos dias {name}",
+    formalGreeting: "{salute} {name}",
+  },
+  account: {
+    balance: {
+      label: "Saldo",
+    },
   },
 } as const;
 
@@ -79,6 +88,13 @@ describe("@better-translate/react", () => {
 
     expect(latestValue?.locale).toBe("en");
     expect(latestValue?.t("common.hello")).toBe("Hello");
+    expect(
+      latestValue?.t("common.greeting", {
+        params: {
+          name: "Ada",
+        },
+      }),
+    ).toBe("Good morning Ada");
     expect(latestValue?.messages).toEqual({ en, es });
   });
 
@@ -287,6 +303,41 @@ describe("@better-translate/react", () => {
         },
       },
     });
+  });
+
+  it("interpolates params through the locale-bound t helper", async () => {
+    const translator = await configureTranslations({
+      availableLocales: ["en", "es"] as const,
+      defaultLocale: "en",
+      fallbackLocale: "en",
+      messages: { en, es },
+    });
+
+    let latestValue:
+      | ReturnType<typeof useTranslations<typeof translator>>
+      | undefined;
+
+    function Consumer() {
+      latestValue = useTranslations<typeof translator>();
+      return null;
+    }
+
+    await act(async () => {
+      create(
+        <BetterTranslateProvider translator={translator} initialLocale="es">
+          <Consumer />
+        </BetterTranslateProvider>,
+      );
+    });
+
+    expect(
+      latestValue?.t("common.formalGreeting", {
+        params: {
+          salute: "Dra.",
+          name: "Ada",
+        },
+      }),
+    ).toBe("Dra. Ada");
   });
 
   it("throws when used outside the provider", () => {

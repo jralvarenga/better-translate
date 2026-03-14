@@ -5,8 +5,14 @@ import type {
   AnyBetterTranslateTranslator,
   BetterTranslateProviderProps,
   InferLocale,
+  InferMessages,
   UseTranslationsValue,
 } from "./types.js";
+import type {
+  TranslateCall,
+  TranslateFunction,
+  TranslationKey,
+} from "better-translate/core";
 
 /**
  * Provides a configured Better Translate translator to a React subtree.
@@ -103,6 +109,27 @@ export function BetterTranslateProvider<
     });
   }
 
+  const translate = (<TKey extends TranslationKey<InferMessages<TTranslator>>>(
+    ...args: TranslateCall<
+      InferLocale<TTranslator>,
+      InferMessages<TTranslator>,
+      TKey
+    >
+  ) => {
+    const [key, options] = args as unknown as [
+      string,
+      ({ locale?: InferLocale<TTranslator> } & Record<string, unknown>)?,
+    ];
+
+    return translator.t(
+      key as never,
+      {
+        ...options,
+        locale: options?.locale ?? locale,
+      } as never,
+    );
+  }) as TranslateFunction<InferLocale<TTranslator>, InferMessages<TTranslator>>;
+
   const value: UseTranslationsValue<TTranslator> = {
     defaultLocale: translator.defaultLocale as InferLocale<TTranslator>,
     fallbackLocale: translator.fallbackLocale as InferLocale<TTranslator>,
@@ -115,13 +142,7 @@ export function BetterTranslateProvider<
     setLocale,
     supportedLocales:
       translator.getSupportedLocales() as readonly InferLocale<TTranslator>[],
-    t(key) {
-      return translator.t(key, { locale }) as UseTranslationsValue<TTranslator>["t"] extends (
-        ...args: never[]
-      ) => infer TResult
-        ? TResult
-        : string;
-    },
+    t: translate,
     translator,
   };
 

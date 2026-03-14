@@ -3,17 +3,18 @@ import {
   t,
   type DotKeys,
   type TranslationLocaleMap,
+  type TranslationKeysWithOptionalParams,
 } from "better-translate/core";
 
-import en from "../../locales/en.json";
-import es from "../../locales/es.json";
+import en from "../../locales/en";
+import es from "../../locales/es";
 
 export const SUPPORTED_LOCALES = ["en", "es"] as const;
 const FALLBACK_LOCALE = "en" as const;
 
 export type Locale = (typeof SUPPORTED_LOCALES)[number];
 type AppMessages = typeof en;
-type TranslationKey = DotKeys<AppMessages>;
+type TranslationKey = TranslationKeysWithOptionalParams<AppMessages> & DotKeys<AppMessages>;
 
 const messages = {
   en,
@@ -79,6 +80,21 @@ export function getTranslationPayload(key: TranslationKey) {
   return {
     key,
     message: t(key),
+    currentLocale: activeLocale,
+  };
+}
+
+/**
+ * Builds a translated greeting payload using interpolation params.
+ */
+export function getGreetingPayload(name: string) {
+  return {
+    key: "routes.greeting" as const,
+    message: t("routes.greeting", {
+      params: {
+        name: name
+      },
+    }),
     currentLocale: activeLocale,
   };
 }

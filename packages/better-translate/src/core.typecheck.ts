@@ -8,6 +8,8 @@ import { configureTranslations, getMessages } from "./core.js";
 const en = {
   common: {
     hello: "Hello",
+    greeting: "Good morning {name}",
+    formalGreeting: "{salute} {name}",
   },
   account: {
     balance: {
@@ -19,6 +21,8 @@ const en = {
 const es = {
   common: {
     hello: "Hola",
+    greeting: "Buenos dias {name}",
+    formalGreeting: "{salute} {name}",
   },
   account: {
     balance: {
@@ -55,12 +59,47 @@ const translator = await configureTranslations({
 
 translator.t("common.hello");
 translator.t(translationKey, { locale: "es" });
+translator.t("common.greeting", {
+  params: {
+    name: "Ada",
+  },
+});
+translator.t("common.formalGreeting", {
+  params: {
+    salute: "Dr.",
+    name: "Ada",
+  },
+});
 translator.loadLocale("fr");
 translator.getMessages();
 getMessages();
 
 // @ts-expect-error invalid translation key should fail
 translator.t("account.balance.total");
+
+// @ts-expect-error placeholder params should be required when the message contains tokens
+translator.t("common.greeting");
+
+translator.t("common.greeting", {
+  // @ts-expect-error missing placeholder param should fail
+  params: {},
+});
+
+translator.t("common.greeting", {
+  params: {
+    name: "Ada",
+    // @ts-expect-error extra placeholder params should fail
+    role: "Admin",
+  },
+});
+
+translator.t("common.formalGreeting", {
+  params: {
+    // @ts-expect-error placeholder names should be inferred from the message string
+    greeting: "Dr.",
+    name: "Ada",
+  },
+});
 
 // @ts-expect-error unsupported locale should fail
 translator.loadLocale("pt");
@@ -103,11 +142,14 @@ configureTranslations({
 
 const missingNestedKey = {
   en,
-  // @ts-expect-error preloaded locales must include every nested key from the source locale
   es: {
     common: {
       hello: "Hola",
+      greeting: "Buenos dias {name}",
+      formalGreeting: "{salute} {name}",
     },
+    // @ts-expect-error preloaded locales must include every nested key from the source locale
+    account: {},
   },
 } satisfies TranslationLocaleMap<Locale, AppMessages>;
 
@@ -116,6 +158,8 @@ const extraNestedKey = {
   es: {
     common: {
       hello: "Hola",
+      greeting: "Buenos dias {name}",
+      formalGreeting: "{salute} {name}",
     },
     account: {
       balance: {

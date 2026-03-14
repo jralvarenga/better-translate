@@ -2,6 +2,7 @@
   "routes": {
     "home": "Hello from Better Translate and Elysia.",
     "hello": "Hello world.",
+    "greeting": "Good morning {name}",
     "currentLocale": "Current locale"
   },
   "account": {

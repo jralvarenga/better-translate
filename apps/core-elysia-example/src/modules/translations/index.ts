@@ -3,12 +3,14 @@ import { Elysia } from "elysia";
 import {
   changeLocaleParams,
   changeLocaleResponse,
+  greetingParams,
   invalidLocaleResponse,
   localeStateResponse,
   translationMessageResponse,
 } from "./model";
 import {
   changeLocale,
+  getGreetingPayload,
   getInvalidLocalePayload,
   getLocaleChangedPayload,
   getLocaleState,
@@ -36,6 +38,14 @@ export const translationModule = new Elysia({
     "/hello",
     () => getTranslationPayload("routes.hello"),
     {
+      response: translationMessageResponse,
+    },
+  )
+  .get(
+    "/greeting/:name",
+    ({ params: { name } }) => getGreetingPayload(name),
+    {
+      params: greetingParams,
       response: translationMessageResponse,
     },
   )

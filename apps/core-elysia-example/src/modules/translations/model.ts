@@ -18,6 +18,10 @@ export const changeLocaleParams = t.Object({
   language: t.String(),
 });
 
+export const greetingParams = t.Object({
+  name: t.String(),
+});
+
 export const changeLocaleResponse = t.Object({
   message: t.String(),
   currentLocale: localeSchema,
