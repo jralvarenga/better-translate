@@ -111,6 +111,17 @@ export function getLocaleChangedPayload() {
 }
 
 /**
+ * Translates a key for a specific locale without mutating global state.
+ */
+export function getLocaleResponsePayload(locale: Locale) {
+  return {
+    key: "routes.hello" as const,
+    message: t("routes.hello", { config: { locale: locale } }),
+    currentLocale: locale,
+  };
+}
+
+/**
  * Builds the error payload for unsupported locale values.
  */
 export function getInvalidLocalePayload() {

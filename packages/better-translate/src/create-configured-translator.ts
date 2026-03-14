@@ -81,7 +81,7 @@ export function createConfiguredTranslator<
       string,
       TranslateOptions<TLocale> | undefined,
     ];
-    const locale = options?.locale ?? (config.defaultLocale as TLocale);
+    const locale = options?.config?.locale ?? options?.locale ?? (config.defaultLocale as TLocale);
     const activeValue = resolveMessageValue(messageCache[locale], key);
 
     if (typeof activeValue === "string") {

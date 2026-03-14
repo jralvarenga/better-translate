@@ -5,6 +5,7 @@ import {
   changeLocaleResponse,
   greetingParams,
   invalidLocaleResponse,
+  localeParams,
   localeStateResponse,
   translationMessageResponse,
 } from "./model";
@@ -13,6 +14,7 @@ import {
   getGreetingPayload,
   getInvalidLocalePayload,
   getLocaleChangedPayload,
+  getLocaleResponsePayload,
   getLocaleState,
   getTranslationPayload,
   isLocale,
@@ -55,6 +57,24 @@ export const translationModule = new Elysia({
       () => getTranslationPayload("account.balance.label"),
       {
         response: translationMessageResponse,
+      },
+    ),
+  )
+  .group("/api", (app) =>
+    app.get(
+      "/:locale/response",
+      ({ params: { locale }, status }) => {
+        if (!isLocale(locale)) {
+          return status(400, getInvalidLocalePayload());
+        }
+        return getLocaleResponsePayload(locale);
+      },
+      {
+        params: localeParams,
+        response: {
+          200: translationMessageResponse,
+          400: invalidLocaleResponse,
+        },
       },
     ),
   )

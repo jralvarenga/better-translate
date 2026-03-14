@@ -244,6 +244,13 @@ export type TranslationJsonSchemaNode =
   | TranslationJsonObjectSchema
   | TranslationJsonStringSchema;
 
+export interface TranslationConfig<TLocale extends string> {
+  /**
+   * Uses a specific locale for this call instead of the configured default locale.
+   */
+  locale?: TLocale;
+}
+
 /**
  * Optional overrides for a single translation lookup.
  */
@@ -256,6 +263,10 @@ export interface TranslateOptions<TLocale extends string> {
    * Replaces `{token}` placeholders found in the translation string.
    */
   params?: TranslationParams;
+  /**
+   * Per-call configuration options for the translation method.
+   */
+  config?: TranslationConfig<TLocale>;
 }
 
 /**

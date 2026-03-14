@@ -28,6 +28,10 @@ export const changeLocaleResponse = t.Object({
   supportedLocales: t.Array(localeSchema),
 });
 
+export const localeParams = t.Object({
+  locale: t.String(),
+});
+
 export const invalidLocaleResponse = t.Object({
   error: t.String(),
   supportedLocales: t.Array(localeSchema),
