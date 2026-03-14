@@ -3,12 +3,12 @@
   "private": true,
   "scripts": {
     "build": "turbo run build",
-    "build:packages": "turbo run build --filter=better-translate --filter=better-translate/*",
+    "build:packages": "turbo run build --filter=better-translate --filter=better-translate/* --filter=@better-translate/*",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types",
-    "check-types:packages": "turbo run check-types --filter=better-translate --filter=better-translate/*"
+    "check-types:packages": "turbo run check-types --filter=better-translate --filter=better-translate/* --filter=@better-translate/*"
   },
   "devDependencies": {
     "prettier": "^3.7.4",

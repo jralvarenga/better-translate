@@ -5,11 +5,11 @@ import type {
   CachedMessages,
   ConfiguredTranslator,
   DeepPartialMessages,
-  DotKeys,
   InternalNormalizedConfig,
   InternalTranslationMessages,
   TranslateOptions,
   TranslationLoader,
+  TranslationKey,
   TranslationMessages,
 } from "./types.js";
 
@@ -76,7 +76,7 @@ export function createConfiguredTranslator<
     defaultLocale: config.defaultLocale as TLocale,
     fallbackLocale: config.fallbackLocale as TLocale,
     supportedLocales: [...config.supportedLocales] as unknown as readonly TLocale[],
-    t<TKey extends DotKeys<TSourceMessages>>(
+    t<TKey extends TranslationKey<TSourceMessages>>(
       key: TKey,
       options?: TranslateOptions<TLocale>,
     ) {

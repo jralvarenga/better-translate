@@ -1,4 +1,10 @@
-export const packageName = "better-translate/react";
-export const setupStatus = "setup-only" as const;
+export { BetterTranslateProvider } from "./provider.js";
+export { useTranslations } from "./use-translations.js";
 
-export type SetupStatus = typeof setupStatus;
+export type {
+  AnyBetterTranslateTranslator,
+  BetterTranslateProviderProps,
+  InferLocale,
+  InferMessages,
+  UseTranslationsValue,
+} from "./types.js";

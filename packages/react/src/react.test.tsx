@@ -1,0 +1,317 @@
+import { Component, type ReactNode, act } from "react";
+import { describe, expect, it } from "bun:test";
+import { create } from "react-test-renderer";
+
+import { configureTranslations } from "better-translate/core";
+
+import { BetterTranslateProvider } from "./provider.js";
+import { useTranslations } from "./use-translations.js";
+
+const en = {
+  common: {
+    hello: "Hello",
+  },
+  account: {
+    balance: {
+      label: "Balance",
+    },
+  },
+} as const;
+
+const es = {
+  common: {
+    hello: "Hola",
+  },
+} as const;
+
+(
+  globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT?: boolean }
+).IS_REACT_ACT_ENVIRONMENT = true;
+
+class TestErrorBoundary extends Component<
+  { children: ReactNode; onError(error: unknown): void },
+  { hasError: boolean }
+> {
+  state = { hasError: false };
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: unknown) {
+    this.props.onError(error);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return null;
+    }
+
+    return this.props.children;
+  }
+}
+
+describe("@better-translate/react", () => {
+  it("renders with the default locale", async () => {
+    const translator = await configureTranslations({
+      availableLocales: ["en", "es"] as const,
+      defaultLocale: "en",
+      fallbackLocale: "en",
+      messages: { en, es },
+    });
+
+    let latestValue:
+      | ReturnType<typeof useTranslations<typeof translator>>
+      | undefined;
+
+    function Consumer() {
+      latestValue = useTranslations<typeof translator>();
+      return null;
+    }
+
+    await act(async () => {
+      create(
+        <BetterTranslateProvider translator={translator}>
+          <Consumer />
+        </BetterTranslateProvider>,
+      );
+    });
+
+    expect(latestValue?.locale).toBe("en");
+    expect(latestValue?.t("common.hello")).toBe("Hello");
+    expect(latestValue?.messages).toEqual({ en, es });
+  });
+
+  it("supports overriding the initial locale", async () => {
+    const translator = await configureTranslations({
+      availableLocales: ["en", "es"] as const,
+      defaultLocale: "en",
+      fallbackLocale: "en",
+      messages: { en, es },
+    });
+
+    let latestValue:
+      | ReturnType<typeof useTranslations<typeof translator>>
+      | undefined;
+
+    function Consumer() {
+      latestValue = useTranslations<typeof translator>();
+      return null;
+    }
+
+    await act(async () => {
+      create(
+        <BetterTranslateProvider translator={translator} initialLocale="es">
+          <Consumer />
+        </BetterTranslateProvider>,
+      );
+    });
+
+    expect(latestValue?.locale).toBe("es");
+    expect(latestValue?.t("common.hello")).toBe("Hola");
+    expect(latestValue?.defaultLocale).toBe("en");
+  });
+
+  it("switches to a cached locale", async () => {
+    const translator = await configureTranslations({
+      availableLocales: ["en", "es"] as const,
+      defaultLocale: "en",
+      fallbackLocale: "en",
+      messages: { en, es },
+    });
+
+    let latestValue:
+      | ReturnType<typeof useTranslations<typeof translator>>
+      | undefined;
+
+    function Consumer() {
+      latestValue = useTranslations<typeof translator>();
+      return null;
+    }
+
+    await act(async () => {
+      create(
+        <BetterTranslateProvider translator={translator}>
+          <Consumer />
+        </BetterTranslateProvider>,
+      );
+    });
+
+    await act(async () => {
+      await latestValue?.setLocale("es");
+    });
+
+    expect(latestValue?.locale).toBe("es");
+    expect(latestValue?.t("common.hello")).toBe("Hola");
+  });
+
+  it("auto-loads a locale before switching to it", async () => {
+    const translator = await configureTranslations({
+      availableLocales: ["en", "fr"] as const,
+      defaultLocale: "en",
+      fallbackLocale: "en",
+      messages: { en },
+      loaders: {
+        fr: async () => ({
+          common: {
+            hello: "Bonjour",
+          },
+          account: {
+            balance: {
+              label: "Solde",
+            },
+          },
+        }),
+      },
+    });
+
+    let latestValue:
+      | ReturnType<typeof useTranslations<typeof translator>>
+      | undefined;
+
+    function Consumer() {
+      latestValue = useTranslations<typeof translator>();
+      return null;
+    }
+
+    await act(async () => {
+      create(
+        <BetterTranslateProvider translator={translator}>
+          <Consumer />
+        </BetterTranslateProvider>,
+      );
+    });
+
+    await act(async () => {
+      await latestValue?.setLocale("fr");
+    });
+
+    expect(latestValue?.locale).toBe("fr");
+    expect(latestValue?.t("common.hello")).toBe("Bonjour");
+    expect(latestValue?.messages).toEqual({
+      en,
+      fr: {
+        common: {
+          hello: "Bonjour",
+        },
+        account: {
+          balance: {
+            label: "Solde",
+          },
+        },
+      },
+    });
+  });
+
+  it("keeps the previous locale and exposes localeError when loading fails", async () => {
+    const failure = new Error("Locale failed to load");
+    const translator = await configureTranslations({
+      availableLocales: ["en", "fr"] as const,
+      defaultLocale: "en",
+      fallbackLocale: "en",
+      messages: { en },
+      loaders: {
+        fr: async () => {
+          throw failure;
+        },
+      },
+    });
+
+    let latestValue:
+      | ReturnType<typeof useTranslations<typeof translator>>
+      | undefined;
+
+    function Consumer() {
+      latestValue = useTranslations<typeof translator>();
+      return null;
+    }
+
+    await act(async () => {
+      create(
+        <BetterTranslateProvider translator={translator}>
+          <Consumer />
+        </BetterTranslateProvider>,
+      );
+    });
+
+    await act(async () => {
+      await latestValue?.setLocale("fr");
+    });
+
+    expect(latestValue?.locale).toBe("en");
+    expect(latestValue?.localeError).toBe(failure);
+  });
+
+  it("loads locale messages without switching locale", async () => {
+    const translator = await configureTranslations({
+      availableLocales: ["en", "fr"] as const,
+      defaultLocale: "en",
+      fallbackLocale: "en",
+      messages: { en },
+      loaders: {
+        fr: async () => ({
+          common: {
+            hello: "Bonjour",
+          },
+        }),
+      },
+    });
+
+    let latestValue:
+      | ReturnType<typeof useTranslations<typeof translator>>
+      | undefined;
+
+    function Consumer() {
+      latestValue = useTranslations<typeof translator>();
+      return null;
+    }
+
+    await act(async () => {
+      create(
+        <BetterTranslateProvider translator={translator}>
+          <Consumer />
+        </BetterTranslateProvider>,
+      );
+    });
+
+    await act(async () => {
+      await latestValue?.loadLocale("fr");
+    });
+
+    expect(latestValue?.locale).toBe("en");
+    expect(latestValue?.messages).toEqual({
+      en,
+      fr: {
+        common: {
+          hello: "Bonjour",
+        },
+      },
+    });
+  });
+
+  it("throws when used outside the provider", () => {
+    let capturedError: unknown;
+
+    function Consumer() {
+      useTranslations();
+      return null;
+    }
+
+    act(() => {
+      create(
+        <TestErrorBoundary
+          onError={(error) => {
+            capturedError = error;
+          }}
+        >
+          <Consumer />
+        </TestErrorBoundary>,
+      );
+    });
+
+    expect(capturedError).toBeInstanceOf(Error);
+    expect((capturedError as Error).message).toBe(
+      'useTranslations() must be used inside <BetterTranslateProvider />.',
+    );
+  });
+});

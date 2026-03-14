@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it } from "bun:test";
 
 import {
   configureTranslations,
+  createTranslationJsonSchema,
   getMessages,
   getSupportedLocales,
   loadLocale,
@@ -25,6 +26,12 @@ const en = {
 const es = {
   common: {
     hello: "Hola",
+    goodbye: "Adios",
+  },
+  account: {
+    balance: {
+      label: "Saldo",
+    },
   },
 } as const;
 
@@ -47,8 +54,17 @@ describe("better-translate core", () => {
       availableLocales: ["en", "es"] as const,
       defaultLocale: "en",
       fallbackLocale: "en",
-      messages: { en, es },
+      messages: { en },
+      loaders: {
+        es: async () => ({
+          common: {
+            hello: "Hola",
+          },
+        }),
+      },
     });
+
+    await translator.loadLocale("es");
 
     expect(translator.t("account.balance.label", { locale: "es" })).toBe(
       "Balance",
@@ -152,5 +168,46 @@ describe("better-translate core", () => {
     expect(() => getMessages()).toThrow(
       'Translations have not been configured. Call configureTranslations(...) before using "t(...)".',
     );
+  });
+
+  it("creates a JSON schema from a source locale", () => {
+    expect(createTranslationJsonSchema(en)).toEqual({
+      $schema: "https://json-schema.org/draft/2020-12/schema",
+      type: "object",
+      additionalProperties: false,
+      required: ["common", "account"],
+      properties: {
+        common: {
+          type: "object",
+          additionalProperties: false,
+          required: ["hello", "goodbye"],
+          properties: {
+            hello: {
+              type: "string",
+            },
+            goodbye: {
+              type: "string",
+            },
+          },
+        },
+        account: {
+          type: "object",
+          additionalProperties: false,
+          required: ["balance"],
+          properties: {
+            balance: {
+              type: "object",
+              additionalProperties: false,
+              required: ["label"],
+              properties: {
+                label: {
+                  type: "string",
+                },
+              },
+            },
+          },
+        },
+      },
+    });
   });
 });

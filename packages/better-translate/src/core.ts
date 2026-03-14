@@ -1,12 +1,16 @@
+import { createTranslationJsonSchema } from "./create-translation-json-schema.js";
 import { createConfiguredTranslator } from "./create-configured-translator.js";
 import { getGlobalStore } from "./global-store.js";
 import { normalizeConfig } from "./normalize-config.js";
 import type {
   AnyConfiguredTranslator,
+  ConfiguredTranslator,
   OptionsFormTranslator,
   RuntimeConfigInput,
   ShortFormTranslator,
+  StrictTranslationLocaleMap,
   TranslateOptions,
+  TranslationKey,
   TranslationConfigOptions,
   TranslationLoader,
   TranslationMessages,
@@ -16,13 +20,35 @@ export type {
   CachedMessages,
   ConfiguredTranslator,
   DeepPartialMessages,
+  DeepStringify,
   DotKeys,
+  TranslationKey,
   TranslateOptions,
+  StrictTranslationLocaleMap,
+  TranslationJsonSchema,
+  TranslationJsonSchemaNode,
+  TranslationJsonObjectSchema,
+  TranslationJsonStringSchema,
+  TranslationLocaleMap,
   TranslationConfigOptions,
   TranslationLeaf,
   TranslationLoader,
   TranslationMessages,
 } from "./types.js";
+
+export interface BetterTranslateAppConfig {}
+
+export type RegisteredLocale = BetterTranslateAppConfig extends {
+  Locale: infer TLocale extends string;
+}
+  ? TLocale
+  : string;
+
+export type RegisteredMessages = BetterTranslateAppConfig extends {
+  Messages: infer TMessages extends TranslationMessages;
+}
+  ? TMessages
+  : TranslationMessages;
 
 /**
  * Configures Better Translate using the short locale-map form.
@@ -31,7 +57,7 @@ export type {
  */
 export async function configureTranslations<
   const TMessages extends Record<string, TranslationMessages>,
->(messages: TMessages): Promise<ShortFormTranslator<TMessages>>;
+>(messages: StrictTranslationLocaleMap<TMessages>): Promise<ShortFormTranslator<TMessages>>;
 
 /**
  * Configures Better Translate for the current TypeScript project.
@@ -71,7 +97,10 @@ export async function configureTranslations(
  *
  * Throws when translations have not been configured yet.
  */
-export function getTranslator(): AnyConfiguredTranslator {
+export function getTranslator(): ConfiguredTranslator<
+  RegisteredLocale,
+  RegisteredMessages
+> {
   const translator = getGlobalStore().translator;
 
   if (!translator) {
@@ -80,7 +109,7 @@ export function getTranslator(): AnyConfiguredTranslator {
     );
   }
 
-  return translator;
+  return translator as ConfiguredTranslator<RegisteredLocale, RegisteredMessages>;
 }
 
 /**
@@ -89,8 +118,11 @@ export function getTranslator(): AnyConfiguredTranslator {
  * This is the top-level convenience helper for projects that configure Better
  * Translate once and then translate from shared global state.
  */
-export function t(key: string, options?: TranslateOptions<string>): string {
-  return getTranslator().t(key as never, options);
+export function t<TKey extends TranslationKey<RegisteredMessages>>(
+  key: TKey,
+  options?: TranslateOptions<RegisteredLocale>,
+): string {
+  return getTranslator().t(key, options);
 }
 
 /**
@@ -99,14 +131,14 @@ export function t(key: string, options?: TranslateOptions<string>): string {
  * When the locale is backed by an async loader, the result is cached after the
  * first successful load.
  */
-export async function loadLocale(locale: string) {
+export async function loadLocale(locale: RegisteredLocale) {
   return getTranslator().loadLocale(locale);
 }
 
 /**
  * Returns the locales declared on the global translator configuration.
  */
-export function getSupportedLocales(): readonly string[] {
+export function getSupportedLocales(): readonly RegisteredLocale[] {
   return getTranslator().getSupportedLocales();
 }
 
@@ -119,6 +151,15 @@ export function getSupportedLocales(): readonly string[] {
 export function getMessages() {
   return getTranslator().getMessages();
 }
+
+/**
+ * Creates a JSON Schema document from a source locale object.
+ *
+ * The generated schema requires the same nested keys and string leaves as the
+ * provided source messages, which makes it suitable for validating other
+ * locale JSON files in editors and tooling.
+ */
+export { createTranslationJsonSchema };
 
 /**
  * Clears the global translator registry.

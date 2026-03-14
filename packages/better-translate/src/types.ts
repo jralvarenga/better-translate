@@ -18,6 +18,8 @@ type UnionToIntersection<T> = (
   ? I
   : never;
 
+type AllTrue<T> = false extends T ? false : true;
+
 type MergeUnion<T> = T extends Primitive
   ? T
   : T extends ReadonlyArray<unknown>
@@ -30,11 +32,22 @@ type MergeUnion<T> = T extends Primitive
         }>
       : never;
 
+type AsTranslationMessages<TMessages> =
+  TMessages extends TranslationMessages ? TMessages : never;
+
 export type DeepPartialMessages<TMessages> = {
   [K in keyof TMessages]?: TMessages[K] extends string
     ? string
     : TMessages[K] extends TranslationMessages
       ? DeepPartialMessages<TMessages[K]>
+      : never;
+};
+
+export type DeepStringify<TMessages> = {
+  [K in keyof TMessages]: TMessages[K] extends string
+    ? string
+    : TMessages[K] extends TranslationMessages
+      ? DeepStringify<TMessages[K]>
       : never;
 };
 
@@ -45,6 +58,96 @@ export type DotKeys<TMessages, TPrefix extends string = ""> = {
       ? DotKeys<TMessages[K], `${TPrefix}${K}.`>
       : never;
 }[keyof TMessages & string];
+
+type IsExactMessageShape<TReference, TCandidate> = [TReference] extends [string]
+  ? [TCandidate] extends [string]
+    ? true
+    : false
+  : [TReference] extends [TranslationMessages]
+    ? [TCandidate] extends [TranslationMessages]
+      ? Exclude<keyof TReference, keyof TCandidate> extends never
+        ? Exclude<keyof TCandidate, keyof TReference> extends never
+          ? AllTrue<
+              {
+                [K in keyof TReference]: IsExactMessageShape<
+                  TReference[K],
+                  K extends keyof TCandidate ? TCandidate[K] : never
+                >;
+              }[keyof TReference]
+            >
+          : false
+        : false
+      : false
+    : false;
+
+type ExactMessageShape<
+  TReference,
+  TCandidate extends TranslationMessages,
+> = IsExactMessageShape<TReference, TCandidate> extends true ? TCandidate : never;
+
+type EnforceLocaleMapShapeParity<
+  TMessages extends Record<string, TranslationMessages>,
+> = {
+  [TLocale in keyof TMessages]: AllTrue<
+    {
+      [TOtherLocale in keyof TMessages]: IsExactMessageShape<
+        TMessages[TOtherLocale],
+        TMessages[TLocale]
+      >;
+    }[keyof TMessages]
+  > extends true
+    ? TMessages[TLocale]
+    : never;
+};
+
+type EnforceReferenceMessageShape<
+  TMessages extends Partial<Record<string, TranslationMessages>>,
+  TReference extends TranslationMessages,
+> = {
+  [TLocale in keyof TMessages]: TMessages[TLocale] extends TranslationMessages
+    ? ExactMessageShape<DeepStringify<TReference>, TMessages[TLocale]>
+    : never;
+};
+
+type StrictOptionsMessages<
+  TMessages extends Partial<Record<string, TranslationMessages>>,
+  TDefaultLocale extends string,
+> = TMessages[TDefaultLocale] extends TranslationMessages
+  ? Simplify<
+      TMessages &
+        EnforceReferenceMessageShape<
+          TMessages,
+          Extract<TMessages[TDefaultLocale], TranslationMessages>
+        >
+    >
+  : never;
+
+export type TranslationKey<TMessages extends TranslationMessages> =
+  string extends keyof TMessages ? string : DotKeys<TMessages>;
+
+export type TranslationLocaleMap<
+  TLocale extends string,
+  TSourceMessages extends TranslationMessages,
+> = Record<TLocale, DeepStringify<TSourceMessages>>;
+
+export interface TranslationJsonStringSchema {
+  type: "string";
+}
+
+export interface TranslationJsonObjectSchema {
+  type: "object";
+  additionalProperties: false;
+  required: string[];
+  properties: Record<string, TranslationJsonSchemaNode>;
+}
+
+export interface TranslationJsonSchema extends TranslationJsonObjectSchema {
+  $schema: "https://json-schema.org/draft/2020-12/schema";
+}
+
+export type TranslationJsonSchemaNode =
+  | TranslationJsonObjectSchema
+  | TranslationJsonStringSchema;
 
 /**
  * Optional overrides for a single translation lookup.
@@ -84,7 +187,7 @@ export interface ConfiguredTranslator<
    * If a key is missing in the active locale, it falls back to the configured
    * fallback locale. If the key is still missing, the key itself is returned.
    */
-  t<TKey extends DotKeys<TSourceMessages>>(
+  t<TKey extends TranslationKey<TSourceMessages>>(
     key: TKey,
     options?: TranslateOptions<TLocale>,
   ): string;
@@ -127,7 +230,7 @@ export type TranslationConfigOptions<
   availableLocales: TLocales;
   defaultLocale: TDefaultLocale;
   fallbackLocale?: TLocales[number];
-  messages: TMessages & Record<TDefaultLocale, TranslationMessages>;
+  messages: StrictOptionsMessages<TMessages, TDefaultLocale>;
   loaders?: TLoaders;
 };
 
@@ -176,8 +279,12 @@ export type CachedMessages<
 export type ShortFormTranslator<TMessages extends Record<string, TranslationMessages>> =
   ConfiguredTranslator<
     Extract<keyof TMessages, string>,
-    MergeUnion<TMessages[keyof TMessages & string]> & TranslationMessages
+    AsTranslationMessages<DeepStringify<MergeUnion<TMessages[keyof TMessages & string]>>>
   >;
+
+export type StrictTranslationLocaleMap<
+  TMessages extends Record<string, TranslationMessages>,
+> = Simplify<TMessages & EnforceLocaleMapShapeParity<TMessages>>;
 
 export type OptionsFormTranslator<
   TLocales extends readonly string[],
@@ -185,5 +292,5 @@ export type OptionsFormTranslator<
   TDefaultLocale extends TLocales[number],
 > = ConfiguredTranslator<
   TLocales[number],
-  Extract<TMessages[TDefaultLocale], TranslationMessages>
+  AsTranslationMessages<DeepStringify<Extract<TMessages[TDefaultLocale], TranslationMessages>>>
 >;

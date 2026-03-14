@@ -1,7 +1,7 @@
 {
-  "name": "better-translate/react",
+  "name": "@better-translate/react",
   "version": "0.0.0",
-  "description": "Type-safe translation primitives for React.",
+  "description": "React context and hooks for Better Translate.",
   "license": "MIT",
   "type": "module",
   "sideEffects": false,
@@ -22,17 +22,22 @@
   ],
   "scripts": {
     "build": "tsup src/index.ts --format esm,cjs --dts --clean",
-    "check-types": "tsc --noEmit"
+    "check-types": "tsc --noEmit",
+    "test": "bun test src/**/*.test.tsx"
   },
   "publishConfig": {
     "access": "public"
+  },
+  "dependencies": {
+    "better-translate": "0.0.0"
   },
   "peerDependencies": {
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
-    "@repo/typescript-config": "*"
+    "@repo/typescript-config": "*",
+    "react-test-renderer": "^19.2.0"
   },
   "keywords": [
     "i18n",
