@@ -1,0 +1,18 @@
+{
+  "routes": {
+    "home": "Hello from Better Translate and Elysia.",
+    "hello": "Hello world.",
+    "currentLocale": "Current locale"
+  },
+  "account": {
+    "balance": {
+      "label": "Net balance"
+    }
+  },
+  "locale": {
+    "changed": "Locale changed successfully."
+  },
+  "errors": {
+    "unsupportedLocale": "Unsupported locale."
+  }
+}
