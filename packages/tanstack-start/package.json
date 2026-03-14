@@ -1,5 +1,5 @@
 {
-  "name": "@better-translate/tanstack-start",
+  "name": "better-translate/tanstack-start",
   "version": "0.0.0",
   "description": "TanStack Start integration package for Better Translate.",
   "license": "MIT",

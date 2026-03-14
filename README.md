@@ -1,14 +1,15 @@
 # Better Translate
 
-Better Translate is a Bun + Turborepo monorepo for type-safe translations in React applications. The goal is a better translation workflow where TypeScript can autocomplete translation keys from the string you pass into a hook-based API.
+Better Translate is a Bun + Turborepo monorepo for type-safe translations in TypeScript projects.
 
-This repo is currently in setup mode. The package boundaries, build pipeline, and TypeScript configuration are in place, while the translation runtime and hook implementation are intentionally deferred.
+The main package is `better-translate`, exposed both from the package root and from the `better-translate/core` subpath. It is framework-agnostic and is intended to be installed into any TypeScript project, including React, Next.js, TanStack Start, and future adapters such as Svelte or Vue.
 
 ## Packages
 
-- `@better-translate/react`: base React package for the future translation runtime and typed hooks.
-- `@better-translate/nextjs`: Next.js-focused package for framework-specific integration.
-- `@better-translate/tanstack-start`: TanStack Start-focused package for framework-specific integration.
+- `better-translate`: framework-agnostic translation configuration runtime and typed lookup core.
+- `better-translate/react`: future React adapter package.
+- `better-translate/nextjs`: future Next.js adapter package.
+- `better-translate/tanstack-start`: future TanStack Start adapter package.
 - `@repo/typescript-config`: internal shared TypeScript presets used by the workspace.
 
 ## Repository Layout
@@ -18,6 +19,7 @@ apps/
   docs/
   web/
 packages/
+  better-translate/
   nextjs/
   react/
   tanstack-start/
@@ -33,19 +35,14 @@ bun run check-types
 bun run check-types:packages
 ```
 
-`build:packages` and `check-types:packages` are the intended validation commands for the publishable libraries added in this setup pass.
+`build:packages` and `check-types:packages` include `better-translate` and the framework packages.
 
-## Current Status
+## Core Direction
 
-- Publishable package manifests are configured for npm.
-- Library builds target ESM, CJS, and declaration output.
-- TypeScript config is shared through the internal workspace config package.
-- Source entrypoints are placeholders only.
+The `better-translate` package is responsible for:
 
-## Roadmap
-
-The next implementation pass will add the actual translation primitives, including:
-
-- a hook-based API for consuming translations
-- TypeScript-driven key autocomplete
-- framework-specific integration for Next.js and TanStack Start
+- configuring translations globally for a TypeScript project
+- deriving dot-notation translation keys from source messages
+- supporting fallback locales
+- supporting async locale loaders for future services
+- remaining independent from framework-specific runtime concerns

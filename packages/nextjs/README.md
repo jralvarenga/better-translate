@@ -1,4 +1,4 @@
-# @better-translate/nextjs
+# better-translate/nextjs
 
 Next.js package scaffold for Better Translate.
 

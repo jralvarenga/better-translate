@@ -1,5 +1,5 @@
 {
-  "name": "@better-translate/nextjs",
+  "name": "better-translate/nextjs",
   "version": "0.0.0",
   "description": "Next.js integration package for Better Translate.",
   "license": "MIT",

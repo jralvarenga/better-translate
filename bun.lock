@@ -53,7 +53,7 @@
       "version": "0.0.0",
     },
     "packages/nextjs": {
-      "name": "@better-translate/nextjs",
+      "name": "better-translate/nextjs",
       "version": "0.0.0",
       "devDependencies": {
         "@repo/typescript-config": "*",
@@ -65,7 +65,7 @@
       },
     },
     "packages/react": {
-      "name": "@better-translate/react",
+      "name": "better-translate/react",
       "version": "0.0.0",
       "devDependencies": {
         "@repo/typescript-config": "*",
@@ -76,7 +76,7 @@
       },
     },
     "packages/tanstack-start": {
-      "name": "@better-translate/tanstack-start",
+      "name": "better-translate/tanstack-start",
       "version": "0.0.0",
       "devDependencies": {
         "@repo/typescript-config": "*",
@@ -138,11 +138,11 @@
 
     "@babel/types": ["@babel/types@7.29.0", "", { "dependencies": { "@babel/helper-string-parser": "^7.27.1", "@babel/helper-validator-identifier": "^7.28.5" } }, "sha512-LwdZHpScM4Qz8Xw2iKSzS+cfglZzJGvofQICy7W7v4caru4EaAmyUuO6BGrbyQ2mYV11W0U8j5mBhd14dd3B0A=="],
 
-    "@better-translate/nextjs": ["@better-translate/nextjs@workspace:packages/nextjs"],
+    "better-translate/nextjs": ["better-translate/nextjs@workspace:packages/nextjs"],
 
-    "@better-translate/react": ["@better-translate/react@workspace:packages/react"],
+    "better-translate/react": ["better-translate/react@workspace:packages/react"],
 
-    "@better-translate/tanstack-start": ["@better-translate/tanstack-start@workspace:packages/tanstack-start"],
+    "better-translate/tanstack-start": ["better-translate/tanstack-start@workspace:packages/tanstack-start"],
 
     "@emnapi/core": ["@emnapi/core@1.9.0", "", { "dependencies": { "@emnapi/wasi-threads": "1.2.0", "tslib": "^2.4.0" } }, "sha512-0DQ98G9ZQZOxfUcQn1waV2yS8aWdZ6kJMbYCJB3oUBecjWYO1fqJ+a1DRfPF3O5JEkwqwP1A9QEN/9mYm2Yd0w=="],
 

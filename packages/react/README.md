@@ -1,4 +1,4 @@
-# @better-translate/react
+# better-translate/react
 
 React package scaffold for Better Translate.
 

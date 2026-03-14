@@ -1,4 +1,4 @@
-# @better-translate/tanstack-start
+# better-translate/tanstack-start
 
 TanStack Start package scaffold for Better Translate.
 
