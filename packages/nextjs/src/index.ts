@@ -1,4 +1,15 @@
-export const packageName = "better-translate/nextjs";
-export const setupStatus = "setup-only" as const;
+export {
+  defineRouting,
+  getDomainForLocale,
+  getLocaleFromDomain,
+  getPathnameLocale,
+  hasLocale,
+  localizePathname,
+  stripLocaleFromPathname,
+} from "./shared.js";
 
-export type SetupStatus = typeof setupStatus;
+export type {
+  DefinedRouting,
+  RoutingConfig,
+  RoutingDomain,
+} from "./shared.js";

@@ -8,7 +8,7 @@ The main package is `better-translate`, exposed both from the package root and f
 
 - `better-translate`: framework-agnostic translation configuration runtime and typed lookup core.
 - `better-translate/react`: future React adapter package.
-- `better-translate/nextjs`: future Next.js adapter package.
+- `@better-translate/nextjs`: Next.js adapter package.
 - `better-translate/tanstack-start`: future TanStack Start adapter package.
 - `@repo/typescript-config`: internal shared TypeScript presets used by the workspace.
 
