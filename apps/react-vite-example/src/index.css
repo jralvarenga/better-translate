@@ -1,0 +1,85 @@
+:root {
+  color-scheme: dark;
+  font-family:
+    "Avenir Next", "Segoe UI", "Helvetica Neue", sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color: #71717a;
+  background: #000000;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  --bg:               #000000;
+  --surface:          #0c0c0c;
+  --surface-elevated: #141414;
+  --border:           rgba(255, 255, 255, 0.06);
+  --border-hover:     rgba(255, 255, 255, 0.12);
+  --accent:           #8b5cf6;
+  --accent-dim:       rgba(139, 92, 246, 0.12);
+  --accent-border:    rgba(139, 92, 246, 0.35);
+  --text:             #71717a;
+  --text-strong:      #f4f4f5;
+  --text-soft:        #71717a;
+  --badge-text:       #e4d4fc;
+  --hero-title:       #f4f4f5;
+  --hero-copy:        rgba(244, 244, 245, 0.7);
+  --panel-surface:    #0c0c0c;
+  --panel-border:     rgba(255, 255, 255, 0.06);
+  --panel-shadow:     0 24px 60px rgba(0, 0, 0, 0.6);
+  --chip-surface:     #141414;
+  --button-bg:        #141414;
+  --button-text:      #f4f4f5;
+  --button-active-bg: #8b5cf6;
+  --button-active-text: #ffffff;
+  --danger-bg:        rgba(239, 68, 68, 0.12);
+  --danger-text:      #fca5a5;
+  --input-bg:         #0f0f0f;
+  --input-border:     rgba(255, 255, 255, 0.1);
+  --code-surface:     #0a0a0a;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: #000000;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+h1,
+h2 {
+  font-family:
+    "Avenir Next", "Segoe UI", "Helvetica Neue", sans-serif;
+  letter-spacing: -0.04em;
+}
+
+p,
+dt,
+dd,
+span,
+label,
+button,
+input {
+  letter-spacing: 0.01em;
+}
+
+a {
+  color: inherit;
+}
