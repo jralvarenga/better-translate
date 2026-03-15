@@ -79,7 +79,7 @@ export function BetterTranslateProvider<
 
     const hasCachedMessages = Object.prototype.hasOwnProperty.call(
       translator.getMessages(),
-      nextLocale,
+      nextLocale as PropertyKey,
     );
 
     if (!hasCachedMessages) {

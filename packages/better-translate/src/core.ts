@@ -3,15 +3,15 @@ import { createConfiguredTranslator } from "./create-configured-translator.js";
 import { getGlobalStore } from "./global-store.js";
 import { normalizeConfig } from "./normalize-config.js";
 import type {
+  AnyTranslationHelpers,
   AnyConfiguredTranslator,
   ConfiguredTranslator,
   OptionsFormTranslator,
   RuntimeConfigInput,
   ShortFormTranslator,
   StrictTranslationLocaleMap,
-  TranslateCall,
   TranslateOptions,
-  TranslationKey,
+  TranslationHelpers,
   TranslationConfigOptions,
   TranslationLoader,
   TranslationMessages,
@@ -23,6 +23,7 @@ export type {
   DeepPartialMessages,
   DeepStringify,
   DotKeys,
+  TranslationHelpers,
   TranslateCall,
   TranslateFunction,
   TranslationKey,
@@ -41,24 +42,11 @@ export type {
   TranslationKeysWithRequiredParams,
   TranslationLocaleMap,
   TranslationConfigOptions,
+  AnyTranslationHelpers,
   TranslationLeaf,
   TranslationLoader,
   TranslationMessages,
 } from "./types.js";
-
-export interface BetterTranslateAppConfig {}
-
-export type RegisteredLocale = BetterTranslateAppConfig extends {
-  Locale: infer TLocale extends string;
-}
-  ? TLocale
-  : string;
-
-export type RegisteredMessages = BetterTranslateAppConfig extends {
-  Messages: infer TMessages extends TranslationMessages;
-}
-  ? TMessages
-  : TranslationMessages;
 
 /**
  * Configures Better Translate using the short locale-map form.
@@ -103,14 +91,76 @@ export async function configureTranslations(
 }
 
 /**
+ * Binds typed helper functions to a configured translator instance.
+ *
+ * Apps can create one setup module and re-export these helpers anywhere they
+ * want strongly typed access without ambient declarations.
+ */
+export function createTranslationHelpers<
+  TLocale extends string,
+  TSourceMessages extends TranslationMessages,
+>(
+  translator: ConfiguredTranslator<TLocale, TSourceMessages>,
+): TranslationHelpers<TLocale, TSourceMessages>;
+export function createTranslationHelpers<
+  const TMessages extends Record<string, TranslationMessages>,
+>(
+  messages: StrictTranslationLocaleMap<TMessages>,
+): Promise<
+  TranslationHelpers<
+    Extract<keyof TMessages, string>,
+    ShortFormTranslator<TMessages> extends ConfiguredTranslator<any, infer TSourceMessages>
+      ? TSourceMessages
+      : TranslationMessages
+  >
+>;
+export function createTranslationHelpers<
+  const TLocales extends readonly string[],
+  const TMessages extends Partial<Record<TLocales[number], TranslationMessages>>,
+  const TLoaders extends
+    | Partial<Record<TLocales[number], TranslationLoader<unknown>>>
+    | undefined = undefined,
+  const TDefaultLocale extends TLocales[number] = TLocales[number],
+>(
+  config: TranslationConfigOptions<TLocales, TMessages, TLoaders, TDefaultLocale>,
+): Promise<
+  TranslationHelpers<
+    TLocales[number],
+    Extract<TMessages[TDefaultLocale], TranslationMessages>
+  >
+>;
+export function createTranslationHelpers(
+  input: AnyConfiguredTranslator | RuntimeConfigInput,
+): AnyTranslationHelpers | Promise<AnyTranslationHelpers> {
+  if ("t" in input && "getMessages" in input && "getSupportedLocales" in input) {
+    const translator = input as AnyConfiguredTranslator;
+
+    return {
+      translator,
+      t: translator.t,
+      loadLocale(locale) {
+        return translator.loadLocale(locale);
+      },
+      getSupportedLocales() {
+        return translator.getSupportedLocales();
+      },
+      getMessages() {
+        return translator.getMessages();
+      },
+    };
+  }
+
+  return configureTranslations(input).then((translator) =>
+    createTranslationHelpers(translator),
+  );
+}
+
+/**
  * Returns the globally configured translator.
  *
  * Throws when translations have not been configured yet.
  */
-export function getTranslator(): ConfiguredTranslator<
-  RegisteredLocale,
-  RegisteredMessages
-> {
+export function getTranslator(): AnyConfiguredTranslator {
   const translator = getGlobalStore().translator;
 
   if (!translator) {
@@ -119,7 +169,7 @@ export function getTranslator(): ConfiguredTranslator<
     );
   }
 
-  return translator as ConfiguredTranslator<RegisteredLocale, RegisteredMessages>;
+  return translator;
 }
 
 /**
@@ -128,14 +178,10 @@ export function getTranslator(): ConfiguredTranslator<
  * This is the top-level convenience helper for projects that configure Better
  * Translate once and then translate from shared global state.
  */
-export function t<TKey extends TranslationKey<RegisteredMessages>>(
-  ...args: TranslateCall<RegisteredLocale, RegisteredMessages, TKey>
-): string {
-  const [key, options] = args;
-
+export function t(key: string, options?: TranslateOptions<string>): string {
   return (
     getTranslator() as {
-      t(key: string, options?: TranslateOptions<RegisteredLocale>): string;
+      t(key: string, options?: TranslateOptions<string>): string;
     }
   ).t(key, options);
 }
@@ -146,14 +192,14 @@ export function t<TKey extends TranslationKey<RegisteredMessages>>(
  * When the locale is backed by an async loader, the result is cached after the
  * first successful load.
  */
-export async function loadLocale(locale: RegisteredLocale) {
+export async function loadLocale(locale: string) {
   return getTranslator().loadLocale(locale);
 }
 
 /**
  * Returns the locales declared on the global translator configuration.
  */
-export function getSupportedLocales(): readonly RegisteredLocale[] {
+export function getSupportedLocales(): readonly string[] {
   return getTranslator().getSupportedLocales();
 }
 

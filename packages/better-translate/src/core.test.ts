@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it } from "bun:test";
 
 import {
   configureTranslations,
+  createTranslationHelpers,
   createTranslationJsonSchema,
   getMessages,
   getSupportedLocales,
@@ -240,6 +241,26 @@ describe("better-translate core", () => {
       messages: { en, es },
       greeting: "Hello",
     });
+  });
+
+  it("creates bound helpers with the same runtime behavior", async () => {
+    const helpers = await createTranslationHelpers({
+      availableLocales: ["en", "es"] as const,
+      defaultLocale: "en",
+      fallbackLocale: "en",
+      messages: { en, es },
+    });
+
+    expect(helpers.t("common.hello")).toBe("Hello");
+    expect(
+      helpers.t("common.greeting", {
+        params: {
+          name: "Ada",
+        },
+      }),
+    ).toBe("Good morning Ada");
+    expect(helpers.getSupportedLocales()).toEqual(["en", "es"]);
+    expect(helpers.getMessages()).toEqual({ en, es });
   });
 
   it("returns an isolated snapshot from getMessages()", async () => {

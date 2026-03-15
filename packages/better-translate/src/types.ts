@@ -321,6 +321,26 @@ export interface ConfiguredTranslator<
 }
 
 /**
+ * Typed helper surface bound to one configured translator.
+ *
+ * This is useful for app-level setup modules that want to export typed
+ * `t(...)`, `getMessages()`, and related helpers without relying on ambient
+ * module augmentation.
+ */
+export interface TranslationHelpers<
+  TLocale extends string,
+  TSourceMessages extends TranslationMessages,
+> {
+  readonly translator: ConfiguredTranslator<TLocale, TSourceMessages>;
+  readonly t: TranslateFunction<TLocale, TSourceMessages>;
+  loadLocale(
+    locale: TLocale,
+  ): Promise<DeepPartialMessages<TSourceMessages> | TSourceMessages | undefined>;
+  getSupportedLocales(): readonly TLocale[];
+  getMessages(): CachedMessages<TLocale, TSourceMessages>;
+}
+
+/**
  * Main configuration shape for the framework-agnostic translation runtime.
  *
  * `availableLocales` defines the locale contract first. `defaultLocale`,
@@ -342,6 +362,11 @@ export type TranslationConfigOptions<
 };
 
 export type AnyConfiguredTranslator = ConfiguredTranslator<
+  string,
+  TranslationMessages
+>;
+
+export type AnyTranslationHelpers = TranslationHelpers<
   string,
   TranslationMessages
 >;

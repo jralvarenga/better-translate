@@ -8,7 +8,7 @@ Framework-agnostic translation configuration runtime for TypeScript projects.
 import en from "./locales/en.json";
 import es from "./locales/es.json";
 import {
-  configureTranslations,
+  createTranslationHelpers,
   type TranslationLocaleMap,
 } from "better-translate/core";
 
@@ -16,15 +16,15 @@ type Locale = "en" | "es";
 
 const messages = { en, es } satisfies TranslationLocaleMap<Locale, typeof en>;
 
-const translator = await configureTranslations({
+const translations = await createTranslationHelpers({
   availableLocales: ["en", "es"] as const,
   defaultLocale: "en",
   fallbackLocale: "en",
   messages,
 });
 
-translator.t("home.title");
-translator.getMessages();
+translations.t("home.title");
+translations.getMessages();
 ```
 
 The options-based form is the main entrypoint because it defines the locale contract up front. For convenience, the package also supports the short form:
@@ -33,14 +33,21 @@ The options-based form is the main entrypoint because it defines the locale cont
 await configureTranslations({ en, es });
 ```
 
-Once translations are configured in one file, the same runtime can access them
-from another file without passing the messages again:
+If you want app-wide typed helpers, create one setup module and re-export the
+bound helpers:
 
 ```ts
-import { getMessages, t } from "better-translate/core";
+import en from "./locales/en.json";
+import es from "./locales/es.json";
+import { createTranslationHelpers } from "better-translate/core";
 
-const messages = getMessages();
-const title = t("home.title");
+const translations = await createTranslationHelpers({
+  availableLocales: ["en", "es"] as const,
+  defaultLocale: "en",
+  messages: { en, es },
+});
+
+export const { getMessages, loadLocale, getSupportedLocales, t } = translations;
 ```
 
 ## Typed locale maps
@@ -68,29 +75,28 @@ const messages = {
 } satisfies TranslationLocaleMap<Locale, typeof en>;
 ```
 
-That pattern gives TypeScript autocomplete for both `t("section.key")` and the
+That pattern gives TypeScript autocomplete for both `translator.t("section.key")` and the
 preloaded locale objects passed into `configureTranslations(...)`.
 
-## Global `t(...)` autocomplete
-
-To get typed autocomplete for the global `t(...)` helper, add one ambient
-declaration for your app's locale and message contract:
+## App-wide typed helpers
 
 ```ts
-import "better-translate/core";
+import en from "./locales/en.json";
+import es from "./locales/es.json";
+import { createTranslationHelpers } from "better-translate/core";
 
-import type en from "./locales/en.json";
+const translations = await createTranslationHelpers({
+  availableLocales: ["en", "es"] as const,
+  defaultLocale: "en",
+  fallbackLocale: "en",
+  messages: { en, es },
+});
 
-declare module "better-translate/core" {
-  interface BetterTranslateAppConfig {
-    Locale: "en" | "es";
-    Messages: typeof en;
-  }
-}
+export const { getMessages, getSupportedLocales, loadLocale, t } = translations;
 ```
 
-After that, `t("home.title")`, `loadLocale(...)`, `getSupportedLocales()`, and
-`getMessages()` all use the same app-wide TypeScript contract.
+Import those re-exported helpers anywhere in your app to keep the same
+message-driven TypeScript contract without a separate ambient `.d.ts` file.
 
 ## Preloaded message parity
 
