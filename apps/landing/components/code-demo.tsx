@@ -1,26 +1,31 @@
 import { CodeBlock } from '@/components/ui/code-highlight'
+import type { LandingTranslator } from '@/lib/i18n/config'
 
-const code = `// Step 1 — configure once
-const translator = await configureTranslations({
+const code = `export const landingTranslationsConfig = {
   availableLocales: ["en", "es"] as const,
   defaultLocale: "en",
+  fallbackLocale: "en",
   messages: { en, es },
-});
+} as const;
 
-// Step 2 — create helpers (sync, typed)
+const translator = await configureTranslations(landingTranslationsConfig);
 const { t } = createTranslationHelpers(translator);
 
-t("home.title")              // → "Welcome"
-t("home.greeting", { name }) // → "Hello, world"
-t("home.title", { config: { locale: "es" } }) // → "Bienvenido"`
+t("hero.title")
+t("hero.description")
+t("header.language", { locale: "es" })`
 
-export function CodeDemo() {
+interface CodeDemoProps {
+    t: LandingTranslator['t']
+}
+
+export function CodeDemo({ t }: CodeDemoProps) {
     return (
         <section id="docs" className="bg-background py-20 md:py-32">
             <div className="mx-auto max-w-4xl px-6">
                 <div className="mb-12 text-center">
-                    <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">Simple two-step API</h2>
-                    <p className="mt-4 text-muted-foreground">Configure once, create typed helpers everywhere.</p>
+                    <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">{t('codeDemo.title')}</h2>
+                    <p className="mt-4 text-muted-foreground">{t('codeDemo.description')}</p>
                 </div>
                 <div className="rounded-2xl border border-white/10 p-px">
                     <CodeBlock filename="translate.ts" code={code} />

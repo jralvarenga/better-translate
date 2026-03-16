@@ -25,7 +25,10 @@
       "name": "landing",
       "version": "0.1.0",
       "dependencies": {
+        "@better-translate/nextjs": "0.0.0",
+        "@better-translate/react": "0.0.0",
         "@remixicon/react": "^4.9.0",
+        "better-translate": "0.0.0",
         "class-variance-authority": "^0.7.1",
         "clsx": "^2.1.1",
         "motion": "^12.36.0",

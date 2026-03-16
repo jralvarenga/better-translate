@@ -1,13 +1,14 @@
-import React from 'react'
 import Link from 'next/link'
-import { RiArrowRightLine, RiGithubLine, RiReactjsLine, RiNextjsFill, RiNodejsLine } from '@remixicon/react'
+import { RiArrowRightLine, RiBook2Line, RiGithubLine } from '@remixicon/react'
 import { Button } from '@/components/ui/button'
 import Image from 'next/image'
 import { TextEffect } from '@/components/ui/text-effect'
 import { AnimatedGroup } from '@/components/ui/animated-group'
 import { HeroHeader } from './header'
 import { CodeBlock } from '@/components/ui/code-highlight'
-import { BunIcon, TanStackIcon } from '@/components/logo'
+import { getCatalogItems } from '@/lib/content/catalog'
+import type { LandingLocale, LandingTranslator } from '@/lib/i18n/config'
+import { siteLinks } from '@/lib/site'
 
 const transitionVariants = {
     item: {
@@ -29,51 +30,27 @@ const transitionVariants = {
     },
 }
 
-const frameworks = [
-    {
-        icon: ({ className }: { className?: string }) => (
-            <span className={`font-mono font-bold text-blue-500 ${className ?? ''}`}>TS</span>
-        ),
-        name: 'TypeScript',
-        install: 'bun add better-translate',
-        color: 'text-blue-500',
-    },
-    {
-        icon: BunIcon,
-        name: 'Bun',
-        install: 'bun add better-translate',
-        color: '',
-    },
-    {
-        icon: RiNodejsLine,
-        name: 'Node.js',
-        install: 'bun add better-translate',
-        color: 'text-green-500',
-    },
-    {
-        icon: RiReactjsLine,
-        name: 'React',
-        install: 'bun add @better-translate/react',
-        color: 'text-cyan-400',
-    },
-    {
-        icon: RiNextjsFill,
-        name: 'Next.js',
-        install: 'bun add @better-translate/nextjs',
-        color: 'text-white',
-    },
-    {
-        icon: TanStackIcon,
-        name: 'TanStack Start/Router',
-        install: 'bun add @better-translate/tanstack-start',
-        color: 'text-orange-400',
-    },
-]
+interface HeroSectionProps {
+    locale: LandingLocale
+    t: LandingTranslator['t']
+}
 
-export default function HeroSection() {
+export default function HeroSection({ locale, t }: HeroSectionProps) {
+    const frameworks = getCatalogItems('framework')
+    const docsHref = `/${locale}#docs`
+
     return (
         <>
-            <HeroHeader />
+            <HeroHeader
+                changelogLabel={t('header.changelog')}
+                cliLabel={t('header.cli')}
+                closeMenuLabel={t('header.closeMenu')}
+                currentLocale={locale}
+                docsLabel={t('header.docs')}
+                githubLabel={t('header.github')}
+                openMenuLabel={t('header.openMenu')}
+                switchLabel={t('header.language')}
+            />
             <main className="overflow-hidden">
                 <div
                     aria-hidden
@@ -135,7 +112,7 @@ export default function HeroSection() {
                                 <AnimatedGroup variants={transitionVariants}>
                                     <div className="flex w-fit items-center gap-3 rounded-full border border-white/10 bg-[var(--brand)]/10 px-4 py-1.5 text-sm text-[var(--brand)]">
                                         <RiArrowRightLine className="size-3.5" />
-                                        <span>Framework Agnostic — works in any TypeScript project</span>
+                                        <span>{t('hero.badge')}</span>
                                     </div>
                                 </AnimatedGroup>
                             </div>
@@ -150,7 +127,7 @@ export default function HeroSection() {
                                         speedSegment={0.3}
                                         as="h1"
                                         className="text-balance text-3xl font-semibold md:text-4xl lg:text-5xl">
-                                        Type-Safe Translations for TypeScript
+                                        {t('hero.title')}
                                     </TextEffect>
                                     <TextEffect
                                         per="line"
@@ -159,7 +136,7 @@ export default function HeroSection() {
                                         delay={0.5}
                                         as="p"
                                         className="mt-5 max-w-xl text-balance text-base text-muted-foreground md:text-lg">
-                                        Define your translations once. Get autocomplete, type errors, and locale switching — no framework lock-in. Works in React, Next.js, TanStack Start, Node, or any TypeScript codebase.
+                                        {t('hero.description')}
                                     </TextEffect>
 
                                     <AnimatedGroup
@@ -174,25 +151,24 @@ export default function HeroSection() {
                                             },
                                             ...transitionVariants,
                                         }}
-                                        className="mt-8 flex flex-col items-center gap-2 sm:flex-row md:items-start">
-                                        <div>
-                                            <Button
-                                                asChild
-                                                size="lg"
-                                                className="rounded-xl px-5 text-base text-zinc-950">
-                                                <Link href="#docs">
-                                                    <span className="text-nowrap">Get Started</span>
-                                                </Link>
-                                            </Button>
-                                        </div>
+                                        className="mt-8 flex items-center justify-start ">
+                                        <Button
+                                            asChild
+                                            size="lg"
+                                            className="text-sm text-zinc-950">
+                                            <Link href={docsHref}>
+                                                <RiBook2Line className="size-4" />
+                                                <span className="text-nowrap">{t('hero.primaryCta')}</span>
+                                            </Link>
+                                        </Button>
                                         <Button
                                             asChild
                                             size="lg"
                                             variant="ghost"
-                                            className="h-10.5 rounded-xl px-5">
-                                            <Link href="process.env.NEXT_PUBLIC_GITHUB_URL!" target="_blank" rel="noopener noreferrer">
+                                            className="rounded-xl px-5">
+                                            <Link href={siteLinks.github} target="_blank" rel="noopener noreferrer">
                                                 <RiGithubLine className="size-4" />
-                                                <span className="text-nowrap">View on GitHub</span>
+                                                <span className="text-nowrap">{t('hero.secondaryCta')}</span>
                                             </Link>
                                         </Button>
                                     </AnimatedGroup>
@@ -215,19 +191,22 @@ export default function HeroSection() {
                                     <div className="rounded-2xl border border-white/10 p-px">
                                     <CodeBlock
                                         filename="translate.ts"
-                                        code={`const translator = await configureTranslations({
+                                        code={`export const landingTranslationsConfig = {
   availableLocales: ["en", "es"] as const,
   defaultLocale: "en",
+  fallbackLocale: "en",
   messages: { en, es },
-});
+} as const;
+
+const translator = await configureTranslations(landingTranslationsConfig);
 
 const { t } = createTranslationHelpers(translator);
 
-t("home.title")              // → "Welcome"
-t("home.greeting", { name }) // → "Hello, world"
-t("home.title", {
-  config: { locale: "es" }
-})                           // → "Bienvenido"`}
+t("hero.title")                    // -> "Type-Safe Translations for TypeScript"
+t("hero.description")              // -> localized copy
+t("header.language", {
+  locale: "es"
+})                                 // -> "Idioma"`}
                                     />
                                     </div>
                                 </AnimatedGroup>
@@ -239,12 +218,12 @@ t("home.title", {
 
                 <section className="bg-background pb-16 pt-16 md:pb-32">
                     <div className="mx-auto max-w-5xl px-6">
-                        <p className="mb-3 text-center text-base font-medium text-foreground">Works with any TypeScript project</p>
-                        <p className="mb-10 text-center text-sm text-muted-foreground">No framework lock-in — one core, zero runtime dependencies</p>
+                        <p className="mb-3 text-center text-base font-medium text-foreground">{t('frameworks.heroTitle')}</p>
+                        <p className="mb-10 text-center text-sm text-muted-foreground">{t('frameworks.heroDescription')}</p>
                         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
                             {frameworks.map((fw) => (
                                 <div key={fw.name} className="flex flex-col items-center gap-3 rounded-xl border border-white/10 bg-white/5 p-5 text-center">
-                                    <fw.icon className={`size-8 ${fw.color} rounded-full`} />
+                                    <fw.icon className={`size-8 ${fw.iconClassName ?? ''} rounded-full`} />
                                     <span className="text-sm font-medium text-foreground">{fw.name}</span>
                                     <code className="text-xs text-muted-foreground break-all">{fw.install}</code>
                                 </div>

@@ -1,17 +1,9 @@
-import HeroSection from "@/components/hero-section";
-import { Features } from "@/components/features";
-import { CodeDemo } from "@/components/code-demo";
-import { Frameworks } from "@/components/frameworks";
-import { Footer } from "@/components/footer";
+import { redirect } from "next/navigation";
+
+import { localizePathname } from "@better-translate/nextjs";
+
+import { routing } from "@/lib/i18n/routing";
 
 export default function Home() {
-  return (
-    <div className="dot-grid min-h-screen bg-background">
-      <HeroSection />
-      <Features />
-      <CodeDemo />
-      <Frameworks />
-      <Footer />
-    </div>
-  );
+  redirect(localizePathname("/", routing.defaultLocale, routing));
 }
