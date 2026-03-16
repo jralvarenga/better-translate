@@ -15,6 +15,7 @@ export type DefinedRouting<
 
 interface ParsedRouteTemplate {
   deLocalizedSegments: readonly string[];
+  isRequired: boolean;
   localeParamName: string;
   localeSegment: string;
   localeSegmentIndex: number;
@@ -104,11 +105,11 @@ export function localizePathname<TLocale extends string>(
     return normalizedPathname;
   }
 
-  if (locale === routing.defaultLocale) {
+  const parsedTemplate = parseRouteTemplate(routing.routeTemplate);
+
+  if (!parsedTemplate.isRequired && locale === routing.defaultLocale) {
     return deLocalizedPathname;
   }
-
-  const parsedTemplate = parseRouteTemplate(routing.routeTemplate);
   const pathnameSegments = splitPathname(deLocalizedPathname);
   const localizedSegments = [...pathnameSegments];
 
@@ -159,32 +160,35 @@ export function parseRouteTemplate(routeTemplate?: string): ParsedRouteTemplate 
   let localeSegmentIndex = -1;
   let localeParamName = "";
 
+  let isRequired = false;
+
   for (let index = 0; index < localizedSegments.length; index += 1) {
     const segment = localizedSegments[index]!;
-    const localeMatch = /^\{-\$([a-zA-Z_$][a-zA-Z0-9_$]*)\}$/.exec(segment);
+    const localeMatch = /^\{(-?)\$([a-zA-Z_$][a-zA-Z0-9_$]*)\}$/.exec(segment);
 
     if (localeMatch) {
       if (localeSegmentIndex !== -1) {
         throw new Error(
-          `Route template "${normalizedRouteTemplate}" must contain exactly one optional locale segment.`,
+          `Route template "${normalizedRouteTemplate}" must contain exactly one locale segment.`,
         );
       }
 
       localeSegmentIndex = index;
-      localeParamName = localeMatch[1]!;
+      localeParamName = localeMatch[2]!;
+      isRequired = localeMatch[1] !== "-";
       continue;
     }
 
     if (looksDynamic(segment)) {
       throw new Error(
-        `Route template "${normalizedRouteTemplate}" can only contain one optional locale segment like "{-$locale}" plus static path segments.`,
+        `Route template "${normalizedRouteTemplate}" can only contain one locale segment like "{-$locale}" or "{$locale}" plus static path segments.`,
       );
     }
   }
 
   if (localeSegmentIndex === -1) {
     throw new Error(
-      `Route template "${normalizedRouteTemplate}" must contain one optional locale segment like "{-$locale}".`,
+      `Route template "${normalizedRouteTemplate}" must contain one locale segment like "{-$locale}" or "{$locale}".`,
     );
   }
 
@@ -194,6 +198,7 @@ export function parseRouteTemplate(routeTemplate?: string): ParsedRouteTemplate 
 
   return {
     deLocalizedSegments,
+    isRequired,
     localeParamName,
     localeSegment: localizedSegments[localeSegmentIndex]!,
     localeSegmentIndex,

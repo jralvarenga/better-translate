@@ -124,6 +124,7 @@ export function createNavigationFunctions<
       routing,
       parsedTemplate.localeParamName,
       parsedTemplate.localeSegment,
+      parsedTemplate.isRequired,
     );
 
     return createElement(
@@ -158,6 +159,7 @@ export function createNavigationFunctions<
           routing,
           parsedTemplate.localeParamName,
           parsedTemplate.localeSegment,
+          parsedTemplate.isRequired,
         ) as never,
       )) as LocalizedUseNavigateResult<TLocale, TDefaultFrom>;
   }
@@ -178,6 +180,7 @@ export function createNavigationFunctions<
             routing,
             parsedTemplate.localeParamName,
             parsedTemplate.localeSegment,
+            parsedTemplate.isRequired,
           ) as never,
         );
       },
@@ -190,6 +193,7 @@ export function createNavigationFunctions<
             routing,
             parsedTemplate.localeParamName,
             parsedTemplate.localeSegment,
+            parsedTemplate.isRequired,
           ) as never,
         );
       },
@@ -202,6 +206,7 @@ export function createNavigationFunctions<
             routing,
             parsedTemplate.localeParamName,
             parsedTemplate.localeSegment,
+            parsedTemplate.isRequired,
           ) as never,
         );
       },
@@ -232,6 +237,7 @@ function getLocalizedOptions<
   routing: RoutingConfig<TLocale>,
   localeParamName: string,
   localeSegment: string,
+  isRequired: boolean,
 ): Omit<TOptions, "locale"> {
   const nextLocale = options.locale ?? activeLocale;
   const localized = {
@@ -255,14 +261,18 @@ function getLocalizedOptions<
     return localized;
   }
 
-  if (typeof options.to === "string" && shouldRewriteTo(options.to)) {
+  if (
+    typeof options.to === "string" &&
+    shouldRewriteTo(options.to) &&
+    !pathContainsLocaleParam(options.to, localeParamName)
+  ) {
     localized.to = localizePathname(options.to, nextLocale, routing) as TOptions["to"];
   }
 
   localized.params = localizeParams(
     options.params,
     localeParamName,
-    nextLocale === routing.defaultLocale ? undefined : nextLocale,
+    isRequired ? nextLocale : nextLocale === routing.defaultLocale ? undefined : nextLocale,
   );
 
   return localized;
@@ -338,6 +348,10 @@ function shouldLocalizeTarget<TLocale extends string>(
   const normalizedPathname = stripLocalePlaceholder(pathname, localeParamName, localeSegment);
 
   return isPathnameInScope(normalizedPathname, routing);
+}
+
+function pathContainsLocaleParam(to: string, localeParamName: string): boolean {
+  return to.split("/").some((s) => s === `$${localeParamName}` || s === `{$${localeParamName}}`);
 }
 
 function shouldRewriteTo(to: string): boolean {
