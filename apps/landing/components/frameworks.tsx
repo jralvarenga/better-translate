@@ -1,4 +1,4 @@
-import { getCatalogItems } from '@/lib/content/catalog'
+import { getCatalogItems } from '@/lib/catalog'
 import type { LandingTranslator } from '@/lib/i18n/config'
 
 interface FrameworksProps {

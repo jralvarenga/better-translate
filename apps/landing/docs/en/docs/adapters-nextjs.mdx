@@ -1,0 +1,152 @@
+---
+title: Next.js
+description: "@better-translate/nextjs is the Next.js App Router layer on top of the core package."
+---
+
+# Next.js
+
+`@better-translate/nextjs` is
+the Next.js App Router layer on top of the core package. It adds locale routing config,
+proxy helpers, request-scoped server helpers, and locale-aware navigation wrappers.
+
+## When to use it
+
+Use the Next.js adapter when you are using Next.js App Router, you want locale-prefixed
+routes, you want request helpers for server components, or you want locale-aware links
+and router calls.
+
+## Five-file pattern
+
+A standard Next.js setup needs five files inside your `lib/i18n/` folder:
+
+<Accordion type="single" collapsible className="mt-6">
+  <AccordionItem value="routing">
+    <AccordionTrigger>`routing.ts`</AccordionTrigger>
+    <AccordionContent>
+      <p>Define locale routing rules and the route template.</p>
+    </AccordionContent>
+  </AccordionItem>
+  <AccordionItem value="request">
+    <AccordionTrigger>`request.ts`</AccordionTrigger>
+    <AccordionContent>
+      <p>Connect the core translator to the Next.js request lifecycle.</p>
+    </AccordionContent>
+  </AccordionItem>
+  <AccordionItem value="server">
+    <AccordionTrigger>`server.ts`</AccordionTrigger>
+    <AccordionContent>
+      <p>Export request-scoped helpers like `getLocale()`, `getMessages()`, and `getTranslations()`.</p>
+    </AccordionContent>
+  </AccordionItem>
+  <AccordionItem value="navigation">
+    <AccordionTrigger>`navigation.ts`</AccordionTrigger>
+    <AccordionContent>
+      <p>Expose locale-aware navigation like `I18nLink` and `useI18nRouter()`.</p>
+    </AccordionContent>
+  </AccordionItem>
+  <AccordionItem value="proxy">
+    <AccordionTrigger>`proxy.ts`</AccordionTrigger>
+    <AccordionContent>
+      <p>Own your middleware proxy instead of replacing it outright.</p>
+    </AccordionContent>
+  </AccordionItem>
+</Accordion>
+
+## routing.ts
+
+```tsx showLineNumbers
+import { defineRouting } from "@better-translate/nextjs"
+
+export const routing = defineRouting({
+  locales: ["en", "es"] as const,
+  defaultLocale: "en",
+  routeTemplate: "/[lang]", // scoped: "/app/[lang]"
+})
+```
+
+## request.ts
+
+```tsx showLineNumbers
+import { getRequestConfig } from "@better-translate/nextjs"
+import { configureTranslations } from "better-translate"
+import { routing } from "./routing"
+import { en } from "./messages/en"
+import { es } from "./messages/es"
+
+export default getRequestConfig(async ({ locale }) => {
+  const translator = await configureTranslations({ en, es })
+  return { locale, translator }
+})
+```
+
+## server.ts
+
+```tsx showLineNumbers
+import { createServerHelpers } from "@better-translate/nextjs"
+import requestConfig from "./request"
+
+export const {
+  getLocale,
+  getMessages,
+  getTranslations,
+  getTranslator,
+} = createServerHelpers(requestConfig)
+```
+
+## navigation.ts
+
+```tsx showLineNumbers
+import { createNavigationFunctions } from "@better-translate/nextjs"
+import { routing } from "./routing"
+
+export const {
+  I18nLink,
+  getPathname,
+  useI18nPathname,
+  useI18nRouter,
+} = createNavigationFunctions({ routing })
+```
+
+## Using in server components
+
+```tsx showLineNumbers
+import { getTranslations } from "@/lib/i18n/server"
+
+export default async function Page({ params }) {
+  const { lang } = await params
+  const t = await getTranslations({ locale: lang })
+
+  return <h1>{t("hero.title")}</h1>
+}
+```
+
+## Root vs scoped routing
+
+With `routeTemplate: "/[lang]"`,
+the whole app lives under `/en`, `/es`, etc.
+
+With `routeTemplate: "/app/[lang]"`,
+only that subtree is localized. Routes like `/` and `/login` stay outside localization.
+
+## Key source files
+
+- `packages/nextjs/src/shared.ts`
+- `packages/nextjs/src/server.ts`
+- `packages/nextjs/src/navigation.tsx`
+- `packages/nextjs/src/proxy.ts`
+- `apps/nextjs-example/lib/i18n/`
+- `apps/nextjs-nested-locale-example/lib/i18n/`
+
+## Explore related guides
+
+<div className="mt-6 flex flex-wrap gap-3">
+  <Button asChild variant="outline" size="lg">
+    <Link href="/docs/adapters/core">Start from the core layer</Link>
+  </Button>
+  <Button asChild variant="outline" size="lg">
+    <Link href="/docs/adapters/react">Add the React layer</Link>
+  </Button>
+  <Button asChild size="lg">
+    <Link href="/docs/installation">Review package installation</Link>
+  </Button>
+</div>

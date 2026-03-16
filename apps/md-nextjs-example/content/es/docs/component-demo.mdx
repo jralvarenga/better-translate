@@ -1,0 +1,74 @@
+---
+title: Component Demo
+description: MDX with custom React components, embedded JSX, and frontmatter metadata.
+date: 2025-01-15
+---
+
+# Demostración de Componentes
+
+Este documento es un archivo `.mdx`. Se evalúa del lado del servidor usando `evaluate()` de `@mdx-js/mdx` con un mapa de componentes personalizado.
+
+<Callout type="info">
+  Este componente **Callout** está definido en la app y se pasa mediante la prop `components` de MDX en tiempo de render. No se importa dentro del propio archivo MDX.
+</Callout>
+
+## ¿Por qué MDX?
+
+MDX combina la simplicidad de Markdown con el poder de React. Obtienes:
+
+- Componentes personalizados integrados dentro del contenido
+- Metadatos guiados por frontmatter (`title`, `description`, `date`)
+- Sintaxis estándar de Markdown para títulos, listas, enlaces y código
+- No se requiere JavaScript del cliente: todo se renderiza en el servidor
+
+<Callout type="tip">
+  Prueba cambiar a **Español** usando el selector de idioma del encabezado. Este documento no tiene versión en español, así que aparecerá el aviso de fallback y se mostrará el contenido en inglés.
+</Callout>
+
+## Cómo funciona
+
+El flujo de renderizado de esta página:
+
+```tsx showLineNumbers
+// 1. Obtener el documento (con fallback por locale)
+const doc = await md.getDocument("docs/component-demo", { locale })
+
+// 2. Evaluar el contenido con react/jsx-runtime
+const { default: Content } = await evaluate(doc.source, { ...runtime })
+
+// 3. Renderizar con un mapa de componentes
+return <Content components={{ Callout, Card }} />
+```
+
+`doc.source` ya tiene el frontmatter removido por `gray-matter` dentro de `getDocument()`. El frontmatter queda disponible por separado como `doc.frontmatter`.
+
+## Paquetes utilizados
+
+<Card
+  title="better-translate/core"
+  description="Motor de traducciones agnóstico al framework. Maneja textos de UI con claves tipadas y override de locale por llamada."
+/>
+
+<Card
+  title="@better-translate/md"
+  description="Contenido Markdown y MDX localizado. Resuelve archivos por locale, maneja fallback, parsea frontmatter y devuelve el contenido del documento."
+/>
+
+<Card
+  title="@mdx-js/mdx evaluate()"
+  description="Compila y evalúa el contenido MDX como un componente React en tiempo de render. No necesita plugin del bundler."
+/>
+
+## Demostración de fallback
+
+La versión en español de este documento (`content/es/docs/component-demo.mdx`) falta intencionalmente. Cuando cambias a **ES**, `getDocument()` intenta:
+
+1. `content/es/docs/component-demo.mdx` — no encontrado
+2. `content/es/docs/component-demo.md` — no encontrado
+3. `content/en/docs/component-demo.mdx` — **encontrado** (fallback)
+
+El documento se entrega con `usedFallback: true`, y el aviso de fallback aparece en la parte superior de la página.
+
+<Callout type="warning">
+  El contenido de fallback significa que la traducción está incompleta. Muestra `usedFallback` en tu UI para que los usuarios sepan lo que están leyendo.
+</Callout>

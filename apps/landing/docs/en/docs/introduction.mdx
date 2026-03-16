@@ -1,0 +1,85 @@
+---
+title: Introduction
+description: Better Translate is a type-safe translation library for TypeScript apps.
+---
+
+# Introduction
+
+Better Translate is a type-safe translation library for TypeScript apps. It gives you
+typed translation keys, typed interpolation params, fallback locale support, async locale
+loading, and framework adapters for React and Next.js.
+
+## What is Better Translate?
+
+Better Translate is built around one main idea: configure translations once and use typed
+helpers everywhere. The core package is framework-agnostic — it works in plain TypeScript,
+Bun, Node.js, APIs, and servers. Adapter packages then make it easy to use with React
+context and Next.js App Router routing.
+
+If your source messages have `account.balance.label`,
+TypeScript will autocomplete that key and reject invalid ones. If a message takes a parameter
+like `"Good morning {name}"`, then `t(...)` will require you to pass `params.name`.
+
+## Package map
+
+- `better-translate` — Core translation engine. Framework-agnostic. Use this in any TypeScript project.
+- `@better-translate/react` — React provider and useTranslations() hook for client-side locale switching.
+- `@better-translate/nextjs` — Next.js App Router helpers: locale routing, server helpers, and navigation wrappers.
+- `@better-translate/tanstack-start` — Scaffold package for TanStack Start. Early stage.
+- `@better-translate/vscode` — VS Code extension for translation key navigation.
+
+## Quick start
+
+Install the core package and configure your translations. The first locale becomes the default and fallback.
+
+```tsx showLineNumbers
+import { configureTranslations } from "better-translate"
+
+const en = {
+  greeting: "Hello, {name}!",
+  nav: { home: "Home", about: "About" },
+}
+
+const es = {
+  greeting: "¡Hola, {name}!",
+  nav: { home: "Inicio", about: "Acerca de" },
+}
+
+const translator = await configureTranslations({ en, es })
+
+const t = translator.getTranslator("en")
+t("greeting", { params: { name: "World" } }) // "Hello, World!"
+t("nav.home")                                 // "Home"
+```
+
+## Mental model
+
+Better Translate has three layers:
+
+1. **Core** — Translates. Owns message lookup, fallback logic, and async loading. Works everywhere.
+2. **React** — Connects locale to UI. Provides context and a useTranslations() hook for client components.
+3. **Next.js** — Connects locale to route. Adds locale routing, server helpers, and navigation wrappers for App Router.
+
+## Which guide should I read?
+
+- → Only need translations in TypeScript or a server? Read **Adapters → Core**.
+- → Building a React app? Read **Adapters → React**.
+- → Using Next.js App Router? Read **Adapters → Next.js**.
+- → Need both server and client translations? Start with Next.js, then add the React adapter.
+
+## Jump in
+
+<div className="mt-6 flex flex-wrap gap-3">
+  <Button asChild variant="outline" size="lg">
+    <Link href="/docs/installation">Install the packages</Link>
+  </Button>
+  <Button asChild variant="outline" size="lg">
+    <Link href="/docs/adapters/core">Read the core guide</Link>
+  </Button>
+  <Button asChild variant="outline" size="lg">
+    <Link href="/docs/adapters/react">Read the React guide</Link>
+  </Button>
+  <Button asChild size="lg">
+    <Link href="/docs/adapters/nextjs">Read the Next.js guide</Link>
+  </Button>
+</div>

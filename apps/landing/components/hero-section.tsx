@@ -6,7 +6,7 @@ import { TextEffect } from '@/components/ui/text-effect'
 import { AnimatedGroup } from '@/components/ui/animated-group'
 import { HeroHeader } from './header'
 import { CodeBlock } from '@/components/ui/code-highlight'
-import { getCatalogItems } from '@/lib/content/catalog'
+import { getCatalogItems } from '@/lib/catalog'
 import type { LandingLocale, LandingTranslator } from '@/lib/i18n/config'
 import { siteLinks } from '@/lib/site'
 

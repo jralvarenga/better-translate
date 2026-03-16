@@ -8,8 +8,7 @@ import { cn } from '@/lib/utils'
 import { siteLinks } from '@/lib/site'
 import type { LandingLocale } from '@/lib/i18n/config'
 import { I18nLink } from '@/lib/i18n/navigation'
-import { HeaderLanguageSwitcher, LanguageSwitcherFallback } from '@/components/header-language-switcher'
-import { LandingTranslationsProvider } from '@/components/landing-translations-provider'
+import { HeaderLanguageSwitcher } from '@/components/header-language-switcher'
 
 interface HeroHeaderProps {
     changelogLabel: string
@@ -132,19 +131,10 @@ export const HeroHeader = ({
                                         <span>{githubLabel}</span>
                                     </Link>
                                 </Button>
-                                <LandingTranslationsProvider
-                                    fallback={
-                                        <LanguageSwitcherFallback
-                                            currentLocale={currentLocale}
-                                            switchLabel={switchLabel}
-                                        />
-                                    }
-                                    initialLocale={currentLocale}>
-                                    <HeaderLanguageSwitcher
-                                        currentLocale={currentLocale}
-                                        onSelect={() => setMenuState(false)}
-                                    />
-                                </LandingTranslationsProvider>
+                                <HeaderLanguageSwitcher
+                                    currentLocale={currentLocale}
+                                    onSelect={() => setMenuState(false)}
+                                />
                             </div>
                         </div>
                     </div>

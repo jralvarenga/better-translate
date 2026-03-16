@@ -12,7 +12,6 @@ import {
 
 interface LandingTranslationsProviderProps {
   children: React.ReactNode;
-  fallback?: React.ReactNode;
   initialLocale: LandingLocale;
 }
 
@@ -25,28 +24,9 @@ function getTranslatorPromise() {
 
 export function LandingTranslationsProvider({
   children,
-  fallback = null,
   initialLocale,
 }: LandingTranslationsProviderProps) {
-  const [translator, setTranslator] = React.useState<LandingTranslator | null>(null);
-
-  React.useEffect(() => {
-    let isMounted = true;
-
-    void getTranslatorPromise().then((resolvedTranslator) => {
-      if (isMounted) {
-        setTranslator(resolvedTranslator);
-      }
-    });
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
-  if (!translator) {
-    return <>{fallback}</>;
-  }
+  const translator = React.use(getTranslatorPromise());
 
   return (
     <BetterTranslateProvider initialLocale={initialLocale} translator={translator}>

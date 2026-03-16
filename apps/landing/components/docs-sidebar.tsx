@@ -26,6 +26,7 @@ const ADAPTERS = [
     { name: "React", href: "/docs/adapters/react" },
     { name: "Next.js", href: "/docs/adapters/nextjs" },
     { name: "TanStack Start", href: "/docs/adapters/tanstack-start" },
+    { name: "MD & MDX", href: "/docs/adapters/md-and-mdx" },
 ]
 
 export function DocsSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {

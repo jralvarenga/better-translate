@@ -2,10 +2,16 @@ import Link from "next/link"
 import { RiArrowLeftLine, RiGithubLine } from "@remixicon/react"
 import { Logo } from "@/components/logo"
 import { Button } from "@/components/ui/button"
+import { HeaderLanguageSwitcher } from "@/components/header-language-switcher"
+import type { LandingLocale } from "@/lib/i18n/config"
 import { I18nLink } from "@/lib/i18n/navigation"
 import { siteLinks } from "@/lib/site"
 
-export function DocsHeader() {
+interface DocsHeaderProps {
+    currentLocale: LandingLocale
+}
+
+export function DocsHeader({ currentLocale }: DocsHeaderProps) {
     return (
         <header className="fixed top-0 left-0 right-0 z-50 h-14 border-b border-border/60 bg-background/95 backdrop-blur-sm">
             <div className="flex h-full items-center justify-between px-6">
@@ -26,6 +32,7 @@ export function DocsHeader() {
                             <span className="hidden sm:inline">GitHub</span>
                         </Link>
                     </Button>
+                    <HeaderLanguageSwitcher currentLocale={currentLocale} />
                 </div>
             </div>
         </header>

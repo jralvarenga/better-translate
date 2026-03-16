@@ -8,7 +8,7 @@ date: 2025-01-15
 
 Instala el paquete principal y el adaptador MD:
 
-```sh
+```tsx showLineNumbers
 bun add better-translate @better-translate/md
 ```
 
@@ -16,7 +16,7 @@ bun add better-translate @better-translate/md
 
 Usa el formulario de opciones para una configuración de producción con contrato de idioma explícito:
 
-```ts
+```tsx showLineNumbers
 import { configureTranslations } from "better-translate/core"
 
 const translator = await configureTranslations({
@@ -31,7 +31,7 @@ const translator = await configureTranslations({
 
 Apunta los helpers a tu directorio de contenido:
 
-```ts
+```tsx showLineNumbers
 import { createMarkdownHelpers } from "@better-translate/md"
 import path from "path"
 
@@ -48,7 +48,7 @@ Los archivos de contenido se organizan por idioma:
 
 ## Listar y obtener documentos
 
-```ts
+```tsx showLineNumbers
 // Lista todos los IDs de documentos (escaneados desde el directorio del idioma predeterminado)
 const ids = await md.listDocuments()
 // → ["docs/component-demo", "docs/getting-started"]
@@ -65,7 +65,7 @@ const doc = await md.getDocument("docs/getting-started", { locale: "es" })
 
 Para archivos `.md`, compila a HTML:
 
-```ts
+```tsx showLineNumbers
 const compiled = await md.compileDocument("docs/getting-started", { locale })
 if (compiled.kind === "md") {
   return <div dangerouslySetInnerHTML={{ __html: compiled.html }} />
@@ -74,7 +74,7 @@ if (compiled.kind === "md") {
 
 Para archivos `.mdx`, evalúa con `@mdx-js/mdx`:
 
-```ts
+```tsx showLineNumbers
 import { evaluate } from "@mdx-js/mdx"
 import * as runtime from "react/jsx-runtime"
 

@@ -1,0 +1,65 @@
+---
+title: CLI
+description: Scripts del workspace para compilar, verificar tipos y desarrollar paquetes y apps en el monorepo.
+---
+
+# CLI
+
+Better Translate incluye scripts del workspace para compilar, verificar tipos y desarrollar
+paquetes y apps en el monorepo. Si estás usando esto como librería en tu propio proyecto,
+estos son los scripts que más usarás.
+
+## Scripts del workspace
+
+Ejecuta estos desde la raíz del repositorio usando Bun y Turborepo.
+
+- `bun run dev` — Inicia todas las apps en modo desarrollo.
+- `bun run build` — Compila todos los paquetes y apps.
+- `bun run build:packages` — Compila solo los paquetes de la librería.
+- `bun run check-types` — Ejecuta verificación de tipos TypeScript en todo el workspace.
+- `bun run check-types:packages` — Ejecuta verificación de tipos solo en paquetes.
+
+## Generación de esquema JSON
+
+El paquete core exporta `createTranslationJsonSchema` para
+generar un JSON Schema desde tu objeto de locale fuente. Esto ayuda a los editores a validar
+archivos de locale hermanos.
+
+```tsx showLineNumbers
+import { createTranslationJsonSchema } from "better-translate"
+import { en } from "./messages/en"
+import { writeFileSync } from "fs"
+
+const schema = createTranslationJsonSchema(en)
+writeFileSync("./messages/schema.json", JSON.stringify(schema, null, 2))
+```
+
+## Extensión de VS Code
+
+La extensión `@better-translate/vscode`
+agrega navegación de claves de traducción en VS Code. Instálala desde el marketplace de extensiones
+o compílala localmente desde `packages/vscode`.
+
+<div className="mt-6 flex flex-wrap gap-3">
+  <Button asChild variant="outline" size="lg">
+    <Link href="/docs/installation">Instalar los paquetes</Link>
+  </Button>
+  <Button asChild size="lg">
+    <Link href="/docs/changelog">Ver lanzamientos recientes</Link>
+  </Button>
+</div>
+
+## Scripts por paquete
+
+Cada paquete tiene sus propios scripts locales. Desde cualquier directorio de paquete:
+
+```tsx showLineNumbers
+# compilar el paquete
+bun run build
+
+# verificar tipos del paquete
+bun run check-types
+
+# ejecutar tests (donde estén disponibles)
+bun test
+```

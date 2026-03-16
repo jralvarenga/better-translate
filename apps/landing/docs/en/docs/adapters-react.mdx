@@ -1,0 +1,126 @@
+---
+title: React
+description: "@better-translate/react is the React layer on top of the core package."
+---
+
+# React
+
+`@better-translate/react` is
+the React layer on top of the core package. It provides
+`BetterTranslateProvider` and
+`useTranslations()` for
+client-side locale switching and context-based translation access.
+
+## When to use it
+
+Use the React adapter when your app has client components, you want to switch locale
+in the browser, or you want React context instead of calling global helpers directly.
+
+## Setup
+
+Create a core translator first, then pass it to `BetterTranslateProvider`.
+
+```tsx showLineNumbers
+// i18n.ts
+import { configureTranslations } from "better-translate"
+
+export async function createTranslator() {
+  return configureTranslations({
+    availableLocales: ["en", "es"] as const,
+    defaultLocale: "en",
+    messages: { en, es },
+  })
+}
+```
+
+```tsx showLineNumbers
+// main.tsx
+import { BetterTranslateProvider } from "@better-translate/react"
+import { createTranslator } from "./i18n"
+
+const translator = await createTranslator()
+
+root.render(
+  <BetterTranslateProvider translator={translator}>
+    <App />
+  </BetterTranslateProvider>
+)
+```
+
+## useTranslations()
+
+Inside the provider, `useTranslations()` gives
+you everything you need:
+
+```tsx showLineNumbers
+import { useTranslations } from "@better-translate/react"
+
+function MyComponent() {
+  const {
+    t,
+    locale,
+    setLocale,
+    loadLocale,
+    messages,
+    supportedLocales,
+    defaultLocale,
+    fallbackLocale,
+    isLoadingLocale,
+    loadingLocale,
+    localeError,
+    translator,
+  } = useTranslations()
+
+  return (
+    <div>
+      <p>{t("greeting", { params: { name: "World" } })}</p>
+      <button type="button" onClick={() => setLocale("es")}>
+        Switch to Spanish
+      </button>
+    </div>
+  )
+}
+```
+
+## Locale switching
+
+`setLocale()` changes
+the active locale for that provider tree. If the locale is not cached, it loads it first.
+If loading fails, the old locale stays active and `localeError` is set.
+
+`loadLocale()` warms
+the cache without changing the active locale. Use it to preload the next locale before
+the user switches, so the switch is instant.
+
+```tsx showLineNumbers
+// warm the cache before the user switches
+await loadLocale("fr")
+
+// switch instantly since it's already cached
+setLocale("fr")
+```
+
+## Provider scope
+
+Each provider has its own active locale state. You can nest multiple providers to give
+different parts of the UI independent locale states — useful for testing locale error
+behavior in isolation.
+
+## Key source files
+
+- `packages/react/src/provider.tsx`
+- `packages/react/src/use-translations.ts`
+- `packages/react/src/types.ts`
+- `apps/react-vite-example/src/i18n.ts`
+- `apps/react-vite-example/src/main.tsx`
+
+## Continue with
+
+<div className="mt-6 flex flex-wrap gap-3">
+  <Button asChild variant="outline" size="lg">
+    <Link href="/docs/adapters/core">Understand the core config</Link>
+  </Button>
+  <Button asChild size="lg">
+    <Link href="/docs/adapters/nextjs">Pair it with Next.js</Link>
+  </Button>
+</div>

@@ -1,0 +1,151 @@
+---
+title: Next.js
+description: "@better-translate/nextjs es la capa Next.js App Router sobre el paquete core."
+---
+
+# Next.js
+
+`@better-translate/nextjs` es
+la capa Next.js App Router sobre el paquete core. Agrega configuración de enrutamiento por locale,
+helpers proxy, helpers de servidor por request y wrappers de navegación con locale.
+
+## Cuándo usarlo
+
+Usa el adaptador Next.js cuando uses Next.js App Router, quieras rutas con prefijo de locale,
+helpers de request para server components, o links y llamadas de router con locale.
+
+## Patrón de cinco archivos
+
+Una configuración estándar de Next.js necesita cinco archivos dentro de tu carpeta `lib/i18n/`:
+
+<Accordion type="single" collapsible className="mt-6">
+  <AccordionItem value="routing">
+    <AccordionTrigger>`routing.ts`</AccordionTrigger>
+    <AccordionContent>
+      <p>Define las reglas de enrutamiento de locales y el template de ruta.</p>
+    </AccordionContent>
+  </AccordionItem>
+  <AccordionItem value="request">
+    <AccordionTrigger>`request.ts`</AccordionTrigger>
+    <AccordionContent>
+      <p>Conecta el translator del core con el ciclo de vida del request de Next.js.</p>
+    </AccordionContent>
+  </AccordionItem>
+  <AccordionItem value="server">
+    <AccordionTrigger>`server.ts`</AccordionTrigger>
+    <AccordionContent>
+      <p>Exporta helpers por request como `getLocale()`, `getMessages()` y `getTranslations()`.</p>
+    </AccordionContent>
+  </AccordionItem>
+  <AccordionItem value="navigation">
+    <AccordionTrigger>`navigation.ts`</AccordionTrigger>
+    <AccordionContent>
+      <p>Expone navegación con locale como `I18nLink` y `useI18nRouter()`.</p>
+    </AccordionContent>
+  </AccordionItem>
+  <AccordionItem value="proxy">
+    <AccordionTrigger>`proxy.ts`</AccordionTrigger>
+    <AccordionContent>
+      <p>Te permite mantener tu propio proxy de middleware sin reemplazarlo por completo.</p>
+    </AccordionContent>
+  </AccordionItem>
+</Accordion>
+
+## routing.ts
+
+```tsx showLineNumbers
+import { defineRouting } from "@better-translate/nextjs"
+
+export const routing = defineRouting({
+  locales: ["en", "es"] as const,
+  defaultLocale: "en",
+  routeTemplate: "/[lang]", // acotado: "/app/[lang]"
+})
+```
+
+## request.ts
+
+```tsx showLineNumbers
+import { getRequestConfig } from "@better-translate/nextjs"
+import { configureTranslations } from "better-translate"
+import { routing } from "./routing"
+import { en } from "./messages/en"
+import { es } from "./messages/es"
+
+export default getRequestConfig(async ({ locale }) => {
+  const translator = await configureTranslations({ en, es })
+  return { locale, translator }
+})
+```
+
+## server.ts
+
+```tsx showLineNumbers
+import { createServerHelpers } from "@better-translate/nextjs"
+import requestConfig from "./request"
+
+export const {
+  getLocale,
+  getMessages,
+  getTranslations,
+  getTranslator,
+} = createServerHelpers(requestConfig)
+```
+
+## navigation.ts
+
+```tsx showLineNumbers
+import { createNavigationFunctions } from "@better-translate/nextjs"
+import { routing } from "./routing"
+
+export const {
+  I18nLink,
+  getPathname,
+  useI18nPathname,
+  useI18nRouter,
+} = createNavigationFunctions({ routing })
+```
+
+## Uso en server components
+
+```tsx showLineNumbers
+import { getTranslations } from "@/lib/i18n/server"
+
+export default async function Page({ params }) {
+  const { lang } = await params
+  const t = await getTranslations({ locale: lang })
+
+  return <h1>{t("hero.title")}</h1>
+}
+```
+
+## Enrutamiento raíz vs acotado
+
+Con `routeTemplate: "/[lang]"`,
+toda la app vive bajo `/en`, `/es`, etc.
+
+Con `routeTemplate: "/app/[lang]"`,
+solo ese subárbol está localizado. Rutas como `/` y `/login` quedan fuera de la localización.
+
+## Archivos fuente clave
+
+- `packages/nextjs/src/shared.ts`
+- `packages/nextjs/src/server.ts`
+- `packages/nextjs/src/navigation.tsx`
+- `packages/nextjs/src/proxy.ts`
+- `apps/nextjs-example/lib/i18n/`
+- `apps/nextjs-nested-locale-example/lib/i18n/`
+
+## Explora guías relacionadas
+
+<div className="mt-6 flex flex-wrap gap-3">
+  <Button asChild variant="outline" size="lg">
+    <Link href="/docs/adapters/core">Empezar desde la capa core</Link>
+  </Button>
+  <Button asChild variant="outline" size="lg">
+    <Link href="/docs/adapters/react">Agregar la capa React</Link>
+  </Button>
+  <Button asChild size="lg">
+    <Link href="/docs/installation">Revisar la instalación</Link>
+  </Button>
+</div>

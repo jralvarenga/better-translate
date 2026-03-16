@@ -4,7 +4,7 @@ import * as React from "react";
 
 import { useTranslations } from "@better-translate/react";
 
-import { getCatalogItems } from "@/lib/content/catalog";
+import { getCatalogItems } from "@/lib/catalog";
 import {
   Select,
   SelectContent,
