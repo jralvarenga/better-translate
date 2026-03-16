@@ -4,10 +4,13 @@ import type {
   ConfiguredTranslator,
   TranslationMessages,
 } from "better-translate/core";
+import {
+  getRequestLocale as getStoredRequestLocale,
+  resolveRequestLocale,
+} from "better-translate/server";
 
 import { createMarkdownCollection } from "./collection.js";
 import type {
-  AnyBetterTranslateTranslator,
   CompiledMarkdownResult,
   InferLocale,
   LocalizedMarkdownDocument,
@@ -23,7 +26,7 @@ type RequestConfig<
   TTranslator extends AnyTranslator,
   TLocale extends InferLocale<TTranslator> = InferLocale<TTranslator>,
 > = {
-  locale: TLocale;
+  locale?: TLocale;
   translator: TTranslator;
 };
 
@@ -49,13 +52,8 @@ type InferFactoryTranslator<TFactory extends (...args: any) => any> =
     : never;
 
 type InferFactoryLocale<TFactory extends (...args: any) => any> =
-  InferResolvedRequestConfig<TFactory> extends RequestConfig<
-    infer TTranslator,
-    infer TLocale
-  >
-    ? TLocale extends InferLocale<TTranslator>
-      ? TLocale
-      : never
+  InferFactoryTranslator<TFactory> extends AnyTranslator
+    ? InferLocale<InferFactoryTranslator<TFactory>>
     : never;
 
 type InferServerLocale<TFactory extends (...args: any) => any> = InferLocale<
@@ -70,17 +68,10 @@ export function createMarkdownServerHelpers<
 ): MarkdownServerHelpers<InferServerLocale<TFactory>> {
   const readRequestConfig = cache(async () => {
     const resolved = await requestConfig();
-    const locale = resolved.locale as InferFactoryLocale<TFactory>;
     const translator = resolved.translator as InferFactoryTranslator<TFactory>;
 
-    if (!translator.getSupportedLocales().includes(locale)) {
-      throw new Error(
-        `The resolved locale "${locale}" is not included in the translator's supported locales.`,
-      );
-    }
-
     return {
-      locale,
+      locale: resolved.locale as InferFactoryLocale<TFactory> | undefined,
       translator,
     };
   });
@@ -100,16 +91,26 @@ export function createMarkdownServerHelpers<
     >;
   }
 
+  async function getResolvedLocale(
+    options?: MarkdownDocumentOptions<InferServerLocale<TFactory>>,
+  ) {
+    const { locale: configLocale, translator } = await readRequestConfig();
+
+    return resolveRequestLocale(translator, {
+      locale: options?.locale,
+      requestLocale: getStoredRequestLocale(),
+      configLocale,
+    }) as InferServerLocale<TFactory>;
+  }
+
   async function getDocument(
     documentId: string,
     requestOptions?: MarkdownDocumentOptions<InferServerLocale<TFactory>>,
   ): Promise<LocalizedMarkdownDocument<InferServerLocale<TFactory>>> {
-    const [{ locale: requestLocale }, collection] = await Promise.all([
-      readRequestConfig(),
+    const [locale, collection] = await Promise.all([
+      getResolvedLocale(requestOptions),
       readCollection(),
     ]);
-    const locale = (requestOptions?.locale ??
-      requestLocale) as InferServerLocale<TFactory>;
 
     return collection.getDocument(documentId, {
       locale,
@@ -133,12 +134,10 @@ export function createMarkdownServerHelpers<
       return (await readCollection()).compileDocument(documentOrId);
     }
 
-    const [{ locale: requestLocale }, collection] = await Promise.all([
-      readRequestConfig(),
+    const [locale, collection] = await Promise.all([
+      getResolvedLocale(requestOptions),
       readCollection(),
     ]);
-    const locale = (requestOptions?.locale ??
-      requestLocale) as InferServerLocale<TFactory>;
 
     return collection.compileDocument(documentOrId, {
       locale,

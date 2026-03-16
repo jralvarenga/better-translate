@@ -1,38 +1,19 @@
 ---
 title: Introduction
-description: Better Translate is a type-safe translation library for TypeScript apps.
+description: Better Translate is a type-safe translation library built for TypeScript — configure once, use everywhere.
 ---
 
 # Introduction
 
-Better Translate is a type-safe translation library for TypeScript apps. It gives you
-typed translation keys, typed interpolation params, fallback locale support, async locale
-loading, and framework adapters for React and Next.js.
+Most i18n libraries treat TypeScript as an afterthought. You wire up your translations, then separately bolt on type safety through declaration files, module augmentation, and a handful of workarounds. If you've ever typed `t("account.balanc")` and only found out at runtime, you know how that story ends.
 
-## What is Better Translate?
+Better Translate flips that. Type safety isn't a plugin or a config flag here — it's the foundation everything is built on.
 
-Better Translate is built around one main idea: configure translations once and use typed
-helpers everywhere. The core package is framework-agnostic — it works in plain TypeScript,
-Bun, Node.js, APIs, and servers. Adapter packages then make it easy to use with React
-context and Next.js App Router routing.
+## The core idea
 
-If your source messages have `account.balance.label`,
-TypeScript will autocomplete that key and reject invalid ones. If a message takes a parameter
-like `"Good morning {name}"`, then `t(...)` will require you to pass `params.name`.
+Configure your translations once. Get typed keys, typed interpolation params, fallback locale support, and async loading — everywhere, with zero boilerplate.
 
-## Package map
-
-- `better-translate` — Core translation engine. Framework-agnostic. Use this in any TypeScript project.
-- `@better-translate/react` — React provider and useTranslations() hook for client-side locale switching.
-- `@better-translate/nextjs` — Next.js App Router helpers: locale routing, server helpers, and navigation wrappers.
-- `@better-translate/tanstack-start` — Scaffold package for TanStack Start. Early stage.
-- `@better-translate/vscode` — VS Code extension for translation key navigation.
-
-## Quick start
-
-Install the core package and configure your translations. The first locale becomes the default and fallback.
-
-```tsx showLineNumbers
+```tsx
 import { configureTranslations } from "better-translate"
 
 const en = {
@@ -46,40 +27,54 @@ const es = {
 }
 
 const translator = await configureTranslations({ en, es })
-
 const t = translator.getTranslator("en")
-t("greeting", { params: { name: "World" } }) // "Hello, World!"
-t("nav.home")                                 // "Home"
+
+t("greeting", { params: { name: "World" } }) // ✅ "Hello, World!"
+t("nav.home")                                 // ✅ "Home"
+t("nav.hoome")                                // ❌ TypeScript error — instantly
+t("greeting")                                 // ❌ TypeScript error — params.name is required
 ```
 
-## Mental model
+That last two lines aren't runtime errors caught in QA. They're compile-time errors caught the moment you type them. That's the difference.
 
-Better Translate has three layers:
+## Why not just use i18next or next-intl?
 
-1. **Core** — Translates. Owns message lookup, fallback logic, and async loading. Works everywhere.
-2. **React** — Connects locale to UI. Provides context and a useTranslations() hook for client components.
-3. **Next.js** — Connects locale to route. Adds locale routing, server helpers, and navigation wrappers for App Router.
+They're great libraries — widely adopted, battle-tested, and full of features. But type safety in both is opt-in and additive:
 
-## Which guide should I read?
+- **i18next** requires you to create a `i18next.d.ts` file, augment `CustomTypeOptions`, and register your resources manually. Miss a step and you're back to `string`.
+- **next-intl** needs a `global.d.ts` with manually imported message types. It works, but it's setup you maintain separately from your actual translations.
+- **Interpolation params** are rarely typed at all without extra tooling in either library.
 
-- → Only need translations in TypeScript or a server? Read **Adapters → Core**.
-- → Building a React app? Read **Adapters → React**.
-- → Using Next.js App Router? Read **Adapters → Next.js**.
-- → Need both server and client translations? Start with Next.js, then add the React adapter.
+With Better Translate, there's nothing to register or augment. Your locale objects *are* the source of truth. TypeScript infers everything from them automatically — keys, nested paths, and interpolation variables included.
 
-## Jump in
+## One config, your whole stack
 
-<div className="mt-6 flex flex-wrap gap-3">
-  <Button asChild variant="outline" size="lg">
-    <Link href="/docs/installation">Install the packages</Link>
-  </Button>
-  <Button asChild variant="outline" size="lg">
-    <Link href="/docs/adapters/core">Read the core guide</Link>
-  </Button>
-  <Button asChild variant="outline" size="lg">
-    <Link href="/docs/adapters/react">Read the React guide</Link>
-  </Button>
-  <Button asChild size="lg">
-    <Link href="/docs/adapters/nextjs">Read the Next.js guide</Link>
-  </Button>
-</div>
+This is the part that sets Better Translate apart from most alternatives: the core package is completely framework-agnostic. It runs in Node.js, Bun, plain TypeScript, APIs, and server environments without modification.
+
+The React and Next.js packages aren't separate products with their own opinions — they're optimized layers on top of the same core. The same `configureTranslations` call you use in your backend is what powers your React context and your Next.js App Router routing. One configuration, one source of truth, consistent behavior everywhere.
+
+```
+better-translate          ← Your single source of truth. Works anywhere TypeScript runs.
+    ↓
+@better-translate/react   ← Adds provider + useTranslations() hook. Powered by core.
+    ↓
+@better-translate/nextjs  ← Adds locale routing + server helpers. Powered by core.
+```
+
+Scale from a simple API to a full Next.js app without ever rewriting your translation config.
+
+## What you get out of the box
+
+- **Typed keys** — autocomplete and compile-time errors for every key, including nested paths like `nav.home`
+- **Typed interpolation** — if a message takes `{name}`, passing it is required; passing the wrong thing is an error
+- **Fallback locale support** — define once, missing translations gracefully fall back
+- **Async locale loading** — load only what you need, when you need it
+- **Framework adapters** — React, Next.js App Router, and TanStack Start (early stage), all derived from the same core
+- **VS Code extension** — navigate translation keys inline, without leaving your editor
+
+## Where to go next
+
+- **Using TypeScript or a server?** → [Adapters → Core](/docs/adapters/core)
+- **Building a React app?** → [Adapters → React](/docs/adapters/react)
+- **Using Next.js App Router?** → [Adapters → Next.js](/docs/adapters/nextjs)
+- **Need server + client translations together?** → Start with Next.js, then add the React adapter.

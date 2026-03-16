@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { notFound } from "next/navigation";
 
 import { hasLocale } from "@better-translate/nextjs";
+import { setRequestLocale } from "@better-translate/nextjs/server";
 
 import { LandingTranslationsProvider } from "@/components/landing-translations-provider";
 import type { LandingLocale } from "@/lib/i18n/config";
@@ -25,6 +26,8 @@ export default async function LocalizedLayout({
   if (!hasLocale(routing.locales, lang)) {
     notFound();
   }
+
+  setRequestLocale(lang);
 
   return (
     <div lang={lang}>

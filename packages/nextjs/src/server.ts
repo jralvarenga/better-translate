@@ -5,6 +5,11 @@ import type {
   DeepPartialMessages,
   TranslationMessages,
 } from "better-translate/core";
+import {
+  getRequestLocale as getStoredRequestLocale,
+  resolveRequestLocale,
+  setRequestLocale as setStoredRequestLocale,
+} from "better-translate/server";
 
 type AnyTranslator = ConfiguredTranslator<any, TranslationMessages>;
 
@@ -22,7 +27,7 @@ export interface BetterTranslateRequestConfig<
   TTranslator extends AnyTranslator,
   TLocale extends InferTranslatorLocale<TTranslator> = InferTranslatorLocale<TTranslator>,
 > {
-  locale: TLocale;
+  locale?: TLocale;
   translator: TTranslator;
 }
 
@@ -48,13 +53,8 @@ type InferFactoryTranslator<TFactory extends (...args: any) => any> =
     : never;
 
 type InferFactoryLocale<TFactory extends (...args: any) => any> =
-  InferResolvedRequestConfig<TFactory> extends BetterTranslateRequestConfig<
-    infer TTranslator,
-    infer TLocale
-  >
-    ? TLocale extends InferTranslatorLocale<TTranslator>
-      ? TLocale
-      : never
+  InferFactoryTranslator<TFactory> extends AnyTranslator
+    ? InferTranslatorLocale<InferFactoryTranslator<TFactory>>
     : never;
 
 export interface ServerHelpers<
@@ -74,11 +74,17 @@ export interface ServerHelpers<
 
 export function getRequestConfig<
   TTranslator extends AnyTranslator,
-  TLocale extends InferTranslatorLocale<TTranslator>,
+  TLocale extends InferTranslatorLocale<TTranslator> = InferTranslatorLocale<TTranslator>,
 >(
   factory: RequestConfigFactory<TTranslator, TLocale>,
 ): RequestConfigFactory<TTranslator, TLocale> {
   return factory;
+}
+
+export function setRequestLocale<TLocale extends string>(
+  locale: TLocale | undefined,
+) {
+  setStoredRequestLocale(locale);
 }
 
 export function createServerHelpers<
@@ -88,27 +94,37 @@ export function createServerHelpers<
 ): ServerHelpers<InferFactoryLocale<TFactory>, InferFactoryTranslator<TFactory>> {
   const readRequestConfig = cache(async () => {
     const resolved = await requestConfig();
-    const locale = resolved.locale as InferFactoryLocale<TFactory>;
     const translator = resolved.translator as InferFactoryTranslator<TFactory>;
 
-    if (!translator.getSupportedLocales().includes(locale)) {
-      throw new Error(
-        `The resolved locale "${locale}" is not included in the translator's supported locales.`,
-      );
-    }
-
     return {
-      locale,
+      locale: resolved.locale as InferFactoryLocale<TFactory> | undefined,
       translator,
     };
   });
 
+  async function getResolvedLocale(
+    options?: {
+      locale?: InferFactoryLocale<TFactory>;
+    },
+  ) {
+    const { locale: configLocale, translator } = await readRequestConfig();
+
+    return resolveRequestLocale(translator, {
+      locale: options?.locale,
+      requestLocale: getStoredRequestLocale(),
+      configLocale,
+    }) as InferFactoryLocale<TFactory>;
+  }
+
   return {
     async getLocale() {
-      return (await readRequestConfig()).locale;
+      return getResolvedLocale();
     },
     async getMessages() {
-      const { locale, translator } = await readRequestConfig();
+      const [{ translator }, locale] = await Promise.all([
+        readRequestConfig(),
+        getResolvedLocale(),
+      ]);
       const loadedMessages = await translator.loadLocale(locale);
       const cachedMessages = translator.getMessages()[locale];
 
@@ -129,14 +145,10 @@ export function createServerHelpers<
       );
     },
     async getTranslations(options) {
-      const { locale: requestLocale, translator } = await readRequestConfig();
-      const locale = (options?.locale ?? requestLocale) as InferFactoryLocale<TFactory>;
-
-      if (!translator.getSupportedLocales().includes(locale)) {
-        throw new Error(
-          `The locale "${locale}" is not included in the translator's supported locales.`,
-        );
-      }
+      const [{ translator }, locale] = await Promise.all([
+        readRequestConfig(),
+        getResolvedLocale(options),
+      ]);
 
       await translator.loadLocale(locale);
 

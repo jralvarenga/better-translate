@@ -17,7 +17,6 @@ export const requestConfig = getRequestConfig(async () => {
   });
 
   return {
-    locale: routing.defaultLocale,
     translator,
   };
 });

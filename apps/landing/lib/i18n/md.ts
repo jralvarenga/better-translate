@@ -1,3 +1,4 @@
+import "server-only";
 import path from "path";
 import { createMarkdownServerHelpers } from "@better-translate/md/server";
 

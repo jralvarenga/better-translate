@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 
 import { hasLocale } from "@better-translate/nextjs";
+import { setRequestLocale } from "@better-translate/nextjs/server";
 
 import { CodeDemo } from "@/components/code-demo";
 import { Features } from "@/components/features";
@@ -21,9 +22,8 @@ export default async function LocalizedHomePage({
   }
 
   const locale = lang as LandingLocale;
-  const t = await getTranslations({
-    locale,
-  });
+  setRequestLocale(locale);
+  const t = await getTranslations();
 
   return (
     <div className="dot-grid min-h-screen bg-background">

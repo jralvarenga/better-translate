@@ -1,7 +1,9 @@
 "use client"
 
 import { usePathname } from "next/navigation"
+import { useTranslations } from "@better-translate/react"
 import { I18nLink } from "@/lib/i18n/navigation"
+import type { LandingTranslator } from "@/lib/i18n/config"
 import {
     Sidebar,
     SidebarContent,
@@ -14,23 +16,24 @@ import {
 } from "@/components/ui/sidebar"
 
 const GETTING_STARTED = [
-    { name: "Introduction", href: "/docs" },
-    { name: "Installation", href: "/docs/installation" },
-    { name: "CLI", href: "/docs/cli" },
-    { name: "Skills", href: "/docs/skills" },
-    { name: "Changelog", href: "/docs/changelog" },
+    { nameKey: "introduction" as const, href: "/docs" },
+    { nameKey: "installation" as const, href: "/docs/installation" },
+    { nameKey: "cli" as const, href: "/docs/cli" },
+    { nameKey: "skills" as const, href: "/docs/skills" },
+    { nameKey: "changelog" as const, href: "/docs/changelog" },
 ]
 
 const ADAPTERS = [
-    { name: "Core", href: "/docs/adapters/core" },
-    { name: "React", href: "/docs/adapters/react" },
-    { name: "Next.js", href: "/docs/adapters/nextjs" },
-    { name: "TanStack Start", href: "/docs/adapters/tanstack-start" },
-    { name: "MD & MDX", href: "/docs/adapters/md-and-mdx" },
+    { nameKey: "core" as const, href: "/docs/adapters/core" },
+    { nameKey: "react" as const, href: "/docs/adapters/react" },
+    { nameKey: "nextjs" as const, href: "/docs/adapters/nextjs" },
+    { nameKey: "tanstackStart" as const, href: "/docs/adapters/tanstack-start" },
+    { nameKey: "mdAndMdx" as const, href: "/docs/adapters/md-and-mdx" },
 ]
 
 export function DocsSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const pathname = usePathname()
+    const t = useTranslations<LandingTranslator>().t
 
     function isActive(href: string) {
         if (href === "/docs") {
@@ -51,11 +54,11 @@ export function DocsSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) 
             <SidebarContent className="mx-auto no-scrollbar w-(--sidebar-menu-width) overflow-x-hidden px-2">
                 <SidebarGroup className="pt-6">
                     <SidebarGroupLabel className="font-medium text-muted-foreground">
-                        Getting Started
+                        {t("docs.sidebar.gettingStarted")}
                     </SidebarGroupLabel>
                     <SidebarGroupContent>
                         <SidebarMenu>
-                            {GETTING_STARTED.map(({ name, href }) => (
+                            {GETTING_STARTED.map(({ nameKey, href }) => (
                                 <SidebarMenuItem key={href}>
                                     <SidebarMenuButton
                                         asChild
@@ -64,7 +67,7 @@ export function DocsSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) 
                                     >
                                         <I18nLink href={href}>
                                             <span className="absolute inset-0 flex w-(--sidebar-menu-width) bg-transparent" />
-                                            {name}
+                                            {t(`docs.sidebar.${nameKey}`)}
                                         </I18nLink>
                                     </SidebarMenuButton>
                                 </SidebarMenuItem>
@@ -75,11 +78,11 @@ export function DocsSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) 
 
                 <SidebarGroup>
                     <SidebarGroupLabel className="font-medium text-muted-foreground">
-                        Adapters
+                        {t("docs.sidebar.adapters")}
                     </SidebarGroupLabel>
                     <SidebarGroupContent>
                         <SidebarMenu className="gap-0.5">
-                            {ADAPTERS.map(({ name, href }) => (
+                            {ADAPTERS.map(({ nameKey, href }) => (
                                 <SidebarMenuItem key={href}>
                                     <SidebarMenuButton
                                         asChild
@@ -88,7 +91,7 @@ export function DocsSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) 
                                     >
                                         <I18nLink href={href}>
                                             <span className="absolute inset-0 flex w-(--sidebar-menu-width) bg-transparent" />
-                                            {name}
+                                            {t(`docs.sidebar.${nameKey}`)}
                                         </I18nLink>
                                     </SidebarMenuButton>
                                 </SidebarMenuItem>

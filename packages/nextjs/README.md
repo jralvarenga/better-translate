@@ -90,25 +90,62 @@ export const requestConfig = getRequestConfig(async () => {
   });
 
   return {
-    locale: routing.defaultLocale,
     translator,
   };
 });
 ```
 
+### `app/app/[lang]/layout.tsx`
+
+```tsx
+import { hasLocale } from "@better-translate/nextjs";
+import { setRequestLocale } from "@better-translate/nextjs/server";
+import { notFound } from "next/navigation";
+
+import { getTranslations } from "@/src/i18n/server";
+import { routing } from "@/src/i18n/routing";
+
+export default async function LocalizedLayout({
+  children,
+  params,
+}: PageProps<"/app/[lang]">) {
+  const { lang } = await params;
+
+  if (!hasLocale(routing.locales, lang)) {
+    notFound();
+  }
+
+  setRequestLocale(lang);
+
+  const t = await getTranslations();
+
+  return (
+    <section>
+      <h1>{t("dashboard.title")}</h1>
+      {children}
+    </section>
+  );
+}
+```
+
 ### `src/i18n/server.ts`
 
 ```ts
-import { createServerHelpers } from "@better-translate/nextjs/server";
+import {
+  createServerHelpers,
+  setRequestLocale,
+} from "@better-translate/nextjs/server";
 
 import { requestConfig } from "./request";
 
 export const { getLocale, getMessages, getTranslations, getTranslator } =
   createServerHelpers(requestConfig);
+
+export { setRequestLocale };
 ```
 
-When your localized route already has `lang` in `params`, passing it into
-`getTranslations(...)` is usually the simplest option:
+After you set the request locale once in the localized layout, server helpers
+read it automatically:
 
 ### `app/app/[lang]/page.tsx`
 
@@ -128,9 +165,7 @@ export default async function DashboardPage({
     notFound();
   }
 
-  const t = await getTranslations({
-    locale: lang,
-  });
+  const t = await getTranslations();
 
   return <h1>{t("dashboard.title")}</h1>;
 }
@@ -140,6 +175,7 @@ export default async function DashboardPage({
 
 - `configureTranslations(...)` builds the actual translator
 - `getRequestConfig(...)` exposes it to the Next.js adapter
+- `setRequestLocale(...)` stores the current route locale once per request
 - `createServerHelpers(...)` returns request-friendly wrappers around that translator
 
 ## User-owned proxy

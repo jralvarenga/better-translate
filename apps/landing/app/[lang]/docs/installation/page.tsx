@@ -1,3 +1,5 @@
+import { setRequestLocale } from "@better-translate/nextjs/server";
+
 import { renderDocPage } from "../_components/render-doc-page";
 
 export default async function DocsInstallationPage({
@@ -6,5 +8,6 @@ export default async function DocsInstallationPage({
   params: Promise<{ lang: string }>;
 }) {
   const { lang } = await params;
-  return renderDocPage("docs/installation", lang as "en" | "es");
+  setRequestLocale(lang);
+  return renderDocPage("docs/installation");
 }

@@ -46,3 +46,45 @@ content/
   en/docs/getting-started.mdx
   es/docs/getting-started.mdx
 ```
+
+## Next.js server helpers
+
+When you use the `@better-translate/md/server` entry in a localized Next.js
+route, set the request locale once in the layout and then call markdown helpers
+without passing `locale` repeatedly.
+
+```ts
+import { createMarkdownServerHelpers } from "@better-translate/md/server";
+
+import { requestConfig } from "./i18n/request";
+
+export const docs = createMarkdownServerHelpers(requestConfig, {
+  rootDir: "./content",
+});
+```
+
+```tsx
+import { hasLocale } from "@better-translate/nextjs";
+import { setRequestLocale } from "@better-translate/nextjs/server";
+import { notFound } from "next/navigation";
+
+import { docs } from "@/lib/docs";
+import { routing } from "@/lib/i18n/routing";
+
+export default async function LocalizedLayout({
+  children,
+  params,
+}: PageProps<"/[lang]">) {
+  const { lang } = await params;
+
+  if (!hasLocale(routing.locales, lang)) {
+    notFound();
+  }
+
+  setRequestLocale(lang);
+
+  await docs.getDocument("docs/getting-started");
+
+  return children;
+}
+```

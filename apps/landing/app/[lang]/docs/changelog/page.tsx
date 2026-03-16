@@ -1,3 +1,5 @@
+import { setRequestLocale } from "@better-translate/nextjs/server";
+
 import { renderDocPage } from "../_components/render-doc-page";
 
 export default async function DocsChangelogPage({
@@ -6,5 +8,6 @@ export default async function DocsChangelogPage({
   params: Promise<{ lang: string }>;
 }) {
   const { lang } = await params;
-  return renderDocPage("docs/changelog", lang as "en" | "es");
+  setRequestLocale(lang);
+  return renderDocPage("docs/changelog");
 }

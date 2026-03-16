@@ -1,38 +1,19 @@
 ---
 title: Introducción
-description: Better Translate es una librería de traducciones type-safe para aplicaciones TypeScript.
+description: "Better Translate es una librería de traducciones type-safe pensada para TypeScript: configúrala una vez y úsala en todas partes."
 ---
 
 # Introducción
 
-Better Translate es una librería de traducciones type-safe para aplicaciones TypeScript. Te ofrece
-claves de traducción tipadas, parámetros de interpolación tipados, soporte de locale fallback, carga
-asíncrona de locales, y adaptadores para React y Next.js.
+La mayoría de las librerías de i18n tratan a TypeScript como algo secundario. Conectas tus traducciones y luego, aparte, intentas añadir type safety con archivos de declaración, *module augmentation* y varios *workarounds*. Si alguna vez escribiste `t("account.balanc")` y te enteraste recién en runtime, ya sabes cómo termina esa historia.
 
-## ¿Qué es Better Translate?
+Better Translate le da la vuelta a eso. Aquí el type safety no es un plugin ni un flag de configuración: es la base sobre la que está construido todo.
 
-Better Translate está construido alrededor de una idea principal: configurar las traducciones una vez
-y usar helpers tipados en todas partes. El paquete core es agnóstico al framework — funciona en TypeScript
-puro, Bun, Node.js, APIs y servidores. Los paquetes adaptadores facilitan su uso con React context y
-Next.js App Router routing.
+## La idea principal
 
-Si tus mensajes fuente tienen `account.balance.label`,
-TypeScript autocompletará esa clave y rechazará las inválidas. Si un mensaje recibe un parámetro
-como `"Buenos días {name}"`, entonces `t(...)` te exigirá pasar `params.name`.
+Configura tus traducciones una sola vez. Obtén claves tipadas, parámetros de interpolación tipados, soporte de locale de fallback y carga asíncrona… en todas partes, sin *boilerplate*.
 
-## Mapa de paquetes
-
-- `better-translate` — Motor de traducciones principal. Agnóstico al framework. Úsalo en cualquier proyecto TypeScript.
-- `@better-translate/react` — Provider y hook useTranslations() para cambio de locale en el cliente.
-- `@better-translate/nextjs` — Helpers para Next.js App Router: enrutamiento por locale, helpers de servidor y wrappers de navegación.
-- `@better-translate/tanstack-start` — Paquete scaffold para TanStack Start. Etapa inicial.
-- `@better-translate/vscode` — Extensión VS Code para navegación de claves de traducción.
-
-## Inicio rápido
-
-Instala el paquete core y configura tus traducciones. El primer locale se convierte en el predeterminado y fallback.
-
-```tsx showLineNumbers
+```tsx
 import { configureTranslations } from "better-translate"
 
 const en = {
@@ -46,40 +27,64 @@ const es = {
 }
 
 const translator = await configureTranslations({ en, es })
+const t = translator.getTranslator("en")
 
-const t = translator.getTranslator("es")
-t("greeting", { params: { name: "Mundo" } }) // "¡Hola, Mundo!"
-t("nav.home")                                 // "Inicio"
+t("greeting", { params: { name: "World" } }) // ✅ "Hello, World!"
+t("nav.home")                                 // ✅ "Home"
+t("nav.hoome")                                // ❌ Error de TypeScript — al instante
+t("greeting")                                 // ❌ Error de TypeScript — params.name es obligatorio
 ```
 
-## Modelo mental
+Esas dos últimas líneas no son errores en tiempo de ejecución que se descubren en QA. Son errores de compilación que se detectan en el momento en que las escribes. Esa es la diferencia.
 
-Better Translate tiene tres capas:
+## ¿Por qué no simplemente usar i18next o next-intl?
 
-1. **Core** — Traduce. Gestiona la búsqueda de mensajes, lógica de fallback y carga asíncrona. Funciona en cualquier entorno.
-2. **React** — Conecta el locale a la UI. Provee context y un hook useTranslations() para componentes cliente.
-3. **Next.js** — Conecta el locale a la ruta. Agrega enrutamiento de locales, helpers de servidor y wrappers de navegación para App Router.
+Son excelentes librerías — muy adoptadas, probadas en batalla y llenas de funcionalidades. Pero el type safety en ambas es opcional y aditivo:
 
-## ¿Qué guía debería leer?
+- **i18next** requiere que crees un archivo `i18next.d.ts`, que hagas *augment* de `CustomTypeOptions` y registres tus recursos manualmente. Si te saltas un paso, vuelves a `string`.
+- **next-intl** necesita un `global.d.ts` con tipos de mensajes importados manualmente. Funciona, pero es configuración que mantienes separada de tus traducciones reales.
+- **Los parámetros de interpolación** casi nunca están tipados sin tooling extra en ninguna de las dos.
 
-- → ¿Solo necesitas traducciones en TypeScript o en un servidor? Lee **Adaptadores → Core**.
-- → ¿Construyendo una app React? Lee **Adaptadores → React**.
-- → ¿Usando Next.js App Router? Lee **Adaptadores → Next.js**.
-- → ¿Necesitas traducciones en servidor y cliente? Empieza con Next.js y luego agrega el adaptador React.
+Con Better Translate no hay nada que registrar ni aumentar. Tus objetos de locales *son* la fuente de la verdad. TypeScript infiere todo a partir de ellos automáticamente: claves, rutas anidadas y variables de interpolación incluidas.
 
-## Empieza rápido
+## Una sola configuración para todo tu *stack*
 
-<div className="mt-6 flex flex-wrap gap-3">
-  <Button asChild variant="outline" size="lg">
-    <Link href="/docs/installation">Instalar los paquetes</Link>
-  </Button>
-  <Button asChild variant="outline" size="lg">
-    <Link href="/docs/adapters/core">Leer la guía de core</Link>
-  </Button>
-  <Button asChild variant="outline" size="lg">
-    <Link href="/docs/adapters/react">Leer la guía de React</Link>
-  </Button>
-  <Button asChild size="lg">
-    <Link href="/docs/adapters/nextjs">Leer la guía de Next.js</Link>
-  </Button>
-</div>
+Esto es lo que diferencia a Better Translate de la mayoría de alternativas: el paquete core es completamente agnóstico al framework. Funciona en Node.js, Bun, TypeScript puro, APIs y entornos de servidor sin modificaciones.
+
+Los paquetes de React y Next.js no son productos separados con su propia opinión: son capas optimizadas encima del mismo core. La misma llamada a `configureTranslations` que usas en tu backend es la que alimenta tu contexto de React y el enrutado de App Router de Next.js. Una sola configuración, una sola fuente de verdad, comportamiento consistente en todas partes.
+
+```
+better-translate          ← Tu única fuente de verdad. Funciona donde corra TypeScript.
+    ↓
+@better-translate/react   ← Añade provider + hook useTranslations(). Impulsado por el core.
+    ↓
+@better-translate/nextjs  ← Añade routing de locales + helpers de servidor. Impulsado por el core.
+```
+
+Escala desde una API sencilla hasta una app completa en Next.js sin reescribir nunca tu configuración de traducciones.
+
+## Qué obtienes desde el primer momento
+
+- **Claves tipadas** — autocompletado y errores de compilación para cada clave, incluyendo rutas anidadas como `nav.home`
+- **Interpolación tipada** — si un mensaje recibe `{name}`, pasarla es obligatorio; pasar algo incorrecto es un error
+- **Soporte de locale de fallback** — lo defines una vez y las traducciones faltantes hacen fallback de forma controlada
+- **Carga asíncrona de locales** — carga solo lo que necesitas, cuando lo necesitas
+- **Adaptadores de framework** — React, Next.js App Router y TanStack Start (en fase temprana), todos derivados del mismo core
+- **Extensión para VS Code** — navega claves de traducción en línea sin salir del editor
+
+## Mapa de paquetes
+
+| Paquete | Qué hace |
+|---|---|
+| `better-translate` | Motor core. Agnóstico al framework. La base de todo lo demás. |
+| `@better-translate/react` | Provider de React y hook `useTranslations()` para cambio de locale en el cliente. |
+| `@better-translate/nextjs` | Helpers para App Router: routing de locales, helpers de servidor, navegación. |
+| `@better-translate/tanstack-start` | Scaffold para TanStack Start. Fase temprana. |
+| `@better-translate/vscode` | Extensión de VS Code para navegar claves de traducción y ver vistas previas en línea. |
+
+## A dónde ir después
+
+- **¿Usas TypeScript o un servidor?** → [Adaptadores → Core](/docs/adapters/core)
+- **¿Estás construyendo una app React?** → [Adaptadores → React](/docs/adapters/react)
+- **¿Usas Next.js App Router?** → [Adaptadores → Next.js](/docs/adapters/nextjs)
+- **¿Necesitas traducciones en servidor y cliente juntas?** → Empieza con Next.js y luego añade el adaptador de React.

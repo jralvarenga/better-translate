@@ -81,4 +81,26 @@ export const en = {
     secondaryCta: "View on GitHub",
     title: "Type-Safe Translations for TypeScript",
   },
+  docs: {
+    copyMarkdown: "Copy markdown",
+    copiedMarkdown: "Copied",
+    header: {
+      home: "Home",
+      github: "GitHub",
+    },
+    sidebar: {
+      adapters: "Adapters",
+      changelog: "Changelog",
+      cli: "CLI",
+      core: "Core",
+      gettingStarted: "Getting Started",
+      installation: "Installation",
+      introduction: "Introduction",
+      mdAndMdx: "MD & MDX",
+      nextjs: "Next.js",
+      react: "React",
+      skills: "Skills",
+      tanstackStart: "TanStack Start",
+    },
+  },
 } as const;

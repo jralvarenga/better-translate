@@ -4,7 +4,11 @@ import { configureTranslations } from "better-translate/core";
 
 import { createNavigationFunctions } from "./navigation.js";
 import { defineRouting } from "./index.js";
-import { createServerHelpers, getRequestConfig } from "./server.js";
+import {
+  createServerHelpers,
+  getRequestConfig,
+  setRequestLocale,
+} from "./server.js";
 
 const routing = defineRouting({
   locales: ["en", "es"] as const,
@@ -46,10 +50,10 @@ const translator = await configureTranslations({
 });
 
 const requestConfig = getRequestConfig(async () => ({
-  locale: "en" as const,
   translator,
 }));
 const helpers = createServerHelpers(requestConfig);
+setRequestLocale("en");
 const t = await helpers.getTranslations();
 const navigation = createNavigationFunctions({
   Link(props: { children?: ReactNode; href: string }) {

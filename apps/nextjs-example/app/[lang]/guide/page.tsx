@@ -16,9 +16,7 @@ export default async function GuidePage({
     notFound();
   }
 
-  const t = await getTranslations({
-    locale: lang,
-  });
+  const t = await getTranslations();
 
   return (
     <main className="flex flex-1 flex-col justify-between gap-10 py-10">

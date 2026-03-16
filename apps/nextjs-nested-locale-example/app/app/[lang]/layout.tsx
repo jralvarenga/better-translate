@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 
 import { hasLocale } from "@better-translate/nextjs";
+import { setRequestLocale } from "@better-translate/nextjs/server";
 
 import { LocalizedHeader } from "@/app/components/localized-header";
 import { getTranslations } from "@/lib/i18n/server";
@@ -25,9 +26,9 @@ export default async function LocalizedLayout({
     notFound();
   }
 
-  const t = await getTranslations({
-    locale: lang,
-  });
+  setRequestLocale(lang);
+
+  const t = await getTranslations();
 
   return (
     <div

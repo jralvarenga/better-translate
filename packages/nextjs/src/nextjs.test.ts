@@ -1,4 +1,4 @@
-import { describe, expect, it } from "bun:test";
+import { afterEach, beforeEach, describe, expect, it } from "bun:test";
 import { NextRequest, NextResponse } from "next/server";
 import { renderToStaticMarkup } from "react-dom/server";
 import { createElement } from "react";
@@ -12,7 +12,11 @@ import {
   getProxyMatcher,
   withBetterTranslate,
 } from "./proxy.js";
-import { createServerHelpers, getRequestConfig } from "./server.js";
+import {
+  createServerHelpers,
+  getRequestConfig,
+  setRequestLocale,
+} from "./server.js";
 import {
   buildDomainAwareHref,
   defineRouting,
@@ -25,6 +29,14 @@ import {
 } from "./shared.js";
 
 describe("@better-translate/nextjs", () => {
+  beforeEach(() => {
+    setRequestLocale(undefined);
+  });
+
+  afterEach(() => {
+    setRequestLocale(undefined);
+  });
+
   it("narrows locales with hasLocale", () => {
     const routing = defineRouting({
       locales: ["en", "es"] as const,
@@ -400,5 +412,105 @@ describe("@better-translate/nextjs", () => {
         },
       }),
     ).toBe("Hola Ada");
+  });
+
+  it("prefers the request locale set in layout over the request-config locale", async () => {
+    const translator = await configureTranslations({
+      availableLocales: ["en", "es"] as const,
+      defaultLocale: "en",
+      fallbackLocale: "en",
+      messages: {
+        en: {
+          home: {
+            title: "Hello",
+          },
+        },
+        es: {
+          home: {
+            title: "Hola",
+          },
+        },
+      },
+    });
+
+    const requestConfig = getRequestConfig(async () => ({
+      locale: "en" as const,
+      translator,
+    }));
+    const helpers = createServerHelpers(requestConfig);
+
+    setRequestLocale("es");
+
+    expect(await helpers.getLocale()).toBe("es");
+    expect(await helpers.getMessages()).toEqual({
+      home: {
+        title: "Hola",
+      },
+    });
+    expect((await helpers.getTranslations())("home.title")).toBe("Hola");
+    expect((await helpers.getTranslations({ locale: "en" }))("home.title")).toBe(
+      "Hello",
+    );
+  });
+
+  it("falls back to the translator default locale when no request locale is set", async () => {
+    const translator = await configureTranslations({
+      availableLocales: ["en", "es"] as const,
+      defaultLocale: "en",
+      fallbackLocale: "en",
+      messages: {
+        en: {
+          home: {
+            title: "Hello",
+          },
+        },
+        es: {
+          home: {
+            title: "Hola",
+          },
+        },
+      },
+    });
+
+    const helpers = createServerHelpers(
+      getRequestConfig(async () => ({
+        translator,
+      })),
+    );
+
+    expect(await helpers.getLocale()).toBe("en");
+    expect((await helpers.getTranslations())("home.title")).toBe("Hello");
+  });
+
+  it("rejects an unsupported stored request locale", async () => {
+    const translator = await configureTranslations({
+      availableLocales: ["en", "es"] as const,
+      defaultLocale: "en",
+      fallbackLocale: "en",
+      messages: {
+        en: {
+          home: {
+            title: "Hello",
+          },
+        },
+        es: {
+          home: {
+            title: "Hola",
+          },
+        },
+      },
+    });
+
+    const helpers = createServerHelpers(
+      getRequestConfig(async () => ({
+        translator,
+      })),
+    );
+
+    setRequestLocale("pt");
+
+    await expect(helpers.getTranslations()).rejects.toThrow(
+      'The locale "pt" is not included in the translator\'s supported locales.',
+    );
   });
 });

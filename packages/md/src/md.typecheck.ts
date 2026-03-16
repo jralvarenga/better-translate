@@ -1,4 +1,5 @@
 import { configureTranslations } from "better-translate/core";
+import { setRequestLocale } from "better-translate/server";
 
 import {
   createMarkdownCollection,
@@ -39,13 +40,14 @@ const collection = createMarkdownCollection({
 
 const serverDocs = createMarkdownServerHelpers(
   async () => ({
-    locale: "es" as const,
     translator,
   }),
   {
     rootDir: "./content",
   },
 );
+
+setRequestLocale("es");
 
 const helperDocument = await docs.getDocument("docs/guide", {
   locale: "es",
