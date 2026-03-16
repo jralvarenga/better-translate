@@ -6,7 +6,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Better Translate Next.js Example",
-  description: "Root-level locale routing with Better Translate and Next.js.",
+  description: "Scoped locale routing with Better Translate and Next.js.",
 };
 
 export default async function RootLayout({

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useParams } from "next/navigation";
 
 import { hasLocale } from "@better-translate/nextjs";
@@ -11,6 +12,7 @@ interface LocalizedHeaderProps {
   guideLabel: string;
   homeLabel: string;
   loginLabel: string;
+  rootLabel: string;
   switchLabel: string;
 }
 
@@ -18,6 +20,7 @@ export function LocalizedHeader({
   guideLabel,
   homeLabel,
   loginLabel,
+  rootLabel,
   switchLabel,
 }: LocalizedHeaderProps) {
   const params = useParams();
@@ -34,7 +37,7 @@ export function LocalizedHeader({
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
         <I18nLink
           className="inline-flex items-center gap-3 rounded-full border border-black/10 px-4 py-2 text-sm font-medium text-zinc-600 transition-colors hover:bg-black/[0.03] dark:border-white/10 dark:text-zinc-300 dark:hover:bg-white/[0.06]"
-          href="/"
+          href="/app"
         >
           <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
           better-translate
@@ -43,22 +46,28 @@ export function LocalizedHeader({
         <nav className="flex flex-wrap gap-3 text-sm font-medium">
           <I18nLink
             className="rounded-full border border-black/10 px-4 py-2 transition-colors hover:bg-black/[0.03] dark:border-white/10 dark:hover:bg-white/[0.06]"
-            href="/"
+            href="/app"
           >
             {homeLabel}
           </I18nLink>
           <I18nLink
             className="rounded-full border border-black/10 px-4 py-2 transition-colors hover:bg-black/[0.03] dark:border-white/10 dark:hover:bg-white/[0.06]"
-            href="/guide"
+            href="/app/guide"
           >
             {guideLabel}
           </I18nLink>
-          <I18nLink
+          <Link
+            className="rounded-full border border-black/10 px-4 py-2 transition-colors hover:bg-black/[0.03] dark:border-white/10 dark:hover:bg-white/[0.06]"
+            href="/"
+          >
+            {rootLabel}
+          </Link>
+          <Link
             className="rounded-full border border-black/10 px-4 py-2 transition-colors hover:bg-black/[0.03] dark:border-white/10 dark:hover:bg-white/[0.06]"
             href="/login"
           >
             {loginLabel}
-          </I18nLink>
+          </Link>
         </nav>
       </div>
 

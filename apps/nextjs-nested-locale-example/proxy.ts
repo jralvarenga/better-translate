@@ -13,7 +13,7 @@ function userProxy() {
 export const proxy = withBetterTranslate(userProxy, routing);
 
 export const config = {
-  // Next.js statically analyzes this field, so the root-level matcher needs to
-  // be written inline even though it mirrors the Better Translate helpers.
-  matcher: ["/((?!api|_next|_vercel|.*\\..*).*)"],
+  // Next.js statically analyzes this field, so the scoped matcher needs to be
+  // written inline even though it mirrors getProxyMatcher(routing).
+  matcher: ["/app", "/app/:path*"],
 };

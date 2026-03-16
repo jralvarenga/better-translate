@@ -1,0 +1,34 @@
+{
+  "guide": {
+    "backToHome": "Back to home",
+    "openLogin": "Open login page",
+    "badge": "Localized route detail",
+    "description": "This second page shows that guide routes, page links, and the locale switcher all stay inside the active language at the root of the app.",
+    "navigationDescription": "The app injects Next.js navigation primitives into createNavigationFunctions(), so locale-aware links and router calls stay compatible with the installed Next.js version.",
+    "navigationTitle": "Injected navigation",
+    "routeTreeDescription": "Every user-facing page now lives under /[lang], so home, guide, and login all share the same locale-aware routing model.",
+    "routeTreeTitle": "Root-level locale tree",
+    "title": "One route tree, two languages, and a localized app from the root."
+  },
+  "home": {
+    "badge": "Root-level localized experience",
+    "description": "This page keeps the familiar calm starter-card feel, but now the full route tree is localized from /[lang], including home, guide, and login.",
+    "primaryCta": "See localized guide",
+    "secondaryCta": "Open localized login",
+    "supportingCopy": "Switch between English and Spanish from the header above. The current route shape stays intact, while Better Translate keeps links and router actions locale-aware.",
+    "title": "Locale routing that starts at the root and feels native to the app."
+  },
+  "login": {
+    "badge": "Localized login route",
+    "description": "Login now belongs to the same root-level locale tree as the rest of the example, so the route, header navigation, and switcher all stay consistent.",
+    "primaryCta": "Back to home",
+    "secondaryCta": "Open guide",
+    "title": "A localized login page without leaving the app shell."
+  },
+  "navigation": {
+    "guide": "Guide",
+    "home": "Home",
+    "login": "Login",
+    "switchLanguage": "Language"
+  }
+}

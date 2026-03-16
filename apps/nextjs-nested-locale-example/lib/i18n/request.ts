@@ -1,8 +1,7 @@
 import { getRequestConfig } from "@better-translate/nextjs/server";
 import { configureTranslations } from "better-translate/core";
 
-import en from "./messages/en.json";
-import es from "./messages/es.json";
+import { en, es } from "./messages";
 import { routing } from "./routing";
 
 export const requestConfig = getRequestConfig(async () => {
