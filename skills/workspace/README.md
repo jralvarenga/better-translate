@@ -33,7 +33,7 @@ This folder contains the publishable or reusable library pieces.
   React provider and hooks
 - `packages/nextjs`
   Next.js App Router helpers
-- `packages/tanstack-start`
+- `packages/tanstack-router`
   Scaffold package only
 - `packages/vscode`
   VS Code extension

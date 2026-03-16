@@ -9,7 +9,7 @@ const fontSans = Geist({ subsets: ["latin"], variable: "--font-sans" });
 export const metadata: Metadata = {
   title: "better-translate — Type-Safe Translations for TypeScript",
   description:
-    "Define your translations once. Get autocomplete, type errors, and locale switching — with adapters for React, Next.js, TanStack Start, and any Node server.",
+    "Define your translations once. Get autocomplete, type errors, and locale switching — with adapters for React, Next.js, TanStack Router, TanStack Start, and any Node server.",
 };
 
 export default function RootLayout({

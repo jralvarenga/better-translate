@@ -63,11 +63,9 @@ It already has:
 - root and scoped route patterns
 - tests and typechecks
 
-### TanStack Start package
+### TanStack Router package
 
-`@better-translate/tanstack-start` is scaffold-only right now.
-
-Its README says it exposes placeholder exports while real helpers are still being implemented.
+`@better-translate/tanstack-router` now provides the TanStack Router adapter, including Start-compatible server helpers.
 
 ### VS Code package
 
@@ -102,7 +100,7 @@ That is one reason this new `skills/` folder is useful.
 
 - `README.md`
 - `KEY_FEATURES.md`
-- `packages/tanstack-start/README.md`
+- `packages/tanstack-router/README.md`
 - `packages/vscode/package.json`
 - `packages/better-translate/src/core.test.ts`
 - `packages/react/src/react.test.tsx`
@@ -112,7 +110,7 @@ That is one reason this new `skills/` folder is useful.
 
 The core, React, and Next.js packages are the main finished story.
 
-TanStack Start and some surrounding docs are still catching up.
+TanStack Router is implemented, and some surrounding docs may still mention TanStack Start where they describe Start compatibility.
 
 ## What To Copy From The Examples
 

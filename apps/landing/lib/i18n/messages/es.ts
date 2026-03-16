@@ -14,7 +14,7 @@ export const es = {
       },
       frameworkAgnostic: {
         description:
-          "Cero bloqueo por framework. Un solo paquete core con adaptadores de primera clase para React, Next.js, TanStack Start y Node.",
+          "Cero bloqueo por framework. Un solo paquete core con adaptadores de primera clase para React, Next.js, TanStack Router y Node.",
         title: "Agnostico al framework",
       },
       localeSwitching: {
@@ -60,7 +60,7 @@ export const es = {
       },
       tanstack: {
         description:
-          "Soporte de ruteo type-safe para proyectos con TanStack Start y Router.",
+          "Soporte de ruteo type-safe para proyectos con TanStack Router, incluyendo apps de TanStack Start.",
       },
       typescript: {
         description:
@@ -106,7 +106,7 @@ export const es = {
       nextjs: "Next.js",
       react: "React",
       skills: "Skills",
-      tanstackStart: "TanStack Start",
+      tanstackStart: "TanStack Router",
     },
   },
 } as const;

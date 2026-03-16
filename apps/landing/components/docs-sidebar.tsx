@@ -27,7 +27,7 @@ const ADAPTERS = [
     { nameKey: "core" as const, href: "/docs/adapters/core" },
     { nameKey: "react" as const, href: "/docs/adapters/react" },
     { nameKey: "nextjs" as const, href: "/docs/adapters/nextjs" },
-    { nameKey: "tanstackStart" as const, href: "/docs/adapters/tanstack-start" },
+    { nameKey: "tanstackStart" as const, href: "/docs/adapters/tanstack-router" },
     { nameKey: "mdAndMdx" as const, href: "/docs/adapters/md-and-mdx" },
 ]
 

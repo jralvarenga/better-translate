@@ -26,7 +26,7 @@ If you are new, read the files in this order:
   Next.js App Router helpers.
 - `@better-translate/md`
   Markdown and MDX helpers that use the same configured translator.
-- `@better-translate/tanstack-start`
+- `@better-translate/tanstack-router`
   Scaffold package. It is not fully implemented yet.
 - `@better-translate/vscode`
   VS Code extension for translation key navigation.

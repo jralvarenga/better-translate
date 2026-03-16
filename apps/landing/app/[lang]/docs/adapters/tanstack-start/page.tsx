@@ -1,6 +1,4 @@
-import { setRequestLocale } from "@better-translate/nextjs/server";
-
-import { renderDocPage } from "../../_components/render-doc-page";
+import { redirect } from "next/navigation";
 
 export default async function DocsAdapterTanStackPage({
   params,
@@ -8,6 +6,5 @@ export default async function DocsAdapterTanStackPage({
   params: Promise<{ lang: string }>;
 }) {
   const { lang } = await params;
-  setRequestLocale(lang);
-  return renderDocPage("docs/adapters-tanstack-start");
+  redirect(`/${lang}/docs/adapters/tanstack-router`);
 }

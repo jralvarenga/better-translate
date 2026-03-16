@@ -2,7 +2,7 @@
 
 Better Translate is a Bun + Turborepo monorepo for type-safe translations in TypeScript projects.
 
-The main package is `better-translate`, exposed both from the package root and from the `better-translate/core` subpath. It is framework-agnostic and is intended to be installed into any TypeScript project, including React, Next.js, TanStack Start, and future adapters such as Svelte or Vue.
+The main package is `better-translate`, exposed both from the package root and from the `better-translate/core` subpath. It is framework-agnostic and is intended to be installed into any TypeScript project, including React, Next.js, TanStack Router, TanStack Start, and future adapters such as Svelte or Vue.
 
 ## Packages
 
@@ -10,7 +10,7 @@ The main package is `better-translate`, exposed both from the package root and f
 - `@better-translate/md`: localized Markdown and MDX helpers built on top of a configured Better Translate translator.
 - `better-translate/react`: future React adapter package.
 - `@better-translate/nextjs`: Next.js adapter package.
-- `better-translate/tanstack-start`: future TanStack Start adapter package.
+- `@better-translate/tanstack-router`: TanStack Router adapter package that also works in TanStack Start apps.
 - `@repo/typescript-config`: internal shared TypeScript presets used by the workspace.
 
 ## Repository Layout
@@ -23,7 +23,7 @@ packages/
   better-translate/
   nextjs/
   react/
-  tanstack-start/
+  tanstack-router/
   typescript-config/
 ```
 

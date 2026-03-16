@@ -107,9 +107,9 @@ const catalog = [
     icon: TanStackIcon,
     iconClassName: "text-orange-400",
     id: "tanstack",
-    install: "bun add @better-translate/tanstack-start",
+    install: "bun add @better-translate/tanstack-router",
     kind: "framework",
-    name: "TanStack Start/Router",
+    name: "TanStack Router",
   },
   {
     emoji: "🇺🇸",

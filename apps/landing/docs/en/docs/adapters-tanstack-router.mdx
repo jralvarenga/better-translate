@@ -1,0 +1,119 @@
+---
+title: TanStack Router
+description: "@better-translate/tanstack-router provides locale routing and request helpers for TanStack Router and TanStack Start."
+---
+
+# TanStack Router
+
+`@better-translate/tanstack-router` is
+the TanStack Router adapter for Better Translate. It follows TanStack Router's
+optional locale param pattern with `/{-$locale}` and works in TanStack Start
+because Start runs on top of TanStack Router.
+
+## What it provides
+
+- `defineRouting(...)` for prefix-based locale routing with optional params
+- `createNavigationFunctions(...)` for localized `Link`, `useNavigate`, `useRouter`, `usePathname`, and `useLocale`
+- `createServerHelpers(...)` and `setRequestLocale(...)` for request-scoped translations in TanStack Start
+
+## Routing model
+
+By default, the adapter assumes `/{-$locale}`:
+
+- `/about` uses the default locale
+- `/es/about` uses Spanish
+
+You can scope locale routing to only part of your app:
+
+```ts showLineNumbers
+import { defineRouting } from "@better-translate/tanstack-router"
+
+export const routing = defineRouting({
+  locales: ["en", "es"] as const,
+  defaultLocale: "en",
+  routeTemplate: "/app/{-$locale}",
+})
+```
+
+That keeps `/login` untouched while localizing `/app/dashboard` and `/app/es/dashboard`.
+
+## Server helpers for TanStack Start
+
+Create the translator once, then expose request-scoped helpers:
+
+```ts showLineNumbers
+import { configureTranslations } from "better-translate"
+import {
+  createServerHelpers,
+  getRequestConfig,
+  setRequestLocale,
+} from "@better-translate/tanstack-router/server"
+
+const requestConfig = getRequestConfig(async () => ({
+  translator: await configureTranslations({
+    availableLocales: ["en", "es"] as const,
+    defaultLocale: "en",
+    messages: { en, es },
+  }),
+}))
+
+export const { getLocale, getMessages, getTranslations, getTranslator } =
+  createServerHelpers(requestConfig)
+
+export { setRequestLocale }
+```
+
+In TanStack Start, call `setRequestLocale(params.locale ?? routing.defaultLocale)`
+inside `beforeLoad`, a loader, or another request-bound server entrypoint.
+
+## Navigation wrappers
+
+Inject the router primitives from your app:
+
+```tsx showLineNumbers
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useParams,
+  useRouter,
+} from "@tanstack/react-router"
+import { createNavigationFunctions } from "@better-translate/tanstack-router/navigation"
+
+import { routing } from "./routing"
+
+export const {
+  Link: I18nLink,
+  getPathname,
+  useLocale,
+  useNavigate: useI18nNavigate,
+  usePathname,
+  useRouter: useI18nRouter,
+} = createNavigationFunctions({
+  Link,
+  routing,
+  useLocation,
+  useNavigate,
+  useParams: () =>
+    useParams({
+      strict: false,
+      select: (params) => ({
+        locale: params.locale as "en" | "es" | undefined,
+      }),
+    }),
+  useRouter,
+})
+```
+
+## Package location
+
+`packages/tanstack-router`
+
+<div className="mt-6 flex flex-wrap gap-3">
+  <Button asChild variant="outline" size="lg">
+    <Link href="/docs/adapters/core">Understand the core package</Link>
+  </Button>
+  <Button asChild size="lg">
+    <Link href="/docs/adapters/react">Pair it with React</Link>
+  </Button>
+</div>

@@ -13,7 +13,7 @@ export const en = {
       },
       frameworkAgnostic: {
         description:
-          "Zero framework lock-in. One core package, first-class adapters for React, Next.js, TanStack Start, and plain Node.",
+          "Zero framework lock-in. One core package, first-class adapters for React, Next.js, TanStack Router, and plain Node.",
         title: "Framework Agnostic",
       },
       localeSwitching: {
@@ -55,7 +55,7 @@ export const en = {
         description: "Context, hooks, and locale-aware client rendering for React apps.",
       },
       tanstack: {
-        description: "Type-safe routing support for TanStack Start and Router projects.",
+        description: "Type-safe routing support for TanStack Router projects, including TanStack Start apps.",
       },
       typescript: {
         description: "Strong types, autocomplete, and compile-time feedback from your messages.",
@@ -100,7 +100,7 @@ export const en = {
       nextjs: "Next.js",
       react: "React",
       skills: "Skills",
-      tanstackStart: "TanStack Start",
+      tanstackStart: "TanStack Router",
     },
   },
 } as const;

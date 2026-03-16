@@ -204,14 +204,17 @@
         "react-dom": "^19.0.0",
       },
     },
-    "packages/tanstack-start": {
-      "name": "@better-translate/tanstack-start",
+    "packages/tanstack-router": {
+      "name": "@better-translate/tanstack-router",
       "version": "0.0.0",
+      "dependencies": {
+        "better-translate": "0.0.0",
+      },
       "devDependencies": {
         "@repo/typescript-config": "*",
       },
       "peerDependencies": {
-        "@tanstack/react-start": "^1.131.0",
+        "@tanstack/react-router": "^1.167.3",
         "react": "^19.0.0",
         "react-dom": "^19.0.0",
       },
@@ -309,7 +312,7 @@
 
     "@better-translate/react": ["@better-translate/react@workspace:packages/react"],
 
-    "@better-translate/tanstack-start": ["@better-translate/tanstack-start@workspace:packages/tanstack-start"],
+    "@better-translate/tanstack-router": ["@better-translate/tanstack-router@workspace:packages/tanstack-router"],
 
     "@better-translate/vscode": ["@better-translate/vscode@workspace:packages/vscode"],
 
