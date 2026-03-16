@@ -14,8 +14,8 @@ feature-based structure:
 bun run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) after starting the server.
-Set `PORT` if `3000` is already in use.
+Open [http://localhost:2902](http://localhost:2902) after starting the server.
+Set `PORT` if `2902` is already in use.
 
 From the workspace root you can also run:
 

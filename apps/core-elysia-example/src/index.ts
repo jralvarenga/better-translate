@@ -1,6 +1,6 @@
 import { createApp } from "./app";
 
-const port = Number(process.env.PORT ?? "3000");
+const port = Number(process.env.PORT ?? "2902");
 const app = await createApp();
 
 app.listen(port);

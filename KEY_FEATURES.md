@@ -4,6 +4,8 @@
   - use it on any node server with typescript or api with core package
   - react hooks
   - next js config
+    - routing controller
+    - nested router translations (leave behind pages out of scope)
   - tanstack start
 - Autocomplete (mapping based on passed .json and .ts files)
 - Passing key params to strings (including autocomplete from ts)
