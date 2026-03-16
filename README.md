@@ -7,6 +7,7 @@ The main package is `better-translate`, exposed both from the package root and f
 ## Packages
 
 - `better-translate`: framework-agnostic translation configuration runtime and typed lookup core.
+- `@better-translate/md`: localized Markdown and MDX helpers built on top of a configured Better Translate translator.
 - `better-translate/react`: future React adapter package.
 - `@better-translate/nextjs`: Next.js adapter package.
 - `better-translate/tanstack-start`: future TanStack Start adapter package.

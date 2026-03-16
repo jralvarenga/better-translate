@@ -50,6 +50,18 @@ The client does things like:
 - warm the locale cache
 - show loading and error state
 
+### Content side
+
+If your app also serves localized docs or articles, the content side can use:
+
+- `@better-translate/md`
+
+That package does things like:
+
+- load locale-specific `.md` and `.mdx` files
+- fall back to the translator fallback locale
+- keep content locale behavior aligned with string locale behavior
+
 ## Three Common Setups
 
 ### 1. Core only
@@ -84,7 +96,7 @@ Best reference:
 
 Use this sentence:
 
-“Core translates. Next.js connects locale to the route. React connects locale to the UI.”
+“Core translates. Next.js connects locale to the route. React connects locale to the UI. Markdown helpers connect locale to content files.”
 
 That is the cleanest way to think about the repo.
 
@@ -114,6 +126,9 @@ Examples:
 - `apps/landing/lib/i18n/server.ts`
 
 This lets server components call `getTranslations({ locale })`.
+
+If the same route also loads localized Markdown or MDX, create Markdown server
+helpers from the same request config.
 
 ### Step 4. Render translated server pages
 
@@ -168,4 +183,5 @@ So even though the app is a marketing site, it is also the repo’s clearest exa
 - Use only core if you only translate on the server.
 - Add React if client components need locale state.
 - Add Next.js if locale is part of the URL or request lifecycle.
+- Add `@better-translate/md` if docs, blog posts, or content pages live in `.md` or `.mdx` files.
 - Use all three for full App Router apps with server rendering and interactive client switching.

@@ -21,6 +21,7 @@ Use only the core package when:
 
 - you do not need React helpers
 - you do not need Next.js routing helpers
+- you do not need Markdown or MDX file helpers
 - you want translations in a server, script, API, or shared library
 
 ## How It Works
@@ -138,6 +139,9 @@ The core package does four jobs:
 2. Keep messages and loaders.
 3. Resolve the correct locale value with fallback.
 4. Return a typed `t(...)` function.
+
+If you also need localized `.md` or `.mdx` files, keep this core setup and add
+`@better-translate/md` on top of the same translator.
 
 ## What To Copy From The Examples
 

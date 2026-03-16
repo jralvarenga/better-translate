@@ -89,6 +89,19 @@ It shows:
 
 Copy this if you need both server and client translation behavior in one app.
 
+## Markdown And MDX Note
+
+The repo now also has `@better-translate/md` for localized `.md` and `.mdx`
+files.
+
+There is not a dedicated example app for it yet.
+
+For now, copy:
+
+- the core setup pattern from any existing example
+- the Next.js request/server pattern from `apps/nextjs-example` or `apps/landing`
+- the Markdown usage pattern from `packages/md/README.md`
+
 ## Important Files
 
 - `apps/core-elysia-example/src/modules/translations/service.ts`

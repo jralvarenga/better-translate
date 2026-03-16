@@ -1,3 +1,5 @@
+/// <reference path="./jsx.d.ts" />
+
 export type TranslationLeaf = string;
 
 export type TranslationMessages = {
