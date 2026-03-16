@@ -1,0 +1,74 @@
+---
+title: Component Demo
+description: MDX with custom React components, embedded JSX, and frontmatter metadata.
+date: 2025-01-15
+---
+
+# Component Demo
+
+This document is a `.mdx` file. It is evaluated server-side using `evaluate()` from `@mdx-js/mdx` with a custom components map.
+
+<Callout type="info">
+  This **Callout** component is defined in the app and passed via the MDX `components` prop at render time. It is not imported inside the MDX file itself.
+</Callout>
+
+## Why MDX?
+
+MDX combines Markdown's simplicity with React's power. You get:
+
+- Custom components inline with prose content
+- Frontmatter-driven metadata (`title`, `description`, `date`)
+- Standard Markdown syntax for headings, lists, links, and code
+- No client JavaScript required — everything renders server-side
+
+<Callout type="tip">
+  Try switching to **Español** using the locale switcher in the header. This document has no Spanish version, so the fallback banner will appear and the English content will be shown instead.
+</Callout>
+
+## How it works
+
+The rendering pipeline for this page:
+
+```ts
+// 1. Fetch the document (with locale fallback)
+const doc = await md.getDocument("docs/component-demo", { locale })
+
+// 2. Evaluate the source with react/jsx-runtime
+const { default: Content } = await evaluate(doc.source, { ...runtime })
+
+// 3. Render with a components map
+return <Content components={{ Callout, Card }} />
+```
+
+The `doc.source` has frontmatter already stripped by `gray-matter` inside `getDocument()`. The frontmatter is available separately as `doc.frontmatter`.
+
+## Packages used
+
+<Card
+  title="better-translate/core"
+  description="Framework-agnostic translation engine. Handles UI strings with typed keys and per-call locale override."
+/>
+
+<Card
+  title="@better-translate/md"
+  description="Localized Markdown and MDX content. Resolves locale files, handles fallback, parses frontmatter, and returns document source."
+/>
+
+<Card
+  title="@mdx-js/mdx evaluate()"
+  description="Compiles and evaluates MDX source into a React component at render time. No bundler plugin needed."
+/>
+
+## Fallback demo
+
+The Spanish version of this document (`content/es/docs/component-demo.mdx`) is intentionally missing. When you switch to **ES**, `getDocument()` tries:
+
+1. `content/es/docs/component-demo.mdx` — not found
+2. `content/es/docs/component-demo.md` — not found
+3. `content/en/docs/component-demo.mdx` — **found** (fallback)
+
+The document is served with `usedFallback: true`, and the fallback banner appears at the top of the page.
+
+<Callout type="warning">
+  Fallback content means the translation is incomplete. Surface `usedFallback` in your UI so users know what they are reading.
+</Callout>
