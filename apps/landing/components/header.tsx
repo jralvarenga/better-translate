@@ -35,7 +35,7 @@ export const HeroHeader = ({
     const [menuState, setMenuState] = React.useState(false)
     const [isScrolled, setIsScrolled] = React.useState(false)
     const menuItems = [
-        { href: '/#docs', label: docsLabel, localized: true },
+        { href: '/docs', label: docsLabel, localized: true },
         { href: siteLinks.npm, label: cliLabel, localized: false },
         { href: siteLinks.changelog, label: changelogLabel, localized: false },
     ] as const

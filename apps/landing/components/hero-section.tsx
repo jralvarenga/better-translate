@@ -188,7 +188,7 @@ export default function HeroSection({ locale, t }: HeroSectionProps) {
                                         ...transitionVariants,
                                     }}
                                     className="w-full md:flex-1">
-                                    <div className="rounded-2xl border border-white/10 p-px">
+                                    <div className="rounded-2xl font-mono border border-white/10 p-px">
                                     <CodeBlock
                                         filename="translate.ts"
                                         code={`export const landingTranslationsConfig = {
