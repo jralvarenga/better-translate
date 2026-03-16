@@ -9,6 +9,7 @@ export interface RoutingConfig<TLocale extends string> {
   locales: readonly TLocale[];
   defaultLocale: TLocale;
   domains?: readonly RoutingDomain<TLocale>[];
+  routeTemplate?: string;
 }
 
 export type DefinedRouting<
@@ -18,12 +19,24 @@ export type DefinedRouting<
   locales: readonly TLocale[];
   defaultLocale: TDefaultLocale;
   domains?: readonly RoutingDomain<TLocale>[];
+  routeTemplate: string;
 }>;
 
 export interface DomainAwareHrefResult {
   href: string;
   external: boolean;
 }
+
+interface ParsedRouteTemplate {
+  deLocalizedSegments: readonly string[];
+  localeParamName: string;
+  localeSegmentIndex: number;
+  localizedSegments: readonly string[];
+  routeTemplate: string;
+  scopePrefix: string;
+}
+
+const DEFAULT_ROUTE_TEMPLATE = "/[lang]";
 
 export function hasLocale<TLocale extends string>(
   locales: readonly TLocale[],
@@ -39,8 +52,14 @@ export function defineRouting<
   locales: TLocales;
   defaultLocale: TDefaultLocale;
   domains?: readonly RoutingDomain<TLocales[number]>[];
+  routeTemplate?: string;
 }): DefinedRouting<TLocales[number], TDefaultLocale> {
-  validateRouting(config);
+  const routeTemplate = config.routeTemplate ?? DEFAULT_ROUTE_TEMPLATE;
+
+  validateRouting({
+    ...config,
+    routeTemplate,
+  });
 
   const domains = config.domains?.map((domain) =>
     Object.freeze({
@@ -53,6 +72,7 @@ export function defineRouting<
     locales: [...config.locales],
     defaultLocale: config.defaultLocale,
     domains,
+    routeTemplate,
   }) as DefinedRouting<TLocales[number], TDefaultLocale>;
 }
 
@@ -66,44 +86,96 @@ export function normalizePathname(pathname: string): string {
 
 export function getPathnameLocale<TLocale extends string>(
   pathname: string,
-  locales: readonly TLocale[],
+  routing: RoutingConfig<TLocale>,
 ): TLocale | undefined {
-  const normalizedPathname = normalizePathname(pathname);
+  const parsedTemplate = parseRouteTemplate(routing.routeTemplate);
+  const pathnameSegments = splitPathname(pathname);
 
-  for (const locale of locales) {
-    if (
-      normalizedPathname === `/${locale}` ||
-      normalizedPathname.startsWith(`/${locale}/`)
-    ) {
-      return locale;
+  if (pathnameSegments.length < parsedTemplate.localizedSegments.length) {
+    return undefined;
+  }
+
+  for (let index = 0; index < parsedTemplate.localizedSegments.length; index += 1) {
+    const templateSegment = parsedTemplate.localizedSegments[index]!;
+    const pathnameSegment = pathnameSegments[index];
+
+    if (index === parsedTemplate.localeSegmentIndex) {
+      if (!pathnameSegment || !hasLocale(routing.locales, pathnameSegment)) {
+        return undefined;
+      }
+
+      continue;
+    }
+
+    if (pathnameSegment !== templateSegment) {
+      return undefined;
     }
   }
 
-  return undefined;
+  return pathnameSegments[parsedTemplate.localeSegmentIndex] as TLocale;
+}
+
+export function isPathnameInScope<TLocale extends string>(
+  pathname: string,
+  routing: RoutingConfig<TLocale>,
+): boolean {
+  if (getPathnameLocale(pathname, routing)) {
+    return true;
+  }
+
+  const parsedTemplate = parseRouteTemplate(routing.routeTemplate);
+  const pathnameSegments = splitPathname(pathname);
+
+  if (pathnameSegments.length < parsedTemplate.deLocalizedSegments.length) {
+    return false;
+  }
+
+  for (let index = 0; index < parsedTemplate.deLocalizedSegments.length; index += 1) {
+    if (pathnameSegments[index] !== parsedTemplate.deLocalizedSegments[index]) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 export function stripLocaleFromPathname<TLocale extends string>(
   pathname: string,
-  locales: readonly TLocale[],
+  routing: RoutingConfig<TLocale>,
 ): string {
-  const normalizedPathname = normalizePathname(pathname);
-  const locale = getPathnameLocale(normalizedPathname, locales);
+  const locale = getPathnameLocale(pathname, routing);
 
   if (!locale) {
-    return normalizedPathname;
+    return normalizePathname(pathname);
   }
 
-  const withoutLocale = normalizedPathname.slice(locale.length + 1);
-  return withoutLocale.length > 0 ? withoutLocale : "/";
+  const parsedTemplate = parseRouteTemplate(routing.routeTemplate);
+  const pathnameSegments = splitPathname(pathname);
+
+  pathnameSegments.splice(parsedTemplate.localeSegmentIndex, 1);
+
+  return joinPathname(pathnameSegments);
 }
 
 export function localizePathname<TLocale extends string>(
   pathname: string,
   locale: TLocale,
-  locales: readonly TLocale[],
+  routing: RoutingConfig<TLocale>,
 ): string {
-  const barePathname = stripLocaleFromPathname(pathname, locales);
-  return barePathname === "/" ? `/${locale}` : `/${locale}${barePathname}`;
+  const normalizedPathname = normalizePathname(pathname);
+  const deLocalizedPathname = stripLocaleFromPathname(normalizedPathname, routing);
+
+  if (!isPathnameInScope(deLocalizedPathname, routing)) {
+    return normalizedPathname;
+  }
+
+  const parsedTemplate = parseRouteTemplate(routing.routeTemplate);
+  const pathnameSegments = splitPathname(deLocalizedPathname);
+  const localizedSegments = [...pathnameSegments];
+
+  localizedSegments.splice(parsedTemplate.localeSegmentIndex, 0, locale);
+
+  return joinPathname(localizedSegments);
 }
 
 export function splitHrefString(href: string): {
@@ -170,8 +242,8 @@ export function buildDomainAwareHref<TLocale extends string>(
   locale: TLocale,
   options?: {
     currentHost?: string;
-    protocol?: string;
     forceAbsolute?: boolean;
+    protocol?: string;
   },
 ): DomainAwareHrefResult {
   if (isAbsoluteHref(href)) {
@@ -182,7 +254,16 @@ export function buildDomainAwareHref<TLocale extends string>(
   }
 
   const { hash, pathname, search } = splitHrefString(href);
-  const localizedPathname = localizePathname(pathname, locale, routing.locales);
+  const isScopedPath = isPathnameInScope(pathname, routing);
+
+  if (!isScopedPath) {
+    return {
+      href: `${pathname}${search}${hash}`,
+      external: false,
+    };
+  }
+
+  const localizedPathname = localizePathname(pathname, locale, routing);
   const localizedHref = `${localizedPathname}${search}${hash}`;
   const targetDomain = getDomainForLocale(routing, locale);
 
@@ -217,10 +298,59 @@ export function buildDomainAwareHref<TLocale extends string>(
   };
 }
 
+export function parseRouteTemplate(routeTemplate?: string): ParsedRouteTemplate {
+  const normalizedRouteTemplate = normalizePathname(
+    routeTemplate ?? DEFAULT_ROUTE_TEMPLATE,
+  );
+  const localizedSegments = splitPathname(normalizedRouteTemplate);
+  let localeSegmentIndex = -1;
+  let localeParamName = "";
+
+  for (let index = 0; index < localizedSegments.length; index += 1) {
+    const segment = localizedSegments[index]!;
+    const dynamicMatch = /^\[([^\]/]+)\]$/.exec(segment);
+
+    if (!dynamicMatch) {
+      continue;
+    }
+
+    if (localeSegmentIndex !== -1) {
+      throw new Error(
+        `Route template "${normalizedRouteTemplate}" must contain exactly one dynamic locale segment.`,
+      );
+    }
+
+    localeSegmentIndex = index;
+    localeParamName = dynamicMatch[1]!;
+  }
+
+  if (localeSegmentIndex === -1) {
+    throw new Error(
+      `Route template "${normalizedRouteTemplate}" must contain one dynamic locale segment like "[lang]".`,
+    );
+  }
+
+  const deLocalizedSegments = localizedSegments.filter(
+    (_, index) => index !== localeSegmentIndex,
+  );
+  const scopePrefixSegments = localizedSegments.slice(0, localeSegmentIndex);
+
+  return {
+    deLocalizedSegments,
+    localeParamName,
+    localeSegmentIndex,
+    localizedSegments,
+    routeTemplate: normalizedRouteTemplate,
+    scopePrefix: joinPathname(scopePrefixSegments),
+  };
+}
+
 function validateRouting<TLocale extends string>(config: RoutingConfig<TLocale>): void {
   if (config.locales.length === 0) {
     throw new Error("defineRouting(...) requires at least one locale.");
   }
+
+  parseRouteTemplate(config.routeTemplate);
 
   const localeSet = new Set<string>();
 
@@ -253,7 +383,9 @@ function validateRouting<TLocale extends string>(config: RoutingConfig<TLocale>)
     }
 
     if (domainSet.has(normalizedDomain)) {
-      throw new Error(`Duplicate domain "${normalizedDomain}" found in routing config.`);
+      throw new Error(
+        `Duplicate domain "${normalizedDomain}" found in routing config.`,
+      );
     }
 
     domainSet.add(normalizedDomain);
@@ -290,6 +422,20 @@ function validateRouting<TLocale extends string>(config: RoutingConfig<TLocale>)
       localeToDomain.set(locale, normalizedDomain);
     }
   }
+}
+
+function splitPathname(pathname: string): string[] {
+  return normalizePathname(pathname)
+    .split("/")
+    .filter(Boolean);
+}
+
+function joinPathname(segments: readonly string[]): string {
+  if (segments.length === 0) {
+    return "/";
+  }
+
+  return `/${segments.join("/")}`;
 }
 
 function getDomainLocales<TLocale extends string>(

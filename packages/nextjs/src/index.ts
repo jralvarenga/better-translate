@@ -4,6 +4,7 @@ export {
   getLocaleFromDomain,
   getPathnameLocale,
   hasLocale,
+  isPathnameInScope,
   localizePathname,
   stripLocaleFromPathname,
 } from "./shared.js";

@@ -1,9 +1,17 @@
 import { describe, expect, it } from "bun:test";
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { renderToStaticMarkup } from "react-dom/server";
+import { createElement } from "react";
 
 import { configureTranslations } from "better-translate/core";
 
-import { createProxy, defaultProxyMatcher } from "./proxy.js";
+import { createNavigationFunctions } from "./navigation.js";
+import {
+  createProxy,
+  defaultProxyMatcher,
+  getProxyMatcher,
+  withBetterTranslate,
+} from "./proxy.js";
 import { createServerHelpers, getRequestConfig } from "./server.js";
 import {
   buildDomainAwareHref,
@@ -11,6 +19,8 @@ import {
   getLocaleFromDomain,
   getPathnameLocale,
   hasLocale,
+  isPathnameInScope,
+  localizePathname,
   stripLocaleFromPathname,
 } from "./shared.js";
 
@@ -25,42 +35,69 @@ describe("@better-translate/nextjs", () => {
     expect(hasLocale(routing.locales, "pt")).toBe(false);
   });
 
-  it("strips locale prefixes from pathnames", () => {
+  it("supports root-scoped route templates by default", () => {
     const routing = defineRouting({
       locales: ["en", "es"] as const,
       defaultLocale: "en",
     });
 
-    expect(getPathnameLocale("/es/products", routing.locales)).toBe("es");
-    expect(stripLocaleFromPathname("/es/products", routing.locales)).toBe(
-      "/products",
-    );
-    expect(stripLocaleFromPathname("/en", routing.locales)).toBe("/");
+    expect(getPathnameLocale("/es/products", routing)).toBe("es");
+    expect(stripLocaleFromPathname("/es/products", routing)).toBe("/products");
+    expect(localizePathname("/products", "en", routing)).toBe("/en/products");
+    expect(defaultProxyMatcher).toEqual([
+      "/((?!api|_next|_vercel|.*\\..*).*)",
+    ]);
   });
 
-  it("redirects non-localized requests using Accept-Language", () => {
+  it("scopes locale routing to the configured route template", () => {
     const routing = defineRouting({
       locales: ["en", "es"] as const,
       defaultLocale: "en",
+      routeTemplate: "/app/[lang]",
+    });
+
+    expect(getPathnameLocale("/app/es/dashboard", routing)).toBe("es");
+    expect(stripLocaleFromPathname("/app/es/dashboard", routing)).toBe(
+      "/app/dashboard",
+    );
+    expect(localizePathname("/app/dashboard", "en", routing)).toBe(
+      "/app/en/dashboard",
+    );
+    expect(localizePathname("/login", "en", routing)).toBe("/login");
+    expect(isPathnameInScope("/app/dashboard", routing)).toBe(true);
+    expect(isPathnameInScope("/login", routing)).toBe(false);
+  });
+
+  it("redirects only in-scope non-localized requests", () => {
+    const routing = defineRouting({
+      locales: ["en", "es"] as const,
+      defaultLocale: "en",
+      routeTemplate: "/app/[lang]",
     });
     const proxy = createProxy(routing);
-    const request = new NextRequest("https://example.com/products", {
+
+    const inScopeRequest = new NextRequest("https://example.com/app/dashboard", {
+      headers: {
+        "accept-language": "es-ES,es;q=0.9,en;q=0.8",
+      },
+    });
+    const outOfScopeRequest = new NextRequest("https://example.com/login", {
       headers: {
         "accept-language": "es-ES,es;q=0.9,en;q=0.8",
       },
     });
 
-    const response = proxy(request);
-
-    expect(response?.headers.get("location")).toBe(
-      "https://example.com/es/products",
+    expect(proxy(inScopeRequest)?.headers.get("location")).toBe(
+      "https://example.com/app/es/dashboard",
     );
+    expect(proxy(outOfScopeRequest)).toBeUndefined();
   });
 
-  it("redirects localized requests to the configured locale domain", () => {
+  it("redirects scoped localized requests to the configured locale domain", () => {
     const routing = defineRouting({
       locales: ["en", "es"] as const,
       defaultLocale: "en",
+      routeTemplate: "/app/[lang]",
       domains: [
         {
           domain: "example.com",
@@ -75,30 +112,68 @@ describe("@better-translate/nextjs", () => {
       ],
     });
     const proxy = createProxy(routing);
-    const request = new NextRequest("https://example.com/es/products");
+    const request = new NextRequest("https://example.com/app/es/dashboard");
 
     const response = proxy(request);
 
     expect(response?.headers.get("location")).toBe(
-      "https://es.example.com/es/products",
+      "https://es.example.com/app/es/dashboard",
     );
   });
 
-  it("keeps localized same-domain requests untouched", () => {
+  it("composes with the user proxy and runs better-translate first", async () => {
     const routing = defineRouting({
+      locales: ["en", "es"] as const,
+      defaultLocale: "en",
+      routeTemplate: "/app/[lang]",
+    });
+    let userProxyCalls = 0;
+    const userProxy = () => {
+      userProxyCalls += 1;
+      return NextResponse.next();
+    };
+    const proxy = withBetterTranslate(userProxy, routing);
+
+    const redirectingRequest = new NextRequest("https://example.com/app/dashboard", {
+      headers: {
+        "accept-language": "es-ES,es;q=0.9,en;q=0.8",
+      },
+    });
+    const passthroughRequest = new NextRequest("https://example.com/app/en/dashboard");
+
+    const redirectingResponse = await proxy(redirectingRequest, {} as never);
+    const passthroughResponse = await proxy(passthroughRequest, {} as never);
+
+    expect(redirectingResponse?.headers.get("location")).toBe(
+      "https://example.com/app/es/dashboard",
+    );
+    expect(userProxyCalls).toBe(1);
+    expect(passthroughResponse?.headers.get("x-middleware-next")).toBe("1");
+  });
+
+  it("builds scoped proxy matchers", () => {
+    const rootRouting = defineRouting({
       locales: ["en", "es"] as const,
       defaultLocale: "en",
     });
-    const proxy = createProxy(routing);
-    const request = new NextRequest("https://example.com/en/products");
+    const nestedRouting = defineRouting({
+      locales: ["en", "es"] as const,
+      defaultLocale: "en",
+      routeTemplate: "/app/[lang]",
+    });
 
-    expect(proxy(request)).toBeUndefined();
+    expect(getProxyMatcher(rootRouting)).toEqual(defaultProxyMatcher);
+    expect(getProxyMatcher(nestedRouting)).toEqual([
+      "/app",
+      "/app/((?!.*\\..*).*)",
+    ]);
   });
 
-  it("resolves locales from configured domains", () => {
+  it("keeps domain-aware href generation working for nested locale routes", () => {
     const routing = defineRouting({
       locales: ["en", "es"] as const,
       defaultLocale: "en",
+      routeTemplate: "/app/[lang]",
       domains: [
         {
           domain: "example.com",
@@ -113,12 +188,178 @@ describe("@better-translate/nextjs", () => {
 
     expect(getLocaleFromDomain(routing, "es.example.com")).toBe("es");
     expect(
-      buildDomainAwareHref(routing, "/products?ref=hero", "es", {
+      buildDomainAwareHref(routing, "/app/dashboard?ref=hero", "es", {
         currentHost: "example.com",
       }),
     ).toEqual({
-      href: "https://es.example.com/es/products?ref=hero",
+      href: "https://es.example.com/app/es/dashboard?ref=hero",
       external: true,
+    });
+    expect(
+      buildDomainAwareHref(routing, "/login?ref=hero", "es", {
+        currentHost: "example.com",
+      }),
+    ).toEqual({
+      href: "/login?ref=hero",
+      external: false,
+    });
+  });
+
+  it("wraps injected navigation hooks and components", () => {
+    const routing = defineRouting({
+      locales: ["en", "es"] as const,
+      defaultLocale: "en",
+      routeTemplate: "/app/[lang]",
+      domains: [
+        {
+          domain: "example.com",
+          defaultLocale: "en",
+          locales: ["en"],
+        },
+        {
+          domain: "es.example.com",
+          defaultLocale: "es",
+          locales: ["es"],
+        },
+      ],
+    });
+    const routerCalls: Array<{
+      href: string;
+      method: "prefetch" | "push" | "replace";
+      options?: Record<string, unknown>;
+    }> = [];
+    const locationCalls: Array<{
+      href: string;
+      method: "assign" | "replace";
+    }> = [];
+
+    (
+      globalThis as typeof globalThis & {
+        window?: {
+          location: {
+            assign(href: string): void;
+            host: string;
+            protocol: string;
+            replace(href: string): void;
+          };
+        };
+      }
+    ).window = {
+      location: {
+        assign(href: string) {
+          locationCalls.push({
+            href,
+            method: "assign",
+          });
+        },
+        host: "example.com",
+        protocol: "https:",
+        replace(href: string) {
+          locationCalls.push({
+            href,
+            method: "replace",
+          });
+        },
+      },
+    };
+
+    const navigation = createNavigationFunctions({
+      Link(props: { children?: string; href: string }) {
+        return createElement(
+          "a",
+          {
+            "data-href": props.href,
+          },
+          props.children,
+        );
+      },
+      routing,
+      useParams() {
+        return {
+          lang: "en",
+        };
+      },
+      usePathname() {
+        return "/app/en/dashboard";
+      },
+      useRouter() {
+        return {
+          prefetch(href: string, options?: Record<string, unknown>) {
+            routerCalls.push({
+              href,
+              method: "prefetch",
+              options,
+            });
+          },
+          push(href: string, options?: Record<string, unknown>) {
+            routerCalls.push({
+              href,
+              method: "push",
+              options,
+            });
+          },
+          replace(href: string, options?: Record<string, unknown>) {
+            routerCalls.push({
+              href,
+              method: "replace",
+              options,
+            });
+          },
+        };
+      },
+    });
+    const localizedRouter = navigation.useRouter();
+    const renderedLink = renderToStaticMarkup(
+      createElement(
+        navigation.Link,
+        {
+          href: "/app/dashboard",
+        },
+        "Dashboard",
+      ),
+    );
+
+    localizedRouter.push("/app/settings");
+    localizedRouter.replace("/app/settings", {
+      locale: "es",
+      scroll: false,
+    });
+    localizedRouter.prefetch("/app/reports", {
+      locale: "en",
+      kind: "auto",
+    });
+    localizedRouter.push("/login");
+
+    expect(navigation.usePathname()).toBe("/app/dashboard");
+    expect(
+      navigation.getPathname({
+        href: "/app/settings",
+        locale: "es",
+      }),
+    ).toBe("/app/es/settings");
+    expect(renderedLink).toContain(
+      'data-href="https://example.com/app/en/dashboard"',
+    );
+    expect(routerCalls[0]).toEqual({
+      href: "/app/en/settings",
+      method: "push",
+      options: {},
+    });
+    expect(routerCalls[1]).toEqual({
+      href: "/app/en/reports",
+      method: "prefetch",
+      options: {
+        kind: "auto",
+      },
+    });
+    expect(routerCalls[2]).toEqual({
+      href: "/login",
+      method: "push",
+      options: {},
+    });
+    expect(locationCalls[0]).toEqual({
+      href: "https://es.example.com/app/es/settings",
+      method: "replace",
     });
   });
 
@@ -130,14 +371,14 @@ describe("@better-translate/nextjs", () => {
       messages: {
         en: {
           home: {
-            title: "Hello",
             greeting: "Hello {name}",
+            title: "Hello",
           },
         },
         es: {
           home: {
-            title: "Hola",
             greeting: "Hola {name}",
+            title: "Hola",
           },
         },
       },
@@ -159,17 +400,5 @@ describe("@better-translate/nextjs", () => {
         },
       }),
     ).toBe("Hola Ada");
-    expect(await helpers.getMessages()).toEqual({
-      home: {
-        title: "Hola",
-        greeting: "Hola {name}",
-      },
-    });
-  });
-
-  it("exports the default proxy matcher", () => {
-    expect(defaultProxyMatcher).toEqual([
-      "/((?!api|_next|_vercel|.*\\..*).*)",
-    ]);
   });
 });

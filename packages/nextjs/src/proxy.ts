@@ -6,9 +6,16 @@ import {
   buildDomainAwareHref,
   getLocaleFromDomain,
   getPathnameLocale,
+  isPathnameInScope,
+  parseRouteTemplate,
 } from "./shared.js";
 import type { RoutingConfig } from "./shared.js";
-import type { NextRequest, NextResponse as NextResponseType } from "next/server";
+import type {
+  NextFetchEvent,
+  NextProxy,
+  NextRequest,
+  NextResponse as NextResponseType,
+} from "next/server";
 
 export interface CreateProxyOptions {}
 
@@ -19,9 +26,17 @@ export const defaultProxyMatcher = [
 export function createProxy<TLocale extends string>(
   routing: RoutingConfig<TLocale>,
   _options?: CreateProxyOptions,
-) {
-  return function proxy(request: NextRequest): NextResponseType | undefined {
-    const pathnameLocale = getPathnameLocale(request.nextUrl.pathname, routing.locales);
+): NextProxy {
+  return function proxy(
+    request: NextRequest,
+  ): NextResponseType | Response | null | undefined {
+    const pathname = request.nextUrl.pathname;
+
+    if (!isPathnameInScope(pathname, routing)) {
+      return undefined;
+    }
+
+    const pathnameLocale = getPathnameLocale(pathname, routing);
     const host =
       request.headers.get("x-forwarded-host") ??
       request.headers.get("host") ??
@@ -36,12 +51,12 @@ export function createProxy<TLocale extends string>(
       );
     const targetHref = buildDomainAwareHref(
       routing,
-      `${pathnameLocale ? request.nextUrl.pathname : request.nextUrl.pathname}${request.nextUrl.search}`,
+      `${pathname}${request.nextUrl.search}`,
       locale,
       {
         currentHost: host ?? undefined,
-        protocol: request.nextUrl.protocol.replace(":", ""),
         forceAbsolute: !pathnameLocale,
+        protocol: request.nextUrl.protocol.replace(":", ""),
       },
     );
     const redirectUrl = targetHref.href.startsWith("/")
@@ -60,6 +75,44 @@ export function createProxy<TLocale extends string>(
   };
 }
 
+export function withBetterTranslate<TLocale extends string>(
+  userProxy: NextProxy,
+  routing: RoutingConfig<TLocale>,
+  options?: CreateProxyOptions,
+): NextProxy {
+  const betterTranslateProxy = createProxy(routing, options);
+
+  return async function composedProxy(
+    request: NextRequest,
+    event: NextFetchEvent,
+  ) {
+    const betterTranslateResult = await betterTranslateProxy(request, event);
+
+    if (betterTranslateResult) {
+      return betterTranslateResult;
+    }
+
+    return userProxy(request, event);
+  };
+}
+
+export function getProxyMatcher<TLocale extends string>(
+  routing: RoutingConfig<TLocale>,
+): readonly string[] {
+  const parsedTemplate = parseRouteTemplate(routing.routeTemplate);
+
+  if (parsedTemplate.scopePrefix === "/") {
+    return defaultProxyMatcher;
+  }
+
+  const escapedPrefix = escapeMatcherSegment(parsedTemplate.scopePrefix);
+
+  return [
+    parsedTemplate.scopePrefix,
+    `${escapedPrefix}/((?!.*\\..*).*)`,
+  ] as const;
+}
+
 function getPreferredLocale<TLocale extends string>(
   acceptLanguageHeader: string | null,
   locales: readonly TLocale[],
@@ -72,4 +125,8 @@ function getPreferredLocale<TLocale extends string>(
   });
 
   return match(negotiator.languages(), locales, defaultLocale) as TLocale;
+}
+
+function escapeMatcherSegment(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }

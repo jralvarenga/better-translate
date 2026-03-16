@@ -1,12 +1,15 @@
+import type { ReactNode } from "react";
+
 import { configureTranslations } from "better-translate/core";
 
+import { createNavigationFunctions } from "./navigation.js";
 import { defineRouting } from "./index.js";
-import { createNavigation } from "./navigation.js";
 import { createServerHelpers, getRequestConfig } from "./server.js";
 
 const routing = defineRouting({
   locales: ["en", "es"] as const,
   defaultLocale: "en",
+  routeTemplate: "/app/[locale]",
   domains: [
     {
       domain: "example.com",
@@ -29,14 +32,14 @@ const translator = await configureTranslations({
   messages: {
     en: {
       home: {
-        title: "Hello",
         greeting: "Hello {name}",
+        title: "Hello",
       },
     },
     es: {
       home: {
-        title: "Hola",
         greeting: "Hola {name}",
+        title: "Hola",
       },
     },
   },
@@ -48,7 +51,36 @@ const requestConfig = getRequestConfig(async () => ({
 }));
 const helpers = createServerHelpers(requestConfig);
 const t = await helpers.getTranslations();
-const { Link, getPathname } = createNavigation(routing);
+const navigation = createNavigationFunctions({
+  Link(props: { children?: ReactNode; href: string }) {
+    return null;
+  },
+  routing,
+  useParams() {
+    return {
+      locale: "en" as const,
+    };
+  },
+  usePathname() {
+    return "/app/en/dashboard";
+  },
+  useRouter() {
+    return {
+      prefetch(href: string, options?: { kind?: "auto" | "full" }) {
+        void href;
+        void options;
+      },
+      push(href: string, options?: { scroll?: boolean }) {
+        void href;
+        void options;
+      },
+      replace(href: string, options?: { scroll?: boolean }) {
+        void href;
+        void options;
+      },
+    };
+  },
+});
 
 t("home.title");
 t("home.greeting", {
@@ -61,12 +93,22 @@ await helpers.getTranslations({
   locale: "es",
 });
 
-getPathname({
-  href: "/products",
+navigation.getPathname({
+  href: "/app/dashboard",
   locale: "es",
 });
 
-<Link href="/products" locale="es" />;
+navigation.useRouter().push("/app/dashboard", {
+  locale: "es",
+  scroll: true,
+});
+
+navigation.useRouter().prefetch("/app/reports", {
+  kind: "auto",
+  locale: "en",
+});
+
+<navigation.Link href="/app/dashboard" locale="es" />;
 
 // @ts-expect-error unsupported locale should fail
 await helpers.getTranslations({ locale: "pt" });
@@ -75,7 +117,10 @@ await helpers.getTranslations({ locale: "pt" });
 t("home.greeting");
 
 // @ts-expect-error unsupported locale should fail
-getPathname({ href: "/products", locale: "pt" });
+navigation.getPathname({ href: "/app/dashboard", locale: "pt" });
+
+// @ts-expect-error invalid locale should fail for router wrapper
+navigation.useRouter().push("/app/dashboard", { locale: "pt" });
 
 // @ts-expect-error invalid locale should fail for Link
-<Link href="/products" locale="pt" />;
+<navigation.Link href="/app/dashboard" locale="pt" />;

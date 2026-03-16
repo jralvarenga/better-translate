@@ -1,179 +1,262 @@
-import NextLink from "next/link";
 import {
-  redirect as nextRedirect,
-  usePathname as useNextPathname,
-  useRouter as useNextRouter,
-} from "next/navigation";
-import { forwardRef, type ComponentProps } from "react";
+  createElement,
+  type ComponentPropsWithoutRef,
+  type ElementType,
+} from "react";
 
 import {
   buildDomainAwareHref,
   getDomainForLocale,
   localizePathname,
+  parseRouteTemplate,
   stripLocaleFromPathname,
 } from "./shared.js";
 import type { RoutingConfig } from "./shared.js";
 
-type NextLinkProps = ComponentProps<typeof NextLink>;
+type NavigationHref =
+  | string
+  | {
+      hash?: string;
+      pathname?: string;
+      search?: string;
+      [key: string]: unknown;
+    };
+
+type ParamsLike = Record<string, string | string[] | undefined>;
+
+type RouterLike = {
+  prefetch?: (href: string, options?: any) => unknown;
+  push: (href: string, options?: any) => unknown;
+  replace: (href: string, options?: any) => unknown;
+};
+
+type RouterMethodReturn<
+  TRouter extends RouterLike,
+  TMethod extends "push" | "replace" | "prefetch",
+> = TMethod extends keyof TRouter
+  ? Extract<TRouter[TMethod], (...args: any[]) => unknown> extends (
+      ...args: any[]
+    ) => infer TReturn
+    ? TReturn
+    : void
+  : void;
+
+type WithLocale<TLocale extends string, TOptions> = [TOptions] extends [undefined]
+  ? {
+      locale?: TLocale;
+    }
+  : TOptions & {
+      locale?: TLocale;
+    };
 
 export interface GetPathnameOptions<TLocale extends string> {
   href: string;
   locale?: TLocale;
 }
 
-export interface LocalizedNavigationOptions<TLocale extends string> {
-  locale?: TLocale;
-  scroll?: boolean;
-}
-
-export interface LocalizedPrefetchOptions<TLocale extends string> {
-  locale?: TLocale;
-  kind?: "auto" | "full";
-  onInvalidate?: () => void;
-}
-
-export interface LocalizedRedirectOptions<TLocale extends string> {
-  locale?: TLocale;
-}
-
-export type LocalizedLinkProps<TLocale extends string> = Omit<
-  NextLinkProps,
-  "href" | "locale"
-> & {
-  href: NextLinkProps["href"];
+export type LocalizedLinkProps<
+  TLocale extends string,
+  TLink extends ElementType,
+> = Omit<ComponentPropsWithoutRef<TLink>, "href"> & {
+  href: ComponentPropsWithoutRef<TLink> extends { href: infer THref }
+    ? THref
+    : NavigationHref;
   locale?: TLocale;
 };
 
-export function createNavigation<TLocale extends string>(
-  routing: RoutingConfig<TLocale>,
-) {
+export type LocalizedRouter<
+  TLocale extends string,
+  TRouter extends RouterLike,
+> = Omit<TRouter, "prefetch" | "push" | "replace"> & {
+  push(
+    href: string,
+    options?: WithLocale<TLocale, Record<string, unknown>>,
+  ): RouterMethodReturn<TRouter, "push">;
+  replace(
+    href: string,
+    options?: WithLocale<TLocale, Record<string, unknown>>,
+  ): RouterMethodReturn<TRouter, "replace">;
+} & ("prefetch" extends keyof TRouter
+  ? {
+      prefetch(
+        href: string,
+        options?: WithLocale<TLocale, Record<string, unknown>>,
+      ): RouterMethodReturn<TRouter, "prefetch">;
+    }
+  : {});
+
+export interface NavigationFunctionsConfig<
+  TLocale extends string,
+  TRouter extends RouterLike,
+  TParams extends ParamsLike,
+  TLink extends ElementType,
+> {
+  Link: TLink;
+  routing: RoutingConfig<TLocale>;
+  useParams: () => TParams;
+  usePathname: () => string;
+  useRouter: () => TRouter;
+}
+
+export function createNavigationFunctions<
+  TLocale extends string,
+  TRouter extends RouterLike,
+  TParams extends ParamsLike,
+  TLink extends ElementType,
+>({
+  Link: LinkComponent,
+  routing,
+  useParams: useInjectedParams,
+  usePathname: useInjectedPathname,
+  useRouter: useInjectedRouter,
+}: NavigationFunctionsConfig<TLocale, TRouter, TParams, TLink>) {
+  const parsedTemplate = parseRouteTemplate(routing.routeTemplate);
+
   function getPathname({
     href,
     locale = routing.defaultLocale,
   }: GetPathnameOptions<TLocale>): string {
-    return localizePathname(href, locale, routing.locales);
+    return localizePathname(href, locale, routing);
   }
 
-  const Link = forwardRef<HTMLAnchorElement, LocalizedLinkProps<TLocale>>(
-    function BetterTranslateNextLink(
-      { href, locale = routing.defaultLocale, ...props },
-      ref,
-    ) {
-      const localizedHref = localizeLinkHref(href, locale, routing);
+  function Link(rawProps: LocalizedLinkProps<TLocale, TLink>) {
+    const { href, locale, ...props } = rawProps;
+    const params = useInjectedParams();
+    const activeLocale = resolveActiveLocale(params, routing, parsedTemplate.localeParamName);
+    const localizedHref = localizeLinkHref(
+      href as NavigationHref,
+      locale ?? activeLocale,
+      routing,
+    );
 
-      return <NextLink {...props} href={localizedHref} ref={ref} />;
-    },
-  );
+    return createElement(LinkComponent as ElementType, {
+      ...(props as object),
+      href: localizedHref,
+    } as object);
+  }
 
   function usePathname(): string {
-    return stripLocaleFromPathname(useNextPathname(), routing.locales);
+    return stripLocaleFromPathname(useInjectedPathname(), routing);
   }
 
-  function useRouter() {
-    const router = useNextRouter();
+  function useRouter(): LocalizedRouter<TLocale, TRouter> {
+    const router = useInjectedRouter();
+    const params = useInjectedParams();
+    const activeLocale = resolveActiveLocale(
+      params,
+      routing,
+      parsedTemplate.localeParamName,
+    );
 
-    return {
+    const localizedRouter: Record<string, unknown> = {
       ...router,
-      prefetch(href: string, options?: LocalizedPrefetchOptions<TLocale>) {
-        const target = buildDomainAwareHref(routing, href, options?.locale ?? routing.defaultLocale, {
-          currentHost: window.location.host,
-          protocol: window.location.protocol.replace(":", ""),
-        });
-
-        if (target.external) {
-          return;
-        }
-
-        router.prefetch(
-          target.href,
-          options?.kind || options?.onInvalidate
-            ? ({
-                kind: options?.kind === "full" ? "full" : "auto",
-                onInvalidate: options?.onInvalidate,
-              } as never)
-            : undefined,
+      push(href: string, options?: Record<string, unknown>) {
+        return navigate(
+          router.push.bind(router),
+          window.location.assign.bind(window.location),
+          routing,
+          href,
+          activeLocale,
+          options,
         );
       },
-      push(href: string, options?: LocalizedNavigationOptions<TLocale>) {
-        navigate(routing, router.push, window.location.assign.bind(window.location), href, options);
-      },
-      replace(href: string, options?: LocalizedNavigationOptions<TLocale>) {
-        navigate(
-          routing,
-          router.replace,
+      replace(href: string, options?: Record<string, unknown>) {
+        return navigate(
+          router.replace.bind(router),
           window.location.replace.bind(window.location),
+          routing,
           href,
+          activeLocale,
           options,
         );
       },
     };
-  }
 
-  function redirect(href: string, options?: LocalizedRedirectOptions<TLocale>) {
-    const target = buildDomainAwareHref(
-      routing,
-      href,
-      options?.locale ?? routing.defaultLocale,
-      {
-        forceAbsolute: Boolean(
-          getDomainForLocale(routing, options?.locale ?? routing.defaultLocale),
-        ),
-      },
-    );
+    if (typeof router.prefetch === "function") {
+      localizedRouter.prefetch = (href: string, options?: Record<string, unknown>) => {
+        const target = buildNavigationTarget(
+          routing,
+          href,
+          activeLocale,
+          options,
+        );
 
-    nextRedirect(target.href);
+        if (target.external) {
+          return undefined;
+        }
+
+        return router.prefetch?.(target.href, target.forwardedOptions);
+      };
+    }
+
+    return localizedRouter as LocalizedRouter<TLocale, TRouter>;
   }
 
   return {
     Link,
     getPathname,
-    redirect,
     usePathname,
     useRouter,
   };
 }
 
-function navigate<TLocale extends string>(
+function buildNavigationTarget<TLocale extends string>(
   routing: RoutingConfig<TLocale>,
-  navigateWithRouter: (href: string, options?: { scroll?: boolean }) => void,
-  navigateWithDocument: (href: string) => void,
   href: string,
-  options?: LocalizedNavigationOptions<TLocale>,
-): void {
-  const target = buildDomainAwareHref(
-    routing,
-    href,
-    options?.locale ?? routing.defaultLocale,
-    {
-      currentHost: window.location.host,
-      protocol: window.location.protocol.replace(":", ""),
-    },
-  );
+  activeLocale: TLocale,
+  options?: Record<string, unknown>,
+) {
+  const nextLocale = (options?.locale as TLocale | undefined) ?? activeLocale;
+  const forwardedOptions = {
+    ...(options ?? {}),
+  };
+
+  delete forwardedOptions.locale;
+
+  const target = buildDomainAwareHref(routing, href, nextLocale, {
+    currentHost: window.location.host,
+    protocol: window.location.protocol.replace(":", ""),
+  });
+
+  return {
+    external: target.external,
+    forwardedOptions,
+    href: target.href,
+  };
+}
+
+function navigate<TLocale extends string>(
+  navigateWithRouter: (href: string, options?: Record<string, unknown>) => unknown,
+  navigateWithDocument: (href: string) => void,
+  routing: RoutingConfig<TLocale>,
+  href: string,
+  activeLocale: TLocale,
+  options?: Record<string, unknown>,
+) {
+  const target = buildNavigationTarget(routing, href, activeLocale, options);
 
   if (target.external) {
     navigateWithDocument(target.href);
-    return;
+    return undefined;
   }
 
-  navigateWithRouter(target.href, options ? { scroll: options.scroll } : undefined);
+  return navigateWithRouter(target.href, target.forwardedOptions);
 }
 
 function localizeLinkHref<TLocale extends string>(
-  href: NextLinkProps["href"],
+  href: NavigationHref,
   locale: TLocale,
   routing: RoutingConfig<TLocale>,
-): NextLinkProps["href"] {
+): NavigationHref {
   if (typeof href === "string") {
     return buildDomainAwareHref(routing, href, locale, {
       forceAbsolute: Boolean(getDomainForLocale(routing, locale)),
     }).href;
   }
 
-  const hrefRecord = href as Record<string, unknown>;
-  const pathname =
-    typeof hrefRecord.pathname === "string" ? hrefRecord.pathname : "/";
-  const search = typeof hrefRecord.search === "string" ? hrefRecord.search : "";
-  const hash = typeof hrefRecord.hash === "string" ? hrefRecord.hash : "";
+  const pathname = typeof href.pathname === "string" ? href.pathname : "/";
+  const search = typeof href.search === "string" ? href.search : "";
+  const hash = typeof href.hash === "string" ? href.hash : "";
   const localizedHref = buildDomainAwareHref(
     routing,
     `${pathname}${search}${hash}`,
@@ -188,7 +271,21 @@ function localizeLinkHref<TLocale extends string>(
   }
 
   return {
-    ...hrefRecord,
+    ...href,
     pathname: localizedHref.href,
   };
+}
+
+function resolveActiveLocale<TLocale extends string>(
+  params: ParamsLike,
+  routing: RoutingConfig<TLocale>,
+  localeParamName: string,
+): TLocale {
+  const localeParam = params[localeParamName];
+
+  if (typeof localeParam === "string" && routing.locales.includes(localeParam as TLocale)) {
+    return localeParam as TLocale;
+  }
+
+  return routing.defaultLocale;
 }
