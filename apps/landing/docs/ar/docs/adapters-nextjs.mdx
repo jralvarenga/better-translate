@@ -1,0 +1,174 @@
+---
+title: Next.js
+description: "@better-translate/nextjs هي طبقة Next.js App Router فوق الحزمة الأساسية."
+---
+
+# Next.js
+
+`@better-translate/nextjs` هي
+طبقة Next.js App Router فوق الحزمة الأساسية. تضيف ضبط توجيه اللغة،
+ومساعدات الوكيل، ومساعدات الخادم ذات النطاق المحدد للطلب، وأغلفة التنقل المدركة للغة.
+
+## متى تستخدمها
+
+استخدم محول Next.js عندما تستخدم Next.js App Router، وتريد مسارات ذات بادئة لغوية،
+أو تريد مساعدات الطلب لمكونات الخادم، أو تريد روابط وطلبات router مدركة للغة.
+
+## نمط الخمسة ملفات
+
+يحتاج إعداد Next.js القياسي إلى خمسة ملفات داخل مجلد `lib/i18n/` الخاص بك:
+
+<Accordion type="single" collapsible className="mt-6">
+  <AccordionItem value="routing">
+    <AccordionTrigger>`routing.ts`</AccordionTrigger>
+    <AccordionContent>
+      <p>حدد قواعد توجيه اللغة وقالب المسار.</p>
+    </AccordionContent>
+  </AccordionItem>
+  <AccordionItem value="request">
+    <AccordionTrigger>`request.ts`</AccordionTrigger>
+    <AccordionContent>
+      <p>ربط المترجم الأساسي بدورة حياة طلب Next.js.</p>
+    </AccordionContent>
+  </AccordionItem>
+  <AccordionItem value="server">
+    <AccordionTrigger>`server.ts`</AccordionTrigger>
+    <AccordionContent>
+      <p>تصدير مساعدات ذات نطاق محدد للطلب مثل `getLocale()` و`getMessages()` و`getTranslations()`.</p>
+    </AccordionContent>
+  </AccordionItem>
+  <AccordionItem value="navigation">
+    <AccordionTrigger>`navigation.ts`</AccordionTrigger>
+    <AccordionContent>
+      <p>كشف التنقل المدرك للغة مثل `I18nLink` و`useI18nRouter()`.</p>
+    </AccordionContent>
+  </AccordionItem>
+  <AccordionItem value="proxy">
+    <AccordionTrigger>`proxy.ts`</AccordionTrigger>
+    <AccordionContent>
+      <p>امتلك وكيل middleware الخاص بك بدلاً من استبداله كلياً.</p>
+    </AccordionContent>
+  </AccordionItem>
+</Accordion>
+
+## routing.ts
+
+```tsx showLineNumbers
+import { defineRouting } from "@better-translate/nextjs"
+
+export const routing = defineRouting({
+  locales: ["en", "ar"] as const,
+  defaultLocale: "en",
+  routeTemplate: "/[lang]", // نطاق محدد: "/app/[lang]"
+})
+```
+
+## request.ts
+
+```tsx showLineNumbers
+import { getRequestConfig } from "@better-translate/nextjs/server"
+import { configureTranslations } from "better-translate"
+import { routing } from "./routing"
+import { en } from "./messages/en"
+import { ar } from "./messages/ar"
+
+export default getRequestConfig(async () => {
+  const translator = await configureTranslations({ en, ar })
+  return { translator }
+})
+```
+
+## server.ts
+
+```tsx showLineNumbers
+import { createServerHelpers, setRequestLocale } from "@better-translate/nextjs/server"
+import requestConfig from "./request"
+
+export const {
+  getLocale,
+  getMessages,
+  getTranslations,
+  getTranslator,
+} = createServerHelpers(requestConfig)
+
+export { setRequestLocale }
+```
+
+## layout.tsx
+
+```tsx showLineNumbers
+import { hasLocale } from "@better-translate/nextjs"
+import { setRequestLocale } from "@better-translate/nextjs/server"
+import { notFound } from "next/navigation"
+import { routing } from "./routing"
+
+export default async function Layout({ children, params }) {
+  const { lang } = await params
+
+  if (!hasLocale(routing.locales, lang)) {
+    notFound()
+  }
+
+  setRequestLocale(lang)
+
+  return children
+}
+```
+
+## navigation.ts
+
+```tsx showLineNumbers
+import { createNavigationFunctions } from "@better-translate/nextjs"
+import { routing } from "./routing"
+
+export const {
+  I18nLink,
+  getPathname,
+  useI18nPathname,
+  useI18nRouter,
+} = createNavigationFunctions({ routing })
+```
+
+## الاستخدام في مكونات الخادم
+
+```tsx showLineNumbers
+import { getTranslations } from "@/lib/i18n/server"
+
+export default async function Page({ params }) {
+  await params
+  const t = await getTranslations()
+
+  return <h1>{t("hero.title")}</h1>
+}
+```
+
+## التوجيه الجذري مقابل المحدود النطاق
+
+مع `routeTemplate: "/[lang]"`،
+يعيش التطبيق بالكامل تحت `/en` و`/ar` وما إلى ذلك.
+
+مع `routeTemplate: "/app/[lang]"`،
+فقط ذلك الفرع محلّى. المسارات مثل `/` و`/login` تبقى خارج التوطين.
+
+## الملفات المصدرية الرئيسية
+
+- `packages/nextjs/src/shared.ts`
+- `packages/nextjs/src/server.ts`
+- `packages/nextjs/src/navigation.tsx`
+- `packages/nextjs/src/proxy.ts`
+- `apps/nextjs-example/lib/i18n/`
+- `apps/nextjs-nested-locale-example/lib/i18n/`
+
+## استكشاف الأدلة ذات الصلة
+
+<div className="mt-6 flex flex-wrap gap-3">
+  <Button asChild variant="outline" size="lg">
+    <Link href="/docs/adapters/core">ابدأ من طبقة النواة</Link>
+  </Button>
+  <Button asChild variant="outline" size="lg">
+    <Link href="/docs/adapters/react">أضف طبقة React</Link>
+  </Button>
+  <Button asChild size="lg">
+    <Link href="/docs/installation">راجع تثبيت الحزمة</Link>
+  </Button>
+</div>

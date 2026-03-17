@@ -1,0 +1,153 @@
+---
+title: النواة
+description: better-translate هي المكتبة الرئيسية. إنها مستقلة عن الإطار وتعمل في TypeScript العادي وBun وNode.js وAPIs والخوادم.
+---
+
+# النواة
+
+`better-translate` هي
+المكتبة الرئيسية. إنها مستقلة عن الإطار وتعمل في TypeScript العادي وBun وNode.js
+وAPIs والخوادم.
+
+## متى تستخدمها
+
+استخدم الحزمة الأساسية فقط عندما لا تحتاج إلى مساعدات React أو مساعدات توجيه Next.js.
+هذا هو الخيار الصحيح للخادم أو API أو سكريبت أو مكتبة مشتركة.
+
+## إعداد النموذج المختصر
+
+مرّر خريطة اللغة مباشرة. تصبح اللغة الأولى الافتراضية والاحتياطية.
+
+```tsx showLineNumbers
+import { configureTranslations } from "better-translate"
+
+const en = { greeting: "Hello, {name}!" }
+const ar = { greeting: "مرحباً، {name}!" }
+
+const translator = await configureTranslations({ en, ar })
+
+const t = translator.getTranslator("ar")
+t("greeting", { params: { name: "عالم" } }) // "مرحباً، عالم!"
+```
+
+## إعداد النموذج بالخيارات
+
+حدد عقد اللغة مسبقاً. يدعم هذا أدوات التحميل غير المتزامن وهو الإعداد الموصى
+به للتطبيقات الإنتاجية.
+
+```tsx showLineNumbers
+import { configureTranslations } from "better-translate"
+
+const translator = await configureTranslations({
+  availableLocales: ["en", "ar", "fr"] as const,
+  defaultLocale: "en",
+  fallbackLocale: "en",
+  directions: {
+    ar: "rtl",
+  },
+  messages: { en, ar },
+  loaders: {
+    fr: async () => ({
+      greeting: "Bonjour, {name}!",
+    }),
+  },
+})
+```
+
+`directions` اختياري. أي لغة تحذفها تكون افتراضياً `"ltr"`.
+
+## المساعدات العالمية
+
+بعد الضبط مرة واحدة، يمكنك استدعاء هذه المساعدات العالمية من أي مكان:
+
+```tsx showLineNumbers
+import { t, loadLocale, getSupportedLocales, getMessages } from "better-translate"
+
+// ترجمة باللغة النشطة
+t("greeting", { params: { name: "عالم" } })
+
+// تحميل لغة في ذاكرة التخزين المؤقت بدون التبديل
+await loadLocale("fr")
+
+// الحصول على جميع رموز اللغة المدعومة
+getSupportedLocales() // ["en", "ar", "fr"]
+
+// الحصول على لقطة مجمّدة من الرسائل المحملة
+getMessages()
+```
+
+## سلوك الاحتياطية
+
+إذا لم تمتلك اللغة النشطة مفتاحاً، يحاول Better Translate اللغة الاحتياطية.
+إذا لم تمتلك الاحتياطية أيضاً المفتاح، يُعيد سلسلة المفتاح نفسها.
+
+- → قيمة اللغة مفقودة → قيمة اللغة الاحتياطية
+- → قيمة اللغة الاحتياطية مفقودة → سلسلة المفتاح
+
+## أدوات التحميل غير المتزامن
+
+سجّل أدوات تحميل اللغة للغات التي لا تريد تحميلها مسبقاً. اللغات المحملة
+تُخزّن في الذاكرة المؤقتة بعد أول تحميل ناجح.
+
+```tsx showLineNumbers
+const translator = await configureTranslations({
+  availableLocales: ["en", "fr"] as const,
+  defaultLocale: "en",
+  messages: { en },
+  loaders: {
+    fr: async () => import("./messages/fr").then((m) => m.default),
+  },
+})
+
+// يحمّل fr عند الطلب ويخزنه في الذاكرة المؤقتة
+await translator.loadLocale("fr")
+```
+
+## بيانات الاتجاه
+
+استخدم المترجم المُعدَّ عندما تحتاج بيانات اتجاه اللغة:
+
+```tsx showLineNumbers
+translator.getDirection({ locale: "ar" }) // "rtl"
+translator.isRtl({ locale: "ar" }) // true
+
+// تجاوزات rtl لكل استدعاء لا تغير بحث الرسائل.
+translator.t("greeting", {
+  locale: "ar",
+  config: {
+    rtl: false,
+  },
+})
+```
+
+## توليد مخطط JSON
+
+ابنِ مخطط JSON من لغتك المصدر لمساعدة المحررين في التحقق من صحة ملفات اللغة الشقيقة.
+
+```tsx showLineNumbers
+import { createTranslationJsonSchema } from "better-translate"
+
+const schema = createTranslationJsonSchema(en)
+// اكتب المخطط على القرص لتمكين التحقق من المحرر
+```
+
+## الملفات المصدرية الرئيسية
+
+- `packages/better-translate/src/core.ts`
+- `packages/better-translate/src/types.ts`
+- `packages/better-translate/src/normalize-config.ts`
+- `packages/better-translate/src/interpolate-message.ts`
+
+## تابع مع
+
+<div className="mt-6 flex flex-wrap gap-3">
+  <Button asChild variant="outline" size="lg">
+    <Link href="/docs/installation">راجع التثبيت</Link>
+  </Button>
+  <Button asChild variant="outline" size="lg">
+    <Link href="/docs/adapters/react">راجع طبقة React</Link>
+  </Button>
+  <Button asChild size="lg">
+    <Link href="/docs/adapters/nextjs">راجع طبقة Next.js</Link>
+  </Button>
+</div>

@@ -1,0 +1,62 @@
+---
+title: المهارات
+description: دليل تعليمي مكتوب بلغة بسيطة يشرح كيفية عمل المكتبة.
+---
+
+# المهارات
+
+مجلد `skills/` في
+المستودع هو دليل تعليمي مكتوب بلغة بسيطة. يشرح كيفية عمل المكتبة
+دون الحاجة إلى قراءة الكود المصدري الكامل أولاً.
+
+## ترتيب القراءة
+
+إذا كنت جديداً، اقرأ ملفات المهارات بهذا الترتيب:
+
+1. `skills/core/README.md` — محرك الترجمة: المفاتيح المكتوبة، والمعاملات، والاحتياطية، والتحميل غير المتزامن، والمساعدات العالمية.
+2. `skills/react/README.md` — محول React: BetterTranslateProvider وuseTranslations().
+3. `skills/nextjs/README.md` — محول Next.js: توجيه اللغة، ومساعدات الخادم، وأغلفة التنقل.
+4. `skills/combined/README.md` — كيف تعمل النواة وReact وNext.js معاً في تطبيق حقيقي.
+5. `skills/examples/README.md` — خريطة تطبيقات الأمثلة — انسخ التطبيق الذي يتطابق مع هندستك.
+6. `skills/workspace/README.md` — كيف يتم تنظيم المستودع الموحد: الحزم مقابل التطبيقات، وسكريبتات البناء، وملفات الضبط.
+
+## النموذج الذهني البسيط
+
+Better Translate لها فكرة رئيسية واحدة: **اضبط الترجمات مرة واحدة، واستخدم المساعدات المكتوبة في كل مكان.**
+
+الحزمة الأساسية تمتلك منطق الترجمة.
+
+حزمة React تجعل هذا المنطق سهل الاستخدام في مكونات العميل.
+
+حزمة Next.js تجعل هذا المنطق سهل الاستخدام مع التوجيه ومساعدات الخادم والتنقل المدرك للغة.
+
+## أي دليل يجب أن أقرأ؟
+
+- → تحتاج فقط الترجمات في TypeScript أو على الخادم؟ اقرأ `skills/core/README.md`
+- → تبني تطبيق React؟ اقرأ `skills/react/README.md`
+- → تبني تطبيق Next.js App Router؟ اقرأ `skills/nextjs/README.md`
+- → تطبيقك له أجزاء خادم وعميل؟ اقرأ `skills/combined/README.md`
+- → تتعلم بنسخ مشاريع عملية؟ اقرأ `skills/examples/README.md`
+
+<div className="mt-6 flex flex-wrap gap-3">
+  <Button asChild variant="outline" size="lg">
+    <Link href="/docs/adapters/core">مفاهيم النواة</Link>
+  </Button>
+  <Button asChild variant="outline" size="lg">
+    <Link href="/docs/adapters/react">مفاهيم React</Link>
+  </Button>
+  <Button asChild size="lg">
+    <Link href="/docs/adapters/nextjs">مفاهيم Next.js</Link>
+  </Button>
+</div>
+
+## ملفات الحزمة الرئيسية
+
+- `packages/better-translate`
+- `packages/react`
+- `packages/nextjs`
+- `apps/react-vite-example`
+- `apps/nextjs-example`
+- `apps/nextjs-nested-locale-example`
+- `apps/core-elysia-example`
+- `apps/landing`

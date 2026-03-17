@@ -144,6 +144,10 @@
   }
 }
 
+[dir="rtl"] {
+  font-family: var(--font-arabic), var(--font-sans), sans-serif;
+}
+
 .dot-grid {
   background-image: radial-gradient(circle, oklch(0.5 0.1 215 / 0.35) 1px, transparent 1px);
   background-size: 24px 24px;

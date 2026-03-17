@@ -127,6 +127,14 @@ const catalog = [
     nativeLabel: "Español",
     shortLabel: "ES",
   },
+  {
+    emoji: "🇸🇦",
+    id: "ar",
+    kind: "language",
+    locale: "ar",
+    nativeLabel: "العربية",
+    shortLabel: "AR",
+  },
 ] as const satisfies readonly AnyCatalogItem[];
 
 export function getCatalogItems<TKind extends CatalogKind>(

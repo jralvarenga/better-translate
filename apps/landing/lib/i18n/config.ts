@@ -4,10 +4,11 @@ import {
   type TranslationConfigOptions,
 } from "better-translate/core";
 
+import { ar } from "./messages/ar";
 import { en } from "./messages/en";
 import { es } from "./messages/es";
 
-export const landingLocales = ["en", "es"] as const;
+export const landingLocales = ["en", "es", "ar"] as const;
 
 export type LandingLocale = (typeof landingLocales)[number];
 
@@ -16,12 +17,14 @@ export const landingDefaultLocale = "en" as const;
 export const landingMessages = {
   en,
   es,
+  ar,
 } satisfies Record<LandingLocale, DeepStringify<typeof en>>;
 
 export const landingTranslationsConfig = {
   availableLocales: landingLocales,
   defaultLocale: landingDefaultLocale,
   fallbackLocale: landingDefaultLocale,
+  directions: { ar: "rtl" },
   messages: landingMessages,
 } satisfies TranslationConfigOptions<
   typeof landingLocales,

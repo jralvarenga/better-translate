@@ -1,0 +1,136 @@
+---
+title: React
+description: "@better-translate/react هي طبقة React فوق الحزمة الأساسية."
+---
+
+# React
+
+`@better-translate/react` هي
+طبقة React فوق الحزمة الأساسية. تُوفر
+`BetterTranslateProvider` و
+`useTranslations()` لتبديل
+اللغة من جانب العميل والوصول إلى الترجمات عبر السياق.
+
+## متى تستخدمها
+
+استخدم محول React عندما يمتلك تطبيقك مكونات عميل، أو تريد تبديل اللغة
+في المتصفح، أو تريد سياق React بدلاً من استدعاء المساعدات العالمية مباشرة.
+
+## الإعداد
+
+أنشئ مترجم نواة أولاً، ثم مرّره إلى `BetterTranslateProvider`.
+
+```tsx showLineNumbers
+// i18n.ts
+import { configureTranslations } from "better-translate"
+
+export async function createTranslator() {
+  return configureTranslations({
+    availableLocales: ["en", "ar"] as const,
+    defaultLocale: "en",
+    directions: {
+      ar: "rtl",
+    },
+    messages: { en, ar },
+  })
+}
+```
+
+```tsx showLineNumbers
+// main.tsx
+import { BetterTranslateProvider } from "@better-translate/react"
+import { createTranslator } from "./i18n"
+
+const translator = await createTranslator()
+
+root.render(
+  <BetterTranslateProvider translator={translator}>
+    <App />
+  </BetterTranslateProvider>
+)
+```
+
+## useTranslations()
+
+داخل المزود، `useTranslations()` يمنحك
+كل ما تحتاجه:
+
+```tsx showLineNumbers
+import { useTranslations } from "@better-translate/react"
+
+function MyComponent() {
+  const {
+    t,
+    locale,
+    direction,
+    rtl,
+    setLocale,
+    loadLocale,
+    messages,
+    supportedLocales,
+    defaultLocale,
+    fallbackLocale,
+    isLoadingLocale,
+    loadingLocale,
+    localeError,
+    translator,
+  } = useTranslations()
+
+  return (
+    <div>
+      <p>{t("greeting", { params: { name: "عالم" } })}</p>
+      <p>{direction}</p>
+      <p>{String(rtl)}</p>
+      <button type="button" onClick={() => setLocale("ar")}>
+        التبديل إلى العربية
+      </button>
+    </div>
+  )
+}
+```
+
+## تبديل اللغة
+
+`setLocale()` يغير
+اللغة النشطة لشجرة المزود هذه. إذا لم تكن اللغة مخزّنة في الذاكرة المؤقتة، يحملها أولاً.
+إذا فشل التحميل، تبقى اللغة القديمة نشطة ويتم تعيين `localeError`.
+
+`loadLocale()` يُسخّن
+الذاكرة المؤقتة بدون تغيير اللغة النشطة. استخدمه لتحميل اللغة التالية مسبقاً قبل
+أن يتبدل المستخدم، حتى يكون التبديل فورياً.
+
+```tsx showLineNumbers
+// تسخين الذاكرة المؤقتة قبل أن يتبدل المستخدم
+await loadLocale("fr")
+
+// التبديل فوراً لأنها مخزّنة بالفعل في الذاكرة المؤقتة
+setLocale("fr")
+```
+
+استخدم `translator.getDirection()` أو `translator.isRtl()` عندما تحتاج بيانات الاتجاه
+لكل استدعاء أو تريد تجاوزها من خلال `config.rtl`.
+
+## نطاق المزود
+
+كل مزود لديه حالة اللغة النشطة الخاصة به. يمكنك تداخل مزودين متعددين لإعطاء
+أجزاء مختلفة من واجهة المستخدم حالات لغة مستقلة — مفيد لاختبار سلوك خطأ اللغة
+بشكل منعزل.
+
+## الملفات المصدرية الرئيسية
+
+- `packages/react/src/provider.tsx`
+- `packages/react/src/use-translations.ts`
+- `packages/react/src/types.ts`
+- `apps/react-vite-example/src/i18n.ts`
+- `apps/react-vite-example/src/main.tsx`
+
+## تابع مع
+
+<div className="mt-6 flex flex-wrap gap-3">
+  <Button asChild variant="outline" size="lg">
+    <Link href="/docs/adapters/core">فهم إعداد النواة</Link>
+  </Button>
+  <Button asChild size="lg">
+    <Link href="/docs/adapters/nextjs">دمجه مع Next.js</Link>
+  </Button>
+</div>
