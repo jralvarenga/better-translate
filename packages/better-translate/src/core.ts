@@ -27,10 +27,13 @@ export type {
   TranslateCall,
   TranslateFunction,
   TranslationKey,
+  TranslationConfig,
   TranslationParamValue,
   TranslationParams,
   TranslationParamsForKey,
   TranslationPlaceholderNames,
+  TranslationDirection,
+  TranslationDirectionOptions,
   TranslationValueAtKey,
   TranslateOptions,
   StrictTranslationLocaleMap,
@@ -143,6 +146,12 @@ export function createTranslationHelpers(
       },
       getSupportedLocales() {
         return translator.getSupportedLocales();
+      },
+      getDirection(options) {
+        return translator.getDirection(options);
+      },
+      isRtl(options) {
+        return translator.isRtl(options);
       },
       getMessages() {
         return translator.getMessages();

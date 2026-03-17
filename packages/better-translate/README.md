@@ -20,10 +20,15 @@ const translations = await createTranslationHelpers({
   availableLocales: ["en", "es"] as const,
   defaultLocale: "en",
   fallbackLocale: "en",
+  directions: {
+    es: "rtl",
+  },
   messages,
 });
 
 translations.t("home.title");
+translations.getDirection({ locale: "es" });
+translations.isRtl({ locale: "es" });
 translations.getMessages();
 ```
 
@@ -44,10 +49,20 @@ import { createTranslationHelpers } from "better-translate/core";
 const translations = await createTranslationHelpers({
   availableLocales: ["en", "es"] as const,
   defaultLocale: "en",
+  directions: {
+    es: "rtl",
+  },
   messages: { en, es },
 });
 
-export const { getMessages, loadLocale, getSupportedLocales, t } = translations;
+export const {
+  getDirection,
+  getMessages,
+  getSupportedLocales,
+  isRtl,
+  loadLocale,
+  t,
+} = translations;
 ```
 
 ## Typed locale maps
@@ -89,14 +104,51 @@ const translations = await createTranslationHelpers({
   availableLocales: ["en", "es"] as const,
   defaultLocale: "en",
   fallbackLocale: "en",
+  directions: {
+    es: "rtl",
+  },
   messages: { en, es },
 });
 
-export const { getMessages, getSupportedLocales, loadLocale, t } = translations;
+export const {
+  getDirection,
+  getMessages,
+  getSupportedLocales,
+  isRtl,
+  loadLocale,
+  t,
+} = translations;
 ```
 
 Import those re-exported helpers anywhere in your app to keep the same
 message-driven TypeScript contract without a separate ambient `.d.ts` file.
+
+## Direction metadata
+
+Locale directions are optional in `configureTranslations(...)`. Any locale that
+is not listed defaults to `"ltr"`.
+
+```ts
+const translator = await configureTranslations({
+  availableLocales: ["en", "es"] as const,
+  defaultLocale: "en",
+  directions: {
+    es: "rtl",
+  },
+  messages: { en, es },
+});
+
+translator.getDirection({ locale: "es" }); // "rtl"
+translator.isRtl({ locale: "es" }); // true
+
+// Per-call rtl overrides only affect direction metadata, not message lookup.
+translator.t("home.title", {
+  locale: "es",
+  config: {
+    rtl: false,
+  },
+});
+```
 
 ## Preloaded message parity
 

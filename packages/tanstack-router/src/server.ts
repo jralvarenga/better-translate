@@ -3,6 +3,8 @@ import { cache } from "react";
 import type {
   ConfiguredTranslator,
   DeepPartialMessages,
+  TranslationConfig,
+  TranslationDirection,
   TranslationMessages,
 } from "better-translate/core";
 import {
@@ -40,32 +42,26 @@ export type RequestConfigFactory<
 
 type AnyRequestConfig = BetterTranslateRequestConfig<AnyTranslator>;
 
-type InferResolvedRequestConfig<TFactory extends (...args: any) => any> = Awaited<
-  ReturnType<TFactory>
->;
-
-type InferFactoryTranslator<TFactory extends (...args: any) => any> =
-  InferResolvedRequestConfig<TFactory> extends BetterTranslateRequestConfig<
-    infer TTranslator,
-    infer _TLocale
-  >
-    ? TTranslator
-    : never;
-
-type InferFactoryLocale<TFactory extends (...args: any) => any> =
-  InferFactoryTranslator<TFactory> extends AnyTranslator
-    ? InferTranslatorLocale<InferFactoryTranslator<TFactory>>
-    : never;
+type RequestDirectionOptions<TLocale extends string> = {
+  locale?: TLocale;
+  config?: TranslationConfig<TLocale>;
+};
 
 export interface ServerHelpers<
   TRequestLocale extends string,
   TTranslator extends AnyTranslator,
 > {
+  getDirection(
+    options?: RequestDirectionOptions<InferTranslatorLocale<TTranslator>>,
+  ): Promise<TranslationDirection>;
   getLocale(): Promise<TRequestLocale>;
   getMessages(): Promise<
     DeepPartialMessages<InferTranslatorMessages<TTranslator>> |
       InferTranslatorMessages<TTranslator>
   >;
+  isRtl(
+    options?: RequestDirectionOptions<InferTranslatorLocale<TTranslator>>,
+  ): Promise<boolean>;
   getTranslations(options?: {
     locale?: InferTranslatorLocale<TTranslator>;
   }): Promise<TTranslator["t"]>;
@@ -88,35 +84,56 @@ export function setRequestLocale<TLocale extends string>(
 }
 
 export function createServerHelpers<
-  TFactory extends () => AnyRequestConfig | Promise<AnyRequestConfig>,
+  TTranslator extends AnyTranslator,
+  TLocale extends InferTranslatorLocale<TTranslator> = InferTranslatorLocale<TTranslator>,
 >(
-  requestConfig: TFactory,
-): ServerHelpers<InferFactoryLocale<TFactory>, InferFactoryTranslator<TFactory>> {
+  requestConfig: RequestConfigFactory<TTranslator, TLocale>,
+): ServerHelpers<TLocale, TTranslator> {
   const readRequestConfig = cache(async () => {
     const resolved = await requestConfig();
-    const translator = resolved.translator as InferFactoryTranslator<TFactory>;
+    const translator = resolved.translator as TTranslator;
 
     return {
-      locale: resolved.locale as InferFactoryLocale<TFactory> | undefined,
+      locale: resolved.locale as TLocale | undefined,
       translator,
     };
   });
 
   async function getResolvedLocale(
-    options?: {
-      locale?: InferFactoryLocale<TFactory>;
-    },
+    options?: RequestDirectionOptions<TLocale>,
   ) {
     const { locale: configLocale, translator } = await readRequestConfig();
 
     return resolveRequestLocale(translator, {
-      locale: options?.locale,
+      locale: options?.config?.locale ?? options?.locale,
       requestLocale: getStoredRequestLocale(),
       configLocale,
-    }) as InferFactoryLocale<TFactory>;
+    }) as TLocale;
+  }
+
+  async function getDirection(options?: RequestDirectionOptions<TLocale>) {
+    const [{ translator }, locale] = await Promise.all([
+      readRequestConfig(),
+      getResolvedLocale(options),
+    ]);
+
+    return translator.getDirection({
+      config:
+        typeof options?.config?.rtl === "boolean"
+          ? {
+              rtl: options.config.rtl,
+            }
+          : undefined,
+      locale,
+    });
+  }
+
+  async function isRtl(options?: RequestDirectionOptions<TLocale>) {
+    return (await getDirection(options)) === "rtl";
   }
 
   return {
+    getDirection,
     async getLocale() {
       return getResolvedLocale();
     },
@@ -130,20 +147,21 @@ export function createServerHelpers<
 
       if (loadedMessages) {
         return loadedMessages as
-          | DeepPartialMessages<InferTranslatorMessages<InferFactoryTranslator<TFactory>>>
-          | InferTranslatorMessages<InferFactoryTranslator<TFactory>>;
+          | DeepPartialMessages<InferTranslatorMessages<TTranslator>>
+          | InferTranslatorMessages<TTranslator>;
       }
 
       if (cachedMessages) {
         return cachedMessages as
-          | DeepPartialMessages<InferTranslatorMessages<InferFactoryTranslator<TFactory>>>
-          | InferTranslatorMessages<InferFactoryTranslator<TFactory>>;
+          | DeepPartialMessages<InferTranslatorMessages<TTranslator>>
+          | InferTranslatorMessages<TTranslator>;
       }
 
       throw new Error(
         `Locale "${locale}" messages are not available. Preload them or register a loader in your Better Translate core config.`,
       );
     },
+    isRtl,
     async getTranslations(options) {
       const [{ translator }, locale] = await Promise.all([
         readRequestConfig(),
@@ -152,14 +170,14 @@ export function createServerHelpers<
 
       await translator.loadLocale(locale);
 
-      return ((...args: Parameters<InferFactoryTranslator<TFactory>["t"]>) => {
+      return ((...args: Parameters<TTranslator["t"]>) => {
         const [key, translateOptions] = args;
 
         return translator.t(key as never, {
           ...(translateOptions ?? {}),
           locale,
         } as never);
-      }) as InferFactoryTranslator<TFactory>["t"];
+      }) as TTranslator["t"];
     },
     async getTranslator() {
       return (await readRequestConfig()).translator;

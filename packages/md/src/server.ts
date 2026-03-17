@@ -15,6 +15,7 @@ import type {
   InferLocale,
   LocalizedMarkdownDocument,
   MarkdownCollection,
+  MarkdownDirectionOptions,
   MarkdownDocumentOptions,
   MarkdownHelpersOptions,
   MarkdownServerHelpers,
@@ -39,39 +40,19 @@ type RequestConfigFactory<
 
 type AnyRequestConfig = RequestConfig<AnyTranslator>;
 
-type InferResolvedRequestConfig<TFactory extends (...args: any) => any> = Awaited<
-  ReturnType<TFactory>
->;
-
-type InferFactoryTranslator<TFactory extends (...args: any) => any> =
-  InferResolvedRequestConfig<TFactory> extends RequestConfig<
-    infer TTranslator,
-    infer _TLocale
-  >
-    ? TTranslator
-    : never;
-
-type InferFactoryLocale<TFactory extends (...args: any) => any> =
-  InferFactoryTranslator<TFactory> extends AnyTranslator
-    ? InferLocale<InferFactoryTranslator<TFactory>>
-    : never;
-
-type InferServerLocale<TFactory extends (...args: any) => any> = InferLocale<
-  InferFactoryTranslator<TFactory>
->;
-
 export function createMarkdownServerHelpers<
-  TFactory extends () => AnyRequestConfig | Promise<AnyRequestConfig>,
+  TTranslator extends AnyTranslator,
+  TLocale extends InferLocale<TTranslator> = InferLocale<TTranslator>,
 >(
-  requestConfig: TFactory,
+  requestConfig: RequestConfigFactory<TTranslator, TLocale>,
   options: MarkdownHelpersOptions,
-): MarkdownServerHelpers<InferServerLocale<TFactory>> {
+): MarkdownServerHelpers<TLocale> {
   const readRequestConfig = cache(async () => {
     const resolved = await requestConfig();
-    const translator = resolved.translator as InferFactoryTranslator<TFactory>;
+    const translator = resolved.translator as TTranslator;
 
     return {
-      locale: resolved.locale as InferFactoryLocale<TFactory> | undefined,
+      locale: resolved.locale as TLocale | undefined,
       translator,
     };
   });
@@ -86,27 +67,52 @@ export function createMarkdownServerHelpers<
   });
 
   async function getCollection() {
-    return (await readCollection()) as MarkdownCollection<
-      InferServerLocale<TFactory>
-    >;
+    return (await readCollection()) as MarkdownCollection<TLocale>;
   }
 
   async function getResolvedLocale(
-    options?: MarkdownDocumentOptions<InferServerLocale<TFactory>>,
+    options?:
+      | MarkdownDocumentOptions<TLocale>
+      | MarkdownDirectionOptions<TLocale>,
   ) {
     const { locale: configLocale, translator } = await readRequestConfig();
+    const locale =
+      options && "config" in options
+        ? options.config?.locale ?? options.locale
+        : options?.locale;
 
     return resolveRequestLocale(translator, {
-      locale: options?.locale,
+      locale,
       requestLocale: getStoredRequestLocale(),
       configLocale,
-    }) as InferServerLocale<TFactory>;
+    }) as TLocale;
+  }
+
+  async function getDirection(options?: MarkdownDirectionOptions<TLocale>) {
+    const [{ translator }, locale] = await Promise.all([
+      readRequestConfig(),
+      getResolvedLocale(options),
+    ]);
+
+    return translator.getDirection({
+      config:
+        typeof options?.config?.rtl === "boolean"
+          ? {
+              rtl: options.config.rtl,
+            }
+          : undefined,
+      locale,
+    });
+  }
+
+  async function isRtl(options?: MarkdownDirectionOptions<TLocale>) {
+    return (await getDirection(options)) === "rtl";
   }
 
   async function getDocument(
     documentId: string,
-    requestOptions?: MarkdownDocumentOptions<InferServerLocale<TFactory>>,
-  ): Promise<LocalizedMarkdownDocument<InferServerLocale<TFactory>>> {
+    requestOptions?: MarkdownDocumentOptions<TLocale>,
+  ): Promise<LocalizedMarkdownDocument<TLocale>> {
     const [locale, collection] = await Promise.all([
       getResolvedLocale(requestOptions),
       readCollection(),
@@ -119,17 +125,17 @@ export function createMarkdownServerHelpers<
 
   async function compileDocument(
     documentId: string,
-    requestOptions?: MarkdownDocumentOptions<InferServerLocale<TFactory>>,
-  ): Promise<CompiledMarkdownResult<InferServerLocale<TFactory>>>;
+    requestOptions?: MarkdownDocumentOptions<TLocale>,
+  ): Promise<CompiledMarkdownResult<TLocale>>;
   async function compileDocument(
-    document: LocalizedMarkdownDocument<InferServerLocale<TFactory>>,
-  ): Promise<CompiledMarkdownResult<InferServerLocale<TFactory>>>;
+    document: LocalizedMarkdownDocument<TLocale>,
+  ): Promise<CompiledMarkdownResult<TLocale>>;
   async function compileDocument(
     documentOrId:
       | string
-      | LocalizedMarkdownDocument<InferServerLocale<TFactory>>,
-    requestOptions?: MarkdownDocumentOptions<InferServerLocale<TFactory>>,
-  ): Promise<CompiledMarkdownResult<InferServerLocale<TFactory>>> {
+      | LocalizedMarkdownDocument<TLocale>,
+    requestOptions?: MarkdownDocumentOptions<TLocale>,
+  ): Promise<CompiledMarkdownResult<TLocale>> {
     if (typeof documentOrId !== "string") {
       return (await readCollection()).compileDocument(documentOrId);
     }
@@ -147,7 +153,9 @@ export function createMarkdownServerHelpers<
   return {
     compileDocument,
     getCollection,
+    getDirection,
     getDocument,
+    isRtl,
   };
 }
 

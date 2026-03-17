@@ -132,6 +132,9 @@ export function BetterTranslateProvider<
 
   const value: UseTranslationsValue<TTranslator> = {
     defaultLocale: translator.defaultLocale as InferLocale<TTranslator>,
+    direction: translator.getDirection({
+      locale,
+    }),
     fallbackLocale: translator.fallbackLocale as InferLocale<TTranslator>,
     isLoadingLocale: loadingLocale !== null || isPending,
     loadLocale: loadLocale as UseTranslationsValue<TTranslator>["loadLocale"],
@@ -139,6 +142,9 @@ export function BetterTranslateProvider<
     locale,
     localeError,
     messages: translator.getMessages() as UseTranslationsValue<TTranslator>["messages"],
+    rtl: translator.isRtl({
+      locale,
+    }),
     setLocale,
     supportedLocales:
       translator.getSupportedLocales() as readonly InferLocale<TTranslator>[],

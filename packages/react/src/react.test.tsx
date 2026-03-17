@@ -66,6 +66,9 @@ describe("@better-translate/react", () => {
       availableLocales: ["en", "es"] as const,
       defaultLocale: "en",
       fallbackLocale: "en",
+      directions: {
+        es: "rtl",
+      },
       messages: { en, es },
     });
 
@@ -87,6 +90,8 @@ describe("@better-translate/react", () => {
     });
 
     expect(latestValue?.locale).toBe("en");
+    expect(latestValue?.direction).toBe("ltr");
+    expect(latestValue?.rtl).toBe(false);
     expect(latestValue?.t("common.hello")).toBe("Hello");
     expect(
       latestValue?.t("common.greeting", {
@@ -103,6 +108,9 @@ describe("@better-translate/react", () => {
       availableLocales: ["en", "es"] as const,
       defaultLocale: "en",
       fallbackLocale: "en",
+      directions: {
+        es: "rtl",
+      },
       messages: { en, es },
     });
 
@@ -124,8 +132,10 @@ describe("@better-translate/react", () => {
     });
 
     expect(latestValue?.locale).toBe("es");
+    expect(latestValue?.direction).toBe("rtl");
     expect(latestValue?.t("common.hello")).toBe("Hola");
     expect(latestValue?.defaultLocale).toBe("en");
+    expect(latestValue?.rtl).toBe(true);
   });
 
   it("switches to a cached locale", async () => {
@@ -133,6 +143,9 @@ describe("@better-translate/react", () => {
       availableLocales: ["en", "es"] as const,
       defaultLocale: "en",
       fallbackLocale: "en",
+      directions: {
+        es: "rtl",
+      },
       messages: { en, es },
     });
 
@@ -158,6 +171,8 @@ describe("@better-translate/react", () => {
     });
 
     expect(latestValue?.locale).toBe("es");
+    expect(latestValue?.direction).toBe("rtl");
+    expect(latestValue?.rtl).toBe(true);
     expect(latestValue?.t("common.hello")).toBe("Hola");
   });
 
@@ -310,6 +325,9 @@ describe("@better-translate/react", () => {
       availableLocales: ["en", "es"] as const,
       defaultLocale: "en",
       fallbackLocale: "en",
+      directions: {
+        es: "rtl",
+      },
       messages: { en, es },
     });
 
@@ -338,6 +356,22 @@ describe("@better-translate/react", () => {
         },
       }),
     ).toBe("Dra. Ada");
+    expect(
+      latestValue?.t("common.hello", {
+        config: {
+          rtl: false,
+        },
+      }),
+    ).toBe("Hola");
+    expect(latestValue?.translator.getDirection({ locale: "es" })).toBe("rtl");
+    expect(
+      latestValue?.translator.getDirection({
+        locale: "es",
+        config: {
+          rtl: false,
+        },
+      }),
+    ).toBe("ltr");
   });
 
   it("throws when used outside the provider", () => {

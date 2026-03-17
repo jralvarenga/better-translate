@@ -62,6 +62,9 @@ export const requestConfig = getRequestConfig(async () => ({
     availableLocales: routing.locales,
     defaultLocale: "en",
     fallbackLocale: "en",
+    directions: {
+      es: "rtl",
+    },
     messages: {
       en,
       es,
@@ -80,14 +83,32 @@ import {
 
 import { requestConfig } from "./request";
 
-export const { getLocale, getMessages, getTranslations, getTranslator } =
-  createServerHelpers(requestConfig);
+export const {
+  getDirection,
+  getLocale,
+  getMessages,
+  getTranslations,
+  getTranslator,
+  isRtl,
+} = createServerHelpers(requestConfig);
 
 export { setRequestLocale };
 ```
 
 In TanStack Start, call `setRequestLocale(params.locale ?? routing.defaultLocale)`
 inside `beforeLoad`, a loader, or another request-bound server entrypoint.
+
+The same server helpers expose request-aware direction metadata:
+
+```ts
+await getDirection(); // "ltr" | "rtl"
+await isRtl(); // boolean
+await getDirection({
+  config: {
+    rtl: false,
+  },
+});
+```
 
 ## Navigation wrappers
 

@@ -51,6 +51,9 @@ describe("better-translate core", () => {
     const translator = await configureTranslations({ en, es });
 
     expect(translator.defaultLocale).toBe("en");
+    expect(translator.getDirection()).toBe("ltr");
+    expect(translator.getDirection({ locale: "es" })).toBe("ltr");
+    expect(translator.isRtl({ locale: "es" })).toBe(false);
     expect(translator.t("common.hello")).toBe("Hello");
     expect(translator.t("common.hello", { locale: "es" })).toBe("Hola");
     expect(
@@ -86,6 +89,69 @@ describe("better-translate core", () => {
     expect(translator.t("account.unknown.label" as never)).toBe(
       "account.unknown.label",
     );
+  });
+
+  it("defaults locale directions to ltr when directions are omitted", async () => {
+    const translator = await configureTranslations({
+      availableLocales: ["en", "es"] as const,
+      defaultLocale: "en",
+      fallbackLocale: "en",
+      messages: { en, es },
+    });
+
+    expect(translator.getDirection()).toBe("ltr");
+    expect(translator.getDirection({ locale: "es" })).toBe("ltr");
+    expect(translator.isRtl()).toBe(false);
+    expect(translator.isRtl({ locale: "es" })).toBe(false);
+  });
+
+  it("resolves configured directions and supports per-call rtl overrides", async () => {
+    const translator = await configureTranslations({
+      availableLocales: ["en", "es", "fr"] as const,
+      defaultLocale: "en",
+      fallbackLocale: "en",
+      directions: {
+        es: "rtl",
+      },
+      messages: { en, es },
+      loaders: {
+        fr: async () => ({
+          common: {
+            hello: "Bonjour",
+          },
+        }),
+      },
+    });
+
+    expect(translator.getDirection()).toBe("ltr");
+    expect(translator.getDirection({ locale: "es" })).toBe("rtl");
+    expect(translator.isRtl({ locale: "es" })).toBe(true);
+    expect(translator.getDirection({ locale: "fr" })).toBe("ltr");
+    expect(translator.isRtl({ locale: "fr" })).toBe(false);
+    expect(
+      translator.t("common.hello", {
+        locale: "es",
+        config: {
+          rtl: false,
+        },
+      }),
+    ).toBe("Hola");
+    expect(
+      translator.getDirection({
+        locale: "es",
+        config: {
+          rtl: false,
+        },
+      }),
+    ).toBe("ltr");
+    expect(
+      translator.isRtl({
+        locale: "en",
+        config: {
+          rtl: true,
+        },
+      }),
+    ).toBe(true);
   });
 
   it("interpolates multiple params and repeated placeholders", async () => {
@@ -248,6 +314,9 @@ describe("better-translate core", () => {
       availableLocales: ["en", "es"] as const,
       defaultLocale: "en",
       fallbackLocale: "en",
+      directions: {
+        es: "rtl",
+      },
       messages: { en, es },
     });
 
@@ -260,6 +329,8 @@ describe("better-translate core", () => {
       }),
     ).toBe("Good morning Ada");
     expect(helpers.getSupportedLocales()).toEqual(["en", "es"]);
+    expect(helpers.getDirection({ locale: "es" })).toBe("rtl");
+    expect(helpers.isRtl({ locale: "es" })).toBe(true);
     expect(helpers.getMessages()).toEqual({ en, es });
   });
 
@@ -297,6 +368,24 @@ describe("better-translate core", () => {
       } as const),
     ).rejects.toThrow(
       'The locale "fr" is present in messages but not in availableLocales.',
+    );
+  });
+
+  it("rejects direction locales outside the declared availableLocales list", async () => {
+    await expect(
+      configureTranslations({
+        availableLocales: ["en", "es"] as const,
+        defaultLocale: "en",
+        messages: {
+          en,
+          es,
+        },
+        directions: {
+          fr: "rtl",
+        },
+      } as const),
+    ).rejects.toThrow(
+      'The locale "fr" is present in directions but not in availableLocales.',
     );
   });
 

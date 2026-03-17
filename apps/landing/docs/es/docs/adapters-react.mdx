@@ -28,6 +28,9 @@ export async function createTranslator() {
   return configureTranslations({
     availableLocales: ["en", "es"] as const,
     defaultLocale: "en",
+    directions: {
+      es: "rtl",
+    },
     messages: { en, es },
   })
 }
@@ -59,6 +62,8 @@ function MiComponente() {
   const {
     t,
     locale,
+    direction,
+    rtl,
     setLocale,
     loadLocale,
     messages,
@@ -74,6 +79,8 @@ function MiComponente() {
   return (
     <div>
       <p>{t("greeting", { params: { name: "Mundo" } })}</p>
+      <p>{direction}</p>
+      <p>{String(rtl)}</p>
       <button type="button" onClick={() => setLocale("en")}>
         Cambiar a inglés
       </button>
@@ -99,6 +106,9 @@ await loadLocale("fr")
 // cambiar instantáneamente ya que está en caché
 setLocale("fr")
 ```
+
+Usa `translator.getDirection()` o `translator.isRtl()` cuando necesites
+metadatos de dirección por llamada o quieras sobrescribirlos con `config.rtl`.
 
 ## Alcance del provider
 

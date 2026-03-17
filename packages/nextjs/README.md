@@ -83,6 +83,9 @@ export const requestConfig = getRequestConfig(async () => {
     availableLocales: routing.locales,
     defaultLocale: "en",
     fallbackLocale: "en",
+    directions: {
+      es: "rtl",
+    },
     messages: {
       en,
       es,
@@ -138,8 +141,14 @@ import {
 
 import { requestConfig } from "./request";
 
-export const { getLocale, getMessages, getTranslations, getTranslator } =
-  createServerHelpers(requestConfig);
+export const {
+  getDirection,
+  getLocale,
+  getMessages,
+  getTranslations,
+  getTranslator,
+  isRtl,
+} = createServerHelpers(requestConfig);
 
 export { setRequestLocale };
 ```
@@ -177,6 +186,18 @@ export default async function DashboardPage({
 - `getRequestConfig(...)` exposes it to the Next.js adapter
 - `setRequestLocale(...)` stores the current route locale once per request
 - `createServerHelpers(...)` returns request-friendly wrappers around that translator
+
+Direction metadata is available from the same request helpers:
+
+```ts
+await getDirection(); // "ltr" | "rtl"
+await isRtl(); // boolean
+await getDirection({
+  config: {
+    rtl: false,
+  },
+});
+```
 
 ## User-owned proxy
 

@@ -13,8 +13,9 @@ If you are new, read the files in this order:
 3. `skills/md/README.md`
 4. `skills/combined/README.md`
 5. `skills/examples/README.md`
-6. `skills/workspace/README.md`
-7. `skills/status/README.md`
+6. `skills/rtl/README.md`
+7. `skills/workspace/README.md`
+8. `skills/status/README.md`
 
 ## Package Map
 
@@ -38,6 +39,7 @@ If you are new, read the files in this order:
 - If you are building a Next.js App Router app, read `skills/nextjs/README.md`.
 - If you are translating Markdown or MDX files, read `skills/md/README.md`.
 - If your app has both server and client parts, read `skills/combined/README.md`.
+- If you need to support RTL languages, read `skills/rtl/README.md`.
 - If you learn best by copying working projects, read `skills/examples/README.md`.
 
 ## Simple Mental Model

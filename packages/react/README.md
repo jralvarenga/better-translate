@@ -15,6 +15,9 @@ async function createTranslator() {
   return configureTranslations({
     availableLocales: ["en", "es"] as const,
     defaultLocale: "en",
+    directions: {
+      es: "rtl",
+    },
     messages: { en, es },
   });
 }
@@ -22,13 +25,15 @@ async function createTranslator() {
 type AppTranslator = Awaited<ReturnType<typeof createTranslator>>;
 
 function Greeting() {
-  const { t, locale, setLocale, messages } =
+  const { t, locale, direction, rtl, setLocale, messages } =
     useTranslations<AppTranslator>();
 
   return (
     <div>
       <p>{t("common.hello")}</p>
       <p>{locale}</p>
+      <p>{direction}</p>
+      <p>{String(rtl)}</p>
       <button onClick={() => void setLocale("es")}>ES</button>
       <pre>{JSON.stringify(messages)}</pre>
     </div>
@@ -72,6 +77,9 @@ export function createTranslator() {
     availableLocales: ["en", "es"] as const,
     defaultLocale: "en",
     fallbackLocale: "en",
+    directions: {
+      es: "rtl",
+    },
     messages: { en, es },
   });
 }
@@ -116,6 +124,8 @@ export function App() {
   const {
     t,
     locale,
+    direction,
+    rtl,
     setLocale,
     supportedLocales,
     messages,
@@ -125,6 +135,8 @@ export function App() {
     <main>
       <h1>{t("common.hello")}</h1>
       <p>Current locale: {locale}</p>
+      <p>Direction: {direction}</p>
+      <p>RTL: {String(rtl)}</p>
 
       {supportedLocales.map((nextLocale) => (
         <button key={nextLocale} onClick={() => void setLocale(nextLocale)}>
@@ -136,4 +148,19 @@ export function App() {
     </main>
   );
 }
+```
+
+When you need per-call direction metadata, use the configured translator from
+context:
+
+```tsx
+const { translator } = useTranslations<AppTranslator>();
+
+translator.getDirection({ locale: "es" }); // "rtl"
+translator.isRtl({
+  locale: "es",
+  config: {
+    rtl: false,
+  },
+}); // false
 ```

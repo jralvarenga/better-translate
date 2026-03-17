@@ -1,5 +1,18 @@
-import type { InternalNormalizedConfig, RuntimeConfigInput } from "./types.js";
+import type {
+  InternalNormalizedConfig,
+  RuntimeConfigInput,
+  TranslationDirection,
+} from "./types.js";
 import { isTranslationConfigOptions } from "./validation.js";
+
+function createNormalizedDirections(
+  locales: readonly string[],
+  directions?: Partial<Record<string, TranslationDirection>>,
+): Record<string, TranslationDirection> {
+  return Object.fromEntries(
+    locales.map((locale) => [locale, directions?.[locale] ?? "ltr"]),
+  );
+}
 
 /**
  * Normalizes either supported configuration form into one internal runtime
@@ -22,6 +35,7 @@ export function normalizeConfig(input: RuntimeConfigInput): InternalNormalizedCo
       defaultLocale,
       fallbackLocale: defaultLocale,
       supportedLocales: locales,
+      directions: createNormalizedDirections(locales),
       messages: input,
       loaders: {},
     };
@@ -67,10 +81,19 @@ export function normalizeConfig(input: RuntimeConfigInput): InternalNormalizedCo
     }
   }
 
+  for (const locale of Object.keys(input.directions ?? {})) {
+    if (!supportedLocales.includes(locale)) {
+      throw new Error(
+        `The locale "${locale}" is present in directions but not in availableLocales.`,
+      );
+    }
+  }
+
   return {
     defaultLocale: input.defaultLocale,
     fallbackLocale: input.fallbackLocale ?? input.defaultLocale,
     supportedLocales,
+    directions: createNormalizedDirections(supportedLocales, input.directions),
     messages: input.messages,
     loaders: input.loaders ?? {},
   };

@@ -20,6 +20,7 @@ const GETTING_STARTED = [
     { nameKey: "installation" as const, href: "/docs/installation" },
     { nameKey: "cli" as const, href: "/docs/cli" },
     { nameKey: "skills" as const, href: "/docs/skills" },
+    { nameKey: "rtl" as const, href: "/docs/rtl" },
     { nameKey: "changelog" as const, href: "/docs/changelog" },
 ]
 
@@ -27,8 +28,7 @@ const ADAPTERS = [
     { nameKey: "core" as const, href: "/docs/adapters/core" },
     { nameKey: "react" as const, href: "/docs/adapters/react" },
     { nameKey: "nextjs" as const, href: "/docs/adapters/nextjs" },
-    { nameKey: "tanstackStart" as const, href: "/docs/adapters/tanstack-router" },
-    { nameKey: "mdAndMdx" as const, href: "/docs/adapters/md-and-mdx" },
+    { nameKey: "tanstackStart" as const, href: "/docs/adapters/tanstack-start" },
 ]
 
 export function DocsSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {

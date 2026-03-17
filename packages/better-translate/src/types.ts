@@ -136,6 +136,8 @@ export type TranslationParamValue = string | number | boolean;
 
 export type TranslationParams = Record<string, TranslationParamValue>;
 
+export type TranslationDirection = "ltr" | "rtl";
+
 export type TranslationValueAtKey<
   TMessages extends TranslationMessages,
   TKey extends string,
@@ -251,6 +253,10 @@ export interface TranslationConfig<TLocale extends string> {
    * Uses a specific locale for this call instead of the configured default locale.
    */
   locale?: TLocale;
+  /**
+   * Overrides the resolved text direction for this call.
+   */
+  rtl?: boolean;
 }
 
 /**
@@ -267,6 +273,17 @@ export interface TranslateOptions<TLocale extends string> {
   params?: TranslationParams;
   /**
    * Per-call configuration options for the translation method.
+   */
+  config?: TranslationConfig<TLocale>;
+}
+
+export interface TranslationDirectionOptions<TLocale extends string> {
+  /**
+   * Uses a specific locale for this call instead of the configured default locale.
+   */
+  locale?: TLocale;
+  /**
+   * Per-call configuration options used to resolve direction metadata.
    */
   config?: TranslationConfig<TLocale>;
 }
@@ -314,6 +331,14 @@ export interface ConfiguredTranslator<
    */
   getSupportedLocales(): readonly TLocale[];
   /**
+   * Returns the resolved direction metadata for the requested locale or override.
+   */
+  getDirection(options?: TranslationDirectionOptions<TLocale>): TranslationDirection;
+  /**
+   * Returns whether the resolved direction metadata is right-to-left.
+   */
+  isRtl(options?: TranslationDirectionOptions<TLocale>): boolean;
+  /**
    * Returns the cached messages currently known by this translator.
    *
    * This includes messages passed during configuration and any locales loaded
@@ -339,6 +364,8 @@ export interface TranslationHelpers<
     locale: TLocale,
   ): Promise<DeepPartialMessages<TSourceMessages> | TSourceMessages | undefined>;
   getSupportedLocales(): readonly TLocale[];
+  getDirection(options?: TranslationDirectionOptions<TLocale>): TranslationDirection;
+  isRtl(options?: TranslationDirectionOptions<TLocale>): boolean;
   getMessages(): CachedMessages<TLocale, TSourceMessages>;
 }
 
@@ -359,6 +386,7 @@ export type TranslationConfigOptions<
   availableLocales: TLocales;
   defaultLocale: TDefaultLocale;
   fallbackLocale?: TLocales[number];
+  directions?: Partial<Record<TLocales[number], TranslationDirection>>;
   messages: StrictOptionsMessages<TMessages, TDefaultLocale>;
   loaders?: TLoaders;
 };
@@ -395,6 +423,7 @@ export interface InternalNormalizedConfig {
   defaultLocale: string;
   fallbackLocale: string;
   supportedLocales: readonly string[];
+  directions: Readonly<Record<string, TranslationDirection>>;
   messages: Partial<Record<string, InternalTranslationMessages>>;
   loaders: Partial<Record<string, TranslationLoader<unknown>>>;
 }

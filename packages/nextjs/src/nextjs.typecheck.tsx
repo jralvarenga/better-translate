@@ -33,6 +33,9 @@ const translator = await configureTranslations({
   availableLocales: ["en", "es"] as const,
   defaultLocale: "en",
   fallbackLocale: "en",
+  directions: {
+    es: "rtl",
+  },
   messages: {
     en: {
       home: {
@@ -91,6 +94,19 @@ t("home.greeting", {
   params: {
     name: "Ada",
   },
+});
+await helpers.getDirection();
+await helpers.getDirection({
+  locale: "es",
+});
+await helpers.getDirection({
+  config: {
+    rtl: true,
+  },
+});
+await helpers.isRtl();
+await helpers.isRtl({
+  locale: "es",
 });
 
 await helpers.getTranslations({

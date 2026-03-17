@@ -42,6 +42,9 @@ const translator = await configureTranslations({
   availableLocales: ["en", "es", "fr"] as const,
   defaultLocale: "en",
   fallbackLocale: "en",
+  directions: {
+    es: "rtl",
+  },
   messages: { en, es },
   loaders: {
     fr: async () => ({
@@ -50,6 +53,8 @@ const translator = await configureTranslations({
   },
 })
 ```
+
+`directions` is optional. Any locale you omit defaults to `"ltr"`.
 
 ## Global helpers
 
@@ -96,6 +101,23 @@ const translator = await configureTranslations({
 
 // loads fr on demand and caches it
 await translator.loadLocale("fr")
+```
+
+## Direction metadata
+
+Use the configured translator when you need locale direction metadata:
+
+```tsx showLineNumbers
+translator.getDirection({ locale: "es" }) // "rtl"
+translator.isRtl({ locale: "es" }) // true
+
+// Per-call rtl overrides do not change message lookup.
+translator.t("greeting", {
+  locale: "es",
+  config: {
+    rtl: false,
+  },
+})
 ```
 
 ## JSON schema generation

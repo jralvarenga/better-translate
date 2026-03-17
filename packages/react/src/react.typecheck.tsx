@@ -7,6 +7,9 @@ const translator = await configureTranslations({
   availableLocales: ["en", "es", "fr"] as const,
   defaultLocale: "en",
   fallbackLocale: "en",
+  directions: {
+    es: "rtl",
+  },
   messages: {
     en: {
       common: {
@@ -60,8 +63,21 @@ function Consumer() {
   });
   void translations.setLocale("es");
   void translations.loadLocale("fr");
+  translations.direction;
   translations.messages.en;
   translations.messages.fr;
+  translations.rtl;
+  translations.translator.getDirection({ locale: "es" });
+  translations.translator.isRtl({
+    config: {
+      rtl: true,
+    },
+  });
+  translations.t("common.hello", {
+    config: {
+      rtl: false,
+    },
+  });
 
   // @ts-expect-error invalid translation key should fail
   translations.t("account.balance.total");

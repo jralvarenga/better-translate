@@ -8,6 +8,8 @@ import type {
   DeepPartialMessages,
   InternalNormalizedConfig,
   InternalTranslationMessages,
+  TranslationDirection,
+  TranslationDirectionOptions,
   TranslateCall,
   TranslationKey,
   TranslateOptions,
@@ -35,6 +37,28 @@ export function createConfiguredTranslator<
     TLocale,
     Promise<DeepPartialMessages<TSourceMessages> | TSourceMessages | undefined>
   >();
+
+  function resolveLocale(
+    options?:
+      | TranslateOptions<TLocale>
+      | TranslationDirectionOptions<TLocale>,
+  ): TLocale {
+    return (
+      options?.config?.locale ??
+      options?.locale ??
+      (config.defaultLocale as TLocale)
+    );
+  }
+
+  function resolveDirection(
+    options?: TranslationDirectionOptions<TLocale>,
+  ): TranslationDirection {
+    if (typeof options?.config?.rtl === "boolean") {
+      return options.config.rtl ? "rtl" : "ltr";
+    }
+
+    return config.directions[resolveLocale(options)] ?? "ltr";
+  }
 
   const loadLocale: ConfiguredTranslator<TLocale, TSourceMessages>["loadLocale"] =
     async (locale) => {
@@ -81,7 +105,7 @@ export function createConfiguredTranslator<
       string,
       TranslateOptions<TLocale> | undefined,
     ];
-    const locale = options?.config?.locale ?? options?.locale ?? (config.defaultLocale as TLocale);
+    const locale = resolveLocale(options);
     const activeValue = resolveMessageValue(messageCache[locale], key);
 
     if (typeof activeValue === "string") {
@@ -104,6 +128,12 @@ export function createConfiguredTranslator<
     defaultLocale: config.defaultLocale as TLocale,
     fallbackLocale: config.fallbackLocale as TLocale,
     supportedLocales: [...config.supportedLocales] as unknown as readonly TLocale[],
+    getDirection(options) {
+      return resolveDirection(options);
+    },
+    isRtl(options) {
+      return resolveDirection(options) === "rtl";
+    },
     t: translate,
     loadLocale,
     getSupportedLocales() {

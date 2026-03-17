@@ -21,6 +21,9 @@ const translator = await configureTranslations({
   availableLocales: ["en", "es"] as const,
   defaultLocale: "en",
   fallbackLocale: "en",
+  directions: {
+    es: "rtl",
+  },
   messages: {
     en: {
       common: {
@@ -60,6 +63,18 @@ import { requestConfig } from "./i18n/request";
 
 export const docs = createMarkdownServerHelpers(requestConfig, {
   rootDir: "./content",
+});
+```
+
+Request-aware direction helpers are available there too:
+
+```ts
+await docs.getDirection(); // "ltr" | "rtl"
+await docs.isRtl(); // boolean
+await docs.getDirection({
+  config: {
+    rtl: false,
+  },
 });
 ```
 

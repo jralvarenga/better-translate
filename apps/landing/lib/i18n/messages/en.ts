@@ -89,6 +89,7 @@ export const en = {
       github: "GitHub",
     },
     sidebar: {
+      rtl: "RTL",
       adapters: "Adapters",
       changelog: "Changelog",
       cli: "CLI",

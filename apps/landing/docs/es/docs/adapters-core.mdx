@@ -42,6 +42,9 @@ const translator = await configureTranslations({
   availableLocales: ["en", "es", "fr"] as const,
   defaultLocale: "en",
   fallbackLocale: "en",
+  directions: {
+    es: "rtl",
+  },
   messages: { en, es },
   loaders: {
     fr: async () => ({
@@ -50,6 +53,8 @@ const translator = await configureTranslations({
   },
 })
 ```
+
+`directions` es opcional. Cualquier locale omitido usa `"ltr"` por defecto.
 
 ## Helpers globales
 
@@ -96,6 +101,23 @@ const translator = await configureTranslations({
 
 // carga fr bajo demanda y lo almacena en caché
 await translator.loadLocale("fr")
+```
+
+## Metadatos de dirección
+
+Usa el translator configurado cuando necesites metadatos de dirección por locale:
+
+```tsx showLineNumbers
+translator.getDirection({ locale: "es" }) // "rtl"
+translator.isRtl({ locale: "es" }) // true
+
+// Los overrides rtl por llamada no cambian la búsqueda del mensaje.
+translator.t("greeting", {
+  locale: "es",
+  config: {
+    rtl: false,
+  },
+})
 ```
 
 ## Generación de esquema JSON

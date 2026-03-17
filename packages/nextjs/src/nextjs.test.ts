@@ -380,6 +380,9 @@ describe("@better-translate/nextjs", () => {
       availableLocales: ["en", "es"] as const,
       defaultLocale: "en",
       fallbackLocale: "en",
+      directions: {
+        es: "rtl",
+      },
       messages: {
         en: {
           home: {
@@ -404,6 +407,15 @@ describe("@better-translate/nextjs", () => {
     const t = await helpers.getTranslations();
 
     expect(await helpers.getLocale()).toBe("es");
+    expect(await helpers.getDirection()).toBe("rtl");
+    expect(await helpers.isRtl()).toBe(true);
+    expect(
+      await helpers.getDirection({
+        config: {
+          rtl: false,
+        },
+      }),
+    ).toBe("ltr");
     expect(t("home.title")).toBe("Hola");
     expect(
       t("home.greeting", {
@@ -419,6 +431,9 @@ describe("@better-translate/nextjs", () => {
       availableLocales: ["en", "es"] as const,
       defaultLocale: "en",
       fallbackLocale: "en",
+      directions: {
+        es: "rtl",
+      },
       messages: {
         en: {
           home: {
@@ -442,6 +457,7 @@ describe("@better-translate/nextjs", () => {
     setRequestLocale("es");
 
     expect(await helpers.getLocale()).toBe("es");
+    expect(await helpers.getDirection()).toBe("rtl");
     expect(await helpers.getMessages()).toEqual({
       home: {
         title: "Hola",
@@ -458,6 +474,9 @@ describe("@better-translate/nextjs", () => {
       availableLocales: ["en", "es"] as const,
       defaultLocale: "en",
       fallbackLocale: "en",
+      directions: {
+        es: "rtl",
+      },
       messages: {
         en: {
           home: {
@@ -479,6 +498,8 @@ describe("@better-translate/nextjs", () => {
     );
 
     expect(await helpers.getLocale()).toBe("en");
+    expect(await helpers.getDirection()).toBe("ltr");
+    expect(await helpers.isRtl()).toBe(false);
     expect((await helpers.getTranslations())("home.title")).toBe("Hello");
   });
 

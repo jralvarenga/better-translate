@@ -1,0 +1,96 @@
+---
+title: RTL
+description: better-translate tiene soporte RTL incorporado. Declara direcciones por locale, consúltalas en tiempo de ejecución y anúlalas por llamada.
+---
+
+# RTL
+
+`better-translate` tiene soporte RTL incorporado.
+Declaras qué locales son de derecha a izquierda en la configuración, luego consultas la dirección
+en tiempo de ejecución usando `getDirection` o `isRtl`.
+
+## Cuándo usarlo
+
+Usa el soporte RTL cuando tu app necesite soportar idiomas como árabe, hebreo, persa o urdu.
+Los helpers de dirección te dan una forma tipada de establecer el atributo `dir` en elementos HTML
+sin gestionar una tabla de búsqueda separada.
+
+## Declarar direcciones
+
+Agrega una clave `directions` a tu llamada `configureTranslations`. Cualquier locale que omitas usa `"ltr"` por defecto.
+
+```tsx showLineNumbers
+import { configureTranslations } from "better-translate"
+
+const translator = await configureTranslations({
+  availableLocales: ["en", "ar"] as const,
+  defaultLocale: "en",
+  messages: { en, ar },
+  directions: {
+    ar: "rtl",
+  },
+})
+```
+
+## Consultar la dirección
+
+Llama a `getDirection` para obtener `"ltr"` o `"rtl"` para cualquier locale.
+Llama a `isRtl` para obtener un booleano.
+
+```tsx showLineNumbers
+translator.getDirection({ locale: "ar" }) // "rtl"
+translator.getDirection({ locale: "en" }) // "ltr"
+
+translator.isRtl({ locale: "ar" }) // true
+translator.isRtl({ locale: "en" }) // false
+```
+
+## Override por llamada
+
+Pasa `config.rtl` para anular la dirección configurada en una sola llamada.
+Esto no afecta la búsqueda del mensaje — solo cambia la dirección que se resuelve.
+
+```tsx showLineNumbers
+// Forzar LTR incluso para un locale RTL
+translator.t("greeting", {
+  locale: "ar",
+  config: { rtl: false },
+})
+
+// Forzar RTL incluso para un locale LTR
+translator.t("greeting", {
+  locale: "en",
+  config: { rtl: true },
+})
+```
+
+## Aplicar al HTML
+
+Usa `getDirection` al renderizar el atributo `dir` en elementos raíz.
+
+```tsx showLineNumbers
+// En el elemento html (por ejemplo, en un layout de Next.js)
+<html lang={locale} dir={translator.getDirection({ locale })}>
+
+// En un contenedor específico
+<div dir={translator.getDirection({ locale })}>
+  {t("greeting")}
+</div>
+```
+
+## Archivos fuente clave
+
+- `packages/better-translate/src/types.ts`
+- `packages/better-translate/src/create-configured-translator.ts`
+- `packages/better-translate/src/normalize-config.ts`
+
+## Continúa con
+
+<div className="mt-6 flex flex-wrap gap-3">
+  <Button asChild variant="outline" size="lg">
+    <Link href="/docs/adapters/core">Ver el adaptador Core</Link>
+  </Button>
+  <Button asChild size="lg">
+    <Link href="/docs/adapters/nextjs">Ver el adaptador Next.js</Link>
+  </Button>
+</div>

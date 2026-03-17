@@ -2,6 +2,7 @@ import type {
   CachedMessages,
   ConfiguredTranslator,
   DeepPartialMessages,
+  TranslationDirection,
   TranslateFunction,
   TranslationMessages,
 } from "better-translate/core";
@@ -34,6 +35,7 @@ export interface UseTranslationsValue<
   TTranslator extends AnyBetterTranslateTranslator,
 > {
   defaultLocale: InferLocale<TTranslator>;
+  direction: TranslationDirection;
   fallbackLocale: InferLocale<TTranslator>;
   isLoadingLocale: boolean;
   loadLocale(
@@ -50,6 +52,7 @@ export interface UseTranslationsValue<
     InferLocale<TTranslator>,
     InferMessages<TTranslator>
   >;
+  rtl: boolean;
   setLocale(locale: InferLocale<TTranslator>): Promise<void>;
   supportedLocales: readonly InferLocale<TTranslator>[];
   t: TranslateFunction<InferLocale<TTranslator>, InferMessages<TTranslator>>;

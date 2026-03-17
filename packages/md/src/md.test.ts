@@ -74,11 +74,23 @@ Bienvenido.
       availableLocales: ["en", "es"] as const,
       defaultLocale: "en",
       fallbackLocale: "en",
+      directions: {
+        es: "rtl",
+      },
       messages: {
         en,
         es,
       },
     });
+    const serverDocs = createMarkdownServerHelpers(
+      async () => ({
+        locale: "es" as const,
+        translator,
+      }),
+      {
+        rootDir,
+      },
+    );
     const docs = createMarkdownHelpers(translator, {
       rootDir,
     });
@@ -93,6 +105,15 @@ Bienvenido.
       title: "Guia",
     });
     expect(document.source).toContain("Bienvenido.");
+    expect(await serverDocs.getDirection()).toBe("rtl");
+    expect(await serverDocs.isRtl()).toBe(true);
+    expect(
+      await serverDocs.getDirection({
+        config: {
+          rtl: false,
+        },
+      }),
+    ).toBe("ltr");
   });
 
   it("falls back to the translator fallback locale", async () => {

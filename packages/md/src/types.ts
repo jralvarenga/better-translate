@@ -1,5 +1,7 @@
 import type {
   ConfiguredTranslator,
+  TranslationConfig,
+  TranslationDirection,
   TranslationMessages,
 } from "better-translate/core";
 
@@ -28,6 +30,11 @@ export interface MarkdownCollectionConfig<
 
 export interface MarkdownDocumentOptions<TLocale extends string> {
   locale?: TLocale;
+}
+
+export interface MarkdownDirectionOptions<TLocale extends string> {
+  locale?: TLocale;
+  config?: TranslationConfig<TLocale>;
 }
 
 export interface LocalizedMarkdownDocument<TLocale extends string> {
@@ -86,10 +93,14 @@ export interface MarkdownServerHelpers<TLocale extends string> {
     document: LocalizedMarkdownDocument<TLocale>,
   ): Promise<CompiledMarkdownResult<TLocale>>;
   getCollection(): Promise<MarkdownCollection<TLocale>>;
+  getDirection(
+    options?: MarkdownDirectionOptions<TLocale>,
+  ): Promise<TranslationDirection>;
   getDocument(
     documentId: string,
     options?: MarkdownDocumentOptions<TLocale>,
   ): Promise<LocalizedMarkdownDocument<TLocale>>;
+  isRtl(options?: MarkdownDirectionOptions<TLocale>): Promise<boolean>;
 }
 
 export class MarkdownDocumentNotFoundError extends Error {

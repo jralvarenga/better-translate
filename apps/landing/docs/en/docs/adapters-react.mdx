@@ -28,6 +28,9 @@ export async function createTranslator() {
   return configureTranslations({
     availableLocales: ["en", "es"] as const,
     defaultLocale: "en",
+    directions: {
+      es: "rtl",
+    },
     messages: { en, es },
   })
 }
@@ -59,6 +62,8 @@ function MyComponent() {
   const {
     t,
     locale,
+    direction,
+    rtl,
     setLocale,
     loadLocale,
     messages,
@@ -74,6 +79,8 @@ function MyComponent() {
   return (
     <div>
       <p>{t("greeting", { params: { name: "World" } })}</p>
+      <p>{direction}</p>
+      <p>{String(rtl)}</p>
       <button type="button" onClick={() => setLocale("es")}>
         Switch to Spanish
       </button>
@@ -99,6 +106,9 @@ await loadLocale("fr")
 // switch instantly since it's already cached
 setLocale("fr")
 ```
+
+Use `translator.getDirection()` or `translator.isRtl()` when you need per-call
+direction metadata or want to override it through `config.rtl`.
 
 ## Provider scope
 

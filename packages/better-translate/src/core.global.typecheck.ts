@@ -49,6 +49,11 @@ const helpers = await createTranslationHelpers({
 
 helpers.t("common.hello");
 helpers.t("account.balance.label");
+helpers.t("common.hello", {
+  config: {
+    rtl: true,
+  },
+});
 helpers.t("common.greeting", {
   params: {
     name: "Ada",
@@ -62,18 +67,33 @@ helpers.t("common.formalGreeting", {
 });
 helpers.loadLocale("fr");
 helpers.getSupportedLocales().includes("en");
+helpers.getDirection({ locale: "es" });
+helpers.isRtl({
+  config: {
+    rtl: true,
+  },
+});
 helpers.getMessages().en?.account?.balance?.label;
 
 const {
+  getDirection: getConfiguredDirection,
   getMessages: getConfiguredMessages,
   getSupportedLocales: getConfiguredSupportedLocales,
+  isRtl: getConfiguredIsRtl,
   loadLocale: loadConfiguredLocale,
   t: translate,
 } = helpers;
 
 translate("common.hello");
 translate("account.balance.label");
+translate("common.hello", {
+  config: {
+    rtl: false,
+  },
+});
 loadConfiguredLocale("fr");
+getConfiguredDirection();
+getConfiguredIsRtl();
 getConfiguredSupportedLocales().includes("en");
 getConfiguredMessages().en?.account?.balance?.label;
 

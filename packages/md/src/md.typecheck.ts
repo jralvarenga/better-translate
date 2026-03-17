@@ -23,6 +23,9 @@ const translator = await configureTranslations({
   availableLocales: ["en", "es"] as const,
   defaultLocale: "en",
   fallbackLocale: "en",
+  directions: {
+    es: "rtl",
+  },
   messages: {
     en,
     es,
@@ -56,11 +59,22 @@ const collectionDocument = await collection.getDocument("docs/guide", {
   locale: "en",
 });
 const serverDocument = await serverDocs.getDocument("docs/guide");
+const direction = await serverDocs.getDirection();
+const rtl = await serverDocs.isRtl();
+const explicitDirection = await serverDocs.getDirection({
+  locale: "es",
+});
 
 const helperLocale: "en" | "es" = helperDocument.locale;
 const collectionLocale: "en" | "es" = collectionDocument.locale;
 const serverLocale: "en" | "es" = serverDocument.locale;
+const helperDirection: "ltr" | "rtl" = direction;
+const helperRtl: boolean = rtl;
+const localeDirection: "ltr" | "rtl" = explicitDirection;
 
 void helperLocale;
 void collectionLocale;
 void serverLocale;
+void helperDirection;
+void helperRtl;
+void localeDirection;

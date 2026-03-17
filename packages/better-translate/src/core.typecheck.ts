@@ -1,6 +1,7 @@
 import type {
   DeepStringify,
   DotKeys,
+  TranslationDirection,
   TranslationLocaleMap,
 } from "./core.js";
 import { configureTranslations, getMessages } from "./core.js";
@@ -47,6 +48,9 @@ const translator = await configureTranslations({
   availableLocales: ["en", "es", "fr"] as const,
   defaultLocale: "en",
   fallbackLocale: "en",
+  directions: {
+    es: "rtl",
+  },
   messages,
   loaders: {
     fr: async () => ({
@@ -59,6 +63,11 @@ const translator = await configureTranslations({
 
 translator.t("common.hello");
 translator.t(translationKey, { locale: "es" });
+translator.t("common.hello", {
+  config: {
+    rtl: true,
+  },
+});
 translator.t("common.greeting", {
   params: {
     name: "Ada",
@@ -71,6 +80,20 @@ translator.t("common.formalGreeting", {
   },
 });
 translator.loadLocale("fr");
+translator.getDirection();
+translator.getDirection({ locale: "es" });
+translator.getDirection({
+  locale: "es",
+  config: {
+    rtl: false,
+  },
+});
+translator.isRtl();
+translator.isRtl({
+  config: {
+    rtl: true,
+  },
+});
 translator.getMessages();
 getMessages();
 
@@ -112,6 +135,11 @@ configureTranslations({
   },
 });
 
+const direction: TranslationDirection = translator.getDirection({
+  locale: "es",
+});
+void direction;
+
 // @ts-expect-error defaultLocale must be one of the available locales
 configureTranslations({
   availableLocales: ["en", "es"] as const,
@@ -137,6 +165,44 @@ configureTranslations({
         hello: "Bonjour",
       },
     }),
+  },
+});
+
+configureTranslations({
+  availableLocales: ["en", "es"] as const,
+  defaultLocale: "en",
+  messages: {
+    en,
+    es,
+  },
+  directions: {
+    es: "rtl",
+  },
+});
+
+configureTranslations({
+  availableLocales: ["en", "es"] as const,
+  defaultLocale: "en",
+  messages: {
+    en,
+    es,
+  },
+  directions: {
+    // @ts-expect-error directions should reject invalid direction values
+    es: "sideways",
+  },
+});
+
+configureTranslations({
+  availableLocales: ["en", "es"] as const,
+  defaultLocale: "en",
+  messages: {
+    en,
+    es,
+  },
+  directions: {
+    // @ts-expect-error directions should reject locales outside the declared locale contract
+    pt: "rtl",
   },
 });
 

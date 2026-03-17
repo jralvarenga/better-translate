@@ -95,6 +95,7 @@ export const es = {
       github: "GitHub",
     },
     sidebar: {
+      rtl: "RTL",
       adapters: "Adaptadores",
       changelog: "Changelog",
       cli: "CLI",
