@@ -9,5 +9,5 @@ export default async function DocsCliPage({
 }) {
   const { lang } = await params;
   setRequestLocale(lang);
-  return renderDocPage("docs/cli");
+  return renderDocPage("cli");
 }

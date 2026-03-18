@@ -1,0 +1,159 @@
+---
+title: CLI
+description: Generate translation files and localized markdown with the Better Translate CLI.
+---
+
+# CLI
+
+`@better-translate/cli` helps you create translated files from one source locale.
+
+It uses the **AI SDK under the hood**.
+
+You can use it in 2 ways:
+
+- with an AI Gateway model string
+- with the built-in `openai(...)` helper exported by the CLI package
+
+## Install
+
+```sh
+bun add -D @better-translate/cli
+```
+
+## How It Works
+
+Think about it in 3 steps:
+
+1. Point the CLI at your source translation file.
+2. Tell it which locales to generate.
+3. Choose a model mode and run `bt generate`.
+
+The CLI will:
+
+- read your source locale file
+- send that content to the AI SDK
+- ask the model to translate it while keeping the same key structure and style
+- write the generated locale files next to the source file
+- optionally do the same for Markdown and MDX docs
+
+## Config
+
+Create `better-translate.config.ts` in your project root.
+
+### AI Gateway mode
+
+```ts showLineNumbers
+import { defineConfig } from "@better-translate/cli/config"
+
+export default defineConfig({
+  gateway: {
+    apiKey: process.env.AI_GATEWAY_KEY!,
+  },
+  sourceLocale: "en",
+  locales: ["es", "ar", "ja"],
+  model: "anthropic/claude-sonnet-4.5",
+  messages: {
+    entry: "./src/lib/i18n/messages/en.ts",
+  },
+  markdown: {
+    rootDir: "./docs/en",
+  },
+})
+```
+
+Use this when you want to pass a model id through AI Gateway.
+
+### Built-in OpenAI mode
+
+```ts showLineNumbers
+import { defineConfig, openai } from "@better-translate/cli/config"
+
+export default defineConfig({
+  sourceLocale: "en",
+  locales: ["es", "ar", "ja"],
+  model: openai("gpt-4.1", {
+    apiKey: process.env.OPENAI_API_KEY!,
+  }),
+  messages: {
+    entry: "./src/lib/i18n/messages/en.ts",
+  },
+  markdown: {
+    rootDir: "./docs/en",
+  },
+})
+```
+
+Use this when you want to pass your OpenAI API key directly and use the built-in provider exported by the CLI package.
+
+The CLI loads `.env`, `.env.local`, `.env.{NODE_ENV}`, and
+`.env.{NODE_ENV}.local` before importing the config, so you can read keys from
+`process.env` in either mode.
+
+## What Each Field Means
+
+- `gateway.apiKey`: your AI Gateway key
+- `sourceLocale`: the source language, usually `"en"`
+- `locales`: the target languages you want to generate
+- `model`: either a Gateway model string or `openai("model-id", { apiKey })`
+- `messages.entry`: the source translation file
+- `markdown.rootDir`: optional source docs folder, such as `./docs/en`
+
+## Important Rule
+
+- if you use `gateway`, `model` must be a string
+- if you use `model: openai(...)`, do not set `gateway`
+- if you use `gateway`, do not use `openai(...)`
+
+## Provider Example
+
+```ts showLineNumbers
+import { defineConfig, openai } from "@better-translate/cli/config"
+
+export default defineConfig({
+  sourceLocale: "en",
+  locales: ["es", "fr"],
+  model: openai("gpt-4.1", {
+    apiKey: process.env.OPENAI_API_KEY!,
+  }),
+  messages: {
+    entry: "./src/lib/i18n/messages/en.ts",
+  },
+})
+```
+
+## Commands
+
+```sh
+bt generate
+bt generate --config ./better-translate.config.ts
+bt generate --dry-run
+```
+
+Use `--dry-run` when you want to preview what the CLI is going to create.
+
+## Example Output
+
+If `messages.entry` points to `./src/lib/i18n/messages/en.ts`, the CLI writes
+sibling locale files next to it:
+
+```txt
+src/lib/i18n/messages/es.ts
+src/lib/i18n/messages/ar.ts
+```
+
+When `markdown.rootDir` points to `./docs/en`, every `.md` and `.mdx` document
+is mirrored into sibling locale roots:
+
+```txt
+docs/en/intro.md -> docs/es/intro.md
+docs/en/guides/setup.mdx -> docs/ar/guides/setup.mdx
+```
+
+## Important Behavior
+
+- The CLI uses the **AI SDK** under the hood.
+- You can use an AI Gateway model string or the built-in `openai(...)` helper.
+- The generated translation object must keep the same keys as the source file.
+- Placeholders like `{name}` are preserved.
+- Markdown frontmatter string values are translated separately from the body.
+- Existing generated files are overwritten in place.

@@ -1,0 +1,137 @@
+import { readFile } from "node:fs/promises";
+import path from "node:path";
+
+import {
+  createTranslationJsonSchema,
+  type TranslationMessages,
+} from "better-translate";
+
+import { importModule } from "./module-loader.js";
+import {
+  assert,
+  assertTranslationMessages,
+  flattenTranslationKeys,
+  toJavaScriptIdentifier,
+} from "./validation.js";
+
+export interface LoadedSourceMessages {
+  format: "json" | "ts";
+  keyPaths: readonly string[];
+  messages: TranslationMessages;
+  schema: object;
+  sourceText: string;
+  sourcePath: string;
+}
+
+function getExportedMessages(
+  module: Record<string, unknown>,
+  sourceLocale: string,
+): TranslationMessages {
+  const value = module.default ?? module[sourceLocale];
+
+  assert(
+    value !== undefined,
+    `The source translation module must export a default object or a named "${sourceLocale}" export.`,
+  );
+  assertTranslationMessages(
+    value,
+    "The source translation file must export nested objects with string leaves only.",
+  );
+
+  return value as TranslationMessages;
+}
+
+export async function loadSourceMessages(
+  sourcePath: string,
+  sourceLocale: string,
+): Promise<LoadedSourceMessages> {
+  const extension = path.extname(sourcePath);
+  const sourceText = await readFile(sourcePath, "utf8");
+
+  if (extension === ".json") {
+    const parsed = JSON.parse(sourceText) as unknown;
+
+    assertTranslationMessages(
+      parsed,
+      "The source JSON file must contain nested objects with string leaves only.",
+    );
+
+    return {
+      format: "json",
+      keyPaths: flattenTranslationKeys(parsed),
+      messages: parsed as TranslationMessages,
+      schema: createTranslationJsonSchema(parsed as TranslationMessages),
+      sourceText,
+      sourcePath,
+    };
+  }
+
+  assert(
+    extension === ".ts",
+    `Unsupported source translation extension "${extension}". Use .json or .ts.`,
+  );
+
+  const module = await importModule(sourcePath);
+  const messages = getExportedMessages(module, sourceLocale);
+
+  return {
+    format: "ts",
+    keyPaths: flattenTranslationKeys(messages),
+    messages,
+    schema: createTranslationJsonSchema(messages),
+    sourceText,
+    sourcePath,
+  };
+}
+
+function replaceLocaleSegment(
+  basename: string,
+  sourceLocale: string,
+  targetLocale: string,
+): string | null {
+  if (basename === sourceLocale) {
+    return targetLocale;
+  }
+
+  const escapedSourceLocale = sourceLocale.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const pattern = new RegExp(`(^|[._-])${escapedSourceLocale}(?=$|[._-])`);
+  const match = basename.match(pattern);
+
+  if (!match) {
+    return null;
+  }
+
+  return basename.replace(pattern, `${match[1]}${targetLocale}`);
+}
+
+export function deriveTargetMessagesPath(
+  sourcePath: string,
+  sourceLocale: string,
+  targetLocale: string,
+): string {
+  const extension = path.extname(sourcePath);
+  const basename = path.basename(sourcePath, extension);
+  const replaced = replaceLocaleSegment(basename, sourceLocale, targetLocale);
+
+  assert(
+    replaced,
+    `Could not derive a target messages filename from "${sourcePath}". The basename must contain the source locale "${sourceLocale}".`,
+  );
+
+  return path.join(path.dirname(sourcePath), `${replaced}${extension}`);
+}
+
+export function serializeMessages(
+  messages: TranslationMessages,
+  format: "json" | "ts",
+  locale: string,
+): string {
+  if (format === "json") {
+    return `${JSON.stringify(messages, null, 2)}\n`;
+  }
+
+  const identifier = toJavaScriptIdentifier(locale);
+  const objectLiteral = JSON.stringify(messages, null, 2);
+
+  return `export const ${identifier} = ${objectLiteral} as const;\n\nexport default ${identifier};\n`;
+}

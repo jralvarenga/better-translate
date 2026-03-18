@@ -21,6 +21,8 @@ If you are new, read the files in this order:
 
 - `better-translate`
   The main library. This is the core translation engine.
+- `@better-translate/cli`
+  The CLI generator. It uses the AI SDK under the hood to generate locale files and localized markdown from a source file.
 - `@better-translate/react`
   React provider and hooks.
 - `@better-translate/nextjs`
@@ -49,6 +51,14 @@ Better Translate has one main idea:
 1. Configure translations once.
 2. Use typed helpers everywhere.
 
+If you want AI to create translation files for you, use `@better-translate/cli`.
+It uses the AI SDK under the hood and writes locale files into your project.
+
+It supports 2 simple modes:
+
+- AI Gateway with a string model id
+- built-in OpenAI provider mode with `openai("gpt-4.1", { apiKey })`
+
 The core package owns the translation logic.
 
 The React package makes that logic easy to use in client components.
@@ -59,6 +69,7 @@ The Markdown package makes that same logic work for localized `.md` and `.mdx` f
 
 ## Important Files
 
+- `packages/cli`
 - `packages/better-translate`
 - `packages/react`
 - `packages/nextjs`
@@ -71,6 +82,8 @@ The Markdown package makes that same logic work for localized `.md` and `.mdx` f
 
 ## What To Copy From The Examples
 
+- Copy the CLI config pattern if you want AI-generated locale files.
+- If you want provider mode, use `import { defineConfig, openai } from "@better-translate/cli/config"`.
 - Copy the core setup if you want typed translations anywhere.
 - Copy the React provider pattern if you need client-side locale switching.
 - Copy the Next.js request, server, routing, navigation, and proxy files if you need App Router support.

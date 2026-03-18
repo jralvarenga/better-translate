@@ -97,6 +97,7 @@ export const en = {
       gettingStarted: "Getting Started",
       installation: "Installation",
       introduction: "Introduction",
+      mission: "Mission",
       mdAndMdx: "MD & MDX",
       nextjs: "Next.js",
       react: "React",

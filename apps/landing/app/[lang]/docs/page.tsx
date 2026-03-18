@@ -9,5 +9,5 @@ export default async function DocsIntroductionPage({
 }) {
   const { lang } = await params;
   setRequestLocale(lang);
-  return renderDocPage("docs/introduction");
+  return renderDocPage("introduction");
 }

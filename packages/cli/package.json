@@ -1,0 +1,58 @@
+{
+  "name": "@better-translate/cli",
+  "version": "0.0.0",
+  "description": "AI-powered translation generation CLI for Better Translate.",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "bt": "./dist/bin.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./config": {
+      "types": "./dist/config.d.ts",
+      "import": "./dist/config.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts src/config.ts src/bin.ts --format esm --clean && tsc -p tsconfig.build.json",
+    "check-types": "tsc --noEmit",
+    "test": "bun test src/**/*.test.ts"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@ai-sdk/openai": "^3.0.41",
+    "ai": "^6.0.116",
+    "better-translate": "0.0.0",
+    "dotenv": "^17.2.3",
+    "gray-matter": "^4.0.3",
+    "ora": "^8.2.0",
+    "picocolors": "^1.1.1",
+    "typescript": "5.9.2"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "*",
+    "@types/node": "^24.5.2"
+  },
+  "keywords": [
+    "ai",
+    "cli",
+    "i18n",
+    "l10n",
+    "translations",
+    "typescript"
+  ]
+}

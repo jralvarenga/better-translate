@@ -9,5 +9,5 @@ export default async function DocsChangelogPage({
 }) {
   const { lang } = await params;
   setRequestLocale(lang);
-  return renderDocPage("docs/changelog");
+  return renderDocPage("changelog");
 }

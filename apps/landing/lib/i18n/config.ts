@@ -7,8 +7,9 @@ import {
 import { ar } from "./messages/ar";
 import { en } from "./messages/en";
 import { es } from "./messages/es";
+import { ja } from "./messages/ja";
 
-export const landingLocales = ["en", "es", "ar"] as const;
+export const landingLocales = ["en", "es", "ar", "ja"] as const;
 
 export type LandingLocale = (typeof landingLocales)[number];
 
@@ -18,6 +19,7 @@ export const landingMessages = {
   en,
   es,
   ar,
+  ja
 } satisfies Record<LandingLocale, DeepStringify<typeof en>>;
 
 export const landingTranslationsConfig = {

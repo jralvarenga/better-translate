@@ -9,5 +9,5 @@ export default async function DocsRtlPage({
 }) {
   const { lang } = await params;
   setRequestLocale(lang);
-  return renderDocPage("docs/rtl");
+  return renderDocPage("rtl");
 }

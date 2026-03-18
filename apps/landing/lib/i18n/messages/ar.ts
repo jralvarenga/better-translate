@@ -1,107 +1,103 @@
 export const ar = {
-  codeDemo: {
-    description: "اضبط الإعداد مرة واحدة، وأنشئ مساعدين مكتوبَي النوع في كل مكان.",
-    title: "واجهة برمجية بسيطة من خطوتين",
+  "codeDemo": {
+    "description": "ضبط مرة واحدة، ثم إنشاء مساعدات محدّدة النوع في كل مكان.",
+    "title": "واجهة API بسيطة بخطوتين"
   },
-  features: {
-    description: "كل ما تحتاجه لترجمة احترافية جاهزة للإنتاج، بدون أي زيادات.",
-    items: {
-      autocomplete: {
-        description:
-          'محررك يعرف كل مفتاح في كائن الرسائل. لا مزيد من التخمين لأن `t("home.` تبدأ بالإكمال التلقائي فوراً.',
-        title: "إكمال تلقائي في كل مكان",
+  "features": {
+    "description": "كل ما تحتاجه من i18n للإنتاج، بلا إضافات.",
+    "items": {
+      "autocomplete": {
+        "description": "المحرر الخاص بك يعرف كل مفتاح في كائن رسائلك. لا مزيد من التخمين لأن `t(\"home.` يبدأ الإكمال فورًا.",
+        "title": "الإكمال التلقائي في كل مكان"
       },
-      frameworkAgnostic: {
-        description:
-          "صفر اعتمادية على إطار عمل معين. حزمة أساسية واحدة، ومحولات متكاملة لـ React وNext.js وTanStack Router وNode.js العادي.",
-        title: "مستقل عن الإطار",
+      "frameworkAgnostic": {
+        "description": "بدون ارتباط إطار—حزمة أساسية واحدة، موائمات من الدرجة الأولى لـ React وNext.js وTanStack Router وNode عادي.",
+        "title": "مستقل الإطار"
       },
-      localeSwitching: {
-        description:
-          "قم بتبديل اللغات في وقت التشغيل دون إعادة تحميل الصفحة. تتيح لك التجاوزات لكل استدعاء عرض أي لغة عند الطلب.",
-        title: "تبديل اللغة",
+      "localeSwitching": {
+        "description": "تبديل اللغات أثناء التشغيل بدون إعادة تحميل الصفحة. السماحات المستندة إلى الاستدعاء تتيح لك عرض أي لغة عند الطلب.",
+        "title": "تبديل اللغة"
       },
-      typeSafe: {
-        description:
-          "استنتاج TypeScript كامل على مفاتيح الترجمة ومتغيرات الاستيفاء. تصبح الأخطاء المطبعية والمفاتيح المفقودة أخطاء وقت ترجمة.",
-        title: "آمن النوع افتراضياً",
-      },
+      "typeSafe": {
+        "description": "استنتاج TypeScript كامل لمفاتيح الترجمات ومتغيرات الاستبدال. الأخطاء الإملائية والمفاتيح المفقودة تصبح أخطاء بنائية.",
+        "title": "نوع آمن افتراضيًا"
+      }
     },
-    title: "مبني لفرق TypeScript",
+    "title": "مصمم لفرق TypeScript"
   },
-  footer: {
-    docs: "التوثيق",
-    github: "GitHub",
-    legal: "رخصة MIT · مبني بـ TypeScript",
-    npm: "npm",
+  "footer": {
+    "docs": "الوثائق",
+    "github": "GitHub",
+    "legal": "MIT License · مبني باستخدام TypeScript",
+    "npm": "npm"
   },
-  frameworks: {
-    description:
-      "نواة ترجمة مشتركة واحدة. محولات أصلية لكل إطار عمل TypeScript رئيسي، أو استخدم النواة مباشرة.",
-    heroDescription:
-      "بدون اعتمادية على إطار معين - نواة واحدة، صفر تبعيات وقت التشغيل",
-    heroTitle: "يعمل مع أي مشروع TypeScript",
-    items: {
-      bun: {
-        description: "دعم وقت تشغيل Bun الأصلي بدون إعداد إضافي.",
+  "frameworks": {
+    "description": "نواة ترجمة مشتركة واحدة. موائمات أصلية لكل إطار TypeScript رئيسي، أو استخدم النواة مباشرة.",
+    "heroDescription": "لا ارتباط بإطار—نواة واحدة، بدون تبعيات وقت التشغيل",
+    "heroTitle": "يعمل مع أي مشروع TypeScript",
+    "items": {
+      "bun": {
+        "description": "دعم وقت تشغيل Bun أصلي بدون إعداد إضافي."
       },
-      nextjs: {
-        description: "مكونات الخادم، App Router، ومساعدات اللغة المدركة للمسارات.",
+      "nextjs": {
+        "description": "مكوّنات الخادم، App Router، ومساعدات اللغة المرتبطة بالمسار."
       },
-      nodejs: {
-        description: "نواة بدون تبعيات للسكريبتات والخوادم والمهام الخلفية.",
+      "nodejs": {
+        "description": "نواة بلا تبعيات للسكريبتات والخوادم والمهام الخلفية."
       },
-      react: {
-        description: "السياق والـ hooks وعرض العميل المدرك للغة لتطبيقات React.",
+      "react": {
+        "description": "السياق، والـ hooks، وعرض عميل يعتمد على اللغة لتطبيقات React."
       },
-      tanstack: {
-        description: "دعم التوجيه الآمن للنوع لمشاريع TanStack Router، بما في ذلك تطبيقات TanStack Start.",
+      "tanstack": {
+        "description": "دعم توجيه آمن النوع لمشاريع TanStack Router، بما فيها تطبيقات TanStack Start."
       },
-      typescript: {
-        description: "أنواع قوية وإكمال تلقائي وتغذية راجعة وقت الترجمة من رسائلك.",
-      },
+      "typescript": {
+        "description": "أنواع قوية، إكمال تلقائي، وتغذية راجعة من رسائلك أثناء البناء."
+      }
     },
-    title: "إطارك، اختيارك",
+    "title": "إطارك، اختيارك"
   },
-  header: {
-    changelog: "سجل التغييرات",
-    cli: "واجهة سطر الأوامر",
-    closeMenu: "إغلاق القائمة",
-    docs: "التوثيق",
-    github: "GitHub",
-    language: "اللغة",
-    languageSwitcher: "تبديل اللغة",
-    openMenu: "فتح القائمة",
+  "header": {
+    "changelog": "Changelog",
+    "cli": "CLI",
+    "closeMenu": "إغلاق القائمة",
+    "docs": "الوثائق",
+    "github": "GitHub",
+    "language": "اللغة",
+    "languageSwitcher": "تبديل اللغة",
+    "openMenu": "فتح القائمة"
   },
-  hero: {
-    badge: "مستقل عن الإطار - يعمل في أي مشروع TypeScript",
-    description:
-      "حدد ترجماتك مرة واحدة. احصل على إكمال تلقائي وأخطاء النوع وتبديل اللغة - بدون اعتمادية على إطار. يعمل في أي قاعدة كود TypeScript.",
-    primaryCta: "عرض التوثيق",
-    secondaryCta: "عرض على GitHub",
-    title: "ترجمات آمنة النوع لـ TypeScript",
+  "hero": {
+    "badge": "بدون ارتباط بإطار - يعمل في أي مشروع TypeScript",
+    "description": "عرف ترجماتك مرة واحدة. احصل على الإكمال التلقائي، وأخطاء النوع، وتبديل اللغة - بلا ارتباط بإطار. يعمل في أي قاعدة كود TypeScript.",
+    "primaryCta": "عرض الوثائق",
+    "secondaryCta": "عرض على GitHub",
+    "title": "ترجمات آمنة النوع لـ TypeScript"
   },
-  docs: {
-    copyMarkdown: "نسخ Markdown",
-    copiedMarkdown: "تم النسخ",
-    header: {
-      home: "الرئيسية",
-      github: "GitHub",
+  "docs": {
+    "copyMarkdown": "نسخ ماركداون",
+    "copiedMarkdown": "تم النسخ",
+    "header": {
+      "home": "الصفحة الرئيسية",
+      "github": "GitHub"
     },
-    sidebar: {
-      rtl: "RTL",
-      adapters: "المحولات",
-      changelog: "سجل التغييرات",
-      cli: "واجهة سطر الأوامر",
-      core: "النواة",
-      gettingStarted: "البدء",
-      installation: "التثبيت",
-      introduction: "المقدمة",
-      mdAndMdx: "MD & MDX",
-      nextjs: "Next.js",
-      react: "React",
-      skills: "المهارات",
-      tanstackStart: "TanStack Router",
-    },
-  },
+    "sidebar": {
+      "rtl": "RTL",
+      "adapters": "الموائمات",
+      "changelog": "Changelog",
+      "cli": "CLI",
+      "core": "النواة",
+      "gettingStarted": "البدء",
+      "installation": "التثبيت",
+      "introduction": "مقدمة",
+      "mission": "المهمة",
+      "mdAndMdx": "MD و MDX",
+      "nextjs": "Next.js",
+      "react": "React",
+      "skills": "المهارات",
+      "tanstackStart": "TanStack Router"
+    }
+  }
 } as const;
+
+export default ar;

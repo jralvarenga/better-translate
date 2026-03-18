@@ -1,0 +1,51 @@
+---
+title: Introduction
+description: Better Translate is a type-safe translation library built for TypeScript — configure once, use everywhere.
+---
+
+# Introduction
+
+Better Translate exists because type safety in i18n too often feels optional.
+
+In a lot of translation setups, you first wire everything together, then later try to recover safety with extra declaration files, manual typing, or framework-specific workarounds. The result usually works, but it rarely feels simple.
+
+This package exists to make translations feel safer and more unified from the beginning.
+
+## Why it exists
+
+Type safety should be part of the default experience, not something you bolt on later.
+
+If a translation key is wrong, that should be visible while you are writing code.
+
+If a message expects params, that should be clear where you use it.
+
+And if translations are shared across the stack, the setup should feel like one system instead of a collection of disconnected tools.
+
+That is the reason Better Translate exists: to make i18n safer, simpler, and more consistent for TypeScript-first apps.
+
+## The idea behind it
+
+The project is built around a simple belief:
+
+Configure translations once, then use that same source of truth everywhere.
+
+The package is not trying to turn translation safety into a giant setup exercise. It is trying to make the safe path feel like the natural path.
+
+## What that means for the project
+
+Better Translate is here for teams that want:
+
+- typed translation keys
+- typed message params
+- one clear translation model
+- less setup friction
+- a package that feels coherent across the stack
+
+The details of the package can grow over time, but the reason it exists stays the same: translation tooling should help you move faster without making correctness feel fragile.
+
+## Where to go next
+
+- **Want to understand the current focus?** → [Mission](/docs/mission)
+- **Using TypeScript or a server?** → [Adapters → Core](/docs/adapters/core)
+- **Building a React app?** → [Adapters → React](/docs/adapters/react)
+- **Using Next.js App Router?** → [Adapters → Next.js](/docs/adapters/nextjs)

@@ -9,5 +9,5 @@ export default async function DocsInstallationPage({
 }) {
   const { lang } = await params;
   setRequestLocale(lang);
-  return renderDocPage("docs/installation");
+  return renderDocPage("installation");
 }

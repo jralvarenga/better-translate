@@ -35,8 +35,8 @@ export const HeroHeader = ({
     const [isScrolled, setIsScrolled] = React.useState(false)
     const menuItems = [
         { href: '/docs', label: docsLabel, localized: true },
-        { href: siteLinks.npm, label: cliLabel, localized: false },
-        { href: siteLinks.changelog, label: changelogLabel, localized: false },
+        { href: '/docs/cli', label: cliLabel, localized: false },
+        { href: '/docs/changelog', label: changelogLabel, localized: false },
     ] as const
 
     React.useEffect(() => {

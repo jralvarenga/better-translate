@@ -17,6 +17,7 @@ import {
 
 const GETTING_STARTED = [
     { nameKey: "introduction" as const, href: "/docs" },
+    { nameKey: "mission" as const, href: "/docs/mission" },
     { nameKey: "installation" as const, href: "/docs/installation" },
     { nameKey: "cli" as const, href: "/docs/cli" },
     { nameKey: "skills" as const, href: "/docs/skills" },

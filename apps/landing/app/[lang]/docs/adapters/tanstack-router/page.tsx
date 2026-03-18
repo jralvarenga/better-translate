@@ -9,5 +9,5 @@ export default async function DocsAdapterTanStackRouterPage({
 }) {
   const { lang } = await params;
   setRequestLocale(lang);
-  return renderDocPage("docs/adapters-tanstack-router");
+  return renderDocPage("adapters-tanstack-router");
 }

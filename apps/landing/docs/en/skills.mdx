@@ -1,0 +1,101 @@
+---
+title: Skills
+description: A simple learning guide for understanding Better Translate and its packages.
+---
+
+# Skills
+
+The `skills/` folder is a simple guide to the repo.
+
+It explains how Better Translate works without making you read the whole codebase first.
+
+It also helps you understand the difference between:
+
+- the core translation runtime
+- the framework adapters
+- the CLI generator
+
+The CLI is important here because it uses the **AI SDK under the hood** to
+generate locale files and localized markdown from a source file.
+
+You can use the CLI with:
+
+- an AI Gateway model string
+- the built-in `openai(...)` provider helper from `@better-translate/cli/config`
+
+## Reading order
+
+If you are new, read the skill files in this order:
+
+1. `skills/core/README.md` — The translation engine: typed keys, params, fallback, async loading, and global helpers.
+2. `skills/react/README.md` — The React adapter: BetterTranslateProvider and useTranslations().
+3. `skills/nextjs/README.md` — The Next.js adapter: locale routing, server helpers, and navigation wrappers.
+4. `skills/md/README.md` — How localized Markdown and MDX files work.
+5. `skills/combined/README.md` — How core, React, and Next.js work together in a real app.
+6. `skills/examples/README.md` — A map of the example apps — copy the one that matches your architecture.
+7. `skills/workspace/README.md` — How the monorepo is organized: packages vs apps, build scripts, and config files.
+
+## Simple mental model
+
+Better Translate has two simple ideas:
+
+1. **Configure translations once, use typed helpers everywhere.**
+2. **Use the CLI when you want AI to generate locale files for you.**
+
+The core package owns the translation logic.
+
+The React and Next.js packages make that logic easy to use in apps.
+
+The CLI uses the **AI SDK** to generate translated files from a source locale file.
+
+If you want the provider mode, the config looks like this:
+
+```ts
+import { defineConfig, openai } from "@better-translate/cli/config"
+
+export default defineConfig({
+  sourceLocale: "en",
+  locales: ["es", "ar"],
+  model: openai("gpt-4.1", {
+    apiKey: process.env.OPENAI_API_KEY!,
+  }),
+  messages: {
+    entry: "./src/lib/i18n/messages/en.ts",
+  },
+})
+```
+
+## Which guide should I read?
+
+- → Only need translations in TypeScript or on a server? Read `skills/core/README.md`
+- → Building a React app? Read `skills/react/README.md`
+- → Building a Next.js App Router app? Read `skills/nextjs/README.md`
+- → Translating Markdown or MDX docs? Read `skills/md/README.md`
+- → Want AI-generated locale files? Read the CLI docs first, then `skills/core/README.md`
+- → App has both server and client parts? Read `skills/combined/README.md`
+- → Learn best by copying working projects? Read `skills/examples/README.md`
+
+<div className="mt-6 flex flex-wrap gap-3">
+  <Button asChild variant="outline" size="lg">
+    <Link href="/docs/adapters/core">Core concepts</Link>
+  </Button>
+  <Button asChild variant="outline" size="lg">
+    <Link href="/docs/adapters/react">React concepts</Link>
+  </Button>
+  <Button asChild size="lg">
+    <Link href="/docs/adapters/nextjs">Next.js concepts</Link>
+  </Button>
+</div>
+
+## Key package files
+
+- `packages/better-translate`
+- `packages/cli`
+- `packages/react`
+- `packages/nextjs`
+- `packages/md`
+- `apps/react-vite-example`
+- `apps/nextjs-example`
+- `apps/nextjs-nested-locale-example`
+- `apps/core-elysia-example`
+- `apps/landing`

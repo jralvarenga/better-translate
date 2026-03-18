@@ -9,5 +9,5 @@ export default async function DocsAdapterCorePage({
 }) {
   const { lang } = await params;
   setRequestLocale(lang);
-  return renderDocPage("docs/adapters-core");
+  return renderDocPage("adapters-core");
 }
