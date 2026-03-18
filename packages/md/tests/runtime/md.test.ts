@@ -74,6 +74,14 @@ Bienvenido.
       directions: {
         es: "rtl",
       },
+      languages: [
+        {
+          icon: "🇪🇸",
+          locale: "es",
+          nativeLabel: "Español",
+          shortLabel: "ES",
+        },
+      ],
       messages: {
         en,
         es,
@@ -102,6 +110,19 @@ Bienvenido.
       title: "Guia",
     });
     expect(document.source).toContain("Bienvenido.");
+    expect(await serverDocs.getAvailableLanguages()).toEqual([
+      {
+        icon: "🇪🇸",
+        locale: "es",
+        nativeLabel: "Español",
+        shortLabel: "ES",
+      },
+      {
+        locale: "en",
+        nativeLabel: "en",
+        shortLabel: "EN",
+      },
+    ]);
     expect(await serverDocs.getDirection()).toBe("rtl");
     expect(await serverDocs.isRtl()).toBe(true);
     expect(

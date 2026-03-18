@@ -1,4 +1,5 @@
 'use client'
+
 import Link from 'next/link'
 import { Logo } from '@/components/logo'
 import { RiMenuLine, RiCloseLine, RiGithubLine } from '@remixicon/react'
@@ -6,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import React from 'react'
 import { cn } from '@/lib/utils'
 import { siteLinks } from '@/lib/site'
-import type { LandingLocale } from '@/lib/i18n/config'
+import { getLandingLanguages, type LandingLocale } from '@/lib/i18n/config'
 import { I18nLink } from '@/lib/i18n/navigation'
 import { HeaderLanguageSwitcher } from '@/components/header-language-switcher'
 
@@ -29,14 +30,14 @@ export const HeroHeader = ({
     docsLabel,
     githubLabel,
     openMenuLabel,
-    switchLabel,
 }: HeroHeaderProps) => {
     const [menuState, setMenuState] = React.useState(false)
     const [isScrolled, setIsScrolled] = React.useState(false)
+    const languages = getLandingLanguages()
     const menuItems = [
         { href: '/docs', label: docsLabel, localized: true },
-        { href: '/docs/cli', label: cliLabel, localized: false },
-        { href: '/docs/changelog', label: changelogLabel, localized: false },
+        { href: siteLinks.npm, label: cliLabel, localized: false },
+        { href: siteLinks.changelog, label: changelogLabel, localized: false },
     ] as const
 
     React.useEffect(() => {
@@ -64,7 +65,7 @@ export const HeroHeader = ({
 
                             <button
                                 onClick={() => setMenuState(!menuState)}
-                                aria-label={menuState == true ? closeMenuLabel : openMenuLabel}
+                            aria-label={menuState == true ? closeMenuLabel : openMenuLabel}
                                 className="relative z-20 -m-2.5 -mr-4 block cursor-pointer p-2.5 lg:hidden">
                                 <RiMenuLine className="in-data-[state=active]:rotate-180 in-data-[state=active]:scale-0 in-data-[state=active]:opacity-0 m-auto size-6 duration-200" />
                                 <RiCloseLine className="in-data-[state=active]:rotate-0 in-data-[state=active]:scale-100 in-data-[state=active]:opacity-100 absolute inset-0 m-auto size-6 -rotate-180 scale-0 opacity-0 duration-200" />
@@ -133,6 +134,7 @@ export const HeroHeader = ({
                                 </Button>
                                 <HeaderLanguageSwitcher
                                     currentLocale={currentLocale}
+                                    languages={languages}
                                     onSelect={() => setMenuState(false)}
                                 />
                             </div>

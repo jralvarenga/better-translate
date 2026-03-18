@@ -1,5 +1,6 @@
 import { interpolateMessage } from "./interpolate-message.js";
 import { resolveMessageValue } from "./resolve-message-value.js";
+import { snapshotLanguages } from "./snapshot-languages.js";
 import { snapshotMessages } from "./snapshot-messages.js";
 import { isTranslationMessages } from "./validation.js";
 import type {
@@ -10,6 +11,7 @@ import type {
   InternalTranslationMessages,
   TranslationDirection,
   TranslationDirectionOptions,
+  TranslationLanguageMetadata,
   TranslateCall,
   TranslationKey,
   TranslateOptions,
@@ -33,6 +35,8 @@ export function createConfiguredTranslator<
     ...config.messages,
   } as Partial<Record<TLocale, InternalTranslationMessages>>;
   const loaders = config.loaders as Partial<Record<TLocale, TranslationLoader<unknown>>>;
+  const availableLanguages =
+    config.languages as readonly TranslationLanguageMetadata<TLocale>[];
   const loadPromises = new Map<
     TLocale,
     Promise<DeepPartialMessages<TSourceMessages> | TSourceMessages | undefined>
@@ -138,6 +142,9 @@ export function createConfiguredTranslator<
     loadLocale,
     getSupportedLocales() {
       return [...config.supportedLocales] as unknown as readonly TLocale[];
+    },
+    getAvailableLanguages() {
+      return snapshotLanguages(availableLanguages);
     },
     getMessages(): CachedMessages<TLocale, TSourceMessages> {
       return snapshotMessages<TLocale, TSourceMessages>(messageCache);

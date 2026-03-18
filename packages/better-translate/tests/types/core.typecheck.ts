@@ -2,9 +2,14 @@ import type {
   DeepStringify,
   DotKeys,
   TranslationDirection,
+  TranslationLanguageMetadata,
   TranslationLocaleMap,
 } from "../../dist/core.js";
-import { configureTranslations, getMessages } from "../../dist/core.js";
+import {
+  configureTranslations,
+  getAvailableLanguages,
+  getMessages,
+} from "../../dist/core.js";
 
 const en = {
   common: {
@@ -51,6 +56,14 @@ const translator = await configureTranslations({
   directions: {
     es: "rtl",
   },
+  languages: [
+    {
+      icon: "🇪🇸",
+      locale: "es",
+      nativeLabel: "Español",
+      shortLabel: "ES",
+    },
+  ],
   messages,
   loaders: {
     fr: async () => ({
@@ -80,6 +93,7 @@ translator.t("common.formalGreeting", {
   },
 });
 translator.loadLocale("fr");
+translator.getAvailableLanguages();
 translator.getDirection();
 translator.getDirection({ locale: "es" });
 translator.getDirection({
@@ -95,7 +109,15 @@ translator.isRtl({
   },
 });
 translator.getMessages();
+getAvailableLanguages();
 getMessages();
+
+const configuredLanguages = translator.getAvailableLanguages();
+const configuredLanguageLocale: Locale | "fr" = configuredLanguages[0]!.locale;
+const configuredLanguage: TranslationLanguageMetadata<Locale | "fr"> =
+  configuredLanguages[0]!;
+void configuredLanguageLocale;
+void configuredLanguage;
 
 // @ts-expect-error invalid translation key should fail
 translator.t("account.balance.total");
@@ -178,6 +200,31 @@ configureTranslations({
   directions: {
     es: "rtl",
   },
+  languages: [
+    {
+      icon: "🇪🇸",
+      locale: "es",
+      nativeLabel: "Español",
+      shortLabel: "ES",
+    },
+  ],
+});
+
+// @ts-expect-error languages should reject locales outside the declared locale contract
+configureTranslations({
+  availableLocales: ["en", "es"] as const,
+  defaultLocale: "en",
+  messages: {
+    en,
+    es,
+  },
+  languages: [
+    {
+      locale: "pt",
+      nativeLabel: "Português",
+      shortLabel: "PT",
+    },
+  ],
 });
 
 // @ts-expect-error directions should reject invalid direction values

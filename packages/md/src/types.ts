@@ -2,6 +2,7 @@ import type {
   ConfiguredTranslator,
   TranslationConfig,
   TranslationDirection,
+  TranslationLanguageMetadata,
   TranslationMessages,
 } from "better-translate/core";
 
@@ -93,6 +94,9 @@ export interface MarkdownServerHelpers<TLocale extends string> {
     document: LocalizedMarkdownDocument<TLocale>,
   ): Promise<CompiledMarkdownResult<TLocale>>;
   getCollection(): Promise<MarkdownCollection<TLocale>>;
+  getAvailableLanguages(): Promise<
+    readonly TranslationLanguageMetadata<TLocale>[]
+  >;
   getDirection(
     options?: MarkdownDirectionOptions<TLocale>,
   ): Promise<TranslationDirection>;

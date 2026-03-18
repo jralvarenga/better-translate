@@ -223,6 +223,14 @@ describe("@better-translate/tanstack-router", () => {
       directions: {
         es: "rtl",
       },
+      languages: [
+        {
+          icon: "🇪🇸",
+          locale: "es",
+          nativeLabel: "Español",
+          shortLabel: "ES",
+        },
+      ],
       messages: {
         en: {
           home: {
@@ -247,6 +255,19 @@ describe("@better-translate/tanstack-router", () => {
     const t = await helpers.getTranslations();
 
     expect(await helpers.getLocale()).toBe("es");
+    expect(await helpers.getAvailableLanguages()).toEqual([
+      {
+        icon: "🇪🇸",
+        locale: "es",
+        nativeLabel: "Español",
+        shortLabel: "ES",
+      },
+      {
+        locale: "en",
+        nativeLabel: "en",
+        shortLabel: "EN",
+      },
+    ]);
     expect(await helpers.getDirection()).toBe("rtl");
     expect(await helpers.isRtl()).toBe(true);
     expect(

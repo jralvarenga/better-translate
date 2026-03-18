@@ -4,6 +4,7 @@ import {
   configureTranslations,
   createTranslationHelpers,
   createTranslationJsonSchema,
+  getAvailableLanguages,
   getMessages,
   getSupportedLocales,
   loadLocale,
@@ -42,6 +43,13 @@ const es = {
   },
 } as const;
 
+const jaLanguage = {
+  icon: "🇯🇵",
+  locale: "ja",
+  nativeLabel: "日本語",
+  shortLabel: "JA",
+} as const;
+
 describe("better-translate core", () => {
   afterEach(() => {
     resetTranslationsForTests();
@@ -54,6 +62,18 @@ describe("better-translate core", () => {
     expect(translator.getDirection()).toBe("ltr");
     expect(translator.getDirection({ locale: "es" })).toBe("ltr");
     expect(translator.isRtl({ locale: "es" })).toBe(false);
+    expect(translator.getAvailableLanguages()).toEqual([
+      {
+        locale: "en",
+        nativeLabel: "en",
+        shortLabel: "EN",
+      },
+      {
+        locale: "es",
+        nativeLabel: "es",
+        shortLabel: "ES",
+      },
+    ]);
     expect(translator.t("common.hello")).toBe("Hello");
     expect(translator.t("common.hello", { locale: "es" })).toBe("Hola");
     expect(
@@ -281,6 +301,18 @@ describe("better-translate core", () => {
 
     expect(loadCount).toBe(1);
     expect(t("common.hello", { locale: "fr" })).toBe("Bonjour");
+    expect(getAvailableLanguages()).toEqual([
+      {
+        locale: "en",
+        nativeLabel: "en",
+        shortLabel: "EN",
+      },
+      {
+        locale: "fr",
+        nativeLabel: "fr",
+        shortLabel: "FR",
+      },
+    ]);
     expect(getSupportedLocales()).toEqual(["en", "fr"]);
     expect(getMessages()).toEqual({
       en,
@@ -308,12 +340,13 @@ describe("better-translate core", () => {
 
   it("creates bound helpers with the same runtime behavior", async () => {
     const helpers = await createTranslationHelpers({
-      availableLocales: ["en", "es"] as const,
+      availableLocales: ["en", "es", "ja"] as const,
       defaultLocale: "en",
       fallbackLocale: "en",
       directions: {
         es: "rtl",
       },
+      languages: [jaLanguage],
       messages: { en, es },
     });
 
@@ -325,7 +358,20 @@ describe("better-translate core", () => {
         },
       }),
     ).toBe("Good morning Ada");
-    expect(helpers.getSupportedLocales()).toEqual(["en", "es"]);
+    expect(helpers.getSupportedLocales()).toEqual(["en", "es", "ja"]);
+    expect(helpers.getAvailableLanguages()).toEqual([
+      jaLanguage,
+      {
+        locale: "en",
+        nativeLabel: "en",
+        shortLabel: "EN",
+      },
+      {
+        locale: "es",
+        nativeLabel: "es",
+        shortLabel: "ES",
+      },
+    ]);
     expect(helpers.getDirection({ locale: "es" })).toBe("rtl");
     expect(helpers.isRtl({ locale: "es" })).toBe(true);
     expect(helpers.getMessages()).toEqual({ en, es });
@@ -347,6 +393,62 @@ describe("better-translate core", () => {
 
     expect(translator.getMessages()).toEqual({ en, es });
     expect(getMessages()).toEqual({ en, es });
+  });
+
+  it("returns an isolated snapshot from getAvailableLanguages()", async () => {
+    const translator = await configureTranslations({
+      availableLocales: ["en", "ja"] as const,
+      defaultLocale: "en",
+      fallbackLocale: "en",
+      languages: [jaLanguage],
+      messages: { en },
+      loaders: {
+        ja: async () => ({
+          common: {
+            hello: "こんにちは",
+          },
+          account: {
+            balance: {
+              label: "残高",
+            },
+          },
+        }),
+      },
+    });
+
+    const languages = translator.getAvailableLanguages() as Array<{
+      locale: string;
+      nativeLabel: string;
+      shortLabel: string;
+      icon?: string;
+    }>;
+
+    expect(languages).toEqual([
+      jaLanguage,
+      {
+        locale: "en",
+        nativeLabel: "en",
+        shortLabel: "EN",
+      },
+    ]);
+    expect(() => {
+      languages.push({
+        locale: "es",
+        nativeLabel: "es",
+        shortLabel: "ES",
+      });
+    }).toThrow();
+    expect(() => {
+      languages[0]!.nativeLabel = "Japanese";
+    }).toThrow();
+    expect(translator.getAvailableLanguages()).toEqual([
+      jaLanguage,
+      {
+        locale: "en",
+        nativeLabel: "en",
+        shortLabel: "EN",
+      },
+    ]);
   });
 
   it("rejects locales outside the declared availableLocales list", async () => {
@@ -384,6 +486,53 @@ describe("better-translate core", () => {
     ).rejects.toThrow(
       'The locale "fr" is present in directions but not in availableLocales.',
     );
+  });
+
+  it("rejects language locales outside the declared availableLocales list", async () => {
+    await expect(
+      configureTranslations({
+        availableLocales: ["en", "es"] as const,
+        defaultLocale: "en",
+        messages: {
+          en,
+          es,
+        },
+        languages: [
+          {
+            locale: "fr",
+            nativeLabel: "Francais",
+            shortLabel: "FR",
+          },
+        ],
+      } as const),
+    ).rejects.toThrow(
+      'The locale "fr" is present in languages but not in availableLocales.',
+    );
+  });
+
+  it("rejects duplicate language locale entries", async () => {
+    await expect(
+      configureTranslations({
+        availableLocales: ["en", "es"] as const,
+        defaultLocale: "en",
+        messages: {
+          en,
+          es,
+        },
+        languages: [
+          {
+            locale: "es",
+            nativeLabel: "Español",
+            shortLabel: "ES",
+          },
+          {
+            locale: "es",
+            nativeLabel: "Spanish",
+            shortLabel: "ES",
+          },
+        ],
+      } as const),
+    ).rejects.toThrow('Duplicate locale "es" found in languages config.');
   });
 
   it("throws before configuration", () => {

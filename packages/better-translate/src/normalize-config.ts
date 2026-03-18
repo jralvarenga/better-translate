@@ -2,6 +2,7 @@ import type {
   InternalNormalizedConfig,
   RuntimeConfigInput,
   TranslationDirection,
+  TranslationLanguageMetadata,
 } from "./types.js";
 import { isTranslationConfigOptions } from "./validation.js";
 
@@ -12,6 +13,54 @@ function createNormalizedDirections(
   return Object.fromEntries(
     locales.map((locale) => [locale, directions?.[locale] ?? "ltr"]),
   );
+}
+
+function createDefaultLanguageMetadata(
+  locale: string,
+): TranslationLanguageMetadata<string> {
+  return {
+    locale,
+    nativeLabel: locale,
+    shortLabel: locale.toUpperCase(),
+  };
+}
+
+function createNormalizedLanguages(
+  locales: readonly string[],
+  languages?: readonly TranslationLanguageMetadata<string>[],
+): TranslationLanguageMetadata<string>[] {
+  const supportedLocaleSet = new Set(locales);
+  const seenLocales = new Set<string>();
+  const normalizedLanguages: TranslationLanguageMetadata<string>[] = [];
+
+  for (const language of languages ?? []) {
+    if (!supportedLocaleSet.has(language.locale)) {
+      throw new Error(
+        `The locale "${language.locale}" is present in languages but not in availableLocales.`,
+      );
+    }
+
+    if (seenLocales.has(language.locale)) {
+      throw new Error(
+        `Duplicate locale "${language.locale}" found in languages config.`,
+      );
+    }
+
+    seenLocales.add(language.locale);
+    normalizedLanguages.push({
+      ...language,
+    });
+  }
+
+  for (const locale of locales) {
+    if (seenLocales.has(locale)) {
+      continue;
+    }
+
+    normalizedLanguages.push(createDefaultLanguageMetadata(locale));
+  }
+
+  return normalizedLanguages;
 }
 
 /**
@@ -36,6 +85,7 @@ export function normalizeConfig(input: RuntimeConfigInput): InternalNormalizedCo
       fallbackLocale: defaultLocale,
       supportedLocales: locales,
       directions: createNormalizedDirections(locales),
+      languages: createNormalizedLanguages(locales),
       messages: input,
       loaders: {},
     };
@@ -94,6 +144,7 @@ export function normalizeConfig(input: RuntimeConfigInput): InternalNormalizedCo
     fallbackLocale: input.fallbackLocale ?? input.defaultLocale,
     supportedLocales,
     directions: createNormalizedDirections(supportedLocales, input.directions),
+    languages: createNormalizedLanguages(supportedLocales, input.languages),
     messages: input.messages,
     loaders: input.loaders ?? {},
   };

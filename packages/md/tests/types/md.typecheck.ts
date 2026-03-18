@@ -26,6 +26,14 @@ const translator = await configureTranslations({
   directions: {
     es: "rtl",
   },
+  languages: [
+    {
+      icon: "🇪🇸",
+      locale: "es",
+      nativeLabel: "Español",
+      shortLabel: "ES",
+    },
+  ],
   messages: {
     en,
     es,
@@ -59,6 +67,7 @@ const collectionDocument = await collection.getDocument("docs/guide", {
   locale: "en",
 });
 const serverDocument = await serverDocs.getDocument("docs/guide");
+const availableLanguages = await serverDocs.getAvailableLanguages();
 const direction = await serverDocs.getDirection();
 const rtl = await serverDocs.isRtl();
 const explicitDirection = await serverDocs.getDirection({
@@ -68,6 +77,7 @@ const explicitDirection = await serverDocs.getDirection({
 const helperLocale: "en" | "es" = helperDocument.locale;
 const collectionLocale: "en" | "es" = collectionDocument.locale;
 const serverLocale: "en" | "es" = serverDocument.locale;
+const availableLanguageLocale: "en" | "es" = availableLanguages[0]!.locale;
 const helperDirection: "ltr" | "rtl" = direction;
 const helperRtl: boolean = rtl;
 const localeDirection: "ltr" | "rtl" = explicitDirection;
@@ -75,6 +85,7 @@ const localeDirection: "ltr" | "rtl" = explicitDirection;
 void helperLocale;
 void collectionLocale;
 void serverLocale;
+void availableLanguageLocale;
 void helperDirection;
 void helperRtl;
 void localeDirection;

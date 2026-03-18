@@ -3,8 +3,8 @@
 import * as React from "react";
 
 import { useTranslations } from "@better-translate/react";
+import type { TranslationLanguageMetadata } from "better-translate/core";
 
-import { getCatalogItems } from "@/lib/catalog";
 import {
   Select,
   SelectContent,
@@ -12,23 +12,27 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { LandingLocale, LandingTranslator } from "@/lib/i18n/config";
+import type {
+  LandingLocale,
+  LandingTranslator,
+} from "@/lib/i18n/config";
 import { useI18nPathname, useI18nRouter } from "@/lib/i18n/navigation";
 
 interface HeaderLanguageSwitcherProps {
   className?: string;
   currentLocale: LandingLocale;
+  languages: readonly TranslationLanguageMetadata<LandingLocale>[];
   onSelect?: () => void;
   switchLabel?: string;
 }
 
 export function LanguageSwitcherFallback({
   currentLocale,
+  languages,
   switchLabel = "Switch language",
 }: HeaderLanguageSwitcherProps) {
-  const languageItems = getCatalogItems("language");
   const currentItem =
-    languageItems.find((item) => item.locale === currentLocale) ?? languageItems[0];
+    languages.find((item) => item.locale === currentLocale) ?? languages[0];
 
   return (
     <Select defaultValue={currentItem?.locale} disabled
@@ -40,9 +44,9 @@ export function LanguageSwitcherFallback({
         <SelectValue />
       </SelectTrigger>
       <SelectContent>
-        {languageItems.map((item) => (
-          <SelectItem key={item.id} value={item.locale}>
-            <span aria-hidden="true">{item.emoji}</span>
+        {languages.map((item) => (
+          <SelectItem key={item.locale} value={item.locale}>
+            <span aria-hidden="true">{item.icon}</span>
             <span>{item.nativeLabel}</span>
           </SelectItem>
         ))}
@@ -53,15 +57,23 @@ export function LanguageSwitcherFallback({
 
 export function HeaderLanguageSwitcher({
   currentLocale,
+  languages,
   onSelect,
 }: HeaderLanguageSwitcherProps) {
-  const { locale, supportedLocales, t } = useTranslations<LandingTranslator>();
+  const { availableLanguages, locale, supportedLocales, t } =
+    useTranslations<LandingTranslator>();
   const pathname = useI18nPathname();
   const router = useI18nRouter();
   const [isPending, startTransition] = React.useTransition();
-  const languageItems = getCatalogItems("language").filter((item) =>
-    supportedLocales.includes(item.locale),
+  const fallbackLanguageMap = new Map(
+    languages.map((language) => [language.locale, language] as const),
   );
+  const languageItems = availableLanguages
+    .filter((item) => supportedLocales.includes(item.locale))
+    .map((item) => ({
+      ...item,
+      ...fallbackLanguageMap.get(item.locale),
+    }));
   const selectedLocale = locale ?? currentLocale;
 
   return (
@@ -93,8 +105,8 @@ export function HeaderLanguageSwitcher({
       </SelectTrigger>
       <SelectContent>
         {languageItems.map((item) => (
-          <SelectItem key={item.id} value={item.locale}>
-            <span aria-hidden="true">{item.emoji}</span>
+          <SelectItem key={item.locale} value={item.locale}>
+            <span aria-hidden="true">{item.icon}</span>
             <span>{item.nativeLabel}</span>
           </SelectItem>
         ))}

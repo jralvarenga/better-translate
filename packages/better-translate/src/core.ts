@@ -12,6 +12,7 @@ import type {
   StrictTranslationLocaleMap,
   TranslateOptions,
   TranslationHelpers,
+  TranslationLanguageMetadata,
   TranslationConfigOptions,
   TranslationLoader,
   TranslationMessages,
@@ -34,6 +35,7 @@ export type {
   TranslationPlaceholderNames,
   TranslationDirection,
   TranslationDirectionOptions,
+  TranslationLanguageMetadata,
   TranslationValueAtKey,
   TranslateOptions,
   StrictTranslationLocaleMap,
@@ -147,6 +149,9 @@ export function createTranslationHelpers(
       getSupportedLocales() {
         return translator.getSupportedLocales();
       },
+      getAvailableLanguages() {
+        return translator.getAvailableLanguages();
+      },
       getDirection(options) {
         return translator.getDirection(options);
       },
@@ -210,6 +215,13 @@ export async function loadLocale(locale: string) {
  */
 export function getSupportedLocales(): readonly string[] {
   return getTranslator().getSupportedLocales();
+}
+
+/**
+ * Returns the configured language metadata for the global translator.
+ */
+export function getAvailableLanguages(): readonly TranslationLanguageMetadata<string>[] {
+  return getTranslator().getAvailableLanguages();
 }
 
 /**

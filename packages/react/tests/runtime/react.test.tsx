@@ -69,6 +69,14 @@ describe("@better-translate/react", () => {
       directions: {
         es: "rtl",
       },
+      languages: [
+        {
+          icon: "🇪🇸",
+          locale: "es",
+          nativeLabel: "Español",
+          shortLabel: "ES",
+        },
+      ],
       messages: { en, es },
     });
 
@@ -92,6 +100,19 @@ describe("@better-translate/react", () => {
     expect(latestValue?.locale).toBe("en");
     expect(latestValue?.direction).toBe("ltr");
     expect(latestValue?.rtl).toBe(false);
+    expect(latestValue?.availableLanguages).toEqual([
+      {
+        icon: "🇪🇸",
+        locale: "es",
+        nativeLabel: "Español",
+        shortLabel: "ES",
+      },
+      {
+        locale: "en",
+        nativeLabel: "en",
+        shortLabel: "EN",
+      },
+    ]);
     expect(latestValue?.t("common.hello")).toBe("Hello");
     expect(
       latestValue?.t("common.greeting", {

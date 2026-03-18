@@ -5,6 +5,7 @@ import { createTranslationJsonSchema } from "../../src/create-translation-json-s
 import { interpolateMessage } from "../../src/interpolate-message.js";
 import { normalizeConfig } from "../../src/normalize-config.js";
 import { resolveMessageValue } from "../../src/resolve-message-value.js";
+import { snapshotLanguages } from "../../src/snapshot-languages.js";
 import {
   getRequestLocale,
   resolveRequestLocale,
@@ -61,6 +62,18 @@ describe("better-translate internals", () => {
     ).toMatchObject({
       defaultLocale: "en",
       fallbackLocale: "en",
+      languages: [
+        {
+          locale: "en",
+          nativeLabel: "en",
+          shortLabel: "EN",
+        },
+        {
+          locale: "es",
+          nativeLabel: "es",
+          shortLabel: "ES",
+        },
+      ],
       supportedLocales: ["en", "es"],
     });
 
@@ -107,6 +120,32 @@ describe("better-translate internals", () => {
     ).toThrow(
       'The locale "es" is present in loaders but not in availableLocales.',
     );
+    expect(() =>
+      normalizeConfig({
+        availableLocales: ["en", "es"] as const,
+        defaultLocale: "en",
+        messages: {
+          en,
+          es: {
+            common: {
+              hello: "Hola",
+            },
+          },
+        },
+        languages: [
+          {
+            locale: "es",
+            nativeLabel: "Español",
+            shortLabel: "ES",
+          },
+          {
+            locale: "es",
+            nativeLabel: "Spanish",
+            shortLabel: "ES",
+          },
+        ],
+      }),
+    ).toThrow('Duplicate locale "es" found in languages config.');
   });
 
   it("resolves nested message values and interpolates repeated placeholders", () => {
@@ -166,6 +205,36 @@ describe("better-translate internals", () => {
     }).toThrow();
     expect(() => {
       (snapshot.en.common as Record<string, unknown>).hello = "Hola";
+    }).toThrow();
+  });
+
+  it("creates immutable language snapshots", () => {
+    const snapshot = snapshotLanguages([
+      {
+        icon: "🇪🇸",
+        locale: "es",
+        nativeLabel: "Español",
+        shortLabel: "ES",
+      },
+    ]);
+
+    expect(snapshot).toEqual([
+      {
+        icon: "🇪🇸",
+        locale: "es",
+        nativeLabel: "Español",
+        shortLabel: "ES",
+      },
+    ]);
+    expect(() => {
+      (snapshot as Array<unknown>).push({});
+    }).toThrow();
+    expect(() => {
+      (
+        snapshot[0] as {
+          nativeLabel: string;
+        }
+      ).nativeLabel = "Spanish";
     }).toThrow();
   });
 

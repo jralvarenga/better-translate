@@ -86,6 +86,14 @@ export const requestConfig = getRequestConfig(async () => {
     directions: {
       es: "rtl",
     },
+    languages: [
+      {
+        icon: "🇪🇸",
+        locale: "es",
+        nativeLabel: "Español",
+        shortLabel: "ES",
+      },
+    ],
     messages: {
       en,
       es,
@@ -142,6 +150,7 @@ import {
 import { requestConfig } from "./request";
 
 export const {
+  getAvailableLanguages,
   getDirection,
   getLocale,
   getMessages,
@@ -190,6 +199,7 @@ export default async function DashboardPage({
 Direction metadata is available from the same request helpers:
 
 ```ts
+await getAvailableLanguages();
 await getDirection(); // "ltr" | "rtl"
 await isRtl(); // boolean
 await getDirection({

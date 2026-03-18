@@ -5,6 +5,7 @@ import type {
   DeepPartialMessages,
   TranslationConfig,
   TranslationDirection,
+  TranslationLanguageMetadata,
   TranslationMessages,
 } from "better-translate/core";
 import {
@@ -51,6 +52,9 @@ export interface ServerHelpers<
   TRequestLocale extends string,
   TTranslator extends AnyTranslator,
 > {
+  getAvailableLanguages(): Promise<
+    readonly TranslationLanguageMetadata<InferTranslatorLocale<TTranslator>>[]
+  >;
   getDirection(
     options?: RequestDirectionOptions<InferTranslatorLocale<TTranslator>>,
   ): Promise<TranslationDirection>;
@@ -133,6 +137,9 @@ export function createServerHelpers<
   }
 
   return {
+    async getAvailableLanguages() {
+      return (await readRequestConfig()).translator.getAvailableLanguages();
+    },
     getDirection,
     async getLocale() {
       return getResolvedLocale();

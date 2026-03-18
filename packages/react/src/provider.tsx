@@ -131,6 +131,8 @@ export function BetterTranslateProvider<
   }) as TranslateFunction<InferLocale<TTranslator>, InferMessages<TTranslator>>;
 
   const value: UseTranslationsValue<TTranslator> = {
+    availableLanguages:
+      translator.getAvailableLanguages() as UseTranslationsValue<TTranslator>["availableLanguages"],
     defaultLocale: translator.defaultLocale as InferLocale<TTranslator>,
     direction: translator.getDirection({
       locale,

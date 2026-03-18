@@ -10,6 +10,7 @@ import type {
   TranslateOptions,
   TranslationConfigOptions,
   TranslationHelpers,
+  TranslationLanguageMetadata,
   TranslationJsonSchema,
   TranslationLoader,
   TranslationMessages,
@@ -33,6 +34,7 @@ export type {
   TranslationPlaceholderNames,
   TranslationDirection,
   TranslationDirectionOptions,
+  TranslationLanguageMetadata,
   TranslationValueAtKey,
   TranslateOptions,
   StrictTranslationLocaleMap,
@@ -129,6 +131,8 @@ export declare function loadLocale(
 ): Promise<DeepPartialMessages<TranslationMessages> | TranslationMessages | undefined>;
 
 export declare function getSupportedLocales(): readonly string[];
+
+export declare function getAvailableLanguages(): readonly TranslationLanguageMetadata<string>[];
 
 export declare function getMessages(): CachedMessages<string, TranslationMessages>;
 

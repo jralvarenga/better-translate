@@ -138,6 +138,13 @@ export type TranslationParams = Record<string, TranslationParamValue>;
 
 export type TranslationDirection = "ltr" | "rtl";
 
+export interface TranslationLanguageMetadata<TLocale extends string> {
+  icon?: string;
+  locale: TLocale;
+  nativeLabel: string;
+  shortLabel: string;
+}
+
 export type TranslationValueAtKey<
   TMessages extends TranslationMessages,
   TKey extends string,
@@ -331,6 +338,10 @@ export interface ConfiguredTranslator<
    */
   getSupportedLocales(): readonly TLocale[];
   /**
+   * Returns the configured or synthesized language metadata for each locale.
+   */
+  getAvailableLanguages(): readonly TranslationLanguageMetadata<TLocale>[];
+  /**
    * Returns the resolved direction metadata for the requested locale or override.
    */
   getDirection(options?: TranslationDirectionOptions<TLocale>): TranslationDirection;
@@ -364,6 +375,7 @@ export interface TranslationHelpers<
     locale: TLocale,
   ): Promise<DeepPartialMessages<TSourceMessages> | TSourceMessages | undefined>;
   getSupportedLocales(): readonly TLocale[];
+  getAvailableLanguages(): readonly TranslationLanguageMetadata<TLocale>[];
   getDirection(options?: TranslationDirectionOptions<TLocale>): TranslationDirection;
   isRtl(options?: TranslationDirectionOptions<TLocale>): boolean;
   getMessages(): CachedMessages<TLocale, TSourceMessages>;
@@ -387,6 +399,7 @@ export type TranslationConfigOptions<
   defaultLocale: TDefaultLocale;
   fallbackLocale?: TLocales[number];
   directions?: Partial<Record<TLocales[number], TranslationDirection>>;
+  languages?: readonly TranslationLanguageMetadata<TLocales[number]>[];
   messages: StrictOptionsMessages<TMessages, TDefaultLocale>;
   loaders?: TLoaders;
 };
@@ -424,6 +437,7 @@ export interface InternalNormalizedConfig {
   fallbackLocale: string;
   supportedLocales: readonly string[];
   directions: Readonly<Record<string, TranslationDirection>>;
+  languages: readonly TranslationLanguageMetadata<string>[];
   messages: Partial<Record<string, InternalTranslationMessages>>;
   loaders: Partial<Record<string, TranslationLoader<unknown>>>;
 }

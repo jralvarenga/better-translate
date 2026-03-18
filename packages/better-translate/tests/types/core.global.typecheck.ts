@@ -1,5 +1,6 @@
 import {
   createTranslationHelpers,
+  getAvailableLanguages,
   getMessages,
   getSupportedLocales,
   loadLocale,
@@ -23,6 +24,14 @@ const helpers = await createTranslationHelpers({
   availableLocales: ["en", "es", "fr"] as const,
   defaultLocale: "en",
   fallbackLocale: "en",
+  languages: [
+    {
+      icon: "🇪🇸",
+      locale: "es",
+      nativeLabel: "Español",
+      shortLabel: "ES",
+    },
+  ],
   messages: {
     en,
     es: {
@@ -66,6 +75,7 @@ helpers.t("common.formalGreeting", {
   },
 });
 helpers.loadLocale("fr");
+helpers.getAvailableLanguages()[0]?.locale;
 helpers.getSupportedLocales().includes("en");
 helpers.getDirection({ locale: "es" });
 helpers.isRtl({
@@ -77,6 +87,7 @@ helpers.getMessages().en?.account?.balance?.label;
 
 const {
   getDirection: getConfiguredDirection,
+  getAvailableLanguages: getConfiguredLanguages,
   getMessages: getConfiguredMessages,
   getSupportedLocales: getConfiguredSupportedLocales,
   isRtl: getConfiguredIsRtl,
@@ -93,11 +104,13 @@ translate("common.hello", {
 });
 loadConfiguredLocale("fr");
 getConfiguredDirection();
+getConfiguredLanguages()[0]?.locale;
 getConfiguredIsRtl();
 getConfiguredSupportedLocales().includes("en");
 getConfiguredMessages().en?.account?.balance?.label;
 
 getMessages();
+getAvailableLanguages();
 getSupportedLocales();
 void loadLocale("fr");
 void t("common.hello");

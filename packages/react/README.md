@@ -18,6 +18,14 @@ async function createTranslator() {
     directions: {
       es: "rtl",
     },
+    languages: [
+      {
+        icon: "🇪🇸",
+        locale: "es",
+        nativeLabel: "Español",
+        shortLabel: "ES",
+      },
+    ],
     messages: { en, es },
   });
 }
@@ -25,7 +33,7 @@ async function createTranslator() {
 type AppTranslator = Awaited<ReturnType<typeof createTranslator>>;
 
 function Greeting() {
-  const { t, locale, direction, rtl, setLocale, messages } =
+  const { t, locale, direction, rtl, setLocale, messages, availableLanguages } =
     useTranslations<AppTranslator>();
 
   return (
@@ -34,6 +42,7 @@ function Greeting() {
       <p>{locale}</p>
       <p>{direction}</p>
       <p>{String(rtl)}</p>
+      <p>{availableLanguages.map((language) => language.shortLabel).join(", ")}</p>
       <button onClick={() => void setLocale("es")}>ES</button>
       <pre>{JSON.stringify(messages)}</pre>
     </div>
@@ -80,6 +89,14 @@ export function createTranslator() {
     directions: {
       es: "rtl",
     },
+    languages: [
+      {
+        icon: "🇪🇸",
+        locale: "es",
+        nativeLabel: "Español",
+        shortLabel: "ES",
+      },
+    ],
     messages: { en, es },
   });
 }
@@ -128,6 +145,7 @@ export function App() {
     rtl,
     setLocale,
     supportedLocales,
+    availableLanguages,
     messages,
   } = useTranslations<AppTranslator>();
 
@@ -137,6 +155,7 @@ export function App() {
       <p>Current locale: {locale}</p>
       <p>Direction: {direction}</p>
       <p>RTL: {String(rtl)}</p>
+      <p>Languages: {availableLanguages.map((language) => language.shortLabel).join(", ")}</p>
 
       {supportedLocales.map((nextLocale) => (
         <button key={nextLocale} onClick={() => void setLocale(nextLocale)}>

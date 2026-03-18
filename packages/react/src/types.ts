@@ -3,6 +3,7 @@ import type {
   ConfiguredTranslator,
   DeepPartialMessages,
   TranslationDirection,
+  TranslationLanguageMetadata,
   TranslateFunction,
   TranslationMessages,
 } from "better-translate/core";
@@ -34,6 +35,9 @@ export interface BetterTranslateProviderProps<
 export interface UseTranslationsValue<
   TTranslator extends AnyBetterTranslateTranslator,
 > {
+  availableLanguages: readonly TranslationLanguageMetadata<
+    InferLocale<TTranslator>
+  >[];
   defaultLocale: InferLocale<TTranslator>;
   direction: TranslationDirection;
   fallbackLocale: InferLocale<TTranslator>;

@@ -179,7 +179,7 @@ t("header.language", {
                     </div>
                 </section>
 
-                <section className="pb-12 pt-12 md:pb-24 border-t border-white/5">
+                <section className="pb-12 pt-12 md:pb-24 ">
                     <div className="mx-auto max-w-5xl px-6">
                         <p className="mb-3 text-center text-base font-medium text-foreground">{t('frameworks.heroTitle')}</p>
                         <p className="mb-10 text-center text-sm text-muted-foreground">{t('frameworks.heroDescription')}</p>

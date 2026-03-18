@@ -23,10 +23,19 @@ const translations = await createTranslationHelpers({
   directions: {
     es: "rtl",
   },
+  languages: [
+    {
+      icon: "🇪🇸",
+      locale: "es",
+      nativeLabel: "Español",
+      shortLabel: "ES",
+    },
+  ],
   messages,
 });
 
 translations.t("home.title");
+translations.getAvailableLanguages();
 translations.getDirection({ locale: "es" });
 translations.isRtl({ locale: "es" });
 translations.getMessages();
@@ -52,10 +61,19 @@ const translations = await createTranslationHelpers({
   directions: {
     es: "rtl",
   },
+  languages: [
+    {
+      icon: "🇪🇸",
+      locale: "es",
+      nativeLabel: "Español",
+      shortLabel: "ES",
+    },
+  ],
   messages: { en, es },
 });
 
 export const {
+  getAvailableLanguages,
   getDirection,
   getMessages,
   getSupportedLocales,
@@ -107,10 +125,19 @@ const translations = await createTranslationHelpers({
   directions: {
     es: "rtl",
   },
+  languages: [
+    {
+      icon: "🇪🇸",
+      locale: "es",
+      nativeLabel: "Español",
+      shortLabel: "ES",
+    },
+  ],
   messages: { en, es },
 });
 
 export const {
+  getAvailableLanguages,
   getDirection,
   getMessages,
   getSupportedLocales,
@@ -148,6 +175,39 @@ translator.t("home.title", {
     rtl: false,
   },
 });
+```
+
+## Language metadata
+
+Use the optional `languages` array when you want display metadata for your
+configured locales.
+
+```ts
+const ja = {
+  home: {
+    title: "こんにちは",
+  },
+} as const;
+
+const translator = await configureTranslations({
+  availableLocales: ["en", "es", "ja"] as const,
+  defaultLocale: "en",
+  fallbackLocale: "en",
+  languages: [
+    {
+      icon: "🇯🇵",
+      locale: "ja",
+      nativeLabel: "日本語",
+      shortLabel: "JA",
+    },
+  ],
+  messages: { en, es },
+  loaders: {
+    ja: async () => ja,
+  },
+});
+
+translator.getAvailableLanguages();
 ```
 
 ## Preloaded message parity

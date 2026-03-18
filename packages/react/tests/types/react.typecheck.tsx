@@ -9,6 +9,14 @@ const translator = await configureTranslations({
   directions: {
     es: "rtl",
   },
+  languages: [
+    {
+      icon: "🇪🇸",
+      locale: "es",
+      nativeLabel: "Español",
+      shortLabel: "ES",
+    },
+  ],
   messages: {
     en: {
       common: {
@@ -62,6 +70,7 @@ function Consumer() {
   });
   void translations.setLocale("es");
   void translations.loadLocale("fr");
+  translations.availableLanguages[0]?.locale;
   translations.direction;
   translations.messages.en;
   translations.messages.fr;

@@ -13,7 +13,7 @@ export function Footer({ locale, t }: FooterProps) {
         <footer className="border-t border-white/10 py-12">
             <div className="mx-auto max-w-5xl px-6">
                 <div className="flex flex-col items-center justify-between gap-6 sm:flex-row">
-                    <Logo />
+                    <Logo onlyIcon />
                     <div className="flex gap-6 text-sm text-muted-foreground">
                         <Link href={siteLinks.github} target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">
                             {t('footer.github')}

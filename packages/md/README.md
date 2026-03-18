@@ -24,6 +24,14 @@ const translator = await configureTranslations({
   directions: {
     es: "rtl",
   },
+  languages: [
+    {
+      icon: "🇪🇸",
+      locale: "es",
+      nativeLabel: "Español",
+      shortLabel: "ES",
+    },
+  ],
   messages: {
     en: {
       common: {
@@ -69,6 +77,7 @@ export const docs = createMarkdownServerHelpers(requestConfig, {
 Request-aware direction helpers are available there too:
 
 ```ts
+await docs.getAvailableLanguages();
 await docs.getDirection(); // "ltr" | "rtl"
 await docs.isRtl(); // boolean
 await docs.getDirection({

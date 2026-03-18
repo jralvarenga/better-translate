@@ -36,6 +36,14 @@ const translator = await configureTranslations({
   directions: {
     es: "rtl",
   },
+  languages: [
+    {
+      icon: "🇪🇸",
+      locale: "es",
+      nativeLabel: "Español",
+      shortLabel: "ES",
+    },
+  ],
   messages: {
     en: {
       home: {
@@ -58,6 +66,7 @@ const requestConfig = getRequestConfig(async () => ({
 const helpers = createServerHelpers(requestConfig);
 setRequestLocale("en");
 const t = await helpers.getTranslations();
+const languages = await helpers.getAvailableLanguages();
 const navigation = createNavigationFunctions({
   Link(props: { children?: ReactNode; href: string }) {
     return null;
@@ -96,6 +105,7 @@ t("home.greeting", {
   },
 });
 await helpers.getDirection();
+languages[0]?.locale;
 await helpers.getDirection({
   locale: "es",
 });

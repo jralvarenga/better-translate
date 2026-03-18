@@ -5,10 +5,9 @@ import { createElement, type ComponentType } from "react";
 import { RiNextjsFill, RiNodejsLine, RiReactjsLine } from "@remixicon/react";
 
 import { BunIcon, TanStackIcon } from "@/components/logo";
-import type { LandingLocale } from "@/lib/i18n/config";
 import { en } from "@/lib/i18n/messages/en";
 
-export type CatalogKind = "framework" | "language";
+export type CatalogKind = "framework";
 
 type LandingMessageKey = TranslationKey<typeof en>;
 type FrameworkDescriptionKey = Extract<
@@ -27,14 +26,6 @@ type CatalogShape = {
     install: string;
     kind: "framework";
     name: string;
-  };
-  language: {
-    emoji: string;
-    id: string;
-    kind: "language";
-    locale: LandingLocale;
-    nativeLabel: string;
-    shortLabel: string;
   };
 };
 
@@ -110,30 +101,6 @@ const catalog = [
     install: "bun add @better-translate/tanstack-router",
     kind: "framework",
     name: "TanStack Router",
-  },
-  {
-    emoji: "🇺🇸",
-    id: "en",
-    kind: "language",
-    locale: "en",
-    nativeLabel: "English",
-    shortLabel: "EN",
-  },
-  {
-    emoji: "🇪🇸",
-    id: "es",
-    kind: "language",
-    locale: "es",
-    nativeLabel: "Español",
-    shortLabel: "ES",
-  },
-  {
-    emoji: "🇸🇦",
-    id: "ar",
-    kind: "language",
-    locale: "ar",
-    nativeLabel: "العربية",
-    shortLabel: "AR",
   },
 ] as const satisfies readonly AnyCatalogItem[];
 

@@ -1,19 +1,25 @@
 import { cn } from '@/lib/utils'
+import Image from 'next/image'
+import logo from '@/assets/logo.png'
 
-export const Logo = ({ className }: { className?: string; uniColor?: boolean }) => {
+export const Logo = ({ className, onlyIcon = false }: { className?: string; onlyIcon?: boolean }) => {
     return (
-        <span className={cn('font-mono text-sm font-semibold tracking-tight text-foreground', className)}>
-            <span className="text-[var(--brand)]">[bt]</span>
-            {' '}better-translate
-        </span>
+        <>
+            {onlyIcon ? <LogoIcon className={className} /> : (
+                <>
+                    <LogoIcon className={className} />
+                    <span className={cn('font-mono text-sm font-semibold tracking-tight text-foreground', className)}>
+                        better-translate
+                    </span>
+                </>
+            )}
+        </>
     )
 }
 
 export const LogoIcon = ({ className }: { className?: string; uniColor?: boolean }) => {
     return (
-        <span className={cn('font-mono text-sm font-semibold tracking-tight text-[var(--brand)]', className)}>
-            [bt]
-        </span>
+        <Image src={logo} alt="Better Translate" width={20} height={20} />
     )
 }
 

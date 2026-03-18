@@ -153,6 +153,9 @@ export function createMarkdownServerHelpers<
   return {
     compileDocument,
     getCollection,
+    async getAvailableLanguages() {
+      return (await readRequestConfig()).translator.getAvailableLanguages();
+    },
     getDirection,
     getDocument,
     isRtl,
