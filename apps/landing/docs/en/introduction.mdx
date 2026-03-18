@@ -1,51 +1,52 @@
 ---
 title: Introduction
-description: Better Translate is a type-safe translation library built for TypeScript — configure once, use everywhere.
+description: Better Translate is a type-safe translation library for TypeScript — configure once, use everywhere.
 ---
 
-# Introduction
+# What is Better Translate?
 
-Better Translate exists because type safety in i18n too often feels optional.
+Most translation setups start simple, then slowly lose safety, you wire things together, and later try to recover type safety with extra declarations, manual typing, or framework-specific fixes. It works but it never feels fully reliable.
 
-In a lot of translation setups, you first wire everything together, then later try to recover safety with extra declaration files, manual typing, or framework-specific workarounds. The result usually works, but it rarely feels simple.
-
-This package exists to make translations feel safer and more unified from the beginning.
+Better Translate flips that approach, type safety is built in from the start, not added later, you define your translations once, and use them everywhere with full confidence.
 
 ## Why it exists
 
-Type safety should be part of the default experience, not something you bolt on later.
+Translation tooling is often:
+- inconsistent across stacks
+- loosely typed (or not typed at all)
+- hard to share between frontend and backend
 
-If a translation key is wrong, that should be visible while you are writing code.
+And every time you start a new project, you end up learning a new translation tool, Better Translate exists to stop that cycle.
 
-If a message expects params, that should be clear where you use it.
+- If a key is wrong, you should know while typing
+- If a message requires params, they should be enforced
+- If translations are shared, they should behave as one system
 
-And if translations are shared across the stack, the setup should feel like one system instead of a collection of disconnected tools.
-
-That is the reason Better Translate exists: to make i18n safer, simpler, and more consistent for TypeScript-first apps.
+No guesswork. No silent failures. No “did I miss something?”
 
 ## The idea behind it
 
-The project is built around a simple belief:
+The goal is simple: **One way to do translations. Everywhere. Fully typed.**
 
-Configure translations once, then use that same source of truth everywhere.
+Start a new project, switch stacks, build web, backend, or mobile, you don’t need to relearn anything, Better Translate works in any TypeScript project. No exceptions.
 
-The package is not trying to turn translation safety into a giant setup exercise. It is trying to make the safe path feel like the natural path.
+It’s not a collection of tools or patterns per framework, just a single, consistent model that follows you across your entire stack.
 
-## What that means for the project
+## What that means
 
-Better Translate is here for teams that want:
+Better Translate is designed for teams that want:
 
-- typed translation keys
-- typed message params
-- one clear translation model
-- less setup friction
-- a package that feels coherent across the stack
+- fully typed translation keys
+- enforced message parameters
+- a unified translation system across apps
+- minimal setup with maximum control
+- predictable behavior in every environment
 
-The details of the package can grow over time, but the reason it exists stays the same: translation tooling should help you move faster without making correctness feel fragile.
+It’s not about adding more tooling, it’s about removing uncertainty.
 
 ## Where to go next
 
-- **Want to understand the current focus?** → [Mission](/docs/mission)
+- **Want to understand the direction?** → [Mission](/docs/mission)
 - **Using TypeScript or a server?** → [Adapters → Core](/docs/adapters/core)
 - **Building a React app?** → [Adapters → React](/docs/adapters/react)
 - **Using Next.js App Router?** → [Adapters → Next.js](/docs/adapters/nextjs)
