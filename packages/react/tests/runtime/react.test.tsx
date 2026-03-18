@@ -4,8 +4,8 @@ import { create } from "react-test-renderer";
 
 import { configureTranslations } from "better-translate/core";
 
-import { BetterTranslateProvider } from "./provider.js";
-import { useTranslations } from "./use-translations.js";
+import { BetterTranslateProvider } from "../../src/provider.js";
+import { useTranslations } from "../../src/use-translations.js";
 
 const en = {
   common: {
@@ -396,7 +396,7 @@ describe("@better-translate/react", () => {
 
     expect(capturedError).toBeInstanceOf(Error);
     expect((capturedError as Error).message).toBe(
-      'useTranslations() must be used inside <BetterTranslateProvider />.',
+      "useTranslations() must be used inside <BetterTranslateProvider />.",
     );
   });
 });

@@ -4,8 +4,8 @@ import { setRequestLocale } from "better-translate/server";
 import {
   createMarkdownCollection,
   createMarkdownHelpers,
-} from "./index.js";
-import { createMarkdownServerHelpers } from "./server.js";
+} from "../../dist/index.js";
+import { createMarkdownServerHelpers } from "../../dist/server.js";
 
 const en = {
   common: {

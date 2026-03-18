@@ -3,8 +3,8 @@ import type {
   DotKeys,
   TranslationDirection,
   TranslationLocaleMap,
-} from "./core.js";
-import { configureTranslations, getMessages } from "./core.js";
+} from "../../dist/core.js";
+import { configureTranslations, getMessages } from "../../dist/core.js";
 
 const en = {
   common: {
@@ -180,6 +180,7 @@ configureTranslations({
   },
 });
 
+// @ts-expect-error directions should reject invalid direction values
 configureTranslations({
   availableLocales: ["en", "es"] as const,
   defaultLocale: "en",
@@ -188,11 +189,11 @@ configureTranslations({
     es,
   },
   directions: {
-    // @ts-expect-error directions should reject invalid direction values
     es: "sideways",
   },
 });
 
+// @ts-expect-error directions should reject locales outside the declared locale contract
 configureTranslations({
   availableLocales: ["en", "es"] as const,
   defaultLocale: "en",
@@ -201,7 +202,6 @@ configureTranslations({
     es,
   },
   directions: {
-    // @ts-expect-error directions should reject locales outside the declared locale contract
     pt: "rtl",
   },
 });

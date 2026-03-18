@@ -5,12 +5,12 @@ import { createElement, type ReactNode } from "react";
 
 import { configureTranslations } from "better-translate/core";
 
-import { createNavigationFunctions } from "./navigation.js";
+import { createNavigationFunctions } from "../../src/navigation.js";
 import {
   createServerHelpers,
   getRequestConfig,
   setRequestLocale,
-} from "./server.js";
+} from "../../src/server.js";
 import {
   defineRouting,
   getPathnameLocale,
@@ -18,7 +18,7 @@ import {
   isPathnameInScope,
   localizePathname,
   stripLocaleFromPathname,
-} from "./shared.js";
+} from "../../src/shared.js";
 
 describe("@better-translate/tanstack-router", () => {
   beforeEach(() => {
@@ -189,7 +189,11 @@ describe("@better-translate/tanstack-router", () => {
       to: "/about",
     });
     expect(
-      (navigateCalls[0]?.params as (value: Record<string, unknown>) => Record<string, unknown>)({
+      (
+        navigateCalls[0]?.params as (
+          value: Record<string, unknown>,
+        ) => Record<string, unknown>
+      )({
         locale: "es",
       }),
     ).toEqual({});

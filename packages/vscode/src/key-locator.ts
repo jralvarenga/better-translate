@@ -1,12 +1,15 @@
-import * as vscode from 'vscode';
+import * as vscode from "vscode";
 
 /**
  * Finds the position of a dot-notation key in a JSON locale file.
  * E.g. "routes.greeting" → finds `"greeting":` nested inside `"routes":{}`
  */
-export function findKeyInJson(text: string, keyPath: string): vscode.Position | null {
-  const segments = keyPath.split('.');
-  const lines = text.split('\n');
+export function findKeyInJson(
+  text: string,
+  keyPath: string,
+): vscode.Position | null {
+  const segments = keyPath.split(".");
+  const lines = text.split("\n");
 
   let depth = 0;
   let segmentIndex = 0;
@@ -25,7 +28,7 @@ export function findKeyInJson(text: string, keyPath: string): vscode.Position | 
     // Check if this line contains the target key at the expected depth
     // For JSON: "key":
     const keyPattern = new RegExp(`^\\s*"${escapeRegex(segment)}"\\s*:`);
-    if (keyPattern.test(line) && depth === targetDepth - 1) {
+    if (keyPattern.test(line) && depth === targetDepth) {
       if (isLastSegment) {
         const col = line.indexOf(`"${segment}"`);
         return new vscode.Position(lineNum, col >= 0 ? col : 0);
@@ -47,9 +50,12 @@ export function findKeyInJson(text: string, keyPath: string): vscode.Position | 
  * E.g. "routes.greeting" → finds `greeting:` nested inside `routes: {}`
  * Handles both unquoted and quoted keys, optional `readonly` modifier.
  */
-export function findKeyInTypeScript(text: string, keyPath: string): vscode.Position | null {
-  const segments = keyPath.split('.');
-  const lines = text.split('\n');
+export function findKeyInTypeScript(
+  text: string,
+  keyPath: string,
+): vscode.Position | null {
+  const segments = keyPath.split(".");
+  const lines = text.split("\n");
 
   let depth = 0;
   let segmentIndex = 0;
@@ -74,18 +80,23 @@ export function findKeyInTypeScript(text: string, keyPath: string): vscode.Posit
     );
 
     const matches =
-      (unquotedPattern.test(line) || quotedPattern.test(line)) && depth === targetDepth - 1;
+      (unquotedPattern.test(line) || quotedPattern.test(line)) &&
+      depth === targetDepth;
 
     if (matches) {
       if (isLastSegment) {
         // Find the column of the key
-        let col = line.search(new RegExp(`(?:readonly\\s+)?(?:['"])?${escapeRegex(segment)}`));
+        let col = line.search(
+          new RegExp(`(?:readonly\\s+)?(?:['"])?${escapeRegex(segment)}`),
+        );
         if (col < 0) col = 0;
         // Skip leading whitespace to point to the key itself
         const trimmed = line.trimStart();
         col = line.length - trimmed.length;
         // Re-find within trimmed (skip readonly if present)
-        const keyInTrimmed = trimmed.search(new RegExp(`(?:['"])?${escapeRegex(segment)}`));
+        const keyInTrimmed = trimmed.search(
+          new RegExp(`(?:['"])?${escapeRegex(segment)}`),
+        );
         col = col + (keyInTrimmed >= 0 ? keyInTrimmed : 0);
         return new vscode.Position(lineNum, col);
       } else {
@@ -101,5 +112,5 @@ export function findKeyInTypeScript(text: string, keyPath: string): vscode.Posit
 }
 
 function escapeRegex(str: string): string {
-  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }

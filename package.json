@@ -8,7 +8,11 @@
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types",
-    "check-types:packages": "turbo run check-types --filter=better-translate --filter=better-translate/* --filter=@better-translate/*"
+    "check-types:packages": "turbo run check-types --filter=better-translate --filter=better-translate/* --filter=@better-translate/*",
+    "test": "bun run test:packages",
+    "test:packages": "bun run test:packages:runtime && bun run test:packages:types",
+    "test:packages:runtime": "bun run --filter='better-translate' --filter='@better-translate/*' --if-present test",
+    "test:packages:types": "bun run --filter='better-translate' --filter='@better-translate/*' --if-present test:types"
   },
   "devDependencies": {
     "prettier": "^3.7.4",

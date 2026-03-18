@@ -8,13 +8,13 @@ import type {
 
 import { configureTranslations } from "better-translate/core";
 
-import { createNavigationFunctions } from "./navigation.js";
-import { defineRouting } from "./shared.js";
+import { createNavigationFunctions } from "../../dist/navigation.js";
+import { defineRouting } from "../../dist/index.js";
 import {
   createServerHelpers,
   getRequestConfig,
   setRequestLocale,
-} from "./server.js";
+} from "../../dist/server.js";
 
 const routing = defineRouting({
   locales: ["en", "es"] as const,

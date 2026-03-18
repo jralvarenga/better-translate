@@ -1,7 +1,6 @@
 import { configureTranslations } from "better-translate/core";
 
-import { BetterTranslateProvider } from "./provider.js";
-import { useTranslations } from "./use-translations.js";
+import { BetterTranslateProvider, useTranslations } from "../../dist/index.js";
 
 const translator = await configureTranslations({
   availableLocales: ["en", "es", "fr"] as const,

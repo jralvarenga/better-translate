@@ -5,28 +5,34 @@ import { createElement } from "react";
 
 import { configureTranslations } from "better-translate/core";
 
-import { createNavigationFunctions } from "./navigation.js";
+import { createNavigationFunctions } from "../../src/navigation.js";
 import {
   createProxy,
   defaultProxyMatcher,
   getProxyMatcher,
   withBetterTranslate,
-} from "./proxy.js";
+} from "../../src/proxy.js";
 import {
   createServerHelpers,
   getRequestConfig,
   setRequestLocale,
-} from "./server.js";
+} from "../../src/server.js";
 import {
   buildDomainAwareHref,
   defineRouting,
+  getDomainForLocale,
   getLocaleFromDomain,
   getPathnameLocale,
   hasLocale,
+  isAbsoluteHref,
   isPathnameInScope,
   localizePathname,
+  normalizeHost,
+  normalizePathname,
+  parseRouteTemplate,
+  splitHrefString,
   stripLocaleFromPathname,
-} from "./shared.js";
+} from "../../src/shared.js";
 
 describe("@better-translate/nextjs", () => {
   beforeEach(() => {
@@ -56,9 +62,7 @@ describe("@better-translate/nextjs", () => {
     expect(getPathnameLocale("/es/products", routing)).toBe("es");
     expect(stripLocaleFromPathname("/es/products", routing)).toBe("/products");
     expect(localizePathname("/products", "en", routing)).toBe("/en/products");
-    expect(defaultProxyMatcher).toEqual([
-      "/((?!api|_next|_vercel|.*\\..*).*)",
-    ]);
+    expect(defaultProxyMatcher).toEqual(["/((?!api|_next|_vercel|.*\\..*).*)"]);
   });
 
   it("scopes locale routing to the configured route template", () => {
@@ -88,11 +92,14 @@ describe("@better-translate/nextjs", () => {
     });
     const proxy = createProxy(routing);
 
-    const inScopeRequest = new NextRequest("https://example.com/app/dashboard", {
-      headers: {
-        "accept-language": "es-ES,es;q=0.9,en;q=0.8",
+    const inScopeRequest = new NextRequest(
+      "https://example.com/app/dashboard",
+      {
+        headers: {
+          "accept-language": "es-ES,es;q=0.9,en;q=0.8",
+        },
       },
-    });
+    );
     const outOfScopeRequest = new NextRequest("https://example.com/login", {
       headers: {
         "accept-language": "es-ES,es;q=0.9,en;q=0.8",
@@ -146,12 +153,17 @@ describe("@better-translate/nextjs", () => {
     };
     const proxy = withBetterTranslate(userProxy, routing);
 
-    const redirectingRequest = new NextRequest("https://example.com/app/dashboard", {
-      headers: {
-        "accept-language": "es-ES,es;q=0.9,en;q=0.8",
+    const redirectingRequest = new NextRequest(
+      "https://example.com/app/dashboard",
+      {
+        headers: {
+          "accept-language": "es-ES,es;q=0.9,en;q=0.8",
+        },
       },
-    });
-    const passthroughRequest = new NextRequest("https://example.com/app/en/dashboard");
+    );
+    const passthroughRequest = new NextRequest(
+      "https://example.com/app/en/dashboard",
+    );
 
     const redirectingResponse = await proxy(redirectingRequest, {} as never);
     const passthroughResponse = await proxy(passthroughRequest, {} as never);
@@ -464,9 +476,123 @@ describe("@better-translate/nextjs", () => {
       },
     });
     expect((await helpers.getTranslations())("home.title")).toBe("Hola");
-    expect((await helpers.getTranslations({ locale: "en" }))("home.title")).toBe(
-      "Hello",
+    expect(
+      (await helpers.getTranslations({ locale: "en" }))("home.title"),
+    ).toBe("Hello");
+  });
+
+  it("normalizes pathnames, href fragments, and hosts", () => {
+    expect(normalizePathname("dashboard")).toBe("/dashboard");
+    expect(normalizePathname("")).toBe("/");
+    expect(splitHrefString("about?ref=hero#top")).toEqual({
+      hash: "#top",
+      pathname: "/about",
+      search: "?ref=hero",
+    });
+    expect(isAbsoluteHref("https://example.com/about")).toBe(true);
+    expect(isAbsoluteHref("//cdn.example.com/file.js")).toBe(true);
+    expect(isAbsoluteHref("/about")).toBe(false);
+    expect(normalizeHost("ES.Example.com:3000")).toBe("es.example.com");
+  });
+
+  it("parses route templates and validates domain assignments", () => {
+    expect(parseRouteTemplate("/app/[lang]")).toEqual({
+      deLocalizedSegments: ["app"],
+      localeParamName: "lang",
+      localeSegmentIndex: 1,
+      localizedSegments: ["app", "[lang]"],
+      routeTemplate: "/app/[lang]",
+      scopePrefix: "/app",
+    });
+
+    expect(() =>
+      defineRouting({
+        locales: [] as const,
+        defaultLocale: "en" as never,
+      }),
+    ).toThrow("defineRouting(...) requires at least one locale.");
+    expect(() =>
+      defineRouting({
+        locales: ["en", "en"] as const,
+        defaultLocale: "en",
+      }),
+    ).toThrow('Duplicate locale "en" found in routing config.');
+    expect(() => parseRouteTemplate("/app/[lang]/[region]")).toThrow(
+      'Route template "/app/[lang]/[region]" must contain exactly one dynamic locale segment.',
     );
+    expect(() =>
+      defineRouting({
+        locales: ["en", "es"] as const,
+        defaultLocale: "en",
+        domains: [
+          {
+            domain: "example.com",
+            defaultLocale: "en",
+          },
+          {
+            domain: "EXAMPLE.COM",
+            defaultLocale: "es",
+          },
+        ],
+      }),
+    ).toThrow('Duplicate domain "example.com" found in routing config.');
+    expect(() =>
+      defineRouting({
+        locales: ["en", "es"] as const,
+        defaultLocale: "en",
+        domains: [
+          {
+            domain: "example.com",
+            defaultLocale: "en",
+            locales: ["en", "es"],
+          },
+          {
+            domain: "es.example.com",
+            defaultLocale: "es",
+          },
+        ],
+      }),
+    ).toThrow(
+      'Locale "es" is assigned to multiple domains: "example.com" and "es.example.com".',
+    );
+  });
+
+  it("returns locale domains and absolute hrefs for cross-domain navigation", () => {
+    const routing = defineRouting({
+      locales: ["en", "es"] as const,
+      defaultLocale: "en",
+      domains: [
+        {
+          domain: "example.com",
+          defaultLocale: "en",
+        },
+        {
+          domain: "es.example.com",
+          defaultLocale: "es",
+          protocol: "http",
+        },
+      ],
+    });
+
+    expect(getDomainForLocale(routing, "es")).toEqual({
+      defaultLocale: "es",
+      domain: "es.example.com",
+      protocol: "http",
+    });
+    expect(
+      buildDomainAwareHref(routing, "/pricing?ref=nav#plans", "es", {
+        currentHost: "example.com",
+      }),
+    ).toEqual({
+      external: true,
+      href: "http://es.example.com/es/pricing?ref=nav#plans",
+    });
+    expect(
+      buildDomainAwareHref(routing, "https://docs.example.com", "es"),
+    ).toEqual({
+      external: true,
+      href: "https://docs.example.com",
+    });
   });
 
   it("falls back to the translator default locale when no request locale is set", async () => {

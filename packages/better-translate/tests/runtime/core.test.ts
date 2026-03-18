@@ -9,8 +9,8 @@ import {
   loadLocale,
   resetTranslationsForTests,
   t,
-} from "./core.js";
-import { readConfiguredTranslationsFromAnotherFile } from "./cross-file-access.js";
+} from "../../src/core.js";
+import { readConfiguredTranslationsFromAnotherFile } from "../../src/cross-file-access.js";
 
 const en = {
   common: {
@@ -222,14 +222,11 @@ describe("better-translate core", () => {
 
     try {
       expect(
-        translator.t(
-          "common.formalGreeting",
-          {
-            params: {
-              salute: "Dr.",
-            },
-          } as never,
-        ),
+        translator.t("common.formalGreeting", {
+          params: {
+            salute: "Dr.",
+          },
+        } as never),
       ).toBe("Dr. ");
       expect(warnings).toEqual([
         'Missing translation param "{name}" for key "common.formalGreeting".',

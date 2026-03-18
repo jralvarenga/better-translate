@@ -8,7 +8,9 @@
   "engines": {
     "vscode": "^1.85.0"
   },
-  "categories": ["Other"],
+  "categories": [
+    "Other"
+  ],
   "main": "./dist/extension.js",
   "activationEvents": [
     "onLanguage:typescript",
@@ -32,7 +34,9 @@
         },
         "betterTranslate.translatorFunctionNames": {
           "type": "array",
-          "default": ["t"],
+          "default": [
+            "t"
+          ],
           "description": "Function names to treat as translation calls."
         }
       }
@@ -41,7 +45,9 @@
   "scripts": {
     "build": "node esbuild.mjs",
     "check-types": "tsc --noEmit",
-    "dev": "node esbuild.mjs --watch"
+    "dev": "node esbuild.mjs --watch",
+    "test": "bun test tests/runtime",
+    "test:types": "tsc -p tests/types/tsconfig.json --noEmit"
   },
   "devDependencies": {
     "@types/vscode": "^1.85.0",

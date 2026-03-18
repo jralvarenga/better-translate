@@ -4,13 +4,12 @@ import { join } from "node:path";
 import { tmpdir } from "node:os";
 
 import { configureTranslations } from "better-translate/core";
-import { setRequestLocale } from "better-translate/server";
 
 import {
   createMarkdownHelpers,
   MarkdownDocumentNotFoundError,
-} from "./index.js";
-import { createMarkdownServerHelpers } from "./server.js";
+} from "../../src/index.js";
+import { createMarkdownServerHelpers } from "../../src/server.js";
 
 const en = {
   common: {
@@ -24,16 +23,14 @@ const es = {
   },
 } as const;
 
-describe("@better-translate/md", () => {
+describe.serial("@better-translate/md", () => {
   let rootDir = "";
 
   beforeEach(async () => {
     rootDir = await mkdtemp(join(tmpdir(), "better-translate-md-"));
-    setRequestLocale(undefined);
   });
 
   afterEach(async () => {
-    setRequestLocale(undefined);
     if (rootDir) {
       await rm(rootDir, {
         force: true,
@@ -306,15 +303,13 @@ title: Hello
     });
     const docs = createMarkdownServerHelpers(
       async () => ({
+        locale: "es" as const,
         translator,
       }),
       {
         rootDir,
       },
     );
-
-    setRequestLocale("es");
-
     const document = await docs.getDocument("docs/guide");
     const compiled = await docs.compileDocument("docs/guide");
 
@@ -326,7 +321,7 @@ title: Hello
     ]);
   });
 
-  it("prefers the request locale over the request-config locale for markdown helpers", async () => {
+  it("prefers the explicit locale over the request-config locale for markdown helpers", async () => {
     await mkdir(join(rootDir, "en", "docs"), {
       recursive: true,
     });
@@ -369,18 +364,16 @@ title: Hola
       },
     );
 
-    setRequestLocale("es");
-
     const document = await docs.getDocument("docs/guide");
     const explicitDocument = await docs.getDocument("docs/guide", {
-      locale: "en",
+      locale: "es",
     });
 
-    expect(document.locale).toBe("es");
-    expect(explicitDocument.locale).toBe("en");
+    expect(document.locale).toBe("en");
+    expect(explicitDocument.locale).toBe("es");
   });
 
-  it("rejects an unsupported stored request locale for markdown helpers", async () => {
+  it("rejects an unsupported explicit locale for markdown server helpers", async () => {
     await mkdir(join(rootDir, "en", "docs"), {
       recursive: true,
     });
@@ -411,9 +404,11 @@ title: Hello
       },
     );
 
-    setRequestLocale("pt");
-
-    await expect(docs.getDocument("docs/guide")).rejects.toThrow(
+    await expect(
+      docs.getDocument("docs/guide", {
+        locale: "pt" as never,
+      }),
+    ).rejects.toThrow(
       'The locale "pt" is not included in the translator\'s supported locales.',
     );
   });

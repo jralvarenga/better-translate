@@ -5,8 +5,8 @@ import { pathToFileURL } from "node:url";
 
 import { afterEach, describe, expect, it } from "bun:test";
 
-import { loadCliConfig } from "./config-loader.js";
-import { generateProject } from "./generate.js";
+import { loadCliConfig } from "../../src/config-loader.js";
+import { generateProject } from "../../src/generate.js";
 
 const tempDirectories: string[] = [];
 const configModuleUrl = pathToFileURL(
@@ -14,7 +14,9 @@ const configModuleUrl = pathToFileURL(
 ).href;
 
 async function createWorkspace(): Promise<string> {
-  const directory = await mkdtemp(path.join(os.tmpdir(), "better-translate-cli-"));
+  const directory = await mkdtemp(
+    path.join(os.tmpdir(), "better-translate-cli-"),
+  );
   tempDirectories.push(directory);
   return directory;
 }
@@ -267,7 +269,9 @@ export default defineConfig({
       loadCliConfig({
         cwd: workspace,
       }),
-    ).rejects.toThrow("Config requires a gateway object when model is a string.");
+    ).rejects.toThrow(
+      "Config requires a gateway object when model is a string.",
+    );
   });
 });
 
@@ -391,7 +395,9 @@ This is the intro.
     });
 
     expect(
-      JSON.parse(await readFile(path.join(workspace, "messages/es.json"), "utf8")),
+      JSON.parse(
+        await readFile(path.join(workspace, "messages/es.json"), "utf8"),
+      ),
     ).toEqual({
       home: {
         title: "Hola",
@@ -453,7 +459,9 @@ export default en;
       },
     });
 
-    expect(await Bun.file(path.join(workspace, "messages/es.ts")).exists()).toBe(false);
+    expect(
+      await Bun.file(path.join(workspace, "messages/es.ts")).exists(),
+    ).toBe(false);
   });
 
   it("overwrites existing files in place", async () => {
@@ -507,7 +515,10 @@ export default en;
       },
     });
 
-    const contents = await readFile(path.join(workspace, "messages/es.ts"), "utf8");
+    const contents = await readFile(
+      path.join(workspace, "messages/es.ts"),
+      "utf8",
+    );
 
     expect(contents).toContain('"greeting": "Hola"');
     expect(contents).not.toContain('"greeting": "Viejo"');
@@ -558,7 +569,9 @@ export default defineConfig({
     });
 
     expect(
-      JSON.parse(await readFile(path.join(workspace, "messages/es.json"), "utf8")),
+      JSON.parse(
+        await readFile(path.join(workspace, "messages/es.json"), "utf8"),
+      ),
     ).toEqual({
       greeting: "Hola",
     });

@@ -4,7 +4,7 @@ import {
   getSupportedLocales,
   loadLocale,
   t,
-} from "./core.js";
+} from "../../dist/core.js";
 
 const en = {
   common: {
