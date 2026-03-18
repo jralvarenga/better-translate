@@ -15,16 +15,16 @@ interface DocsHeaderProps {
 
 export function DocsHeader({ currentLocale, homeLabel, githubLabel }: DocsHeaderProps) {
     return (
-        <header className="fixed top-0 left-0 right-0 z-50 h-14 border-b border-border/60 bg-background/95 backdrop-blur-sm">
-            <div className="flex h-full items-center justify-between px-6">
-                <div className="flex items-center gap-4">
-                    <I18nLink href="/" className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors text-sm">
-                        <RiArrowLeftLine className="size-3.5" />
-                        <span>{homeLabel}</span>
-                    </I18nLink>
-                    <span className="text-border">|</span>
+        <header className="fixed top-0 left-0 right-0 z-50 h-14 flex items-center px-2">
+            <div className="mx-auto flex w-full max-w-4xl items-center justify-between rounded-2xl border border-white/10 bg-background/70 px-5 backdrop-blur-lg h-10">
+                <div className="flex items-center gap-3">
                     <I18nLink href="/docs" className="flex items-center">
                         <Logo />
+                    </I18nLink>
+                    <span className="h-3.5 w-px bg-white/15" />
+                    <I18nLink href="/" className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
+                        <RiArrowLeftLine className="size-3" />
+                        <span>{homeLabel}</span>
                     </I18nLink>
                 </div>
                 <div className="flex items-center gap-2">

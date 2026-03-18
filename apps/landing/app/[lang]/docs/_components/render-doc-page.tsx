@@ -20,7 +20,7 @@ export async function renderDocPage(
   ]);
 
   return (
-    <div className="max-w-3xl px-6 py-10 lg:px-10">
+    <div className="mx-auto max-w-3xl px-6 py-14 lg:px-10">
       <div className="mb-4 flex justify-end">
         <CopyButton
           label={t('docs.copyMarkdown')}

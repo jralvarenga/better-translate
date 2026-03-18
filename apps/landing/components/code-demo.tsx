@@ -21,7 +21,7 @@ interface CodeDemoProps {
 
 export function CodeDemo({ t }: CodeDemoProps) {
     return (
-        <section id="docs" className="bg-background py-20 md:py-32">
+        <section id="docs" className="py-20 md:py-32">
             <div className="mx-auto max-w-4xl px-6">
                 <div className="mb-12 text-center">
                     <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">{t('codeDemo.title')}</h2>

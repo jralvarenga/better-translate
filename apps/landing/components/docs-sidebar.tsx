@@ -54,7 +54,7 @@ export function DocsSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) 
             <div className="absolute top-12 right-2 bottom-0 hidden h-full w-px bg-linear-to-b from-transparent via-border to-transparent lg:flex" />
             <SidebarContent className="mx-auto no-scrollbar w-(--sidebar-menu-width) overflow-x-hidden px-2">
                 <SidebarGroup className="pt-6">
-                    <SidebarGroupLabel className="font-medium text-muted-foreground">
+                    <SidebarGroupLabel className="font-medium text-muted-foreground text-[0.7rem] uppercase tracking-widest">
                         {t("docs.sidebar.gettingStarted")}
                     </SidebarGroupLabel>
                     <SidebarGroupContent>
@@ -64,7 +64,7 @@ export function DocsSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) 
                                     <SidebarMenuButton
                                         asChild
                                         isActive={isActive(href)}
-                                        className="relative h-[30px] w-fit overflow-visible border border-transparent text-[0.8rem] font-medium after:absolute after:inset-x-0 after:-inset-y-1 after:z-0 after:rounded-md data-[active=true]:border-accent data-[active=true]:bg-accent 3xl:fixed:w-full 3xl:fixed:max-w-48"
+                                        className="relative h-[30px] w-fit overflow-visible border border-transparent text-[0.8rem] font-medium after:absolute after:inset-x-0 after:-inset-y-1 after:z-0 after:rounded-md data-[active=true]:border-white/15 data-[active=true]:bg-white/8 data-[active=true]:text-foreground 3xl:fixed:w-full 3xl:fixed:max-w-48"
                                     >
                                         <I18nLink href={href}>
                                             <span className="absolute inset-0 flex w-(--sidebar-menu-width) bg-transparent" />
@@ -78,7 +78,7 @@ export function DocsSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) 
                 </SidebarGroup>
 
                 <SidebarGroup>
-                    <SidebarGroupLabel className="font-medium text-muted-foreground">
+                    <SidebarGroupLabel className="font-medium text-muted-foreground text-[0.7rem] uppercase tracking-widest">
                         {t("docs.sidebar.adapters")}
                     </SidebarGroupLabel>
                     <SidebarGroupContent>
@@ -88,7 +88,7 @@ export function DocsSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) 
                                     <SidebarMenuButton
                                         asChild
                                         isActive={isActive(href)}
-                                        className="relative h-[30px] w-fit overflow-visible border border-transparent text-[0.8rem] font-medium after:absolute after:inset-x-0 after:-inset-y-1 after:z-0 after:rounded-md data-[active=true]:border-accent data-[active=true]:bg-accent 3xl:fixed:w-full 3xl:fixed:max-w-48"
+                                        className="relative h-[30px] w-fit overflow-visible border border-transparent text-[0.8rem] font-medium after:absolute after:inset-x-0 after:-inset-y-1 after:z-0 after:rounded-md data-[active=true]:border-white/15 data-[active=true]:bg-white/8 data-[active=true]:text-foreground 3xl:fixed:w-full 3xl:fixed:max-w-48"
                                     >
                                         <I18nLink href={href}>
                                             <span className="absolute inset-0 flex w-(--sidebar-menu-width) bg-transparent" />

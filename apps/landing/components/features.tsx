@@ -30,7 +30,7 @@ interface FeaturesProps {
 
 export function Features({ t }: FeaturesProps) {
     return (
-        <section id="features" className="bg-background py-20 md:py-32">
+        <section id="features" className="py-20 md:py-32">
             <div className="mx-auto max-w-5xl px-6">
                 <div className="mb-16 text-center">
                     <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">{t('features.title')}</h2>
@@ -38,9 +38,9 @@ export function Features({ t }: FeaturesProps) {
                 </div>
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                     {features.map((f) => (
-                        <div key={f.titleKey} className="flex gap-4 rounded-xl border border-white/10 bg-white/5 p-6">
-                            <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg bg-[var(--brand)]/10">
-                                <f.icon className="size-4 text-[var(--brand)]" />
+                        <div key={f.titleKey} className="flex gap-4 rounded-xl border border-white/10 bg-white/5 p-6 transition-all duration-200 hover:bg-white/8 hover:border-white/20">
+                            <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg bg-white/8">
+                                <f.icon className="size-4 text-white/80" />
                             </div>
                             <div>
                                 <h3 className="mb-1 font-medium text-foreground">{t(f.titleKey)}</h3>

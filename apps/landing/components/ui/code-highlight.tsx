@@ -14,6 +14,7 @@ const patterns: [RegExp, string][] = [
     [/\b[A-Z][a-zA-Z0-9]*\b/,                                              'text-orange-300'],
     [/\b[a-z][a-zA-Z0-9]*(?=\s*\()/,                                       'text-blue-400'],
     [/\b[a-z][a-zA-Z0-9]*(?=\s*:)/,                                        'text-sky-300'],
+    [/\b[a-zA-Z][a-zA-Z0-9]*\b/,                                           PLAIN],
 ]
 
 function tokenize(code: string): Token[] {

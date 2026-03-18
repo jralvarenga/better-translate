@@ -10,7 +10,7 @@ interface FooterProps {
 
 export function Footer({ locale, t }: FooterProps) {
     return (
-        <footer className="border-t bg-background py-12">
+        <footer className="border-t border-white/10 py-12">
             <div className="mx-auto max-w-5xl px-6">
                 <div className="flex flex-col items-center justify-between gap-6 sm:flex-row">
                     <Logo />
@@ -26,7 +26,7 @@ export function Footer({ locale, t }: FooterProps) {
                         </Link>
                     </div>
                 </div>
-                <p className="mt-8 text-center text-xs text-muted-foreground">
+                <p className="mt-10 text-center text-xs text-muted-foreground">
                     {t('footer.legal')}
                 </p>
             </div>

@@ -43,7 +43,7 @@ export const mdxComponents = {
   h1: ({ className, ...props }: React.ComponentProps<"h1">) => (
     <h1
       className={cn(
-        "mt-2 scroll-m-28 text-3xl font-bold tracking-tight",
+        "mt-2 scroll-m-28 text-3xl font-bold tracking-tight text-foreground",
         className
       )}
       {...props}
@@ -53,7 +53,7 @@ export const mdxComponents = {
     <h2
       id={slugifyHeading(props.children)}
       className={cn(
-        "mt-10 scroll-m-28 text-xl font-medium tracking-tight first:mt-0 lg:mt-12",
+        "mt-10 scroll-m-28 text-xl font-medium tracking-tight first:mt-0 lg:mt-12 border-b border-white/8 pb-3 text-foreground",
         className
       )}
       {...props}
@@ -101,7 +101,7 @@ export const mdxComponents = {
     ...props
   }: React.ComponentProps<"a">) => {
     const linkClassName = cn(
-      "font-medium underline underline-offset-4",
+      "text-foreground/80 underline decoration-white/30 hover:decoration-white/70 underline-offset-4 transition-colors",
       className
     );
 
@@ -134,7 +134,7 @@ export const mdxComponents = {
   ),
   blockquote: ({ className, ...props }: React.ComponentProps<"blockquote">) => (
     <blockquote
-      className={cn("mt-6 border-l-2 border-border pl-6 italic text-muted-foreground", className)}
+      className={cn("mt-6 border-l border-white/25 not-italic text-muted-foreground bg-white/[0.02] rounded-r-md py-1 pl-6", className)}
       {...props}
     />
   ),
@@ -142,7 +142,7 @@ export const mdxComponents = {
     <img className={cn("rounded-md", className)} alt={alt} {...props} />
   ),
   hr: (props: React.ComponentProps<"hr">) => (
-    <hr className="my-4 border-border/60 md:my-8" {...props} />
+    <hr className="my-4 border-white/10 md:my-8" {...props} />
   ),
   table: ({ className, ...props }: React.ComponentProps<"table">) => (
     <div className="my-6 w-full overflow-y-auto rounded-xl border border-border/80">
@@ -233,7 +233,7 @@ export const mdxComponents = {
       return (
         <code
           className={cn(
-            "relative rounded-md bg-accent px-[0.3rem] py-[0.2rem] font-mono text-[0.8rem] break-words outline-none",
+            "relative rounded-md bg-white/8 border border-white/10 px-1.5 py-0.5 font-mono text-[0.8rem] break-words outline-none text-foreground/90",
             className
           )}
           {...props}
