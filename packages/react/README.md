@@ -1,10 +1,23 @@
 # @better-translate/react
 
-React context and hooks for Better Translate.
+React context and hooks for Better Translate in web React and Expo/React Native apps.
+
+## Install
+
+```sh
+bun add better-translate @better-translate/react
+```
+
+If you use npm:
+
+```sh
+npm install better-translate @better-translate/react
+```
 
 ## Example
 
 ```tsx
+import React from "react";
 import {
   BetterTranslateProvider,
   useTranslations,
@@ -67,6 +80,76 @@ export function App() {
   );
 }
 ```
+
+## Expo / React Native Setup
+
+Expo uses this same package. There is no separate native adapter.
+
+Create the translator in shared app code, then mount `BetterTranslateProvider`
+at the root of your app:
+
+```tsx
+// app/_layout.tsx (Expo Router) or App.tsx
+import { useEffect, useState } from "react";
+import { Slot } from "expo-router";
+
+import { BetterTranslateProvider } from "@better-translate/react";
+
+import { createTranslator, type AppTranslator } from "./src/i18n";
+
+export default function RootLayout() {
+  const [translator, setTranslator] = useState<AppTranslator | null>(null);
+
+  useEffect(() => {
+    void createTranslator().then(setTranslator);
+  }, []);
+
+  if (!translator) {
+    return null;
+  }
+
+  return (
+    <BetterTranslateProvider translator={translator}>
+      <Slot />
+    </BetterTranslateProvider>
+  );
+}
+```
+
+Adjust the `createTranslator` import path to match your app structure.
+
+Then read translations in screens and components with the same hook:
+
+```tsx
+import { Pressable, Text, View } from "react-native";
+
+import { useTranslations } from "@better-translate/react";
+
+import type { AppTranslator } from "./src/i18n";
+
+export function HomeScreen() {
+  const { t, locale, direction, rtl, setLocale, supportedLocales } =
+    useTranslations<AppTranslator>();
+
+  return (
+    <View>
+      <Text>{t("common.hello")}</Text>
+      <Text>{locale}</Text>
+      <Text>{direction}</Text>
+      <Text>{String(rtl)}</Text>
+
+      {supportedLocales.map((nextLocale) => (
+        <Pressable key={nextLocale} onPress={() => void setLocale(nextLocale)}>
+          <Text>{nextLocale}</Text>
+        </Pressable>
+      ))}
+    </View>
+  );
+}
+```
+
+Use `loadLocale(...)` to warm the cache before a user switches locales, and use
+`direction` or `rtl` to drive native layout decisions.
 
 ## Vite React Client-Only Setup
 

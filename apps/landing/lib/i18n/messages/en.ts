@@ -94,6 +94,7 @@ export const en = {
       changelog: "Changelog",
       cli: "CLI",
       core: "Core",
+      expo: "Expo",
       gettingStarted: "Getting Started",
       installation: "Installation",
       introduction: "Introduction",

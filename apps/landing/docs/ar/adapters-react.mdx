@@ -9,12 +9,25 @@ description: "@better-translate/react هي طبقة React فوق الحزمة ا
 طبقة React فوق الحزمة الأساسية. تُوفر
 `BetterTranslateProvider` و
 `useTranslations()` لتبديل
-اللغة من جانب العميل والوصول إلى الترجمات عبر السياق.
+اللغة من جانب العميل والوصول إلى الترجمات عبر السياق
+في تطبيقات React على الويب وExpo/React Native.
 
 ## متى تستخدمها
 
 استخدم محول React عندما يمتلك تطبيقك مكونات عميل، أو تريد تبديل اللغة
-في المتصفح، أو تريد سياق React بدلاً من استدعاء المساعدات العالمية مباشرة.
+أثناء التشغيل، أو تريد سياق React بدلاً من استدعاء المساعدات العالمية مباشرة.
+
+## Expo و React Native
+
+يستخدم Expo هذه الحزمة نفسها. لا يوجد موائم أصلي منفصل.
+إذا كنت تضيف Better Translate إلى تطبيق Expo، فاحتفظ بنموذج المزود هذا
+واتبع الدليل المخصص:
+
+<div className="mt-6 flex flex-wrap gap-3">
+  <Button asChild variant="outline" size="lg">
+    <Link href="/docs/adapters/expo">افتح دليل Expo</Link>
+  </Button>
+</div>
 
 ## الإعداد
 
@@ -129,6 +142,9 @@ setLocale("fr")
 <div className="mt-6 flex flex-wrap gap-3">
   <Button asChild variant="outline" size="lg">
     <Link href="/docs/adapters/core">فهم إعداد النواة</Link>
+  </Button>
+  <Button asChild variant="outline" size="lg">
+    <Link href="/docs/adapters/expo">ربطه مع Expo</Link>
   </Button>
   <Button asChild size="lg">
     <Link href="/docs/adapters/nextjs">دمجه مع Next.js</Link>

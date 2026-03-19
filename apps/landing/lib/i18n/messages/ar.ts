@@ -87,6 +87,7 @@ export const ar = {
       "changelog": "Changelog",
       "cli": "CLI",
       "core": "النواة",
+      "expo": "Expo",
       "gettingStarted": "البدء",
       "installation": "التثبيت",
       "introduction": "مقدمة",

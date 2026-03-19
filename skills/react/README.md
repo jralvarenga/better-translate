@@ -18,8 +18,11 @@ The React package makes that translator easy to use in React components.
 Use the React package when:
 
 - your app has client components
-- you want to switch locale in the browser
+- you want to switch locale at runtime
 - you want React context instead of calling global helpers directly
+
+If you are building with Expo or React Native, keep using this package and then
+read `skills/expo/README.md` for the native app wiring.
 
 ## How It Works
 

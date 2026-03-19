@@ -87,6 +87,7 @@ export const ja = {
       "changelog": "変更履歴",
       "cli": "CLI",
       "core": "コア",
+      "expo": "Expo",
       "gettingStarted": "はじめに",
       "installation": "インストール",
       "introduction": "導入",

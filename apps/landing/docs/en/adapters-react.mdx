@@ -9,12 +9,25 @@ description: "@better-translate/react is the React layer on top of the core pack
 the React layer on top of the core package. It provides
 `BetterTranslateProvider` and
 `useTranslations()` for
-client-side locale switching and context-based translation access.
+client-side locale switching and context-based translation access across
+web React and Expo/React Native apps.
 
 ## When to use it
 
 Use the React adapter when your app has client components, you want to switch locale
-in the browser, or you want React context instead of calling global helpers directly.
+at runtime, or you want React context instead of calling global helpers directly.
+
+## Expo and React Native
+
+Expo uses this same package. There is no separate native adapter.
+If you are wiring Better Translate into an Expo app, keep this provider model
+and follow the native setup guide:
+
+<div className="mt-6 flex flex-wrap gap-3">
+  <Button asChild variant="outline" size="lg">
+    <Link href="/docs/adapters/expo">Open the Expo guide</Link>
+  </Button>
+</div>
 
 ## Setup
 
@@ -129,6 +142,9 @@ behavior in isolation.
 <div className="mt-6 flex flex-wrap gap-3">
   <Button asChild variant="outline" size="lg">
     <Link href="/docs/adapters/core">Understand the core config</Link>
+  </Button>
+  <Button asChild variant="outline" size="lg">
+    <Link href="/docs/adapters/expo">Wire it into Expo</Link>
   </Button>
   <Button asChild size="lg">
     <Link href="/docs/adapters/nextjs">Pair it with Next.js</Link>

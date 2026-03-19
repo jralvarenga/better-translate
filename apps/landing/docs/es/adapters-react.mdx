@@ -9,12 +9,25 @@ description: "@better-translate/react es la capa React sobre el paquete core."
 la capa React sobre el paquete core. Provee
 `BetterTranslateProvider` y
 `useTranslations()` para
-cambio de locale en el cliente y acceso a traducciones basado en context.
+cambio de locale en el cliente y acceso a traducciones basado en context
+en apps web React y Expo/React Native.
 
 ## Cuándo usarlo
 
 Usa el adaptador React cuando tu app tenga componentes cliente, quieras cambiar el locale
-en el navegador, o prefieras React context en lugar de llamar directamente a los helpers globales.
+en tiempo de ejecución, o prefieras React context en lugar de llamar directamente a los helpers globales.
+
+## Expo y React Native
+
+Expo usa este mismo paquete. No existe un adaptador nativo separado.
+Si vas a integrar Better Translate en una app Expo, conserva este modelo de provider
+y sigue la guía dedicada:
+
+<div className="mt-6 flex flex-wrap gap-3">
+  <Button asChild variant="outline" size="lg">
+    <Link href="/docs/adapters/expo">Abrir la guía de Expo</Link>
+  </Button>
+</div>
 
 ## Configuración
 
@@ -129,6 +142,9 @@ de error de locale en aislamiento.
 <div className="mt-6 flex flex-wrap gap-3">
   <Button asChild variant="outline" size="lg">
     <Link href="/docs/adapters/core">Entender la configuración core</Link>
+  </Button>
+  <Button asChild variant="outline" size="lg">
+    <Link href="/docs/adapters/expo">Integrarlo con Expo</Link>
   </Button>
   <Button asChild size="lg">
     <Link href="/docs/adapters/nextjs">Combinarlo con Next.js</Link>

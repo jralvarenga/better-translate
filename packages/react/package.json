@@ -1,7 +1,7 @@
 {
   "name": "@better-translate/react",
   "version": "0.0.0",
-  "description": "React context and hooks for Better Translate.",
+  "description": "React context and hooks for Better Translate in web and native React apps.",
   "license": "MIT",
   "type": "module",
   "sideEffects": false,
@@ -32,17 +32,18 @@
     "better-translate": "0.0.0"
   },
   "peerDependencies": {
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react": "^19.0.0"
   },
   "devDependencies": {
     "@repo/typescript-config": "*",
     "react-test-renderer": "^19.2.0"
   },
   "keywords": [
+    "expo",
     "i18n",
     "l10n",
     "react",
+    "react-native",
     "translations",
     "typescript"
   ]

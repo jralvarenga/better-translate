@@ -29,11 +29,12 @@ If you are new, read the skill files in this order:
 
 1. `skills/core/README.md` — The translation engine: typed keys, params, fallback, async loading, and global helpers.
 2. `skills/react/README.md` — The React adapter: BetterTranslateProvider and useTranslations().
-3. `skills/nextjs/README.md` — The Next.js adapter: locale routing, server helpers, and navigation wrappers.
-4. `skills/md/README.md` — How localized Markdown and MDX files work.
-5. `skills/combined/README.md` — How core, React, and Next.js work together in a real app.
-6. `skills/examples/README.md` — A map of the example apps — copy the one that matches your architecture.
-7. `skills/workspace/README.md` — How the monorepo is organized: packages vs apps, build scripts, and config files.
+3. `skills/expo/README.md` — Expo and React Native with the existing React adapter.
+4. `skills/nextjs/README.md` — The Next.js adapter: locale routing, server helpers, and navigation wrappers.
+5. `skills/md/README.md` — How localized Markdown and MDX files work.
+6. `skills/combined/README.md` — How core, React, and Next.js work together in a real app.
+7. `skills/examples/README.md` — A map of the example apps — copy the one that matches your architecture.
+8. `skills/workspace/README.md` — How the monorepo is organized: packages vs apps, build scripts, and config files.
 
 ## Simple mental model
 
@@ -45,6 +46,7 @@ Better Translate has two simple ideas:
 The core package owns the translation logic.
 
 The React and Next.js packages make that logic easy to use in apps.
+Expo and React Native use that same React package rather than a separate native adapter.
 
 The CLI uses the **AI SDK** to generate translated files from a source locale file.
 
@@ -69,6 +71,7 @@ export default defineConfig({
 
 - → Only need translations in TypeScript or on a server? Read `skills/core/README.md`
 - → Building a React app? Read `skills/react/README.md`
+- → Building with Expo or React Native? Read `skills/expo/README.md`
 - → Building a Next.js App Router app? Read `skills/nextjs/README.md`
 - → Translating Markdown or MDX docs? Read `skills/md/README.md`
 - → Want AI-generated locale files? Read the CLI docs first, then `skills/core/README.md`

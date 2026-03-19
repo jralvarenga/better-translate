@@ -9,13 +9,15 @@ It is not source code. It is a learning guide for people who want to understand 
 If you are new, read the files in this order:
 
 1. `skills/core/README.md`
-2. `skills/react/README.md` or `skills/nextjs/README.md`
-3. `skills/md/README.md`
-4. `skills/combined/README.md`
-5. `skills/examples/README.md`
-6. `skills/rtl/README.md`
-7. `skills/workspace/README.md`
-8. `skills/status/README.md`
+2. `skills/react/README.md`
+3. `skills/expo/README.md`
+4. `skills/nextjs/README.md`
+5. `skills/md/README.md`
+6. `skills/combined/README.md`
+7. `skills/examples/README.md`
+8. `skills/rtl/README.md`
+9. `skills/workspace/README.md`
+10. `skills/status/README.md`
 
 ## Package Map
 
@@ -24,7 +26,7 @@ If you are new, read the files in this order:
 - `@better-translate/cli`
   The CLI generator. It uses the AI SDK under the hood to generate locale files and localized markdown from a source file.
 - `@better-translate/react`
-  React provider and hooks.
+  React provider and hooks for web React and Expo/React Native.
 - `@better-translate/nextjs`
   Next.js App Router helpers.
 - `@better-translate/md`
@@ -38,6 +40,7 @@ If you are new, read the files in this order:
 
 - If you only need translations in TypeScript or on a server, read `skills/core/README.md`.
 - If you are building a React app, read `skills/react/README.md`.
+- If you are building with Expo or React Native, read `skills/expo/README.md`.
 - If you are building a Next.js App Router app, read `skills/nextjs/README.md`.
 - If you are translating Markdown or MDX files, read `skills/md/README.md`.
 - If your app has both server and client parts, read `skills/combined/README.md`.
@@ -62,6 +65,7 @@ It supports 2 simple modes:
 The core package owns the translation logic.
 
 The React package makes that logic easy to use in client components.
+Expo and React Native use that same React package instead of a separate native adapter.
 
 The Next.js package makes that logic easy to use with routing, server helpers, and locale-aware navigation.
 

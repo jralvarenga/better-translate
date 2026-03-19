@@ -87,6 +87,7 @@ export const es = {
       "changelog": "Registro de cambios",
       "cli": "CLI",
       "core": "Núcleo",
+      "expo": "Expo",
       "gettingStarted": "Guía de inicio",
       "installation": "Instalación",
       "introduction": "Introducción",
