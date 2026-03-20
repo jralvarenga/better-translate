@@ -36,6 +36,9 @@ export const ja = {
     "heroDescription": "フレームワークに縛られない - 1つのコア、ランタイム依存性ゼロ",
     "heroTitle": "任意の TypeScript プロジェクトで動作します",
     "items": {
+      "astro": {
+        "description": ".md と .mdx の両方に対応する、リクエスト単位のヘルパーとローカライズされた Astro コンテンツコレクション。"
+      },
       "bun": {
         "description": "追加設定ゼロの Bun ネイティブランタイム対応。"
       },
@@ -84,6 +87,7 @@ export const ja = {
     "sidebar": {
       "rtl": "RTL",
       "adapters": "アダプター",
+      "astro": "Astro",
       "changelog": "変更履歴",
       "cli": "CLI",
       "core": "コア",

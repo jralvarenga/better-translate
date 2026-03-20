@@ -1,0 +1,61 @@
+---
+import { getRelativeLocaleUrl } from "astro:i18n";
+
+import SiteLayout from "../layouts/SiteLayout.astro";
+import { docs } from "../lib/i18n/content";
+import { getLocale, getTranslations } from "../lib/i18n/server";
+
+const [locale, t, ids] = await Promise.all([
+  getLocale(),
+  getTranslations(),
+  docs.listDocuments(),
+]);
+const documents = await Promise.all(
+  ids.map((id) => docs.getDocument(id, { locale })),
+);
+---
+
+<SiteLayout
+  currentPath={Astro.url.pathname}
+  description={t("docs.intro")}
+  title={t("docs.title")}
+>
+  <main class="py-8">
+    <h1
+      class="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50"
+    >
+      {t("docs.title")}
+    </h1>
+    <p class="mt-2 text-zinc-600 dark:text-zinc-400">{t("docs.intro")}</p>
+
+    <div class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
+      {
+        documents.map((document) => (
+          <a
+            href={getRelativeLocaleUrl(locale, `docs/${document.id}`)}
+            class="group rounded-2xl border border-black/5 bg-white p-5 shadow-sm transition-shadow hover:shadow-md dark:border-white/10 dark:bg-zinc-900"
+          >
+            <div class="mb-2 flex items-center gap-2">
+              <span class="rounded-full bg-zinc-100 px-2.5 py-0.5 text-xs font-medium text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300">
+                {document.locale.toUpperCase()}
+              </span>
+              {document.usedFallback && (
+                <span class="rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-medium text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">
+                  fallback
+                </span>
+              )}
+            </div>
+            <p class="font-medium text-zinc-900 group-hover:text-zinc-700 dark:text-zinc-50 dark:group-hover:text-zinc-200">
+              {String(document.data.title)}
+            </p>
+            {document.data.description && (
+              <p class="mt-1 line-clamp-2 text-sm text-zinc-500 dark:text-zinc-400">
+                {String(document.data.description)}
+              </p>
+            )}
+          </a>
+        ))
+      }
+    </div>
+  </main>
+</SiteLayout>

@@ -1,0 +1,72 @@
+---
+import { getRelativeLocaleUrl } from "astro:i18n";
+
+import LocaleSwitcher from "../components/LocaleSwitcher.astro";
+import { getLocale, getTranslations } from "../lib/i18n/server";
+import { appLocales, defaultLocale } from "../lib/i18n/request";
+import "../styles/global.css";
+
+interface Props {
+  currentPath: string;
+  description?: string;
+  title: string;
+}
+
+const { currentPath, description, title } = Astro.props;
+const [locale, t] = await Promise.all([getLocale(), getTranslations()]);
+---
+
+<!doctype html>
+<html lang={locale}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+  </head>
+  <body
+    class="min-h-screen bg-zinc-50 px-6 py-8 font-sans text-zinc-950 dark:bg-black dark:text-zinc-50"
+  >
+    <div
+      class="mx-auto flex min-h-[calc(100vh-4rem)] w-full max-w-5xl flex-col rounded-[2rem] border border-black/5 bg-white px-8 py-8 shadow-[0_24px_80px_-40px_rgba(0,0,0,0.35)] dark:border-white/10 dark:bg-zinc-950 sm:px-10 sm:py-10"
+    >
+      <header
+        class="flex flex-col gap-5 border-b border-black/5 pb-6 dark:border-white/10 lg:flex-row lg:items-center lg:justify-between"
+      >
+        <div class="flex flex-col gap-4 lg:flex-row lg:items-center">
+          <a
+            href={getRelativeLocaleUrl(locale)}
+            class="inline-flex w-fit items-center gap-3 rounded-full border border-black/10 px-4 py-2 text-sm font-medium text-zinc-600 transition-colors hover:bg-black/[0.03] dark:border-white/10 dark:text-zinc-300 dark:hover:bg-white/[0.06]"
+          >
+            <span class="h-2.5 w-2.5 rounded-full bg-emerald-500"></span>
+            better-translate / astro
+          </a>
+          <nav class="flex flex-wrap gap-3 text-sm font-medium">
+            <a
+              href={getRelativeLocaleUrl(locale)}
+              class="rounded-full border border-black/10 px-4 py-2 transition-colors hover:bg-black/[0.03] dark:border-white/10 dark:hover:bg-white/[0.06]"
+            >
+              {t("nav.home")}
+            </a>
+            <a
+              href={getRelativeLocaleUrl(locale, "docs")}
+              class="rounded-full border border-black/10 px-4 py-2 transition-colors hover:bg-black/[0.03] dark:border-white/10 dark:hover:bg-white/[0.06]"
+            >
+              {t("nav.docs")}
+            </a>
+          </nav>
+        </div>
+        <LocaleSwitcher
+          currentLocale={locale}
+          currentPath={currentPath}
+          defaultLocale={defaultLocale}
+          label={t("nav.language")}
+          locales={appLocales}
+        />
+      </header>
+      <div class="flex flex-1 flex-col">
+        <slot />
+      </div>
+    </div>
+  </body>
+</html>

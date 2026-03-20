@@ -36,6 +36,9 @@ export const es = {
     "heroDescription": "Sin acoplamiento a frameworks - un núcleo, cero dependencias en tiempo de ejecución",
     "heroTitle": "Funciona con cualquier proyecto TypeScript",
     "items": {
+      "astro": {
+        "description": "Ayudantes por solicitud y Astro content collections localizadas para .md y .mdx."
+      },
       "bun": {
         "description": "Soporte nativo del runtime Bun con cero configuración adicional."
       },
@@ -84,6 +87,7 @@ export const es = {
     "sidebar": {
       "rtl": "RTL",
       "adapters": "Adaptadores",
+      "astro": "Astro",
       "changelog": "Registro de cambios",
       "cli": "CLI",
       "core": "Núcleo",

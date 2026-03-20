@@ -1,0 +1,46 @@
+---
+title: Component Demo
+description: An MDX document rendered through the same localized content helper — demonstrates Astro components inside content, and the fallback banner when no Spanish version exists.
+---
+
+import Callout from "../../../components/Callout.astro";
+
+# Component Demo
+
+This document is written in `.mdx`, which means it can embed Astro components directly in the content.
+
+<Callout title="Same helper, different file type">
+  `createContentCollectionHelpers(...)` resolves the locale and fallback entry,
+  then Astro renders the entry with `render(entry)`. The same API works for
+  both `.md` and `.mdx` — no separate renderer needed.
+</Callout>
+
+## Why MDX in a localized app?
+
+MDX is useful when your content needs interactive or styled components that plain Markdown cannot express — things like callout boxes, tabbed code examples, or embedded demos. Better Translate treats `.mdx` files exactly like `.md` files: same fallback logic, same `usedFallback` flag, same `renderDocument` API.
+
+## The fallback demo
+
+This app intentionally has **no Spanish version** of this document. When you visit `/es/docs/component-demo`, Better Translate:
+
+1. Looks for `es/component-demo.mdx` — not found
+2. Falls back to `en/component-demo.mdx`
+3. Sets `usedFallback: true` and `locale: "en"` on the result
+
+The `DocPage` component checks `usedFallback` and renders the amber banner at the top of the page.
+
+<Callout title="Try it yourself">
+  Navigate to `/es/docs/component-demo` to see the fallback banner. Then
+  create `src/content/docs/es/component-demo.mdx` with a translated title and
+  refresh — the banner will disappear because the Spanish version now exists.
+</Callout>
+
+## Importing components in MDX
+
+Components must be imported with a path relative to the MDX file, not relative to the project root:
+
+```mdx
+import Callout from "../../../components/Callout.astro";
+```
+
+This is a limitation of Astro's content collection rendering — the component path is resolved at build time relative to the MDX file's location in `src/content/docs/en/`.

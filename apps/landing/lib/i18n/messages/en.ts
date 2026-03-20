@@ -42,6 +42,9 @@ export const en = {
       "No framework lock-in - one core, zero runtime dependencies",
     heroTitle: "Works with any TypeScript project",
     items: {
+      astro: {
+        description: "Request-scoped helpers and localized Astro content collections for .md and .mdx.",
+      },
       bun: {
         description: "Native Bun runtime support with zero extra setup.",
       },
@@ -91,6 +94,7 @@ export const en = {
     sidebar: {
       rtl: "RTL",
       adapters: "Adapters",
+      astro: "Astro",
       changelog: "Changelog",
       cli: "CLI",
       core: "Core",

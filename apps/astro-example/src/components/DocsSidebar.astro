@@ -1,0 +1,50 @@
+---
+import { getRelativeLocaleUrl } from "astro:i18n";
+
+import { getLocale } from "../lib/i18n/server";
+
+interface Props {
+  currentId: string;
+  ids: string[];
+  labels: Record<string, string>;
+}
+
+const { currentId, ids, labels } = Astro.props;
+const locale = await getLocale();
+
+function getLabel(id: string): string {
+  return (
+    labels[id] ??
+    id
+      .replace(/-/g, " ")
+      .replace(/\b\w/g, (c) => c.toUpperCase())
+  );
+}
+---
+
+<nav
+  class="hidden w-48 shrink-0 pt-8 md:block"
+  aria-label="Docs navigation"
+>
+  <ul class="flex flex-col gap-0.5">
+    {
+      ids.map((id) => {
+        const isActive = id === currentId;
+        return (
+          <li>
+            <a
+              href={getRelativeLocaleUrl(locale, `docs/${id}`)}
+              class={`block rounded-xl px-3 py-2 text-sm font-medium transition-colors ${
+                isActive
+                  ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900"
+                  : "text-zinc-600 hover:bg-black/[0.03] hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-white/[0.06] dark:hover:text-zinc-100"
+              }`}
+            >
+              {getLabel(id)}
+            </a>
+          </li>
+        );
+      })
+    }
+  </ul>
+</nav>

@@ -1,0 +1,182 @@
+---
+title: Astro
+description: "@better-translate/astro is the Astro layer on top of the core package."
+---
+
+# Astro
+
+`@better-translate/astro` is
+the Astro layer on top of the core package. It adds request-scoped server helpers,
+Astro middleware integration, and localized content-collection helpers for both
+`.md` and `.mdx`.
+
+## When to use it
+
+Use the Astro adapter when you are building an Astro app, want request-scoped
+translation helpers that follow the current locale, and want one localized content
+helper that works with Astro content collections for Markdown and MDX.
+
+## Mental model
+
+Astro keeps ownership of routing.
+
+- Astro i18n config stays in `astro.config.mjs`
+- Better Translate config stays in `src/lib/i18n/request.ts`
+- Astro middleware stores the resolved request locale for Better Translate
+- Astro content collections still render the content
+
+## Four-file pattern
+
+A standard Astro setup needs four files:
+
+<Accordion type="single" collapsible className="mt-6">
+  <AccordionItem value="request">
+    <AccordionTrigger>`request.ts`</AccordionTrigger>
+    <AccordionContent>
+      <p>Build the core translator with `configureTranslations(...)` and wrap it with `getRequestConfig(...)`.</p>
+    </AccordionContent>
+  </AccordionItem>
+  <AccordionItem value="server">
+    <AccordionTrigger>`server.ts`</AccordionTrigger>
+    <AccordionContent>
+      <p>Export request helpers such as `getLocale()`, `getTranslations()`, and `getMessages()`.</p>
+    </AccordionContent>
+  </AccordionItem>
+  <AccordionItem value="middleware">
+    <AccordionTrigger>`middleware.ts`</AccordionTrigger>
+    <AccordionContent>
+      <p>Store Astro’s current locale in Better Translate request state.</p>
+    </AccordionContent>
+  </AccordionItem>
+  <AccordionItem value="content">
+    <AccordionTrigger>`content.ts`</AccordionTrigger>
+    <AccordionContent>
+      <p>Create localized content helpers for Astro content collections.</p>
+    </AccordionContent>
+  </AccordionItem>
+</Accordion>
+
+## request.ts
+
+```ts showLineNumbers
+import { getRequestConfig } from "@better-translate/astro"
+import { configureTranslations } from "better-translate/core"
+
+import { en } from "./messages/en"
+import { es } from "./messages/es"
+
+export const requestConfig = getRequestConfig(async () => ({
+  translator: await configureTranslations({
+    availableLocales: ["en", "es"] as const,
+    defaultLocale: "en",
+    fallbackLocale: "en",
+    messages: {
+      en,
+      es,
+    },
+  }),
+}))
+```
+
+## server.ts
+
+```ts showLineNumbers
+import {
+  createServerHelpers,
+  setRequestLocale,
+} from "@better-translate/astro"
+
+import { requestConfig } from "./request"
+
+export const {
+  getAvailableLanguages,
+  getDirection,
+  getLocale,
+  getMessages,
+  getTranslations,
+  getTranslator,
+  isRtl,
+} = createServerHelpers(requestConfig)
+
+export { setRequestLocale }
+```
+
+## middleware.ts
+
+```ts showLineNumbers
+import { createBetterTranslateMiddleware } from "@better-translate/astro/middleware"
+
+import { requestConfig } from "./lib/i18n/request"
+
+export const onRequest = createBetterTranslateMiddleware(requestConfig)
+```
+
+Astro’s built-in i18n remains the routing source of truth. The adapter just reads the
+resolved locale from the Astro request lifecycle and stores it for Better Translate.
+
+## content.ts
+
+```ts showLineNumbers
+import { getCollection, render } from "astro:content"
+import { createContentCollectionHelpers } from "@better-translate/astro/content"
+
+import { requestConfig } from "./request"
+
+export const docs = createContentCollectionHelpers(requestConfig, {
+  collection: "docs",
+  getCollection,
+  render,
+})
+```
+
+Use locale-prefixed entry ids in the collection:
+
+```txt
+src/content/docs/
+  en/getting-started.md
+  en/component-demo.mdx
+  es/getting-started.md
+```
+
+The helper resolves the requested locale first, then the translator fallback locale.
+Because Astro’s `render(entry)` handles the final rendering, the same helper works for
+both `.md` and `.mdx`.
+
+## Using in `.astro` pages
+
+```astro showLineNumbers
+---
+import { docs } from "@/src/lib/i18n/content"
+import { getLocale, getTranslations } from "@/src/lib/i18n/server"
+
+const locale = await getLocale()
+const t = await getTranslations()
+const document = await docs.renderDocument("getting-started", { locale })
+const { Content } = document.rendered
+---
+
+<h1>{t("docs.title")}</h1>
+{document.usedFallback && <p>Fallback content</p>}
+<Content />
+```
+
+## Key source files
+
+- `packages/astro/src/server.ts`
+- `packages/astro/src/middleware.ts`
+- `packages/astro/src/content.ts`
+- `apps/astro-example/src/lib/i18n/`
+
+## Explore related guides
+
+<div className="mt-6 flex flex-wrap gap-3">
+  <Button asChild variant="outline" size="lg">
+    <Link href="/docs/adapters/core">Start from the core layer</Link>
+  </Button>
+  <Button asChild variant="outline" size="lg">
+    <Link href="/docs/adapters/nextjs">Compare the Next.js adapter</Link>
+  </Button>
+  <Button asChild size="lg">
+    <Link href="/docs/installation">Review package installation</Link>
+  </Button>
+</div>

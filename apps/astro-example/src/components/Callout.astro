@@ -1,0 +1,19 @@
+---
+interface Props {
+  title?: string;
+}
+
+const { title = "Note" } = Astro.props;
+---
+
+<aside
+  class="my-6 rounded-2xl border border-blue-200 bg-blue-50 p-4 dark:border-blue-900 dark:bg-blue-950/30"
+>
+  <strong
+    class="mb-2 block font-semibold text-blue-900 dark:text-blue-100"
+    >{title}</strong
+  >
+  <div class="text-sm leading-relaxed text-blue-800 dark:text-blue-200">
+    <slot />
+  </div>
+</aside>

@@ -1,0 +1,53 @@
+---
+import { getRelativeLocaleUrl } from "astro:i18n";
+
+import SiteLayout from "../layouts/SiteLayout.astro";
+import { getLocale, getTranslations } from "../lib/i18n/server";
+
+const [locale, t] = await Promise.all([getLocale(), getTranslations()]);
+---
+
+<SiteLayout
+  currentPath={Astro.url.pathname}
+  description={t("home.body")}
+  title={t("home.title")}
+>
+  <main class="flex flex-1 flex-col justify-between gap-10 py-10">
+    <div class="flex flex-col gap-6">
+      <div
+        class="inline-flex w-fit items-center gap-3 rounded-full border border-black/10 px-4 py-2 text-sm font-medium text-zinc-600 dark:border-white/10 dark:text-zinc-300"
+      >
+        <span class="h-2.5 w-2.5 rounded-full bg-emerald-500"></span>
+        {t("home.badge")}
+      </div>
+
+      <div class="space-y-5">
+        <h1
+          class="max-w-3xl text-3xl font-semibold leading-10 tracking-tight sm:text-5xl sm:leading-[1.05]"
+        >
+          {t("home.title")}
+        </h1>
+        <p class="max-w-3xl text-lg leading-8 text-zinc-600 dark:text-zinc-400">
+          {t("home.body")}
+        </p>
+      </div>
+    </div>
+
+    <div
+      class="flex flex-col gap-4 text-base font-medium sm:flex-row sm:flex-wrap"
+    >
+      <a
+        href={getRelativeLocaleUrl(locale, "docs")}
+        class="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-zinc-900 px-5 text-white transition-colors hover:bg-zinc-700 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 md:w-auto md:min-w-[180px]"
+      >
+        {t("home.cta")}
+      </a>
+      <a
+        href="https://docs.astro.build/en/guides/internationalization/"
+        class="flex h-12 w-full items-center justify-center rounded-full border border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-auto md:min-w-[170px]"
+      >
+        Astro i18n docs
+      </a>
+    </div>
+  </main>
+</SiteLayout>

@@ -1,0 +1,18 @@
+---
+import DocPage from "../../../components/DocPage.astro";
+import { docs } from "../../../lib/i18n/content";
+
+export async function getStaticPaths() {
+  const ids = await docs.listDocuments();
+
+  return ids.map((id) => ({
+    params: {
+      slug: id.replace(/^docs\//, ""),
+    },
+  }));
+}
+
+const slug = Astro.params.slug?.split("/") ?? [];
+---
+
+<DocPage slug={slug} />

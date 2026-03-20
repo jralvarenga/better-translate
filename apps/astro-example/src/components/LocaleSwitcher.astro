@@ -1,0 +1,60 @@
+---
+import { getRelativeLocaleUrl } from "astro:i18n";
+
+interface Props {
+  currentLocale: string;
+  currentPath: string;
+  defaultLocale: string;
+  label: string;
+  locales: readonly string[];
+}
+
+const { currentLocale, currentPath, defaultLocale, label, locales } =
+  Astro.props;
+
+function stripLocalePrefix(pathname: string, locale: string) {
+  if (locale === defaultLocale) {
+    return pathname;
+  }
+
+  if (pathname === `/${locale}`) {
+    return "/";
+  }
+
+  if (pathname.startsWith(`/${locale}/`)) {
+    return pathname.slice(locale.length + 1);
+  }
+
+  return pathname;
+}
+
+const unlocalizedPath = stripLocalePrefix(currentPath, currentLocale);
+const route = unlocalizedPath === "/" ? "" : unlocalizedPath.slice(1);
+---
+
+<div class="flex flex-wrap items-center gap-3" aria-label={label}>
+  <span class="text-sm font-medium text-zinc-500 dark:text-zinc-400"
+    >{label}</span
+  >
+  {
+    locales.map((locale) => {
+      const isActive = locale === currentLocale;
+      return (
+        <a
+          href={
+            route
+              ? getRelativeLocaleUrl(locale, route)
+              : getRelativeLocaleUrl(locale)
+          }
+          class={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+            isActive
+              ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900"
+              : "border border-black/10 text-zinc-600 hover:bg-black/[0.03] dark:border-white/10 dark:text-zinc-300 dark:hover:bg-white/[0.06]"
+          }`}
+        >
+          {locale.toUpperCase()}
+        </a>
+      );
+    })
+  }
+</div>

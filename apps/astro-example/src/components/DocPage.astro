@@ -1,0 +1,107 @@
+---
+import { getRelativeLocaleUrl } from "astro:i18n";
+
+import { ContentDocumentNotFoundError } from "@better-translate/astro/content";
+
+import SiteLayout from "../layouts/SiteLayout.astro";
+import DocsSidebar from "./DocsSidebar.astro";
+import { docs } from "../lib/i18n/content";
+import { getLocale, getTranslations } from "../lib/i18n/server";
+
+interface Props {
+  slug: string[];
+}
+
+const { slug } = Astro.props;
+const id = slug.join("/");
+const [locale, t, allIds] = await Promise.all([
+  getLocale(),
+  getTranslations(),
+  docs.listDocuments(),
+]);
+
+let renderedDocument:
+  | Awaited<ReturnType<typeof docs.renderDocument>>
+  | null = null;
+let notFound = false;
+
+try {
+  renderedDocument = await docs.renderDocument(id, { locale });
+} catch (error) {
+  if (error instanceof ContentDocumentNotFoundError) {
+    Astro.response.status = 404;
+    notFound = true;
+  } else {
+    throw error;
+  }
+}
+
+const Content = renderedDocument?.rendered.Content;
+
+// Build sidebar labels from doc titles (already localized via fallback)
+const allDocs = await Promise.all(
+  allIds.map((docId) => docs.getDocument(docId, { locale })),
+);
+const sidebarLabels = Object.fromEntries(
+  allDocs.map((doc) => [doc.id, String(doc.data.title)]),
+);
+---
+
+<SiteLayout
+  currentPath={Astro.url.pathname}
+  description={renderedDocument
+    ? String(renderedDocument.data.description ?? t("docs.intro"))
+    : t("docs.intro")}
+  title={renderedDocument ? String(renderedDocument.data.title) : "Not Found"}
+>
+  <div class="flex gap-8">
+    <DocsSidebar currentId={id} ids={allIds} labels={sidebarLabels} />
+    <main class="min-w-0 flex-1 pt-8">
+      {
+        notFound ? (
+          <>
+            <h1 class="text-2xl font-bold text-zinc-900 dark:text-zinc-50">
+              Not Found
+            </h1>
+            <p class="mt-2 text-zinc-600 dark:text-zinc-400">
+              The requested localized document does not exist.
+            </p>
+            <a
+              href={getRelativeLocaleUrl(locale, "docs")}
+              class="mt-4 inline-flex items-center text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
+            >
+              ← {t("docs.backToDocs")}
+            </a>
+          </>
+        ) : renderedDocument && Content ? (
+          <>
+            <div class="mb-4 flex items-center gap-3">
+              <span class="rounded-full bg-zinc-100 px-2.5 py-0.5 text-xs font-medium text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300">
+                {renderedDocument.locale.toUpperCase()}
+              </span>
+              <a
+                href={getRelativeLocaleUrl(locale, "docs")}
+                class="text-sm text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200"
+              >
+                ← {t("docs.backToDocs")}
+              </a>
+            </div>
+            {renderedDocument.usedFallback && (
+              <div class="mb-6 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-300">
+                {t("docs.fallback", {
+                  params: {
+                    fallback: renderedDocument.locale.toUpperCase(),
+                    requested: renderedDocument.requestedLocale.toUpperCase(),
+                  },
+                })}
+              </div>
+            )}
+            <article class="prose">
+              <Content />
+            </article>
+          </>
+        ) : null
+      }
+    </main>
+  </div>
+</SiteLayout>

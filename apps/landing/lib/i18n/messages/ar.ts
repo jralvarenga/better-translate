@@ -36,6 +36,9 @@ export const ar = {
     "heroDescription": "لا ارتباط بإطار—نواة واحدة، بدون تبعيات وقت التشغيل",
     "heroTitle": "يعمل مع أي مشروع TypeScript",
     "items": {
+      "astro": {
+        "description": "مساعدات لكل طلب ومجموعات محتوى Astro محلية لكل من .md و .mdx."
+      },
       "bun": {
         "description": "دعم وقت تشغيل Bun أصلي بدون إعداد إضافي."
       },
@@ -84,6 +87,7 @@ export const ar = {
     "sidebar": {
       "rtl": "RTL",
       "adapters": "الموائمات",
+      "astro": "Astro",
       "changelog": "Changelog",
       "cli": "CLI",
       "core": "النواة",
