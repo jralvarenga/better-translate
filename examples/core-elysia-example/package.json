@@ -6,6 +6,7 @@
     "dev": "bun run --watch src/index.ts"
   },
   "dependencies": {
+    "@sinclair/typebox": "^0.34.41",
     "better-translate": "0.0.0",
     "elysia": "latest"
   },

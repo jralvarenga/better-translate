@@ -4,7 +4,8 @@
   "scripts": {
     "build": "turbo run build",
     "build:packages": "turbo run build --filter=better-translate --filter=better-translate/* --filter=@better-translate/*",
-    "dev": "turbo run dev",
+    "dev": "turbo run dev --concurrency=20",
+    "dev:landing": "turbo run dev --filter=landing",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types",
@@ -26,6 +27,7 @@
   "packageManager": "bun@1.2.23",
   "workspaces": [
     "apps/*",
-    "packages/*"
+    "packages/*",
+    "examples/*"
   ]
 }
