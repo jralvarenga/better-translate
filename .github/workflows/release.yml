@@ -1,32 +1,24 @@
 name: Release
 
 on:
-  workflow_run:
-    workflows:
-      - CI
+  push:
     branches:
       - main
-    types:
-      - completed
 
 jobs:
-  release:
+  packages:
     if: >
-      github.event.workflow_run.conclusion == 'success' &&
-      github.event.workflow_run.event == 'push' &&
-      github.event.workflow_run.head_branch == 'main'
+      github.event_name == 'push' &&
+      github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
-      contents: write
-      id-token: write
-      pull-requests: write
+      contents: read
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
         with:
           fetch-depth: 0
-          ref: ${{ github.event.workflow_run.head_sha }}
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
@@ -40,16 +32,116 @@ jobs:
           registry-url: https://registry.npmjs.org
 
       - name: Install dependencies
-        # run: bun install --frozen-lockfile TODO: Uncomment this when the lockfile is updated
-        run: bun install
+        run: bun install --frozen-lockfile
+
+      - name: Build publishable packages
+        run: bun run build:packages
+
+      - name: Test publishable packages
+        run: bun run test:packages
+
+      - name: Verify publish tarballs
+        run: bun run release:pack
+
+  release_changes:
+    if: >
+      github.event_name == 'push' &&
+      github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      should_release: ${{ steps.detect.outputs.should_release }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Detect release-relevant changes
+        id: detect
+        env:
+          BEFORE_SHA: ${{ github.event.before }}
+          CURRENT_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+
+          if [ "$BEFORE_SHA" = "0000000000000000000000000000000000000000" ]; then
+            mapfile -t changed_files < <(git diff-tree --no-commit-id --name-only -r "$CURRENT_SHA")
+          else
+            mapfile -t changed_files < <(git diff --name-only "$BEFORE_SHA" "$CURRENT_SHA")
+          fi
+
+          printf 'Changed files:\n'
+          printf '%s\n' "${changed_files[@]}"
+
+          should_release=false
+
+          for file in "${changed_files[@]}"; do
+            case "$file" in
+              .changeset/*.md|packages/*/CHANGELOG.md)
+                should_release=true
+                break
+                ;;
+              packages/*/package.json)
+                if [ "$BEFORE_SHA" = "0000000000000000000000000000000000000000" ]; then
+                  if grep -q '"version"' "$file"; then
+                    should_release=true
+                    break
+                  fi
+                elif git diff "$BEFORE_SHA" "$CURRENT_SHA" -- "$file" | grep -Eq '^[+-]\s*"version"\s*:'; then
+                  should_release=true
+                  break
+                fi
+                ;;
+            esac
+          done
+
+          echo "should_release=$should_release" >> "$GITHUB_OUTPUT"
+
+  release:
+    if: >
+      github.event_name == 'push' &&
+      github.ref == 'refs/heads/main' &&
+      needs.release_changes.outputs.should_release == 'true'
+    needs:
+      - packages
+      - release_changes
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.2.23
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
 
       - name: Create release pull request or publish
         uses: changesets/action@v1
         with:
-          # version: bun run changeset:version && bun install --frozen-lockfile
           version: bun run changeset:version && bun install
           publish: bun run release:publish
           title: Release packages
           commit: Release packages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_CONFIG_PROVENANCE: true
