@@ -50,7 +50,7 @@ const jaLanguage = {
 } as const;
 
 describe("better-translate core", () => {
-  it("throws before configuration", () => {
+  it("throws before configuration", async () => {
     expect(() => t("common.hello")).toThrow(
       'Translations have not been configured. Call configureTranslations(...) before using "t(...)".',
     );
@@ -539,7 +539,7 @@ describe("better-translate core", () => {
     ).rejects.toThrow('Duplicate locale "es" found in languages config.');
   });
 
-  it("creates a JSON schema from a source locale", () => {
+  it("creates a JSON schema from a source locale", async () => {
     expect(createTranslationJsonSchema(en)).toEqual({
       $schema: "https://json-schema.org/draft/2020-12/schema",
       type: "object",
