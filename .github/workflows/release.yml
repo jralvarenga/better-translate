@@ -43,67 +43,70 @@ jobs:
       - name: Verify publish tarballs
         run: bun run release:pack
 
-  release_changes:
-    if: >
-      github.event_name == 'push' &&
-      github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    outputs:
-      should_release: ${{ steps.detect.outputs.should_release }}
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v5
-        with:
-          fetch-depth: 0
-
-      - name: Detect release-relevant changes
-        id: detect
-        env:
-          BEFORE_SHA: ${{ github.event.before }}
-          CURRENT_SHA: ${{ github.sha }}
-        run: |
-          set -euo pipefail
-
-          if [ "$BEFORE_SHA" = "0000000000000000000000000000000000000000" ]; then
-            mapfile -t changed_files < <(git diff-tree --no-commit-id --name-only -r "$CURRENT_SHA")
-          else
-            mapfile -t changed_files < <(git diff --name-only "$BEFORE_SHA" "$CURRENT_SHA")
-          fi
-
-          printf 'Changed files:\n'
-          printf '%s\n' "${changed_files[@]}"
-
-          should_release=false
-
-          for file in "${changed_files[@]}"; do
-            case "$file" in
-              .changeset/*.md|packages/*/CHANGELOG.md)
-                should_release=true
-                break
-                ;;
-              packages/*/package.json)
-                if [ "$BEFORE_SHA" = "0000000000000000000000000000000000000000" ]; then
-                  if grep -q '"version"' "$file"; then
-                    should_release=true
-                    break
-                  fi
-                elif git diff "$BEFORE_SHA" "$CURRENT_SHA" -- "$file" | grep -Eq '^[+-]\s*"version"\s*:'; then
-                  should_release=true
-                  break
-                fi
-                ;;
-            esac
-          done
-
-          echo "should_release=$should_release" >> "$GITHUB_OUTPUT"
+  # TODO: Restore release-relevant change detection once the desired release
+  # policy is finalized. For now, release should run on every push to main
+  # after the package checks pass.
+  #
+  # release_changes:
+  #   if: >
+  #     github.event_name == 'push' &&
+  #     github.ref == 'refs/heads/main'
+  #   runs-on: ubuntu-latest
+  #   permissions:
+  #     contents: read
+  #   outputs:
+  #     should_release: ${{ steps.detect.outputs.should_release }}
+  #
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v5
+  #       with:
+  #         fetch-depth: 0
+  #
+  #     - name: Detect release-relevant changes
+  #       id: detect
+  #       env:
+  #         BEFORE_SHA: ${{ github.event.before }}
+  #         CURRENT_SHA: ${{ github.sha }}
+  #       run: |
+  #         set -euo pipefail
+  #
+  #         if [ "$BEFORE_SHA" = "0000000000000000000000000000000000000000" ]; then
+  #           mapfile -t changed_files < <(git diff-tree --no-commit-id --name-only -r "$CURRENT_SHA")
+  #         else
+  #           mapfile -t changed_files < <(git diff --name-only "$BEFORE_SHA" "$CURRENT_SHA")
+  #         fi
+  #
+  #         printf 'Changed files:\n'
+  #         printf '%s\n' "${changed_files[@]}"
+  #
+  #         should_release=false
+  #
+  #         for file in "${changed_files[@]}"; do
+  #           case "$file" in
+  #             .changeset/*.md|packages/*/CHANGELOG.md)
+  #               should_release=true
+  #               break
+  #               ;;
+  #             packages/*/package.json)
+  #               if [ "$BEFORE_SHA" = "0000000000000000000000000000000000000000" ]; then
+  #                 if grep -q '"version"' "$file"; then
+  #                   should_release=true
+  #                   break
+  #                 fi
+  #               elif git diff "$BEFORE_SHA" "$CURRENT_SHA" -- "$file" | grep -Eq '^[+-]\s*"version"\s*:'; then
+  #                 should_release=true
+  #                 break
+  #               fi
+  #               ;;
+  #           esac
+  #         done
+  #
+  #         echo "should_release=$should_release" >> "$GITHUB_OUTPUT"
 
   release:
     needs:
       - packages
-      - release_changes
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -111,35 +114,26 @@ jobs:
       pull-requests: write
 
     steps:
-      - name: No release changes detected
-        if: needs.release_changes.outputs.should_release != 'true'
-        run: echo "No release-relevant changes detected on this push to main."
-
       - name: Checkout repository
-        if: needs.release_changes.outputs.should_release == 'true'
         uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
       - name: Setup Bun
-        if: needs.release_changes.outputs.should_release == 'true'
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: 1.2.23
 
       - name: Setup Node.js
-        if: needs.release_changes.outputs.should_release == 'true'
         uses: actions/setup-node@v5
         with:
           node-version: 22
           registry-url: https://registry.npmjs.org
 
       - name: Install dependencies
-        if: needs.release_changes.outputs.should_release == 'true'
         run: bun install --frozen-lockfile
 
       - name: Create release pull request or publish
-        if: needs.release_changes.outputs.should_release == 'true'
         uses: changesets/action@v1
         with:
           version: bun run changeset:version && bun install
