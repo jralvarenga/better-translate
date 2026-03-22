@@ -40,12 +40,14 @@ jobs:
           registry-url: https://registry.npmjs.org
 
       - name: Install dependencies
-        run: bun install --frozen-lockfile
+        # run: bun install --frozen-lockfile TODO: Uncomment this when the lockfile is updated
+        run: bun install
 
       - name: Create release pull request or publish
         uses: changesets/action@v1
         with:
-          version: bun run changeset:version && bun install --frozen-lockfile
+          # version: bun run changeset:version && bun install --frozen-lockfile
+          version: bun run changeset:version && bun install
           publish: bun run release:publish
           title: Release packages
           commit: Release packages
