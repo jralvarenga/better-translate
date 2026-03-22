@@ -19,9 +19,9 @@
     "release:verify": "bun run build:packages && bun run test:packages && bun run release:pack",
     "release:publish": "changeset publish",
     "test": "bun run test:packages",
-    "test:packages": "bun run test:packages:runtime && bun run test:packages:types",
+    "test:packages": "bun run test:packages:runtime",
     "test:packages:runtime": "bun run --filter='@better-translate/core' --filter='@better-translate/*' --if-present test",
-    "test:packages:types": "bun run --filter='@better-translate/core' --filter='@better-translate/*' --if-present test:types"
+    "test:packages:types": "turbo run test:types --filter=@better-translate/core --filter='@better-translate/*'"
   },
   "devDependencies": {
     "@changesets/cli": "^2.29.7",
