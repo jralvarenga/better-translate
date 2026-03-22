@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from "bun:test";
+import { describe, expect, it } from "bun:test";
 
 import {
   configureTranslations,
@@ -51,10 +51,6 @@ const jaLanguage = {
 } as const;
 
 describe("better-translate core", () => {
-  beforeEach(() => {
-    resetTranslationsForTests();
-  });
-
   it("supports the short configuration form", async () => {
     const translator = await configureTranslations({ en, es });
 
@@ -536,6 +532,7 @@ describe("better-translate core", () => {
   });
 
   it("throws before configuration", () => {
+    resetTranslationsForTests();
     expect(() => t("common.hello")).toThrow(
       'Translations have not been configured. Call configureTranslations(...) before using "t(...)".',
     );
