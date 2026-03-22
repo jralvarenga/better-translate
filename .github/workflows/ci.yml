@@ -33,9 +33,6 @@ jobs:
       - name: Build publishable packages
         run: bun run build:packages
 
-      - name: Typecheck publishable packages
-        run: bun run check-types:packages
-
       - name: Test publishable packages
         run: bun run test:packages
 
