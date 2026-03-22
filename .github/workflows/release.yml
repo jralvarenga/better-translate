@@ -101,10 +101,6 @@ jobs:
           echo "should_release=$should_release" >> "$GITHUB_OUTPUT"
 
   release:
-    if: >
-      github.event_name == 'push' &&
-      github.ref == 'refs/heads/main' &&
-      needs.release_changes.outputs.should_release == 'true'
     needs:
       - packages
       - release_changes
@@ -115,26 +111,35 @@ jobs:
       pull-requests: write
 
     steps:
+      - name: No release changes detected
+        if: needs.release_changes.outputs.should_release != 'true'
+        run: echo "No release-relevant changes detected on this push to main."
+
       - name: Checkout repository
+        if: needs.release_changes.outputs.should_release == 'true'
         uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
       - name: Setup Bun
+        if: needs.release_changes.outputs.should_release == 'true'
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: 1.2.23
 
       - name: Setup Node.js
+        if: needs.release_changes.outputs.should_release == 'true'
         uses: actions/setup-node@v5
         with:
           node-version: 22
           registry-url: https://registry.npmjs.org
 
       - name: Install dependencies
+        if: needs.release_changes.outputs.should_release == 'true'
         run: bun install --frozen-lockfile
 
       - name: Create release pull request or publish
+        if: needs.release_changes.outputs.should_release == 'true'
         uses: changesets/action@v1
         with:
           version: bun run changeset:version && bun install
