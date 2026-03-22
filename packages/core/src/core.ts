@@ -60,7 +60,9 @@ export type {
  */
 export async function configureTranslations<
   const TMessages extends Record<string, TranslationMessages>,
->(messages: StrictTranslationLocaleMap<TMessages>): Promise<ShortFormTranslator<TMessages>>;
+>(
+  messages: StrictTranslationLocaleMap<TMessages>,
+): Promise<ShortFormTranslator<TMessages>>;
 
 /**
  * Configures Better Translate for the current TypeScript project.
@@ -71,13 +73,20 @@ export async function configureTranslations<
  */
 export async function configureTranslations<
   const TLocales extends readonly string[],
-  const TMessages extends Partial<Record<TLocales[number], TranslationMessages>>,
+  const TMessages extends Partial<
+    Record<TLocales[number], TranslationMessages>
+  >,
   const TLoaders extends
     | Partial<Record<TLocales[number], TranslationLoader<unknown>>>
     | undefined = undefined,
   const TDefaultLocale extends TLocales[number] = TLocales[number],
 >(
-  config: TranslationConfigOptions<TLocales, TMessages, TLoaders, TDefaultLocale>,
+  config: TranslationConfigOptions<
+    TLocales,
+    TMessages,
+    TLoaders,
+    TDefaultLocale
+  >,
 ): Promise<OptionsFormTranslator<TLocales, TMessages, TDefaultLocale>>;
 
 /**
@@ -114,20 +123,30 @@ export function createTranslationHelpers<
 ): Promise<
   TranslationHelpers<
     Extract<keyof TMessages, string>,
-    ShortFormTranslator<TMessages> extends ConfiguredTranslator<any, infer TSourceMessages>
+    ShortFormTranslator<TMessages> extends ConfiguredTranslator<
+      any,
+      infer TSourceMessages
+    >
       ? TSourceMessages
       : TranslationMessages
   >
 >;
 export function createTranslationHelpers<
   const TLocales extends readonly string[],
-  const TMessages extends Partial<Record<TLocales[number], TranslationMessages>>,
+  const TMessages extends Partial<
+    Record<TLocales[number], TranslationMessages>
+  >,
   const TLoaders extends
     | Partial<Record<TLocales[number], TranslationLoader<unknown>>>
     | undefined = undefined,
   const TDefaultLocale extends TLocales[number] = TLocales[number],
 >(
-  config: TranslationConfigOptions<TLocales, TMessages, TLoaders, TDefaultLocale>,
+  config: TranslationConfigOptions<
+    TLocales,
+    TMessages,
+    TLoaders,
+    TDefaultLocale
+  >,
 ): Promise<
   TranslationHelpers<
     TLocales[number],
@@ -137,7 +156,11 @@ export function createTranslationHelpers<
 export function createTranslationHelpers(
   input: AnyConfiguredTranslator | RuntimeConfigInput,
 ): AnyTranslationHelpers | Promise<AnyTranslationHelpers> {
-  if ("t" in input && "getMessages" in input && "getSupportedLocales" in input) {
+  if (
+    "t" in input &&
+    "getMessages" in input &&
+    "getSupportedLocales" in input
+  ) {
     const translator = input as AnyConfiguredTranslator;
 
     return {

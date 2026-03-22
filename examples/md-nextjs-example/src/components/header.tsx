@@ -12,7 +12,12 @@ interface HeaderProps {
   localeLabel: string;
 }
 
-export function Header({ currentLocale, navHome, navDocs, localeLabel }: HeaderProps) {
+export function Header({
+  currentLocale,
+  navHome,
+  navDocs,
+  localeLabel,
+}: HeaderProps) {
   const router = useRouter();
 
   async function handleLocaleChange(locale: Locale) {
@@ -24,7 +29,10 @@ export function Header({ currentLocale, navHome, navDocs, localeLabel }: HeaderP
     <header className="sticky top-0 z-50 border-b border-white/10 bg-black/80 backdrop-blur-sm">
       <div className="mx-auto flex h-14 max-w-4xl items-center justify-between px-6">
         {/* Logo */}
-        <Link href="/" className="font-mono text-sm font-semibold text-foreground">
+        <Link
+          href="/"
+          className="font-mono text-sm font-semibold text-foreground"
+        >
           <span className="text-brand">[bt]</span>{" "}
           <span className="text-muted hidden sm:inline">md-nextjs-example</span>
         </Link>
@@ -47,7 +55,9 @@ export function Header({ currentLocale, navHome, navDocs, localeLabel }: HeaderP
 
         {/* Locale switcher */}
         <div className="flex items-center gap-2">
-          <span className="text-xs text-muted hidden sm:block">{localeLabel}:</span>
+          <span className="text-xs text-muted hidden sm:block">
+            {localeLabel}:
+          </span>
           <div className="flex rounded-md border border-white/10 overflow-hidden">
             {locales.map((locale) => (
               <button

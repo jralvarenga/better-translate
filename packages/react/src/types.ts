@@ -45,9 +45,9 @@ export interface UseTranslationsValue<
   loadLocale(
     locale: InferLocale<TTranslator>,
   ): Promise<
-    DeepPartialMessages<InferMessages<TTranslator>>
-      | InferMessages<TTranslator>
-      | undefined
+    | DeepPartialMessages<InferMessages<TTranslator>>
+    | InferMessages<TTranslator>
+    | undefined
   >;
   loadingLocale: InferLocale<TTranslator> | null;
   locale: InferLocale<TTranslator>;

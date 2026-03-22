@@ -13,7 +13,9 @@ export function isTranslationConfigOptions(
   { availableLocales: readonly string[]; defaultLocale: string }
 > {
   return (
-    "availableLocales" in value && "defaultLocale" in value && "messages" in value
+    "availableLocales" in value &&
+    "defaultLocale" in value &&
+    "messages" in value
   );
 }
 
@@ -22,7 +24,9 @@ export function isTranslationConfigOptions(
  *
  * Translation objects may contain nested objects and string leaf values only.
  */
-export function isTranslationMessages(value: unknown): value is TranslationMessages {
+export function isTranslationMessages(
+  value: unknown,
+): value is TranslationMessages {
   if (typeof value !== "object" || value === null || Array.isArray(value)) {
     return false;
   }

@@ -20,9 +20,8 @@ const [locale, t, allIds] = await Promise.all([
   docs.listDocuments(),
 ]);
 
-let renderedDocument:
-  | Awaited<ReturnType<typeof docs.renderDocument>>
-  | null = null;
+let renderedDocument: Awaited<ReturnType<typeof docs.renderDocument>> | null =
+  null;
 let notFound = false;
 
 try {

@@ -160,4 +160,6 @@ export function createFailingTranslator() {
 }
 
 export type AppTranslator = Awaited<ReturnType<typeof createTranslator>>;
-export type FailureTranslator = Awaited<ReturnType<typeof createFailingTranslator>>;
+export type FailureTranslator = Awaited<
+  ReturnType<typeof createFailingTranslator>
+>;

@@ -1,12 +1,17 @@
-import { useParams } from '@tanstack/react-router'
-import { I18nLink, useI18nNavigate, useI18nPathname, useLocale } from '#/lib/i18n/navigation'
-import { routing } from '#/lib/i18n/routing'
+import { useParams } from "@tanstack/react-router";
+import {
+  I18nLink,
+  useI18nNavigate,
+  useI18nPathname,
+  useLocale,
+} from "#/lib/i18n/navigation";
+import { routing } from "#/lib/i18n/routing";
 
 interface HeaderProps {
-  guideLabel: string
-  homeLabel: string
-  loginLabel: string
-  switchLabel: string
+  guideLabel: string;
+  homeLabel: string;
+  loginLabel: string;
+  switchLabel: string;
 }
 
 export default function Header({
@@ -15,10 +20,10 @@ export default function Header({
   loginLabel,
   switchLabel,
 }: HeaderProps) {
-  const locale = useLocale()
-  const navigate = useI18nNavigate()
-  const pathname = useI18nPathname()
-  const currentParams = useParams({ strict: false }) as { lang: string }
+  const locale = useLocale();
+  const navigate = useI18nNavigate();
+  const pathname = useI18nPathname();
+  const currentParams = useParams({ strict: false }) as { lang: string };
 
   return (
     <header className="flex flex-col gap-5 border-b border-black/5 pb-6 lg:flex-row lg:items-center lg:justify-between">
@@ -60,7 +65,7 @@ export default function Header({
       <div className="flex flex-wrap items-center gap-3">
         <span className="text-sm font-medium text-zinc-500">{switchLabel}</span>
         {routing.locales.map((nextLocale) => {
-          const isActive = nextLocale === locale
+          const isActive = nextLocale === locale;
 
           return (
             <button
@@ -68,22 +73,22 @@ export default function Header({
               type="button"
               className={`rounded-full border px-4 py-2 text-sm font-medium transition-colors ${
                 isActive
-                  ? 'border-zinc-900 bg-zinc-900 text-white'
-                  : 'border-black/10 text-zinc-600 hover:bg-black/[0.03]'
+                  ? "border-zinc-900 bg-zinc-900 text-white"
+                  : "border-black/10 text-zinc-600 hover:bg-black/[0.03]"
               }`}
               onClick={() => {
                 void navigate({
                   locale: nextLocale,
                   replace: true,
                   to: pathname,
-                })
+                });
               }}
             >
               {nextLocale.toUpperCase()}
             </button>
-          )
+          );
         })}
       </div>
     </header>
-  )
+  );
 }

@@ -8,7 +8,7 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "lint": "expo lint"
+    "lint": "biome lint ."
   },
   "dependencies": {
     "@better-translate/react": "workspace:*",
@@ -42,9 +42,7 @@
   },
   "devDependencies": {
     "@types/react": "~19.1.0",
-    "typescript": "~5.9.2",
-    "eslint": "^9.25.0",
-    "eslint-config-expo": "~10.0.0"
+    "typescript": "~5.9.2"
   },
   "private": true
 }

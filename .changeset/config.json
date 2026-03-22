@@ -17,7 +17,5 @@
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "ignore": [
-    "@repo/typescript-config"
-  ]
+  "ignore": ["@repo/typescript-config"]
 }

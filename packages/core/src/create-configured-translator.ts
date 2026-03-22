@@ -34,7 +34,9 @@ export function createConfiguredTranslator<
   const messageCache = {
     ...config.messages,
   } as Partial<Record<TLocale, InternalTranslationMessages>>;
-  const loaders = config.loaders as Partial<Record<TLocale, TranslationLoader<unknown>>>;
+  const loaders = config.loaders as Partial<
+    Record<TLocale, TranslationLoader<unknown>>
+  >;
   const availableLanguages =
     config.languages as readonly TranslationLanguageMetadata<TLocale>[];
   const loadPromises = new Map<
@@ -43,9 +45,7 @@ export function createConfiguredTranslator<
   >();
 
   function resolveLocale(
-    options?:
-      | TranslateOptions<TLocale>
-      | TranslationDirectionOptions<TLocale>,
+    options?: TranslateOptions<TLocale> | TranslationDirectionOptions<TLocale>,
   ): TLocale {
     return (
       options?.config?.locale ??
@@ -64,43 +64,49 @@ export function createConfiguredTranslator<
     return config.directions[resolveLocale(options)] ?? "ltr";
   }
 
-  const loadLocale: ConfiguredTranslator<TLocale, TSourceMessages>["loadLocale"] =
-    async (locale) => {
-      const cachedMessages = messageCache[locale];
+  const loadLocale: ConfiguredTranslator<
+    TLocale,
+    TSourceMessages
+  >["loadLocale"] = async (locale) => {
+    const cachedMessages = messageCache[locale];
 
-      if (cachedMessages) {
-        return cachedMessages as DeepPartialMessages<TSourceMessages> | TSourceMessages;
+    if (cachedMessages) {
+      return cachedMessages as
+        | DeepPartialMessages<TSourceMessages>
+        | TSourceMessages;
+    }
+
+    const existingPromise = loadPromises.get(locale);
+    if (existingPromise) {
+      return existingPromise;
+    }
+
+    const loader = loaders[locale];
+    if (!loader) {
+      return undefined;
+    }
+
+    const pendingLoad = Promise.resolve(loader()).then((loadedMessages) => {
+      if (!isTranslationMessages(loadedMessages)) {
+        throw new Error(
+          `Locale "${locale}" did not resolve to a valid translation object.`,
+        );
       }
 
-      const existingPromise = loadPromises.get(locale);
-      if (existingPromise) {
-        return existingPromise;
-      }
+      messageCache[locale] = loadedMessages;
+      return loadedMessages as
+        | DeepPartialMessages<TSourceMessages>
+        | TSourceMessages;
+    });
 
-      const loader = loaders[locale];
-      if (!loader) {
-        return undefined;
-      }
+    loadPromises.set(locale, pendingLoad);
 
-      const pendingLoad = Promise.resolve(loader()).then((loadedMessages) => {
-        if (!isTranslationMessages(loadedMessages)) {
-          throw new Error(
-            `Locale "${locale}" did not resolve to a valid translation object.`,
-          );
-        }
-
-        messageCache[locale] = loadedMessages;
-        return loadedMessages as DeepPartialMessages<TSourceMessages> | TSourceMessages;
-      });
-
-      loadPromises.set(locale, pendingLoad);
-
-      try {
-        return await pendingLoad;
-      } finally {
-        loadPromises.delete(locale);
-      }
-    };
+    try {
+      return await pendingLoad;
+    } finally {
+      loadPromises.delete(locale);
+    }
+  };
 
   const translate = (<TKey extends TranslationKey<TSourceMessages>>(
     ...args: TranslateCall<TLocale, TSourceMessages, TKey>
@@ -131,7 +137,9 @@ export function createConfiguredTranslator<
   return {
     defaultLocale: config.defaultLocale as TLocale,
     fallbackLocale: config.fallbackLocale as TLocale,
-    supportedLocales: [...config.supportedLocales] as unknown as readonly TLocale[],
+    supportedLocales: [
+      ...config.supportedLocales,
+    ] as unknown as readonly TLocale[],
     getDirection(options) {
       return resolveDirection(options);
     },

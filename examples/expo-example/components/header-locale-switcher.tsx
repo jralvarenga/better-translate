@@ -1,15 +1,15 @@
-import { Pressable, StyleSheet, View } from 'react-native';
-import { useTranslations } from '@better-translate/react';
+import { Pressable, StyleSheet, View } from "react-native";
+import { useTranslations } from "@better-translate/react";
 
-import { ThemedText } from '@/components/themed-text';
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
-import type { ExpoTranslator } from '@/lib/i18n/config';
+import { ThemedText } from "@/components/themed-text";
+import { Colors } from "@/constants/theme";
+import { useColorScheme } from "@/hooks/use-color-scheme";
+import type { ExpoTranslator } from "@/lib/i18n/config";
 
 export function HeaderLocaleSwitcher() {
   const { availableLanguages, isLoadingLocale, locale, setLocale, t } =
     useTranslations<ExpoTranslator>();
-  const colorScheme = useColorScheme() ?? 'light';
+  const colorScheme = useColorScheme() ?? "light";
   const palette = Colors[colorScheme];
 
   return (
@@ -21,14 +21,15 @@ export function HeaderLocaleSwitcher() {
           backgroundColor: palette.background,
           borderColor: palette.icon,
         },
-      ]}>
+      ]}
+    >
       {availableLanguages.map((language) => {
         const isActive = language.locale === locale;
 
         return (
           <Pressable
             key={language.locale}
-            accessibilityLabel={t('header.switchLocaleTo', {
+            accessibilityLabel={t("header.switchLocaleTo", {
               params: {
                 locale: language.nativeLabel,
               },
@@ -45,16 +46,18 @@ export function HeaderLocaleSwitcher() {
             style={[
               styles.button,
               {
-                backgroundColor: isActive ? palette.tint : 'transparent',
+                backgroundColor: isActive ? palette.tint : "transparent",
               },
-            ]}>
+            ]}
+          >
             <ThemedText
               style={[
                 styles.label,
                 {
                   color: isActive ? palette.background : palette.text,
                 },
-              ]}>
+              ]}
+            >
               {language.shortLabel}
             </ThemedText>
           </Pressable>
@@ -72,8 +75,8 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
   },
   container: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 4,
     borderRadius: 999,
     borderWidth: StyleSheet.hairlineWidth,
@@ -81,8 +84,8 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 12,
-    fontWeight: '700',
+    fontWeight: "700",
     lineHeight: 14,
-    textAlign: 'center',
+    textAlign: "center",
   },
 });

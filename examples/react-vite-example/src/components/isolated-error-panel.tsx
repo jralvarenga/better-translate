@@ -33,7 +33,9 @@ function ErrorSandboxContent() {
         <div>
           <dt>{t("demo.failureErrorLabel")}</dt>
           <dd data-testid="failure-error">
-            {localeError instanceof Error ? localeError.message : t("demo.failureIdle")}
+            {localeError instanceof Error
+              ? localeError.message
+              : t("demo.failureIdle")}
           </dd>
         </div>
       </dl>

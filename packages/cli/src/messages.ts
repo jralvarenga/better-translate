@@ -93,7 +93,10 @@ function replaceLocaleSegment(
     return targetLocale;
   }
 
-  const escapedSourceLocale = sourceLocale.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const escapedSourceLocale = sourceLocale.replace(
+    /[.*+?^${}()|[\]\\]/g,
+    "\\$&",
+  );
   const pattern = new RegExp(`(^|[._-])${escapedSourceLocale}(?=$|[._-])`);
   const match = basename.match(pattern);
 

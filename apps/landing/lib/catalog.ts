@@ -38,17 +38,16 @@ export type CatalogItem<TKind extends CatalogKind = CatalogKind> = Extract<
   }
 >;
 
-const TypeScriptIcon = ({ className }: { className?: string }) => (
+const TypeScriptIcon = ({ className }: { className?: string }) =>
   createElement(
     "span",
     {
       className: `font-mono font-bold text-blue-500 ${className ?? ""}`,
     },
     "TS",
-  )
-);
+  );
 
-const AstroIcon = ({ className }: { className?: string }) => (
+const AstroIcon = ({ className }: { className?: string }) =>
   createElement(
     "svg",
     {
@@ -66,8 +65,7 @@ const AstroIcon = ({ className }: { className?: string }) => (
       d: "M41.54 36.18c-1.82 1.11-4.06 1.66-6.72 1.66-2.14 0-3.79-.38-4.95-1.13-1.19-.78-1.79-1.86-1.79-3.24 0-1.13.39-2.05 1.17-2.77.77-.73 1.8-1.09 3.1-1.09 1.05 0 1.97.22 2.77.66.84.45 1.58 1.14 2.21 2.06.34.49.76.73 1.28.73.49 0 .91-.18 1.26-.53.35-.35.53-.77.53-1.26 0-1.89-.82-3.5-2.45-4.85-1.63-1.35-3.75-2.02-6.37-2.02-2.95 0-5.36.81-7.24 2.43-1.87 1.59-2.8 3.7-2.8 6.31 0 3 1.12 5.4 3.38 7.21 2.2 1.77 5.23 2.66 9.07 2.66 3.54 0 6.48-.74 8.82-2.21 2.37-1.49 3.56-3.39 3.56-5.68 0-.49-.18-.91-.53-1.26-.35-.35-.77-.53-1.26-.53-.72 0-1.23.36-1.54 1.08-.42 1.03-1.25 1.91-2.49 2.63Z",
       fill: "#ff5d01",
     }),
-  )
-);
+  );
 
 const catalog = [
   {
@@ -137,5 +135,7 @@ const catalog = [
 export function getCatalogItems<TKind extends CatalogKind>(
   kind: TKind,
 ): readonly CatalogItem<TKind>[] {
-  return catalog.filter((item) => item.kind === kind) as unknown as readonly CatalogItem<TKind>[];
+  return catalog.filter(
+    (item) => item.kind === kind,
+  ) as unknown as readonly CatalogItem<TKind>[];
 }

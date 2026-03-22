@@ -52,30 +52,30 @@ function run(command, args, options = {}) {
 }
 
 async function main() {
-  const cacheDir = await mkdtemp(path.join(os.tmpdir(), "better-translate-npm-cache-"));
+  const cacheDir = await mkdtemp(
+    path.join(os.tmpdir(), "better-translate-npm-cache-"),
+  );
 
   try {
     for (const pkgDir of packages) {
       console.log(`\n==> Checking ${pkgDir}`);
 
-      const { stdout } = await run(
-        "npm",
-        ["pack", "--dry-run", "--json"],
-        {
-          cwd: pkgDir,
-          env: {
-            ...process.env,
-            npm_config_cache: cacheDir,
-          },
+      const { stdout } = await run("npm", ["pack", "--dry-run", "--json"], {
+        cwd: pkgDir,
+        env: {
+          ...process.env,
+          npm_config_cache: cacheDir,
         },
-      );
+      });
 
       const packResult = JSON.parse(stdout);
       const files = new Set(packResult[0]?.files?.map((file) => file.path));
 
       for (const requiredFile of requiredFiles) {
         if (!files.has(requiredFile)) {
-          throw new Error(`${pkgDir} is missing ${requiredFile} in npm pack output.`);
+          throw new Error(
+            `${pkgDir} is missing ${requiredFile} in npm pack output.`,
+          );
         }
       }
     }

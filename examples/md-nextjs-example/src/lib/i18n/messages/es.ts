@@ -5,7 +5,8 @@ export const es = {
   },
   home: {
     title: "MD + Better Translate",
-    subtitle: "Contenido Markdown y MDX localizado con cambio de idioma mediante cookies.",
+    subtitle:
+      "Contenido Markdown y MDX localizado con cambio de idioma mediante cookies.",
     description:
       "Este ejemplo usa solo better-translate/core y @better-translate/md. Sin idioma en la URL ,  el idioma se almacena en una cookie.",
     viewDocs: "Ver documentación",

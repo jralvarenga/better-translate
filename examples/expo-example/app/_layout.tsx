@@ -1,21 +1,28 @@
-import { useEffect, useState } from 'react';
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { BetterTranslateProvider, useTranslations } from '@better-translate/react';
-import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
+import { useEffect, useState } from "react";
+import {
+  DarkTheme,
+  DefaultTheme,
+  ThemeProvider,
+} from "@react-navigation/native";
+import {
+  BetterTranslateProvider,
+  useTranslations,
+} from "@better-translate/react";
+import { Stack } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import "react-native-reanimated";
 
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useColorScheme } from "@/hooks/use-color-scheme";
 import {
   createExpoTranslator,
   expoDefaultLocale,
   type ExpoLocale,
   type ExpoTranslator,
-} from '@/lib/i18n/config';
-import { persistLocale, readStoredLocale } from '@/lib/i18n/storage';
+} from "@/lib/i18n/config";
+import { persistLocale, readStoredLocale } from "@/lib/i18n/storage";
 
 export const unstable_settings = {
-  anchor: '(tabs)',
+  anchor: "(tabs)",
 };
 
 function LocalePersistenceBridge() {
@@ -39,8 +46,8 @@ function RootNavigator() {
         <Stack.Screen
           name="modal"
           options={{
-            presentation: 'modal',
-            title: t('modal.title'),
+            presentation: "modal",
+            title: t("modal.title"),
           }}
         />
       </Stack>
@@ -92,10 +99,11 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <BetterTranslateProvider
         initialLocale={appState.initialLocale}
-        translator={appState.translator}>
+        translator={appState.translator}
+      >
         <RootNavigator />
       </BetterTranslateProvider>
       <StatusBar style="auto" />

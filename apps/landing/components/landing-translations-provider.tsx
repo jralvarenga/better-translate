@@ -29,7 +29,10 @@ export function LandingTranslationsProvider({
   const translator = React.use(getTranslatorPromise());
 
   return (
-    <BetterTranslateProvider initialLocale={initialLocale} translator={translator}>
+    <BetterTranslateProvider
+      initialLocale={initialLocale}
+      translator={translator}
+    >
       {children}
     </BetterTranslateProvider>
   );

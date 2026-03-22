@@ -1,4 +1,7 @@
-import type { InternalTranslationMessages, InternalTranslationNode } from "./types.js";
+import type {
+  InternalTranslationMessages,
+  InternalTranslationNode,
+} from "./types.js";
 
 /**
  * Resolves a dot-notation key like `account.balance.label` inside a locale

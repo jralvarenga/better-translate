@@ -15,10 +15,7 @@ import {
   loadSourceMessages,
   serializeMessages,
 } from "./messages.js";
-import {
-  createMarkdownPrompt,
-  createMessagesPrompt,
-} from "./prompts.js";
+import { createMarkdownPrompt, createMessagesPrompt } from "./prompts.js";
 import type {
   CliLogger,
   CliWriteOperation,
@@ -27,11 +24,7 @@ import type {
   ResolvedBetterTranslateCliConfig,
   StructuredGenerator,
 } from "./types.js";
-import {
-  assert,
-  assertExactMessageShape,
-  isRecord,
-} from "./validation.js";
+import { assert, assertExactMessageShape, isRecord } from "./validation.js";
 
 function createConsoleLogger(): CliLogger {
   return {
@@ -56,7 +49,9 @@ async function persistWrite(
   },
 ): Promise<void> {
   if (options.dryRun) {
-    options.logger.info(`[dry-run] ${write.kind}:${write.locale} ${write.targetPath}`);
+    options.logger.info(
+      `[dry-run] ${write.kind}:${write.locale} ${write.targetPath}`,
+    );
     return;
   }
 
@@ -64,7 +59,9 @@ async function persistWrite(
     recursive: true,
   });
   await writeFile(write.targetPath, write.content, "utf8");
-  options.logger.info(`wrote ${write.kind}:${write.locale} ${write.targetPath}`);
+  options.logger.info(
+    `wrote ${write.kind}:${write.locale} ${write.targetPath}`,
+  );
 }
 
 function prepareGatewayEnvironment(apiKey: string): void {
@@ -76,13 +73,17 @@ function prepareGatewayEnvironment(apiKey: string): void {
   process.env.AI_GATEWAY_API_KEY = apiKey;
 }
 
-async function createDefaultGenerator(model: unknown): Promise<StructuredGenerator> {
+async function createDefaultGenerator(
+  model: unknown,
+): Promise<StructuredGenerator> {
   const { generateWithAiSdk } = await import("./ai-sdk-generator.js");
 
   return async (request) => generateWithAiSdk(model, request);
 }
 
-async function resolveRuntimeModel(config: ResolvedBetterTranslateCliConfig): Promise<{
+async function resolveRuntimeModel(
+  config: ResolvedBetterTranslateCliConfig,
+): Promise<{
   description: string;
   model: unknown;
 }> {
@@ -154,8 +155,7 @@ export async function generateProject(
   logger.info(`Target locales: ${config.locales.join(", ")}`);
 
   const generator =
-    options.generator ??
-    (await createDefaultGenerator(resolvedModel.model));
+    options.generator ?? (await createDefaultGenerator(resolvedModel.model));
   const writes: CliWriteOperation[] = [];
 
   logger.info(`Loading source messages from ${config.messages.entry}...`);
@@ -211,7 +211,11 @@ export async function generateProject(
     });
 
     const messageWrite: CliWriteOperation = {
-      content: serializeMessages(translatedMessages, sourceMessages.format, locale),
+      content: serializeMessages(
+        translatedMessages,
+        sourceMessages.format,
+        locale,
+      ),
       kind: "messages",
       locale,
       sourcePath: sourceMessages.sourcePath,
@@ -255,7 +259,10 @@ export async function generateProject(
         system: markdownPrompt.system,
         targetLocale: locale,
         validate(value) {
-          return validateMarkdownTranslation(document.frontmatterStrings, value);
+          return validateMarkdownTranslation(
+            document.frontmatterStrings,
+            value,
+          );
         },
       }).catch((error) => {
         throw new Error(

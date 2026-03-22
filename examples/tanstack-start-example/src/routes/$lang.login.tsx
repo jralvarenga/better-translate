@@ -1,28 +1,28 @@
-import { createFileRoute, notFound } from '@tanstack/react-router'
+import { createFileRoute, notFound } from "@tanstack/react-router";
 
-import { hasLocale } from '@better-translate/tanstack-router'
-import { I18nLink } from '#/lib/i18n/navigation'
-import { getLoginCopy } from '#/lib/i18n/server'
-import { routing } from '#/lib/i18n/routing'
+import { hasLocale } from "@better-translate/tanstack-router";
+import { I18nLink } from "#/lib/i18n/navigation";
+import { getLoginCopy } from "#/lib/i18n/server";
+import { routing } from "#/lib/i18n/routing";
 
-export const Route = createFileRoute('/$lang/login')({
+export const Route = createFileRoute("/$lang/login")({
   loader: async ({ params }) => {
     if (!hasLocale(routing.locales, params.lang)) {
-      throw notFound()
+      throw notFound();
     }
 
     return getLoginCopy({
       data: {
         locale: params.lang,
       },
-    })
+    });
   },
   component: LoginPage,
-})
+});
 
 function LoginPage() {
-  const copy = Route.useLoaderData()
-  const params = Route.useParams()
+  const copy = Route.useLoaderData();
+  const params = Route.useParams();
 
   return (
     <main className="flex flex-1 flex-col justify-between gap-10 py-10">
@@ -59,5 +59,5 @@ function LoginPage() {
         </I18nLink>
       </div>
     </main>
-  )
+  );
 }

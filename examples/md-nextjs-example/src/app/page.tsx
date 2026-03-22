@@ -3,7 +3,10 @@ import { Header } from "@/components/header";
 import { getCurrentLocale, getTranslations } from "@/lib/i18n/server";
 
 export default async function HomePage() {
-  const [locale, t] = await Promise.all([getCurrentLocale(), getTranslations()]);
+  const [locale, t] = await Promise.all([
+    getCurrentLocale(),
+    getTranslations(),
+  ]);
 
   return (
     <div className="min-h-screen">
@@ -21,13 +24,19 @@ export default async function HomePage() {
             <span className="size-1.5 rounded-full bg-brand" />
             better-translate/core + @better-translate/md
           </div>
-          <h1 className="text-4xl font-bold tracking-tight mb-4">{t("home.title")}</h1>
-          <p className="text-lg text-muted max-w-2xl leading-relaxed">{t("home.subtitle")}</p>
+          <h1 className="text-4xl font-bold tracking-tight mb-4">
+            {t("home.title")}
+          </h1>
+          <p className="text-lg text-muted max-w-2xl leading-relaxed">
+            {t("home.subtitle")}
+          </p>
         </div>
 
         {/* Description card */}
         <div className="mb-12 rounded-xl border border-white/10 bg-white/5 p-6">
-          <p className="text-sm text-muted leading-relaxed">{t("home.description")}</p>
+          <p className="text-sm text-muted leading-relaxed">
+            {t("home.description")}
+          </p>
         </div>
 
         {/* Stack */}

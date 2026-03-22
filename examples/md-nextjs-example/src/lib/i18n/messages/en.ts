@@ -5,7 +5,8 @@ export const en = {
   },
   home: {
     title: "MD + Better Translate",
-    subtitle: "Localized Markdown and MDX content with cookie-based locale switching.",
+    subtitle:
+      "Localized Markdown and MDX content with cookie-based locale switching.",
     description:
       "This example uses only better-translate/core and @better-translate/md. No locale in the URL ,  language is stored in a cookie.",
     viewDocs: "Browse docs",

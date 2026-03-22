@@ -5,10 +5,7 @@ import type {
 import { resolveRequestLocale } from "@better-translate/core/server";
 
 import { readRequestCached } from "./request-cache.js";
-import type {
-  InferTranslatorLocale,
-  RequestConfigFactory,
-} from "./server.js";
+import type { InferTranslatorLocale, RequestConfigFactory } from "./server.js";
 import { setRequestLocale } from "./server.js";
 
 export interface BetterTranslateLocals<TLocale extends string = string> {
@@ -51,7 +48,8 @@ export interface CreateBetterTranslateMiddlewareOptions<
 
 export function createBetterTranslateMiddleware<
   TTranslator extends ConfiguredTranslator<any, TranslationMessages>,
-  TLocale extends InferTranslatorLocale<TTranslator> = InferTranslatorLocale<TTranslator>,
+  TLocale extends
+    InferTranslatorLocale<TTranslator> = InferTranslatorLocale<TTranslator>,
   TLocals extends Record<string, unknown> = Record<string, unknown>,
 >(
   requestConfig: RequestConfigFactory<TTranslator, TLocale>,

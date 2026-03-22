@@ -1,15 +1,15 @@
-import { Elysia } from 'elysia'
+import { Elysia } from "elysia";
 
 const prettyJson = new Elysia()
-	.mapResponse(({ response }) => {
-		if (response instanceof Object)
-			return new Response(JSON.stringify(response, null, 4))
-	})
-	.as('scoped')
+  .mapResponse(({ response }) => {
+    if (response instanceof Object)
+      return new Response(JSON.stringify(response, null, 4));
+  })
+  .as("scoped");
 
 new Elysia()
-	.use(prettyJson)
-	.get('/', () => ({
-		hello: 'world'
-	}))
-	.listen(3000)
+  .use(prettyJson)
+  .get("/", () => ({
+    hello: "world",
+  }))
+  .listen(3000);

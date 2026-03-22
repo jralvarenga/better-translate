@@ -28,7 +28,14 @@ export default async function LocalizedHomePage({
 
   return (
     <div className="relative overflow-hidden min-h-screen bg-background">
-      <Particles className="absolute inset-0 z-0" quantity={120} size={0.4} color="#ffffff" staticity={50} ease={50} />
+      <Particles
+        className="absolute inset-0 z-0"
+        quantity={120}
+        size={0.4}
+        color="#ffffff"
+        staticity={50}
+        ease={50}
+      />
       <div className="relative z-10">
         <HeroSection locale={locale} t={t} />
         <Features t={t} />

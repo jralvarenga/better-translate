@@ -8,7 +8,9 @@ export function isLocale(value: unknown): value is Locale {
   return locales.includes(value as Locale);
 }
 
-export function resolveLocaleFromCookie(cookieValue: string | undefined): Locale {
+export function resolveLocaleFromCookie(
+  cookieValue: string | undefined,
+): Locale {
   if (cookieValue && isLocale(cookieValue)) return cookieValue;
   return defaultLocale;
 }

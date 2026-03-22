@@ -1,9 +1,9 @@
-import { createFileRoute, redirect } from '@tanstack/react-router'
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
-import { routing } from '#/lib/i18n/routing'
+import { routing } from "#/lib/i18n/routing";
 
-export const Route = createFileRoute('/')({
+export const Route = createFileRoute("/")({
   beforeLoad() {
-    throw redirect({ to: '/$lang', params: { lang: routing.defaultLocale } })
+    throw redirect({ to: "/$lang", params: { lang: routing.defaultLocale } });
   },
-})
+});

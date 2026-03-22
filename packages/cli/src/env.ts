@@ -5,7 +5,12 @@ import dotenv from "dotenv";
 
 export function loadEnvFiles(cwd: string): string[] {
   const mode = process.env.NODE_ENV || "development";
-  const candidates = [".env", ".env.local", `.env.${mode}`, `.env.${mode}.local`];
+  const candidates = [
+    ".env",
+    ".env.local",
+    `.env.${mode}`,
+    `.env.${mode}.local`,
+  ];
   const loaded: string[] = [];
 
   for (const name of candidates) {

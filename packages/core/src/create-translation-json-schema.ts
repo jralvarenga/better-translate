@@ -6,7 +6,9 @@ import type {
   TranslationMessages,
 } from "./types.js";
 
-function createSchemaNode(messages: TranslationMessages): TranslationJsonObjectSchema {
+function createSchemaNode(
+  messages: TranslationMessages,
+): TranslationJsonObjectSchema {
   const properties: Record<string, TranslationJsonSchemaNode> = {};
 
   for (const [key, value] of Object.entries(messages)) {
@@ -25,9 +27,9 @@ function createSchemaNode(messages: TranslationMessages): TranslationJsonObjectS
 /**
  * Generates a JSON Schema document from a source locale object.
  */
-export function createTranslationJsonSchema<TMessages extends TranslationMessages>(
-  sourceMessages: TMessages,
-): TranslationJsonSchema {
+export function createTranslationJsonSchema<
+  TMessages extends TranslationMessages,
+>(sourceMessages: TMessages): TranslationJsonSchema {
   if (!isTranslationMessages(sourceMessages)) {
     throw new Error(
       "createTranslationJsonSchema(...) requires a valid translation object.",

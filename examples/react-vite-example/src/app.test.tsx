@@ -47,7 +47,9 @@ describe("react-vite-example", () => {
     await renderApp({ initialLocale: "es" });
 
     expect(
-      screen.getByRole("heading", { name: "Ejemplo React de Better Translate" }),
+      screen.getByRole("heading", {
+        name: "Ejemplo React de Better Translate",
+      }),
     ).toBeTruthy();
     expect(screen.getByText("Hola")).toBeTruthy();
     expect(screen.getByTestId("current-locale").textContent).toBe("es");
@@ -57,9 +59,7 @@ describe("react-vite-example", () => {
     const user = userEvent.setup();
     await renderApp();
 
-    await user.click(
-      screen.getByRole("button", { name: "Switch to Spanish" }),
-    );
+    await user.click(screen.getByRole("button", { name: "Switch to Spanish" }));
 
     await waitFor(() => {
       expect(screen.getByTestId("current-locale").textContent).toBe("es");
@@ -156,7 +156,7 @@ describe("react-vite-example", () => {
 
     expect(capturedError).toBeInstanceOf(Error);
     expect((capturedError as Error).message).toBe(
-      'useTranslations() must be used inside <BetterTranslateProvider />.',
+      "useTranslations() must be used inside <BetterTranslateProvider />.",
     );
 
     console.error = originalError;

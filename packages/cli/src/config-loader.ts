@@ -8,11 +8,7 @@ import type {
 } from "./types.js";
 import { loadEnvFilesFromDirectories } from "./env.js";
 import { importModule } from "./module-loader.js";
-import {
-  assert,
-  isRecord,
-  normalizeMarkdownExtensions,
-} from "./validation.js";
+import { assert, isRecord, normalizeMarkdownExtensions } from "./validation.js";
 
 const DEFAULT_CONFIG_FILE = "better-translate.config.ts";
 
@@ -50,7 +46,10 @@ function resolveConfig(
   rawConfig: unknown,
   configDirectory: string,
 ): ResolvedBetterTranslateCliConfig {
-  assert(isRecord(rawConfig), "better-translate.config.ts must export a config object.");
+  assert(
+    isRecord(rawConfig),
+    "better-translate.config.ts must export a config object.",
+  );
 
   const sourceLocale = rawConfig.sourceLocale;
   assert(
@@ -70,7 +69,10 @@ function resolveConfig(
     return locale.trim();
   });
 
-  assert(normalizedLocales.length > 0, "Config requires at least one target locale.");
+  assert(
+    normalizedLocales.length > 0,
+    "Config requires at least one target locale.",
+  );
   assert(
     new Set(normalizedLocales).size === normalizedLocales.length,
     "Config locales must not contain duplicates.",
@@ -97,9 +99,13 @@ function resolveConfig(
       markdown === undefined
         ? undefined
         : (() => {
-            assert(isRecord(markdown), "markdown must be an object when provided.");
             assert(
-              typeof markdown.rootDir === "string" && markdown.rootDir.trim().length > 0,
+              isRecord(markdown),
+              "markdown must be an object when provided.",
+            );
+            assert(
+              typeof markdown.rootDir === "string" &&
+                markdown.rootDir.trim().length > 0,
               "markdown.rootDir must be a non-empty string.",
             );
 
@@ -150,12 +156,17 @@ function resolveConfig(
   };
 }
 
-export async function loadCliConfig(options: {
-  configPath?: string;
-  cwd?: string;
-} = {}): Promise<LoadedBetterTranslateCliConfig> {
+export async function loadCliConfig(
+  options: {
+    configPath?: string;
+    cwd?: string;
+  } = {},
+): Promise<LoadedBetterTranslateCliConfig> {
   const cwd = options.cwd ?? process.cwd();
-  const configPath = path.resolve(cwd, options.configPath ?? DEFAULT_CONFIG_FILE);
+  const configPath = path.resolve(
+    cwd,
+    options.configPath ?? DEFAULT_CONFIG_FILE,
+  );
   const configDirectory = path.dirname(configPath);
 
   loadEnvFilesFromDirectories(

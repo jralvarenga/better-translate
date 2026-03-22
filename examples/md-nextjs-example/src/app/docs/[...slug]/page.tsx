@@ -4,7 +4,11 @@ import * as runtime from "react/jsx-runtime";
 import { Header } from "@/components/header";
 import { mdxComponents } from "@/components/mdx-components";
 import { MarkdownDocumentNotFoundError } from "@better-translate/md";
-import { getCurrentLocale, getMarkdownHelpers, getTranslations } from "@/lib/i18n/server";
+import {
+  getCurrentLocale,
+  getMarkdownHelpers,
+  getTranslations,
+} from "@/lib/i18n/server";
 
 export default async function DocPage({
   params,
@@ -38,7 +42,8 @@ export default async function DocPage({
   let mdHtml: string | null = null;
   // Render MDX → evaluated React component
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let MdxContent: React.FC<{ components?: Record<string, unknown> }> | null = null;
+  let MdxContent: React.FC<{ components?: Record<string, unknown> }> | null =
+    null;
 
   if (doc.kind === "md") {
     const compiled = await md.compileDocument(doc);
@@ -51,7 +56,9 @@ export default async function DocPage({
     const result = await evaluate(doc.source, {
       ...(runtime as Parameters<typeof evaluate>[1]),
     });
-    MdxContent = result.default as React.FC<{ components?: Record<string, unknown> }>;
+    MdxContent = result.default as React.FC<{
+      components?: Record<string, unknown>;
+    }>;
   }
 
   const fallbackBanner = doc.usedFallback
@@ -93,7 +100,9 @@ export default async function DocPage({
             </span>
             <span className="text-xs font-mono text-muted">{doc.locale}</span>
             {date && (
-              <span className="text-xs font-mono text-muted/60">{String(date)}</span>
+              <span className="text-xs font-mono text-muted/60">
+                {String(date)}
+              </span>
             )}
           </div>
           <h1 className="text-3xl font-bold tracking-tight">{title}</h1>
@@ -102,13 +111,14 @@ export default async function DocPage({
 
         {/* Content */}
         <div className="prose">
-          {mdHtml && (
-            <div dangerouslySetInnerHTML={{ __html: mdHtml }} />
-          )}
-          {MdxContent && (() => {
-            const C = MdxContent!;
-            return <C components={mdxComponents as Record<string, unknown>} />;
-          })()}
+          {mdHtml && <div dangerouslySetInnerHTML={{ __html: mdHtml }} />}
+          {MdxContent &&
+            (() => {
+              const C = MdxContent!;
+              return (
+                <C components={mdxComponents as Record<string, unknown>} />
+              );
+            })()}
         </div>
       </main>
     </div>

@@ -12,10 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type {
-  LandingLocale,
-  LandingTranslator,
-} from "@/lib/i18n/config";
+import type { LandingLocale, LandingTranslator } from "@/lib/i18n/config";
 import { useI18nPathname, useI18nRouter } from "@/lib/i18n/navigation";
 
 interface HeaderLanguageSwitcherProps {
@@ -35,8 +32,7 @@ export function LanguageSwitcherFallback({
     languages.find((item) => item.locale === currentLocale) ?? languages[0];
 
   return (
-    <Select defaultValue={currentItem?.locale} disabled
-    >
+    <Select defaultValue={currentItem?.locale} disabled>
       <SelectTrigger
         aria-label={switchLabel}
         className="w-28 rounded-xl border-white/10 bg-background/70 px-3 backdrop-blur-sm"

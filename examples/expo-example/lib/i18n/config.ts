@@ -1,27 +1,27 @@
 import {
   configureTranslations,
   type TranslationLanguageMetadata,
-} from '@better-translate/core';
+} from "@better-translate/core";
 
-import { en } from './messages/en';
-import { es } from './messages/es';
+import { en } from "./messages/en";
+import { es } from "./messages/es";
 
-export const expoLocales = ['en', 'es'] as const;
+export const expoLocales = ["en", "es"] as const;
 
 export type ExpoLocale = (typeof expoLocales)[number];
 
-export const expoDefaultLocale = 'en' as const;
+export const expoDefaultLocale = "en" as const;
 
 export const expoLanguages = [
   {
-    locale: 'en',
-    nativeLabel: 'English',
-    shortLabel: 'EN',
+    locale: "en",
+    nativeLabel: "English",
+    shortLabel: "EN",
   },
   {
-    locale: 'es',
-    nativeLabel: 'Español',
-    shortLabel: 'ES',
+    locale: "es",
+    nativeLabel: "Español",
+    shortLabel: "ES",
   },
 ] as const satisfies readonly TranslationLanguageMetadata<ExpoLocale>[];
 

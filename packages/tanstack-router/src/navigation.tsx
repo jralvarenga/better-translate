@@ -69,10 +69,10 @@ export type LocalizedPreloadRouteFn<TLocale extends string> = (
   },
 ) => Promise<unknown>;
 
-export type LocalizedRouter<TLocale extends string, TRouter extends AnyRouter> = Omit<
-  TRouter,
-  "buildLocation" | "navigate" | "preloadRoute"
-> & {
+export type LocalizedRouter<
+  TLocale extends string,
+  TRouter extends AnyRouter,
+> = Omit<TRouter, "buildLocation" | "navigate" | "preloadRoute"> & {
   buildLocation: LocalizedBuildLocationFn<TLocale>;
   navigate: LocalizedUseNavigateResult<TLocale, string>;
   preloadRoute?: LocalizedPreloadRouteFn<TLocale>;
@@ -120,7 +120,11 @@ export function createNavigationFunctions<
     const localizedOptions = getLocalizedOptions(
       rawProps,
       useInjectedLocation().pathname,
-      resolveActiveLocale(useInjectedParams(), routing, parsedTemplate.localeParamName),
+      resolveActiveLocale(
+        useInjectedParams(),
+        routing,
+        parsedTemplate.localeParamName,
+      ),
       routing,
       parsedTemplate.localeParamName,
       parsedTemplate.localeSegment,
@@ -266,13 +270,21 @@ function getLocalizedOptions<
     shouldRewriteTo(options.to) &&
     !pathContainsLocaleParam(options.to, localeParamName)
   ) {
-    localized.to = localizePathname(options.to, nextLocale, routing) as TOptions["to"];
+    localized.to = localizePathname(
+      options.to,
+      nextLocale,
+      routing,
+    ) as TOptions["to"];
   }
 
   localized.params = localizeParams(
     options.params,
     localeParamName,
-    isRequired ? nextLocale : nextLocale === routing.defaultLocale ? undefined : nextLocale,
+    isRequired
+      ? nextLocale
+      : nextLocale === routing.defaultLocale
+        ? undefined
+        : nextLocale,
   );
 
   return localized;
@@ -300,7 +312,11 @@ function localizeParams(
   }
 
   if (params && typeof params === "object") {
-    return mergeLocaleParam(params as Record<string, unknown>, localeParamName, locale);
+    return mergeLocaleParam(
+      params as Record<string, unknown>,
+      localeParamName,
+      locale,
+    );
   }
 
   return params;
@@ -345,13 +361,19 @@ function shouldLocalizeTarget<TLocale extends string>(
   }
 
   const { pathname } = splitHrefString(to);
-  const normalizedPathname = stripLocalePlaceholder(pathname, localeParamName, localeSegment);
+  const normalizedPathname = stripLocalePlaceholder(
+    pathname,
+    localeParamName,
+    localeSegment,
+  );
 
   return isPathnameInScope(normalizedPathname, routing);
 }
 
 function pathContainsLocaleParam(to: string, localeParamName: string): boolean {
-  return to.split("/").some((s) => s === `$${localeParamName}` || s === `{$${localeParamName}}`);
+  return to
+    .split("/")
+    .some((s) => s === `$${localeParamName}` || s === `{$${localeParamName}}`);
 }
 
 function shouldRewriteTo(to: string): boolean {
@@ -388,7 +410,10 @@ function resolveActiveLocale<TLocale extends string>(
 ): TLocale {
   const localeParam = params[localeParamName];
 
-  if (typeof localeParam === "string" && routing.locales.includes(localeParam as TLocale)) {
+  if (
+    typeof localeParam === "string" &&
+    routing.locales.includes(localeParam as TLocale)
+  ) {
     return localeParam as TLocale;
   }
 

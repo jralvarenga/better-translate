@@ -1,15 +1,15 @@
-'use client'
+"use client";
 
-import { createNavigationFunctions } from '@better-translate/tanstack-router/navigation'
+import { createNavigationFunctions } from "@better-translate/tanstack-router/navigation";
 import {
   Link,
   useLocation,
   useNavigate,
   useParams,
   useRouter,
-} from '@tanstack/react-router'
+} from "@tanstack/react-router";
 
-import { routing } from './routing'
+import { routing } from "./routing";
 
 export const {
   Link: I18nLink,
@@ -27,4 +27,4 @@ export const {
       select: (params) => ({ lang: params.lang as string | undefined }),
     }),
   useRouter,
-})
+});

@@ -59,13 +59,20 @@ export declare function configureTranslations<
 
 export declare function configureTranslations<
   const TLocales extends readonly string[],
-  const TMessages extends Partial<Record<TLocales[number], TranslationMessages>>,
+  const TMessages extends Partial<
+    Record<TLocales[number], TranslationMessages>
+  >,
   const TLoaders extends
     | Partial<Record<TLocales[number], TranslationLoader<unknown>>>
     | undefined = undefined,
   const TDefaultLocale extends TLocales[number] = TLocales[number],
 >(
-  config: TranslationConfigOptions<TLocales, TMessages, TLoaders, TDefaultLocale>,
+  config: TranslationConfigOptions<
+    TLocales,
+    TMessages,
+    TLoaders,
+    TDefaultLocale
+  >,
 ): Promise<OptionsFormTranslator<TLocales, TMessages, TDefaultLocale>>;
 
 export declare function configureTranslations(
@@ -93,7 +100,10 @@ export declare function createTranslationHelpers<
 ): Promise<
   TranslationHelpers<
     Extract<keyof TMessages, string>,
-    ShortFormTranslator<TMessages> extends ConfiguredTranslator<any, infer TSourceMessages>
+    ShortFormTranslator<TMessages> extends ConfiguredTranslator<
+      any,
+      infer TSourceMessages
+    >
       ? TSourceMessages
       : TranslationMessages
   >
@@ -101,13 +111,20 @@ export declare function createTranslationHelpers<
 
 export declare function createTranslationHelpers<
   const TLocales extends readonly string[],
-  const TMessages extends Partial<Record<TLocales[number], TranslationMessages>>,
+  const TMessages extends Partial<
+    Record<TLocales[number], TranslationMessages>
+  >,
   const TLoaders extends
     | Partial<Record<TLocales[number], TranslationLoader<unknown>>>
     | undefined = undefined,
   const TDefaultLocale extends TLocales[number] = TLocales[number],
 >(
-  config: TranslationConfigOptions<TLocales, TMessages, TLoaders, TDefaultLocale>,
+  config: TranslationConfigOptions<
+    TLocales,
+    TMessages,
+    TLoaders,
+    TDefaultLocale
+  >,
 ): Promise<
   TranslationHelpers<
     TLocales[number],
@@ -128,12 +145,17 @@ export declare function t(
 
 export declare function loadLocale(
   locale: string,
-): Promise<DeepPartialMessages<TranslationMessages> | TranslationMessages | undefined>;
+): Promise<
+  DeepPartialMessages<TranslationMessages> | TranslationMessages | undefined
+>;
 
 export declare function getSupportedLocales(): readonly string[];
 
 export declare function getAvailableLanguages(): readonly TranslationLanguageMetadata<string>[];
 
-export declare function getMessages(): CachedMessages<string, TranslationMessages>;
+export declare function getMessages(): CachedMessages<
+  string,
+  TranslationMessages
+>;
 
 export declare function resetTranslationsForTests(): void;

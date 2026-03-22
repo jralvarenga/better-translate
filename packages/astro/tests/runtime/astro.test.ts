@@ -6,9 +6,7 @@ import {
   ContentDocumentNotFoundError,
   createContentCollectionHelpers,
 } from "../../src/content.js";
-import {
-  createBetterTranslateMiddleware,
-} from "../../src/middleware.js";
+import { createBetterTranslateMiddleware } from "../../src/middleware.js";
 import {
   createServerHelpers,
   getRequestConfig,

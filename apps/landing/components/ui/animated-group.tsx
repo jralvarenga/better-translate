@@ -1,19 +1,19 @@
-'use client';
-import { ReactNode } from 'react';
-import { motion, Variants } from 'motion/react';
-import React from 'react';
+"use client";
+import { ReactNode } from "react";
+import { motion, Variants } from "motion/react";
+import React from "react";
 
 export type PresetType =
-  | 'fade'
-  | 'slide'
-  | 'scale'
-  | 'blur'
-  | 'blur-slide'
-  | 'zoom'
-  | 'flip'
-  | 'bounce'
-  | 'rotate'
-  | 'swing';
+  | "fade"
+  | "slide"
+  | "scale"
+  | "blur"
+  | "blur-slide"
+  | "zoom"
+  | "flip"
+  | "bounce"
+  | "rotate"
+  | "swing";
 
 export type AnimatedGroupProps = {
   children: ReactNode;
@@ -51,46 +51,46 @@ const presetVariants: Record<PresetType, Variants> = {
     visible: { scale: 1 },
   },
   blur: {
-    hidden: { filter: 'blur(4px)' },
-    visible: { filter: 'blur(0px)' },
+    hidden: { filter: "blur(4px)" },
+    visible: { filter: "blur(0px)" },
   },
-  'blur-slide': {
-    hidden: { filter: 'blur(4px)', y: 20 },
-    visible: { filter: 'blur(0px)', y: 0 },
+  "blur-slide": {
+    hidden: { filter: "blur(4px)", y: 20 },
+    visible: { filter: "blur(0px)", y: 0 },
   },
   zoom: {
     hidden: { scale: 0.5 },
     visible: {
       scale: 1,
-      transition: { type: 'spring' as const, stiffness: 300, damping: 20 },
+      transition: { type: "spring" as const, stiffness: 300, damping: 20 },
     },
   },
   flip: {
     hidden: { rotateX: -90 },
     visible: {
       rotateX: 0,
-      transition: { type: 'spring' as const, stiffness: 300, damping: 20 },
+      transition: { type: "spring" as const, stiffness: 300, damping: 20 },
     },
   },
   bounce: {
     hidden: { y: -50 },
     visible: {
       y: 0,
-      transition: { type: 'spring' as const, stiffness: 400, damping: 10 },
+      transition: { type: "spring" as const, stiffness: 400, damping: 10 },
     },
   },
   rotate: {
     hidden: { rotate: -180 },
     visible: {
       rotate: 0,
-      transition: { type: 'spring' as const, stiffness: 200, damping: 15 },
+      transition: { type: "spring" as const, stiffness: 200, damping: 15 },
     },
   },
   swing: {
     hidden: { rotate: -10 },
     visible: {
       rotate: 0,
-      transition: { type: 'spring' as const, stiffness: 300, damping: 8 },
+      transition: { type: "spring" as const, stiffness: 300, damping: 8 },
     },
   },
 };
@@ -108,8 +108,8 @@ function AnimatedGroup({
   className,
   variants,
   preset,
-  as: _as = 'div',
-  asChild: _asChild = 'div',
+  as: _as = "div",
+  asChild: _asChild = "div",
 }: AnimatedGroupProps) {
   const selectedVariants = {
     item: addDefaultVariants(preset ? presetVariants[preset] : {}),
@@ -120,8 +120,8 @@ function AnimatedGroup({
 
   return (
     <MotionDiv
-      initial='hidden'
-      animate='visible'
+      initial="hidden"
+      animate="visible"
       variants={containerVariants}
       className={className}
     >

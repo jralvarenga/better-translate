@@ -15,7 +15,9 @@ type Primitive = string | number | boolean | bigint | symbol | null | undefined;
 type Simplify<T> = { [K in keyof T]: T[K] } & {};
 
 type UnionToIntersection<T> = (
-  T extends unknown ? (value: T) => void : never
+  T extends unknown
+    ? (value: T) => void
+    : never
 ) extends (value: infer I) => void
   ? I
   : never;
@@ -34,8 +36,9 @@ type MergeUnion<T> = T extends Primitive
         }>
       : never;
 
-type AsTranslationMessages<TMessages> =
-  TMessages extends TranslationMessages ? TMessages : never;
+type AsTranslationMessages<TMessages> = TMessages extends TranslationMessages
+  ? TMessages
+  : never;
 
 export type DeepPartialMessages<TMessages> = {
   [K in keyof TMessages]?: TMessages[K] extends string
@@ -85,7 +88,9 @@ type IsExactMessageShape<TReference, TCandidate> = [TReference] extends [string]
 type ExactMessageShape<
   TReference,
   TCandidate extends TranslationMessages,
-> = IsExactMessageShape<TReference, TCandidate> extends true ? TCandidate : never;
+> = IsExactMessageShape<TReference, TCandidate> extends true
+  ? TCandidate
+  : never;
 
 type EnforceLocaleMapShapeParity<
   TMessages extends Record<string, TranslationMessages>,
@@ -209,9 +214,11 @@ export type TranslateOptionsForKey<
   ? Simplify<TranslateOptions<TLocale> & { params?: never }>
   : string extends TranslationPlaceholderNames<TMessages, TKey>
     ? Simplify<TranslateOptions<TLocale> & { params?: TranslationParams }>
-    : Simplify<Omit<TranslateOptions<TLocale>, "params"> & {
-        params: TranslationParamsForKey<TMessages, TKey>;
-      }>;
+    : Simplify<
+        Omit<TranslateOptions<TLocale>, "params"> & {
+          params: TranslationParamsForKey<TMessages, TKey>;
+        }
+      >;
 
 export type TranslateArgs<
   TLocale extends string,
@@ -332,7 +339,9 @@ export interface ConfiguredTranslator<
    */
   loadLocale(
     locale: TLocale,
-  ): Promise<DeepPartialMessages<TSourceMessages> | TSourceMessages | undefined>;
+  ): Promise<
+    DeepPartialMessages<TSourceMessages> | TSourceMessages | undefined
+  >;
   /**
    * Returns the list of configured locales for this translator.
    */
@@ -344,7 +353,9 @@ export interface ConfiguredTranslator<
   /**
    * Returns the resolved direction metadata for the requested locale or override.
    */
-  getDirection(options?: TranslationDirectionOptions<TLocale>): TranslationDirection;
+  getDirection(
+    options?: TranslationDirectionOptions<TLocale>,
+  ): TranslationDirection;
   /**
    * Returns whether the resolved direction metadata is right-to-left.
    */
@@ -373,10 +384,14 @@ export interface TranslationHelpers<
   readonly t: TranslateFunction<TLocale, TSourceMessages>;
   loadLocale(
     locale: TLocale,
-  ): Promise<DeepPartialMessages<TSourceMessages> | TSourceMessages | undefined>;
+  ): Promise<
+    DeepPartialMessages<TSourceMessages> | TSourceMessages | undefined
+  >;
   getSupportedLocales(): readonly TLocale[];
   getAvailableLanguages(): readonly TranslationLanguageMetadata<TLocale>[];
-  getDirection(options?: TranslationDirectionOptions<TLocale>): TranslationDirection;
+  getDirection(
+    options?: TranslationDirectionOptions<TLocale>,
+  ): TranslationDirection;
   isRtl(options?: TranslationDirectionOptions<TLocale>): boolean;
   getMessages(): CachedMessages<TLocale, TSourceMessages>;
 }
@@ -450,14 +465,17 @@ export type CachedMessages<
   TLocale extends string,
   TSourceMessages extends TranslationMessages,
 > = Readonly<
-  Partial<Record<TLocale, DeepPartialMessages<TSourceMessages> | TSourceMessages>>
+  Partial<
+    Record<TLocale, DeepPartialMessages<TSourceMessages> | TSourceMessages>
+  >
 >;
 
-export type ShortFormTranslator<TMessages extends Record<string, TranslationMessages>> =
-  ConfiguredTranslator<
-    Extract<keyof TMessages, string>,
-    AsTranslationMessages<MergeUnion<TMessages[keyof TMessages & string]>>
-  >;
+export type ShortFormTranslator<
+  TMessages extends Record<string, TranslationMessages>,
+> = ConfiguredTranslator<
+  Extract<keyof TMessages, string>,
+  AsTranslationMessages<MergeUnion<TMessages[keyof TMessages & string]>>
+>;
 
 export type StrictTranslationLocaleMap<
   TMessages extends Record<string, TranslationMessages>,

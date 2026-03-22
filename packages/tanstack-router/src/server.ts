@@ -28,7 +28,8 @@ type InferTranslatorMessages<TTranslator> =
 
 export interface BetterTranslateRequestConfig<
   TTranslator extends AnyTranslator,
-  TLocale extends InferTranslatorLocale<TTranslator> = InferTranslatorLocale<TTranslator>,
+  TLocale extends
+    InferTranslatorLocale<TTranslator> = InferTranslatorLocale<TTranslator>,
 > {
   locale?: TLocale;
   translator: TTranslator;
@@ -36,7 +37,8 @@ export interface BetterTranslateRequestConfig<
 
 export type RequestConfigFactory<
   TTranslator extends AnyTranslator,
-  TLocale extends InferTranslatorLocale<TTranslator> = InferTranslatorLocale<TTranslator>,
+  TLocale extends
+    InferTranslatorLocale<TTranslator> = InferTranslatorLocale<TTranslator>,
 > = () =>
   | BetterTranslateRequestConfig<TTranslator, TLocale>
   | Promise<BetterTranslateRequestConfig<TTranslator, TLocale>>;
@@ -60,8 +62,8 @@ export interface ServerHelpers<
   ): Promise<TranslationDirection>;
   getLocale(): Promise<TRequestLocale>;
   getMessages(): Promise<
-    DeepPartialMessages<InferTranslatorMessages<TTranslator>> |
-      InferTranslatorMessages<TTranslator>
+    | DeepPartialMessages<InferTranslatorMessages<TTranslator>>
+    | InferTranslatorMessages<TTranslator>
   >;
   isRtl(
     options?: RequestDirectionOptions<InferTranslatorLocale<TTranslator>>,
@@ -74,7 +76,8 @@ export interface ServerHelpers<
 
 export function getRequestConfig<
   TTranslator extends AnyTranslator,
-  TLocale extends InferTranslatorLocale<TTranslator> = InferTranslatorLocale<TTranslator>,
+  TLocale extends
+    InferTranslatorLocale<TTranslator> = InferTranslatorLocale<TTranslator>,
 >(
   factory: RequestConfigFactory<TTranslator, TLocale>,
 ): RequestConfigFactory<TTranslator, TLocale> {
@@ -89,7 +92,8 @@ export function setRequestLocale<TLocale extends string>(
 
 export function createServerHelpers<
   TTranslator extends AnyTranslator,
-  TLocale extends InferTranslatorLocale<TTranslator> = InferTranslatorLocale<TTranslator>,
+  TLocale extends
+    InferTranslatorLocale<TTranslator> = InferTranslatorLocale<TTranslator>,
 >(
   requestConfig: RequestConfigFactory<TTranslator, TLocale>,
 ): ServerHelpers<TLocale, TTranslator> {
@@ -103,9 +107,7 @@ export function createServerHelpers<
     };
   });
 
-  async function getResolvedLocale(
-    options?: RequestDirectionOptions<TLocale>,
-  ) {
+  async function getResolvedLocale(options?: RequestDirectionOptions<TLocale>) {
     const { locale: configLocale, translator } = await readRequestConfig();
 
     return resolveRequestLocale(translator, {
@@ -180,10 +182,13 @@ export function createServerHelpers<
       return ((...args: Parameters<TTranslator["t"]>) => {
         const [key, translateOptions] = args;
 
-        return translator.t(key as never, {
-          ...(translateOptions ?? {}),
-          locale,
-        } as never);
+        return translator.t(
+          key as never,
+          {
+            ...(translateOptions ?? {}),
+            locale,
+          } as never,
+        );
       }) as TTranslator["t"];
     },
     async getTranslator() {

@@ -70,12 +70,16 @@ function createNormalizedLanguages(
  * It also validates locale declarations, required source messages, and that
  * message/loader locales are included in `availableLocales`.
  */
-export function normalizeConfig(input: RuntimeConfigInput): InternalNormalizedConfig {
+export function normalizeConfig(
+  input: RuntimeConfigInput,
+): InternalNormalizedConfig {
   if (!isTranslationConfigOptions(input)) {
     const locales = Object.keys(input);
 
     if (locales.length === 0) {
-      throw new Error("configureTranslations(...) requires at least one locale.");
+      throw new Error(
+        "configureTranslations(...) requires at least one locale.",
+      );
     }
 
     const defaultLocale = locales[0]!;
@@ -103,7 +107,10 @@ export function normalizeConfig(input: RuntimeConfigInput): InternalNormalizedCo
     );
   }
 
-  if (input.fallbackLocale && !supportedLocales.includes(input.fallbackLocale)) {
+  if (
+    input.fallbackLocale &&
+    !supportedLocales.includes(input.fallbackLocale)
+  ) {
     throw new Error(
       `The fallback locale "${input.fallbackLocale}" is not included in availableLocales.`,
     );

@@ -143,7 +143,8 @@ export function BetterTranslateProvider<
     loadingLocale,
     locale,
     localeError,
-    messages: translator.getMessages() as UseTranslationsValue<TTranslator>["messages"],
+    messages:
+      translator.getMessages() as UseTranslationsValue<TTranslator>["messages"],
     rtl: translator.isRtl({
       locale,
     }),

@@ -47,7 +47,7 @@ export const landingMessages = {
   en,
   es,
   ar,
-  ja
+  ja,
 } satisfies Record<LandingLocale, DeepStringify<typeof en>>;
 
 export const landingTranslationsConfig = {
@@ -74,4 +74,6 @@ export function createLandingTranslator() {
   return configureTranslations(landingTranslationsConfig);
 }
 
-export type LandingTranslator = Awaited<ReturnType<typeof createLandingTranslator>>;
+export type LandingTranslator = Awaited<
+  ReturnType<typeof createLandingTranslator>
+>;

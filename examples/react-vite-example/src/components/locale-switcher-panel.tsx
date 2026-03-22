@@ -10,8 +10,14 @@ const ACTION_LABELS = {
 } as const;
 
 export function LocaleSwitcherPanel() {
-  const { isLoadingLocale, loadLocale, locale, setLocale, supportedLocales, t } =
-    useTranslations<AppTranslator>();
+  const {
+    isLoadingLocale,
+    loadLocale,
+    locale,
+    setLocale,
+    supportedLocales,
+    t,
+  } = useTranslations<AppTranslator>();
 
   return (
     <DemoPanel

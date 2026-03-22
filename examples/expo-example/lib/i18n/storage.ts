@@ -1,8 +1,8 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-import { isExpoLocale, type ExpoLocale } from './config';
+import { isExpoLocale, type ExpoLocale } from "./config";
 
-export const LOCALE_STORAGE_KEY = 'expo-example.locale';
+export const LOCALE_STORAGE_KEY = "expo-example.locale";
 
 export async function readStoredLocale(): Promise<ExpoLocale | null> {
   try {

@@ -38,7 +38,11 @@ export function LocaleStatusPanel() {
         </div>
         <div>
           <dt>{t("demo.loadingLocale")}</dt>
-          <dd>{isLoadingLocale ? loadingLocale ?? "pending" : t("demo.localeReady")}</dd>
+          <dd>
+            {isLoadingLocale
+              ? (loadingLocale ?? "pending")
+              : t("demo.localeReady")}
+          </dd>
         </div>
         <div>
           <dt>{t("demo.cachedLocales")}</dt>

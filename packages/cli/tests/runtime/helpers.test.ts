@@ -23,7 +23,10 @@ import {
   loadSourceMessages,
   serializeMessages,
 } from "../../src/messages.js";
-import { createMarkdownPrompt, createMessagesPrompt } from "../../src/prompts.js";
+import {
+  createMarkdownPrompt,
+  createMessagesPrompt,
+} from "../../src/prompts.js";
 import { openai } from "../../src/provider-models.js";
 import {
   assert,

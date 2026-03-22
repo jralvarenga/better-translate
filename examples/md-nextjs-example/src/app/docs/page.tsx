@@ -1,6 +1,10 @@
 import Link from "next/link";
 import { Header } from "@/components/header";
-import { getCurrentLocale, getMarkdownHelpers, getTranslations } from "@/lib/i18n/server";
+import {
+  getCurrentLocale,
+  getMarkdownHelpers,
+  getTranslations,
+} from "@/lib/i18n/server";
 
 export default async function DocsPage() {
   const [locale, t, md] = await Promise.all([
@@ -10,7 +14,9 @@ export default async function DocsPage() {
   ]);
 
   const ids = await md.listDocuments();
-  const docs = await Promise.all(ids.map((id) => md.getDocument(id, { locale })));
+  const docs = await Promise.all(
+    ids.map((id) => md.getDocument(id, { locale })),
+  );
 
   return (
     <div className="min-h-screen">
@@ -23,7 +29,9 @@ export default async function DocsPage() {
 
       <main className="mx-auto max-w-4xl px-6 py-12">
         <div className="mb-10">
-          <h1 className="text-3xl font-bold tracking-tight mb-2">{t("docs.title")}</h1>
+          <h1 className="text-3xl font-bold tracking-tight mb-2">
+            {t("docs.title")}
+          </h1>
           <p className="text-muted">{t("docs.subtitle")}</p>
         </div>
 
@@ -33,7 +41,9 @@ export default async function DocsPage() {
           <div className="grid gap-3">
             {docs.map((doc) => {
               const title = (doc.frontmatter.title as string) ?? doc.id;
-              const description = doc.frontmatter.description as string | undefined;
+              const description = doc.frontmatter.description as
+                | string
+                | undefined;
               const date = doc.frontmatter.date as string | undefined;
               const href = "/" + doc.id;
 
@@ -65,12 +75,16 @@ export default async function DocsPage() {
                         {title}
                       </div>
                       {description && (
-                        <div className="text-sm text-muted mt-1">{description}</div>
+                        <div className="text-sm text-muted mt-1">
+                          {description}
+                        </div>
                       )}
                     </div>
                     <div className="shrink-0 text-right">
                       {date && (
-                        <div className="text-xs font-mono text-muted">{String(date)}</div>
+                        <div className="text-xs font-mono text-muted">
+                          {String(date)}
+                        </div>
                       )}
                       <div className="text-xs font-mono text-muted/60 mt-0.5">
                         {doc.locale}

@@ -23,8 +23,7 @@ export async function generateWithAiSdk<TOutput>(
             };
           } catch (error) {
             return {
-              error:
-                error instanceof Error ? error : new Error(String(error)),
+              error: error instanceof Error ? error : new Error(String(error)),
               success: false as const,
             };
           }

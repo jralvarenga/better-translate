@@ -29,36 +29,20 @@ import {
 export const translationModule = new Elysia({
   name: "translation-module",
 })
-  .get(
-    "/",
-    () => getTranslationPayload("routes.home"),
-    {
-      response: translationMessageResponse,
-    },
-  )
-  .get(
-    "/hello",
-    () => getTranslationPayload("routes.hello"),
-    {
-      response: translationMessageResponse,
-    },
-  )
-  .get(
-    "/greeting/:name",
-    ({ params: { name } }) => getGreetingPayload(name),
-    {
-      params: greetingParams,
-      response: translationMessageResponse,
-    },
-  )
+  .get("/", () => getTranslationPayload("routes.home"), {
+    response: translationMessageResponse,
+  })
+  .get("/hello", () => getTranslationPayload("routes.hello"), {
+    response: translationMessageResponse,
+  })
+  .get("/greeting/:name", ({ params: { name } }) => getGreetingPayload(name), {
+    params: greetingParams,
+    response: translationMessageResponse,
+  })
   .group("/account", (app) =>
-    app.get(
-      "/balance",
-      () => getTranslationPayload("account.balance.label"),
-      {
-        response: translationMessageResponse,
-      },
-    ),
+    app.get("/balance", () => getTranslationPayload("account.balance.label"), {
+      response: translationMessageResponse,
+    }),
   )
   .group("/api", (app) =>
     app.get(
@@ -78,13 +62,9 @@ export const translationModule = new Elysia({
       },
     ),
   )
-  .get(
-    "/current-locale",
-    () => getLocaleState(),
-    {
-      response: localeStateResponse,
-    },
-  )
+  .get("/current-locale", () => getLocaleState(), {
+    response: localeStateResponse,
+  })
   .get(
     "/change-locale/:language",
     async ({ params: { language }, status }) => {

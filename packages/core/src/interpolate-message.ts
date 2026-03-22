@@ -18,7 +18,10 @@ export function interpolateMessage(
   const interpolatedMessage = message.replace(
     PLACEHOLDER_PATTERN,
     (match, placeholderName: string) => {
-      if (params && Object.prototype.hasOwnProperty.call(params, placeholderName)) {
+      if (
+        params &&
+        Object.prototype.hasOwnProperty.call(params, placeholderName)
+      ) {
         return String(params[placeholderName]);
       }
 

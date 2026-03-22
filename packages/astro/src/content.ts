@@ -1,12 +1,15 @@
-import { getRequestLocale as getStoredRequestLocale, resolveRequestLocale } from "@better-translate/core/server";
+import {
+  getRequestLocale as getStoredRequestLocale,
+  resolveRequestLocale,
+} from "@better-translate/core/server";
 
-import type { TranslationMessages, ConfiguredTranslator } from "@better-translate/core";
+import type {
+  TranslationMessages,
+  ConfiguredTranslator,
+} from "@better-translate/core";
 
 import { readRequestCached } from "./request-cache.js";
-import type {
-  InferTranslatorLocale,
-  RequestConfigFactory,
-} from "./server.js";
+import type { InferTranslatorLocale, RequestConfigFactory } from "./server.js";
 
 type AnyTranslator = ConfiguredTranslator<any, TranslationMessages>;
 
@@ -33,9 +36,7 @@ export interface ContentCollectionOptions<
   ) => readonly TEntry[] | Promise<readonly TEntry[]>;
   getEntryId?: (entry: TEntry) => string;
   localizeId?: (locale: string, documentId: string) => string;
-  render?: (
-    entry: TEntry,
-  ) => TRenderedDocument | Promise<TRenderedDocument>;
+  render?: (entry: TEntry) => TRenderedDocument | Promise<TRenderedDocument>;
 }
 
 export interface LocalizedContentDocument<
@@ -139,7 +140,8 @@ function defaultLocalizeId(locale: string, documentId: string) {
 
 export function createContentCollectionHelpers<
   TTranslator extends AnyTranslator,
-  TLocale extends InferTranslatorLocale<TTranslator> = InferTranslatorLocale<TTranslator>,
+  TLocale extends
+    InferTranslatorLocale<TTranslator> = InferTranslatorLocale<TTranslator>,
   TEntry extends {
     data: unknown;
     id: string;
@@ -155,7 +157,9 @@ export function createContentCollectionHelpers<
   const requestConfigCacheKey = Symbol(
     "better-translate-astro-content-request-config",
   );
-  const collectionCacheKey = Symbol("better-translate-astro-content-collection");
+  const collectionCacheKey = Symbol(
+    "better-translate-astro-content-collection",
+  );
   const getEntryId = options.getEntryId ?? ((entry: TEntry) => entry.id);
   const localizeId = options.localizeId ?? defaultLocalizeId;
 

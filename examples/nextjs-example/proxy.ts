@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
 
-import {
-  withBetterTranslate,
-} from "@better-translate/nextjs/proxy";
+import { withBetterTranslate } from "@better-translate/nextjs/proxy";
 
 import { routing } from "@/lib/i18n/routing";
 

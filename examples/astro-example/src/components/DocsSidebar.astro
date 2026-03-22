@@ -14,10 +14,7 @@ const locale = await getLocale();
 
 function getLabel(id: string): string {
   return (
-    labels[id] ??
-    id
-      .replace(/-/g, " ")
-      .replace(/\b\w/g, (c) => c.toUpperCase())
+    labels[id] ?? id.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
   );
 }
 ---

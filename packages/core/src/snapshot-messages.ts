@@ -5,7 +5,9 @@ import type {
   TranslationMessages,
 } from "./types.js";
 
-function cloneTranslationNode(node: InternalTranslationNode): InternalTranslationNode {
+function cloneTranslationNode(
+  node: InternalTranslationNode,
+): InternalTranslationNode {
   if (typeof node === "string" || node === undefined) {
     return node;
   }
@@ -36,6 +38,9 @@ export function snapshotMessages<
   ]);
 
   return Object.freeze(
-    Object.fromEntries(snapshotEntries) as CachedMessages<TLocale, TSourceMessages>,
+    Object.fromEntries(snapshotEntries) as CachedMessages<
+      TLocale,
+      TSourceMessages
+    >,
   );
 }

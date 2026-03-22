@@ -1,7 +1,4 @@
-import {
-  createServerHelpers,
-  setRequestLocale,
-} from "@better-translate/astro";
+import { createServerHelpers, setRequestLocale } from "@better-translate/astro";
 
 import { requestConfig } from "./request";
 

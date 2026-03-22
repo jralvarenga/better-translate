@@ -5,14 +5,17 @@ import { pathToFileURL } from "node:url";
 
 import ts from "typescript";
 
-async function importJavaScriptModule(modulePath: string): Promise<Record<string, unknown>> {
-  return (await import(`${pathToFileURL(modulePath).href}?t=${Date.now()}`)) as Record<
-    string,
-    unknown
-  >;
+async function importJavaScriptModule(
+  modulePath: string,
+): Promise<Record<string, unknown>> {
+  return (await import(
+    `${pathToFileURL(modulePath).href}?t=${Date.now()}`
+  )) as Record<string, unknown>;
 }
 
-async function importTypeScriptModule(modulePath: string): Promise<Record<string, unknown>> {
+async function importTypeScriptModule(
+  modulePath: string,
+): Promise<Record<string, unknown>> {
   const source = await readFile(modulePath, "utf8");
   const tempPath = path.join(
     path.dirname(modulePath),
@@ -40,7 +43,9 @@ async function importTypeScriptModule(modulePath: string): Promise<Record<string
   }
 }
 
-export async function importModule(modulePath: string): Promise<Record<string, unknown>> {
+export async function importModule(
+  modulePath: string,
+): Promise<Record<string, unknown>> {
   if (path.extname(modulePath) === ".ts") {
     return importTypeScriptModule(modulePath);
   }

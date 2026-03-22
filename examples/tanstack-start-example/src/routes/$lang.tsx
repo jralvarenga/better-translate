@@ -1,32 +1,32 @@
-import { Outlet, createFileRoute, notFound } from '@tanstack/react-router'
+import { Outlet, createFileRoute, notFound } from "@tanstack/react-router";
 
-import Header from '#/components/Header'
-import { getChromeCopy } from '#/lib/i18n/server'
-import { routing } from '#/lib/i18n/routing'
-import { hasLocale } from '@better-translate/tanstack-router'
+import Header from "#/components/Header";
+import { getChromeCopy } from "#/lib/i18n/server";
+import { routing } from "#/lib/i18n/routing";
+import { hasLocale } from "@better-translate/tanstack-router";
 
-export const Route = createFileRoute('/$lang')({
+export const Route = createFileRoute("/$lang")({
   beforeLoad({ params }) {
     if (!hasLocale(routing.locales, params.lang)) {
-      throw notFound()
+      throw notFound();
     }
   },
   loader: async ({ params }) => {
     if (!hasLocale(routing.locales, params.lang)) {
-      throw notFound()
+      throw notFound();
     }
 
     return getChromeCopy({
       data: {
         locale: params.lang,
       },
-    })
+    });
   },
   component: LocalizedLayout,
-})
+});
 
 function LocalizedLayout() {
-  const loaderData = Route.useLoaderData()
+  const loaderData = Route.useLoaderData();
 
   return (
     <div
@@ -45,5 +45,5 @@ function LocalizedLayout() {
         </div>
       </div>
     </div>
-  )
+  );
 }

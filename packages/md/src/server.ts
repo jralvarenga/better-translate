@@ -78,7 +78,7 @@ export function createMarkdownServerHelpers<
     const { locale: configLocale, translator } = await readRequestConfig();
     const locale =
       options && "config" in options
-        ? options.config?.locale ?? options.locale
+        ? (options.config?.locale ?? options.locale)
         : options?.locale;
 
     return resolveRequestLocale(translator, {
@@ -131,9 +131,7 @@ export function createMarkdownServerHelpers<
     document: LocalizedMarkdownDocument<TLocale>,
   ): Promise<CompiledMarkdownResult<TLocale>>;
   async function compileDocument(
-    documentOrId:
-      | string
-      | LocalizedMarkdownDocument<TLocale>,
+    documentOrId: string | LocalizedMarkdownDocument<TLocale>,
     requestOptions?: MarkdownDocumentOptions<TLocale>,
   ): Promise<CompiledMarkdownResult<TLocale>> {
     if (typeof documentOrId !== "string") {

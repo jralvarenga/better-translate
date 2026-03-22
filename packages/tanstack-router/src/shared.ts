@@ -99,7 +99,10 @@ export function localizePathname<TLocale extends string>(
   routing: RoutingConfig<TLocale>,
 ): string {
   const normalizedPathname = normalizePathname(pathname);
-  const deLocalizedPathname = stripLocaleFromPathname(normalizedPathname, routing);
+  const deLocalizedPathname = stripLocaleFromPathname(
+    normalizedPathname,
+    routing,
+  );
 
   if (!isPathnameInScope(deLocalizedPathname, routing)) {
     return normalizedPathname;
@@ -152,7 +155,9 @@ export function isAbsoluteHref(href: string): boolean {
   return /^[a-zA-Z][a-zA-Z\d+\-.]*:/.test(href) || href.startsWith("//");
 }
 
-export function parseRouteTemplate(routeTemplate?: string): ParsedRouteTemplate {
+export function parseRouteTemplate(
+  routeTemplate?: string,
+): ParsedRouteTemplate {
   const normalizedRouteTemplate = normalizePathname(
     routeTemplate ?? DEFAULT_ROUTE_TEMPLATE,
   );
@@ -207,7 +212,9 @@ export function parseRouteTemplate(routeTemplate?: string): ParsedRouteTemplate 
   };
 }
 
-function validateRouting<TLocale extends string>(config: RoutingConfig<TLocale>): void {
+function validateRouting<TLocale extends string>(
+  config: RoutingConfig<TLocale>,
+): void {
   if (config.locales.length === 0) {
     throw new Error("defineRouting(...) requires at least one locale.");
   }
@@ -300,9 +307,7 @@ function looksDynamic(segment: string): boolean {
 }
 
 function splitPathname(pathname: string): string[] {
-  return normalizePathname(pathname)
-    .split("/")
-    .filter(Boolean);
+  return normalizePathname(pathname).split("/").filter(Boolean);
 }
 
 function joinPathname(segments: readonly string[]): string {

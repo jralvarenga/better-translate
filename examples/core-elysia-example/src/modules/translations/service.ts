@@ -12,8 +12,8 @@ const FALLBACK_LOCALE = "en" as const;
 
 export type Locale = (typeof SUPPORTED_LOCALES)[number];
 type AppMessages = typeof en;
-type TranslationKey = TranslationKeysWithOptionalParams<AppMessages> & DotKeys<AppMessages>;
-
+type TranslationKey = TranslationKeysWithOptionalParams<AppMessages> &
+  DotKeys<AppMessages>;
 
 export const translations = await createTranslationHelpers({
   availableLocales: SUPPORTED_LOCALES,
@@ -25,13 +25,8 @@ export const translations = await createTranslationHelpers({
   },
 });
 
-export const {
-  getMessages,
-  getSupportedLocales,
-  loadLocale,
-  t,
-  translator,
-} = translations;
+export const { getMessages, getSupportedLocales, loadLocale, t, translator } =
+  translations;
 
 let activeLocale: Locale = "en";
 

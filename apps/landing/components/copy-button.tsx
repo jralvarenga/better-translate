@@ -63,7 +63,7 @@ export function CopyButton({
         className={cn(
           "flex size-7 items-center justify-center rounded-md text-zinc-500 transition hover:bg-white/8 hover:text-zinc-300",
           copied && "text-zinc-300",
-          className
+          className,
         )}
         aria-label={copied ? copiedLabel : copyLabel}
         title={copied ? copiedLabel : copyLabel}
@@ -83,7 +83,7 @@ export function CopyButton({
       onClick={handleCopy}
       className={cn(
         "inline-flex items-center rounded-full border border-border bg-background px-3 py-1.5 text-xs font-medium text-foreground transition hover:bg-muted",
-        className
+        className,
       )}
       aria-label={copyLabel}
       title={copyLabel}

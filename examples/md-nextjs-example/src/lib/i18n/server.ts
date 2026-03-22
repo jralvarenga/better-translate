@@ -16,7 +16,9 @@ export async function getTranslations() {
   ]);
   // Return a locale-bound translate function using per-call locale override.
   // Cast to loose type so callers can pass arbitrary string keys.
-  const looseTrans = translator as { t(key: string, options?: unknown): string };
+  const looseTrans = translator as {
+    t(key: string, options?: unknown): string;
+  };
   return (key: string, params?: Record<string, string>) =>
     looseTrans.t(key, { locale, params });
 }

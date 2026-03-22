@@ -1,10 +1,12 @@
 export const en = {
   codeDemo: {
-    description: "The same config works identically whether you're in Next.js, Astro, React, or plain Node.",
+    description:
+      "The same config works identically whether you're in Next.js, Astro, React, or plain Node.",
     title: "One API. Every environment",
   },
   features: {
-    description: "The same setup, the same API, the same experience ,  no matter which TypeScript environment you're in.",
+    description:
+      "The same setup, the same API, the same experience ,  no matter which TypeScript environment you're in.",
     items: {
       autocomplete: {
         description:
@@ -38,30 +40,35 @@ export const en = {
   frameworks: {
     description:
       "Your translation config works the same way in every TypeScript environment. Native adapters, identical API.",
-    heroDescription:
-      "Switch frameworks without rewriting your i18n setup",
+    heroDescription: "Switch frameworks without rewriting your i18n setup",
     heroTitle: "Same config everywhere",
     items: {
       astro: {
-        description: "Request-scoped helpers and localized Astro content collections for .md and .mdx.",
+        description:
+          "Request-scoped helpers and localized Astro content collections for .md and .mdx.",
       },
       bun: {
         description: "Native Bun runtime support with zero extra setup.",
       },
       nextjs: {
-        description: "Server components, App Router, and route-aware locale helpers.",
+        description:
+          "Server components, App Router, and route-aware locale helpers.",
       },
       nodejs: {
-        description: "Zero-dependency core for scripts, servers, and background jobs.",
+        description:
+          "Zero-dependency core for scripts, servers, and background jobs.",
       },
       react: {
-        description: "Context, hooks, and locale-aware client rendering for React apps.",
+        description:
+          "Context, hooks, and locale-aware client rendering for React apps.",
       },
       tanstack: {
-        description: "Type-safe routing support for TanStack Router projects, including TanStack Start apps.",
+        description:
+          "Type-safe routing support for TanStack Router projects, including TanStack Start apps.",
       },
       typescript: {
-        description: "Strong types, autocomplete, and compile-time feedback from your messages.",
+        description:
+          "Strong types, autocomplete, and compile-time feedback from your messages.",
       },
     },
     title: "Your framework, your choice",

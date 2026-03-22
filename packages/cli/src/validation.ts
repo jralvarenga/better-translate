@@ -88,11 +88,10 @@ export function assertExactMessageShape(
       continue;
     }
 
-    assertExactMessageShape(
-      referenceValue as UnknownRecord,
-      candidateValue,
-      [...pathParts, key],
-    );
+    assertExactMessageShape(referenceValue as UnknownRecord, candidateValue, [
+      ...pathParts,
+      key,
+    ]);
   }
 }
 
@@ -103,8 +102,14 @@ export function normalizeMarkdownExtensions(
     return [".md", ".mdx"];
   }
 
-  assert(Array.isArray(value), "markdown.extensions must be an array when provided.");
-  assert(value.length > 0, "markdown.extensions must include at least one extension.");
+  assert(
+    Array.isArray(value),
+    "markdown.extensions must be an array when provided.",
+  );
+  assert(
+    value.length > 0,
+    "markdown.extensions must include at least one extension.",
+  );
 
   const normalized = [...new Set(value)] as unknown[];
 

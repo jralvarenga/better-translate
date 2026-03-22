@@ -51,7 +51,9 @@ export default async function GuidePage({
               </p>
             </article>
             <article className="rounded-[1.5rem] border border-black/5 bg-zinc-50 p-6 dark:border-white/10 dark:bg-white/[0.02]">
-              <h2 className="text-lg font-semibold">{t("guide.navigationTitle")}</h2>
+              <h2 className="text-lg font-semibold">
+                {t("guide.navigationTitle")}
+              </h2>
               <p className="mt-3 text-sm leading-7 text-zinc-600 dark:text-zinc-400">
                 {t("guide.navigationDescription")}
               </p>

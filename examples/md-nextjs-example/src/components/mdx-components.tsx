@@ -36,7 +36,9 @@ interface CardProps {
 export function Card({ title, description }: CardProps) {
   return (
     <div className="rounded-lg border border-white/10 bg-white/5 p-4 my-3">
-      <div className="font-mono text-sm font-semibold text-foreground">{title}</div>
+      <div className="font-mono text-sm font-semibold text-foreground">
+        {title}
+      </div>
       <div className="text-sm text-muted mt-1">{description}</div>
     </div>
   );

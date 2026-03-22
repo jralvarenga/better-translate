@@ -23,7 +23,10 @@ import type {
 } from "./types.js";
 import { MarkdownDocumentNotFoundError } from "./types.js";
 
-const DEFAULT_EXTENSIONS = [".mdx", ".md"] as const satisfies readonly MarkdownDocumentExtension[];
+const DEFAULT_EXTENSIONS = [
+  ".mdx",
+  ".md",
+] as const satisfies readonly MarkdownDocumentExtension[];
 
 function isMarkdownDocumentExtension(
   value: string,
@@ -203,88 +206,90 @@ export function createMarkdownCollection<
   const fallbackLocale = translator.fallbackLocale as InferLocale<TTranslator>;
   const resolvedExtensions = normalizeExtensions(extensions);
 
-  const listDocuments: MarkdownCollection<InferLocale<TTranslator>>["listDocuments"] =
-    async () => {
-      const localeDirectory = join(resolvedRootDir, defaultLocale);
+  const listDocuments: MarkdownCollection<
+    InferLocale<TTranslator>
+  >["listDocuments"] = async () => {
+    const localeDirectory = join(resolvedRootDir, defaultLocale);
 
-      if (!(await pathExists(localeDirectory))) {
-        return [];
+    if (!(await pathExists(localeDirectory))) {
+      return [];
+    }
+
+    const files = await walkDirectory(localeDirectory);
+    const documentIds = new Set<string>();
+
+    for (const filePath of files) {
+      const extension = resolvedExtensions.find((candidate) =>
+        filePath.endsWith(candidate),
+      );
+
+      if (!extension) {
+        continue;
       }
 
-      const files = await walkDirectory(localeDirectory);
-      const documentIds = new Set<string>();
+      const relativePath = relative(localeDirectory, filePath);
+      const normalizedPath = relativePath.split("\\").join("/");
+      const documentId = normalizedPath.slice(0, -extension.length);
 
-      for (const filePath of files) {
-        const extension = resolvedExtensions.find((candidate) =>
-          filePath.endsWith(candidate),
-        );
+      documentIds.add(documentId);
+    }
 
-        if (!extension) {
+    return [...documentIds].sort();
+  };
+
+  const getDocument: MarkdownCollection<
+    InferLocale<TTranslator>
+  >["getDocument"] = async (documentId, options) => {
+    const normalizedDocumentId = normalizeDocumentId(documentId);
+    const requestedLocale = (options?.locale ??
+      defaultLocale) as InferLocale<TTranslator>;
+
+    assertSupportedLocale(requestedLocale, supportedLocales);
+
+    const localeSearchOrder =
+      requestedLocale === fallbackLocale
+        ? [requestedLocale]
+        : [requestedLocale, fallbackLocale];
+    const lookedUpPaths: string[] = [];
+
+    for (const locale of localeSearchOrder) {
+      const candidatePaths = createCandidatePaths(
+        resolvedRootDir,
+        locale,
+        normalizedDocumentId,
+        resolvedExtensions,
+      );
+
+      for (const candidate of candidatePaths) {
+        lookedUpPaths.push(candidate.path);
+
+        if (!(await pathExists(candidate.path))) {
           continue;
         }
 
-        const relativePath = relative(localeDirectory, filePath);
-        const normalizedPath = relativePath.split("\\").join("/");
-        const documentId = normalizedPath.slice(0, -extension.length);
+        const fileContents = await readFile(candidate.path, "utf8");
+        const parsedFile = matter(fileContents);
 
-        documentIds.add(documentId);
-      }
-
-      return [...documentIds].sort();
-    };
-
-  const getDocument: MarkdownCollection<InferLocale<TTranslator>>["getDocument"] =
-    async (documentId, options) => {
-      const normalizedDocumentId = normalizeDocumentId(documentId);
-      const requestedLocale = (options?.locale ??
-        defaultLocale) as InferLocale<TTranslator>;
-
-      assertSupportedLocale(requestedLocale, supportedLocales);
-
-      const localeSearchOrder =
-        requestedLocale === fallbackLocale
-          ? [requestedLocale]
-          : [requestedLocale, fallbackLocale];
-      const lookedUpPaths: string[] = [];
-
-      for (const locale of localeSearchOrder) {
-        const candidatePaths = createCandidatePaths(
-          resolvedRootDir,
+        return {
+          frontmatter: parsedFile.data,
+          id: normalizedDocumentId,
+          kind: candidate.extension === ".mdx" ? "mdx" : "md",
           locale,
-          normalizedDocumentId,
-          resolvedExtensions,
-        );
-
-        for (const candidate of candidatePaths) {
-          lookedUpPaths.push(candidate.path);
-
-          if (!(await pathExists(candidate.path))) {
-            continue;
-          }
-
-          const fileContents = await readFile(candidate.path, "utf8");
-          const parsedFile = matter(fileContents);
-
-          return {
-            frontmatter: parsedFile.data,
-            id: normalizedDocumentId,
-            kind: candidate.extension === ".mdx" ? "mdx" : "md",
-            locale,
-            path: candidate.path,
-            requestedLocale,
-            source: parsedFile.content,
-            usedFallback: locale !== requestedLocale,
-          };
-        }
+          path: candidate.path,
+          requestedLocale,
+          source: parsedFile.content,
+          usedFallback: locale !== requestedLocale,
+        };
       }
+    }
 
-      throw new MarkdownDocumentNotFoundError({
-        fallbackLocale,
-        id: normalizedDocumentId,
-        lookedUpPaths,
-        requestedLocale,
-      });
-    };
+    throw new MarkdownDocumentNotFoundError({
+      fallbackLocale,
+      id: normalizedDocumentId,
+      lookedUpPaths,
+      requestedLocale,
+    });
+  };
 
   async function compileDocument(
     documentId: string,

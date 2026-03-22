@@ -66,9 +66,7 @@ function extractFrontmatterStrings(value: unknown): TranslationMessages {
   return result as TranslationMessages;
 }
 
-function createStringOnlySchema(
-  value: TranslationMessages,
-): object {
+function createStringOnlySchema(value: TranslationMessages): object {
   const properties: Record<string, unknown> = {};
 
   for (const [key, entry] of Object.entries(value)) {
@@ -147,7 +145,9 @@ export async function listMarkdownSourceFiles(
   const files = await walkDirectory(rootDir);
 
   return files
-    .filter((filePath) => extensions.some((extension) => filePath.endsWith(extension)))
+    .filter((filePath) =>
+      extensions.some((extension) => filePath.endsWith(extension)),
+    )
     .sort();
 }
 
@@ -159,7 +159,10 @@ export async function loadMarkdownDocument(
   const parsed = matter(sourceText);
   const frontmatter = isRecord(parsed.data) ? parsed.data : {};
   const frontmatterStrings = extractFrontmatterStrings(frontmatter);
-  const relativePath = path.relative(rootDir, sourcePath).split(path.sep).join("/");
+  const relativePath = path
+    .relative(rootDir, sourcePath)
+    .split(path.sep)
+    .join("/");
 
   return {
     body: parsed.content,

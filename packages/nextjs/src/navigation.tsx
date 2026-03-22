@@ -41,7 +41,9 @@ type RouterMethodReturn<
     : void
   : void;
 
-type WithLocale<TLocale extends string, TOptions> = [TOptions] extends [undefined]
+type WithLocale<TLocale extends string, TOptions> = [TOptions] extends [
+  undefined,
+]
   ? {
       locale?: TLocale;
     }
@@ -77,13 +79,13 @@ export type LocalizedRouter<
     options?: WithLocale<TLocale, Record<string, unknown>>,
   ): RouterMethodReturn<TRouter, "replace">;
 } & ("prefetch" extends keyof TRouter
-  ? {
-      prefetch(
-        href: string,
-        options?: WithLocale<TLocale, Record<string, unknown>>,
-      ): RouterMethodReturn<TRouter, "prefetch">;
-    }
-  : {});
+    ? {
+        prefetch(
+          href: string,
+          options?: WithLocale<TLocale, Record<string, unknown>>,
+        ): RouterMethodReturn<TRouter, "prefetch">;
+      }
+    : {});
 
 export interface NavigationFunctionsConfig<
   TLocale extends string,
@@ -122,17 +124,24 @@ export function createNavigationFunctions<
   function Link(rawProps: LocalizedLinkProps<TLocale, TLink>) {
     const { href, locale, ...props } = rawProps;
     const params = useInjectedParams();
-    const activeLocale = resolveActiveLocale(params, routing, parsedTemplate.localeParamName);
+    const activeLocale = resolveActiveLocale(
+      params,
+      routing,
+      parsedTemplate.localeParamName,
+    );
     const localizedHref = localizeLinkHref(
       href as NavigationHref,
       locale ?? activeLocale,
       routing,
     );
 
-    return createElement(LinkComponent as ElementType, {
-      ...(props as object),
-      href: localizedHref,
-    } as object);
+    return createElement(
+      LinkComponent as ElementType,
+      {
+        ...(props as object),
+        href: localizedHref,
+      } as object,
+    );
   }
 
   function usePathname(): string {
@@ -173,7 +182,10 @@ export function createNavigationFunctions<
     };
 
     if (typeof router.prefetch === "function") {
-      localizedRouter.prefetch = (href: string, options?: Record<string, unknown>) => {
+      localizedRouter.prefetch = (
+        href: string,
+        options?: Record<string, unknown>,
+      ) => {
         const target = buildNavigationTarget(
           routing,
           href,
@@ -226,7 +238,10 @@ function buildNavigationTarget<TLocale extends string>(
 }
 
 function navigate<TLocale extends string>(
-  navigateWithRouter: (href: string, options?: Record<string, unknown>) => unknown,
+  navigateWithRouter: (
+    href: string,
+    options?: Record<string, unknown>,
+  ) => unknown,
   navigateWithDocument: (href: string) => void,
   routing: RoutingConfig<TLocale>,
   href: string,
@@ -283,7 +298,10 @@ function resolveActiveLocale<TLocale extends string>(
 ): TLocale {
   const localeParam = params[localeParamName];
 
-  if (typeof localeParam === "string" && routing.locales.includes(localeParam as TLocale)) {
+  if (
+    typeof localeParam === "string" &&
+    routing.locales.includes(localeParam as TLocale)
+  ) {
     return localeParam as TLocale;
   }
 

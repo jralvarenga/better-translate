@@ -32,7 +32,10 @@ export default function LoginPage() {
               Login stays outside the localized route tree.
             </h1>
             <p className="max-w-2xl text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-              This page proves that only <code className="rounded bg-black/[0.04] px-2 py-1 text-sm dark:bg-white/[0.08]">/app/[lang]</code>{" "}
+              This page proves that only{" "}
+              <code className="rounded bg-black/[0.04] px-2 py-1 text-sm dark:bg-white/[0.08]">
+                /app/[lang]
+              </code>{" "}
               is controlled by Better Translate routing. Everything else behaves
               like a normal Next.js route.
             </p>

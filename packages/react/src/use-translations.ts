@@ -12,13 +12,14 @@ import type {
  * Throws when used outside `BetterTranslateProvider`.
  */
 export function useTranslations<
-  TTranslator extends AnyBetterTranslateTranslator = AnyBetterTranslateTranslator,
+  TTranslator extends
+    AnyBetterTranslateTranslator = AnyBetterTranslateTranslator,
 >(): UseTranslationsValue<TTranslator> {
   const context = useContext(BetterTranslateContext);
 
   if (!context) {
     throw new Error(
-      'useTranslations() must be used inside <BetterTranslateProvider />.',
+      "useTranslations() must be used inside <BetterTranslateProvider />.",
     );
   }
 

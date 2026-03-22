@@ -64,14 +64,20 @@ export function createSpinnerLogger(): CliLogger {
 
       const writeMsgMatch = message.match(/^wrote messages:(\S+) (.+)/);
       if (writeMsgMatch) {
-        const shortPath = (writeMsgMatch[2] ?? "").split("/").slice(-3).join("/");
+        const shortPath = (writeMsgMatch[2] ?? "")
+          .split("/")
+          .slice(-3)
+          .join("/");
         spinner.succeed(`${pc.green("✓")} ${shortPath}`);
         return;
       }
 
       const writeMdMatch = message.match(/^wrote markdown:(\S+) (.+)/);
       if (writeMdMatch) {
-        const shortPath = (writeMdMatch[2] ?? "").split("/").slice(-3).join("/");
+        const shortPath = (writeMdMatch[2] ?? "")
+          .split("/")
+          .slice(-3)
+          .join("/");
         spinner.succeed(`${pc.green("✓")} ${shortPath}`);
         return;
       }
@@ -107,7 +113,13 @@ export function createSpinnerLogger(): CliLogger {
       const summaryMatch = message.match(/^(generated|planned) \d+ file/);
       if (summaryMatch) {
         spinner.stop();
-        console.log(pc.bold(pc.green(`\n✓ ${message.charAt(0).toUpperCase()}${message.slice(1)}`)));
+        console.log(
+          pc.bold(
+            pc.green(
+              `\n✓ ${message.charAt(0).toUpperCase()}${message.slice(1)}`,
+            ),
+          ),
+        );
         return;
       }
 

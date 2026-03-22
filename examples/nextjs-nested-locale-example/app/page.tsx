@@ -43,18 +43,28 @@ export default function Home() {
 
         <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
           <h1 className="max-w-2xl text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50 sm:text-5xl sm:leading-[1.05]">
-            Scoped locale routing, without forcing every route into translations.
+            Scoped locale routing, without forcing every route into
+            translations.
           </h1>
           <p className="max-w-2xl text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            This example keeps <code className="rounded bg-black/[0.04] px-2 py-1 text-sm dark:bg-white/[0.08]">/</code>{" "}
-            and <code className="rounded bg-black/[0.04] px-2 py-1 text-sm dark:bg-white/[0.08]">/login</code>{" "}
+            This example keeps{" "}
+            <code className="rounded bg-black/[0.04] px-2 py-1 text-sm dark:bg-white/[0.08]">
+              /
+            </code>{" "}
+            and{" "}
+            <code className="rounded bg-black/[0.04] px-2 py-1 text-sm dark:bg-white/[0.08]">
+              /login
+            </code>{" "}
             outside the i18n scope, while the localized demo lives under{" "}
-            <code className="rounded bg-black/[0.04] px-2 py-1 text-sm dark:bg-white/[0.08]">/app/[lang]</code>.
+            <code className="rounded bg-black/[0.04] px-2 py-1 text-sm dark:bg-white/[0.08]">
+              /app/[lang]
+            </code>
+            .
           </p>
           <p className="max-w-2xl text-base leading-7 text-zinc-500 dark:text-zinc-400">
             Start with either locale, switch languages from the top header, and
-            move through localized routes without changing the visual language of
-            the starter app.
+            move through localized routes without changing the visual language
+            of the starter app.
           </p>
         </div>
 
@@ -94,15 +104,15 @@ export default function Home() {
               className="font-medium text-zinc-950 dark:text-zinc-50"
             >
               Templates
-            </a>
-            {" "}or the{" "}
+            </a>{" "}
+            or the{" "}
             <a
               href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
               className="font-medium text-zinc-950 dark:text-zinc-50"
             >
               Learning
-            </a>
-            {" "}center.
+            </a>{" "}
+            center.
           </p>
         </div>
       </main>

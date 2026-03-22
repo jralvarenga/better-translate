@@ -5,7 +5,11 @@ import { useParams } from "next/navigation";
 import { hasLocale } from "@better-translate/nextjs";
 
 import { routing } from "@/lib/i18n/routing";
-import { I18nLink, useI18nPathname, useI18nRouter } from "@/lib/i18n/navigation";
+import {
+  I18nLink,
+  useI18nPathname,
+  useI18nRouter,
+} from "@/lib/i18n/navigation";
 
 interface LocalizedHeaderProps {
   guideLabel: string;

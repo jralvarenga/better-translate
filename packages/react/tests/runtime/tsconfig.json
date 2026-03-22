@@ -10,6 +10,12 @@
     "rootDir": "../..",
     "types": ["bun-types", "node", "react"]
   },
-  "include": ["../../src/**/*.ts", "../../src/**/*.tsx", "./**/*.ts", "./**/*.tsx", "./**/*.d.ts"],
+  "include": [
+    "../../src/**/*.ts",
+    "../../src/**/*.tsx",
+    "./**/*.ts",
+    "./**/*.tsx",
+    "./**/*.d.ts"
+  ],
   "exclude": ["../../dist", "../../node_modules"]
 }
