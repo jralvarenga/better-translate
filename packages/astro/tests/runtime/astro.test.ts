@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "bun:test";
 
-import { configureTranslations } from "better-translate/core";
+import { configureTranslations } from "@better-translate/core";
 
 import {
   ContentDocumentNotFoundError,

@@ -1,4 +1,4 @@
-import type { TranslationMessages } from "better-translate";
+import type { TranslationMessages } from "@better-translate/core";
 
 const MESSAGE_SYSTEM_INSTRUCTIONS = [
   "You are translating application locale files.",

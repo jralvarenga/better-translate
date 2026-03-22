@@ -2,7 +2,7 @@ import { Component, type ReactNode, act } from "react";
 import { describe, expect, it } from "bun:test";
 import { create, type ReactTestRenderer } from "react-test-renderer";
 
-import { configureTranslations } from "better-translate/core";
+import { configureTranslations } from "@better-translate/core";
 
 import { BetterTranslateProvider } from "../../src/provider.js";
 import { useTranslations } from "../../src/use-translations.js";

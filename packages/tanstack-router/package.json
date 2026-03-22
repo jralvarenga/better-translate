@@ -1,6 +1,6 @@
 {
   "name": "@better-translate/tanstack-router",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "TanStack Router integration package for Better Translate.",
   "license": "MIT",
   "type": "module",
@@ -28,6 +28,7 @@
   },
   "files": [
     "dist",
+    "LICENSE",
     "README.md"
   ],
   "scripts": {
@@ -39,8 +40,17 @@
   "publishConfig": {
     "access": "public"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jralvarenga/better-translate.git",
+    "directory": "packages/tanstack-router"
+  },
+  "homepage": "https://github.com/jralvarenga/better-translate/tree/main/packages/tanstack-router#readme",
+  "bugs": {
+    "url": "https://github.com/jralvarenga/better-translate/issues"
+  },
   "dependencies": {
-    "better-translate": "0.0.0"
+    "@better-translate/core": "workspace:^"
   },
   "peerDependencies": {
     "@tanstack/react-router": "^1.167.3",

@@ -5,7 +5,7 @@ import {
   getSupportedLocales,
   loadLocale,
   t,
-} from "../../dist/core.js";
+} from "@better-translate/core";
 
 const en = {
   common: {

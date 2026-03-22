@@ -6,7 +6,7 @@ import type {
   TranslationLanguageMetadata,
   TranslateFunction,
   TranslationMessages,
-} from "better-translate/core";
+} from "@better-translate/core";
 import type { ReactNode } from "react";
 
 export type AnyBetterTranslateTranslator = ConfiguredTranslator<

@@ -1,7 +1,7 @@
 import {
   configureTranslations,
   type TranslationLanguageMetadata,
-} from 'better-translate/core';
+} from '@better-translate/core';
 
 import { en } from './messages/en';
 import { es } from './messages/es';

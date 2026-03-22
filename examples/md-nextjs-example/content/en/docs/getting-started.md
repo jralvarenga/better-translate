@@ -55,10 +55,10 @@ const ids = await md.listDocuments()
 
 // Fetch a document with locale resolution and fallback
 const doc = await md.getDocument("docs/getting-started", { locale: "es" })
-// doc.frontmatter  — parsed YAML frontmatter
-// doc.source       — raw content (frontmatter stripped)
-// doc.kind         — "md" or "mdx"
-// doc.usedFallback — true when the file was missing for the requested locale
+// doc.frontmatter  ,  parsed YAML frontmatter
+// doc.source       ,  raw content (frontmatter stripped)
+// doc.kind         ,  "md" or "mdx"
+// doc.usedFallback ,  true when the file was missing for the requested locale
 ```
 
 ## Compile and render
@@ -87,8 +87,8 @@ return <Content components={{ Callout, Card }} />
 
 If a locale file is missing, the library automatically falls back to the `fallbackLocale`. The returned document includes:
 
-- `usedFallback: true` — the requested locale was unavailable
-- `locale` — the locale that was actually used
-- `requestedLocale` — what was originally requested
+- `usedFallback: true` ,  the requested locale was unavailable
+- `locale` ,  the locale that was actually used
+- `requestedLocale` ,  what was originally requested
 
 Use this to show a localization notice to users.

@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  transpilePackages: ["better-translate", "@better-translate/md"],
+  transpilePackages: ["@better-translate/core", "@better-translate/md"],
 };
 
 export default nextConfig;

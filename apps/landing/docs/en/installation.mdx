@@ -1,101 +1,50 @@
 ---
 title: Installation
-description: Install the packages you need. Start with the core package and add adapters as needed.
+description: The core package works in any TypeScript project. Adapters are optional extensions for specific frameworks.
 ---
 
 # Installation
 
-Install the packages you need. Start with the core package and add adapters as needed.
+The core package works in any TypeScript project, regardless of framework or runtime. If you use a framework like Next.js, React, or Astro, you can add the matching adapter on top of core.
 
-## Core only
+## Core
 
-Use this when you want translations in plain TypeScript, a server, an API, or a script.
-No framework required.
-
-```tsx showLineNumbers
-bun add better-translate
+```sh
+npm install @better-translate/core
 ```
 
-```tsx showLineNumbers
-npm install better-translate
-```
+That's all you need for most cases. Works in Next.js, Astro, React, Bun, Node.js, scripts, APIs, or any TypeScript environment.
 
-## Core + React
+## Adapters
 
-Use this for React apps that need client-side locale switching and context-based
-translation access.
+Adapters are extensions of core that add framework-specific helpers: locale-aware routing, React context and hooks, per-request helpers, etc. They don't replace core, they extend it.
 
-```tsx showLineNumbers
-bun add better-translate @better-translate/react
-```
+You can check the available adapters here:
 
-## Core + Next.js
-
-Use this for Next.js App Router apps with locale-prefixed routes, server component
-helpers, and locale-aware navigation.
-
-```tsx showLineNumbers
-bun add better-translate @better-translate/nextjs
-```
-
-## Core + Next.js + React
-
-Use all three packages when your Next.js app needs both server-side translations
-and client-side locale switching.
-
-```tsx showLineNumbers
-bun add better-translate @better-translate/nextjs @better-translate/react
-```
-
-## Package chooser
-
-<Accordion type="single" collapsible className="mt-6">
-  <AccordionItem value="core-only">
-    <AccordionTrigger>Core only</AccordionTrigger>
-    <AccordionContent>
-      <p>Best for APIs, scripts, servers, and framework-agnostic TypeScript apps.</p>
-      <pre>
-        <code className="language-tsx">bun add better-translate</code>
-      </pre>
-    </AccordionContent>
-  </AccordionItem>
-  <AccordionItem value="core-react">
-    <AccordionTrigger>Core + React</AccordionTrigger>
-    <AccordionContent>
-      <p>Use this when locale switching happens in client components.</p>
-      <pre>
-        <code className="language-tsx">bun add better-translate @better-translate/react</code>
-      </pre>
-    </AccordionContent>
-  </AccordionItem>
-  <AccordionItem value="core-nextjs">
-    <AccordionTrigger>Core + Next.js</AccordionTrigger>
-    <AccordionContent>
-      <p>Use this when App Router pages, locale-prefixed routes, and request helpers matter.</p>
-      <pre>
-        <code className="language-tsx">bun add better-translate @better-translate/nextjs</code>
-      </pre>
-    </AccordionContent>
-  </AccordionItem>
-</Accordion>
+<div className="mt-4 flex flex-wrap gap-3">
+  <Button asChild variant="outline" size="lg">
+    <Link href="/docs/adapters/react">React</Link>
+  </Button>
+  <Button asChild variant="outline" size="lg">
+    <Link href="/docs/adapters/nextjs">Next.js</Link>
+  </Button>
+  <Button asChild variant="outline" size="lg">
+    <Link href="/docs/adapters/astro">Astro</Link>
+  </Button>
+  <Button asChild variant="outline" size="lg">
+    <Link href="/docs/adapters/tanstack-router">TanStack Router</Link>
+  </Button>
+</div>
 
 ## Requirements
 
 - Node.js 18+ or Bun 1.0+
 - TypeScript 5.x recommended
-- Next.js 14+ (App Router) for the Next.js adapter
-- React 18+ for the React adapter
 
-## Next steps
-
-- → Once installed, set up your translation config. See **Adapters → Core** for the options form.
-- → For Next.js, you need five files: `routing.ts`, `request.ts`, `server.ts`, `navigation.ts`, and `proxy.ts`. See **Adapters → Next.js**.
+## Next step
 
 <div className="mt-6 flex flex-wrap gap-3">
-  <Button asChild variant="outline" size="lg">
-    <Link href="/docs/adapters/core">Configure the core package</Link>
-  </Button>
   <Button asChild size="lg">
-    <Link href="/docs/adapters/nextjs">Open the Next.js setup</Link>
+    <Link href="/docs/adapters/core">Set up the core translator</Link>
   </Button>
 </div>

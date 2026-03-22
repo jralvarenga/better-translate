@@ -1,6 +1,6 @@
 {
   "name": "@better-translate/cli",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "AI-powered translation generation CLI for Better Translate.",
   "license": "MIT",
   "type": "module",
@@ -23,6 +23,7 @@
   },
   "files": [
     "dist",
+    "LICENSE",
     "README.md"
   ],
   "scripts": {
@@ -34,10 +35,19 @@
   "publishConfig": {
     "access": "public"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jralvarenga/better-translate.git",
+    "directory": "packages/cli"
+  },
+  "homepage": "https://github.com/jralvarenga/better-translate/tree/main/packages/cli#readme",
+  "bugs": {
+    "url": "https://github.com/jralvarenga/better-translate/issues"
+  },
   "dependencies": {
     "@ai-sdk/openai": "^3.0.41",
     "ai": "^6.0.116",
-    "better-translate": "0.0.0",
+    "@better-translate/core": "workspace:^",
     "dotenv": "^17.2.3",
     "gray-matter": "^4.0.3",
     "ora": "^8.2.0",

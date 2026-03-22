@@ -4,12 +4,12 @@ import type {
   TranslationDirection,
   TranslationLanguageMetadata,
   TranslationLocaleMap,
-} from "../../dist/core.js";
+} from "@better-translate/core";
 import {
   configureTranslations,
   getAvailableLanguages,
   getMessages,
-} from "../../dist/core.js";
+} from "@better-translate/core";
 
 const en = {
   common: {

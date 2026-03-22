@@ -6,7 +6,7 @@ import type {
   UseNavigateResult,
 } from "@tanstack/react-router";
 
-import { configureTranslations } from "better-translate/core";
+import { configureTranslations } from "@better-translate/core";
 
 import { createNavigationFunctions } from "../../dist/navigation.js";
 import { defineRouting } from "../../dist/index.js";

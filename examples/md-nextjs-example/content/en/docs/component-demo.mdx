@@ -19,7 +19,7 @@ MDX combines Markdown's simplicity with React's power. You get:
 - Custom components inline with prose content
 - Frontmatter-driven metadata (`title`, `description`, `date`)
 - Standard Markdown syntax for headings, lists, links, and code
-- No client JavaScript required — everything renders server-side
+- No client JavaScript required ,  everything renders server-side
 
 <Callout type="tip">
   Try switching to **Español** using the locale switcher in the header. This document has no Spanish version, so the fallback banner will appear and the English content will be shown instead.
@@ -63,9 +63,9 @@ The `doc.source` has frontmatter already stripped by `gray-matter` inside `getDo
 
 The Spanish version of this document (`content/es/docs/component-demo.mdx`) is intentionally missing. When you switch to **ES**, `getDocument()` tries:
 
-1. `content/es/docs/component-demo.mdx` — not found
-2. `content/es/docs/component-demo.md` — not found
-3. `content/en/docs/component-demo.mdx` — **found** (fallback)
+1. `content/es/docs/component-demo.mdx` ,  not found
+2. `content/es/docs/component-demo.md` ,  not found
+3. `content/en/docs/component-demo.mdx` ,  **found** (fallback)
 
 The document is served with `usedFallback: true`, and the fallback banner appears at the top of the page.
 

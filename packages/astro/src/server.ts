@@ -5,12 +5,12 @@ import type {
   TranslationDirection,
   TranslationLanguageMetadata,
   TranslationMessages,
-} from "better-translate/core";
+} from "@better-translate/core";
 import {
   getRequestLocale as getStoredRequestLocale,
   resolveRequestLocale,
   setRequestLocale as setStoredRequestLocale,
-} from "better-translate/server";
+} from "@better-translate/core/server";
 
 import { readRequestCached } from "./request-cache.js";
 

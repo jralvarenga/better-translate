@@ -55,10 +55,10 @@ const ids = await md.listDocuments()
 
 // Obtener un documento con resolución de idioma y fallback
 const doc = await md.getDocument("docs/getting-started", { locale: "es" })
-// doc.frontmatter  — YAML frontmatter parseado
-// doc.source       — contenido sin frontmatter
-// doc.kind         — "md" o "mdx"
-// doc.usedFallback — true cuando el archivo no existe para el idioma solicitado
+// doc.frontmatter  ,  YAML frontmatter parseado
+// doc.source       ,  contenido sin frontmatter
+// doc.kind         ,  "md" o "mdx"
+// doc.usedFallback ,  true cuando el archivo no existe para el idioma solicitado
 ```
 
 ## Compilar y renderizar
@@ -87,8 +87,8 @@ return <Content components={{ Callout, Card }} />
 
 Si falta un archivo de idioma, la biblioteca regresa automáticamente al `fallbackLocale`. El documento retornado incluye:
 
-- `usedFallback: true` — el idioma solicitado no estaba disponible
-- `locale` — el idioma que se usó realmente
-- `requestedLocale` — lo que se solicitó originalmente
+- `usedFallback: true` ,  el idioma solicitado no estaba disponible
+- `locale` ,  el idioma que se usó realmente
+- `requestedLocale` ,  lo que se solicitó originalmente
 
 Usa esto para mostrar un aviso de localización a los usuarios.

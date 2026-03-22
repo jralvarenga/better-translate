@@ -1,8 +1,0 @@
-.vscode/**
-node_modules/**
-src/**
-esbuild.mjs
-tsconfig.json
-**/*.map
-**/*.ts
-!dist/**

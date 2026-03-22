@@ -1,6 +1,6 @@
-import { getRequestLocale as getStoredRequestLocale, resolveRequestLocale } from "better-translate/server";
+import { getRequestLocale as getStoredRequestLocale, resolveRequestLocale } from "@better-translate/core/server";
 
-import type { TranslationMessages, ConfiguredTranslator } from "better-translate/core";
+import type { TranslationMessages, ConfiguredTranslator } from "@better-translate/core";
 
 import { readRequestCached } from "./request-cache.js";
 import type {

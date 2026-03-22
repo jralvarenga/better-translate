@@ -4,7 +4,7 @@ import type {
   TranslationDirection,
   TranslationLanguageMetadata,
   TranslationMessages,
-} from "better-translate/core";
+} from "@better-translate/core";
 
 export type AnyBetterTranslateTranslator = ConfiguredTranslator<
   any,

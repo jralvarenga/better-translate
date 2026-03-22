@@ -4,9 +4,8 @@
     "baseUrl": "../..",
     "noEmit": true,
     "paths": {
-      "better-translate": ["../better-translate/src/index.ts"],
-      "better-translate/core": ["../better-translate/src/core.ts"],
-      "better-translate/server": ["../better-translate/src/server.ts"]
+      "@better-translate/core": ["../core/src/index.ts"],
+      "@better-translate/core/server": ["../core/src/server.ts"]
     },
     "rootDir": "../..",
     "types": ["bun-types", "node", "react"]

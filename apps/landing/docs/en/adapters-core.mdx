@@ -1,95 +1,94 @@
 ---
 title: Core
-description: better-translate is the main library. It is framework-agnostic and works in plain TypeScript, Bun, Node.js, APIs, and servers.
+description: "@better-translate/core works in any TypeScript project. Same config, same API, regardless of framework or runtime."
 ---
 
 # Core
 
-`better-translate` is
-the main library. It is framework-agnostic and works in plain TypeScript, Bun, Node.js,
-APIs, and servers.
+`@better-translate/core` works in any TypeScript project. No framework dependency, no runtime requirement. The same config and the same API apply whether you're in Next.js, Astro, React, Bun, Node.js, a script, or any other TypeScript environment.
 
-## When to use it
+**Adapters** are extensions of core that add framework-specific helpers: locale-aware routing, React context, per-request helpers, etc. But everything is built on top of the same core.
 
-Use only the core package when you do not need React helpers or Next.js routing helpers.
-This is the right choice for a server, API, script, or shared library.
+## When to use core directly
 
-## Short form setup
+Use core without an adapter when you don't need framework-specific helpers. This includes servers, APIs, scripts, shared libraries, or any TypeScript environment where no adapter exists for your setup.
 
-Pass a locale map directly. The first locale becomes the default and fallback.
+## 1. Install the package
 
-```tsx showLineNumbers
-import { configureTranslations } from "better-translate"
-
-const en = { greeting: "Hello, {name}!" }
-const es = { greeting: "¡Hola, {name}!" }
-
-const translator = await configureTranslations({ en, es })
-
-const t = translator.getTranslator("en")
-t("greeting", { params: { name: "World" } }) // "Hello, World!"
+```sh
+npm install @better-translate/core
 ```
 
-## Options form setup
+## 2. Create one translator file
 
-Define the locale contract up front. This supports async loaders and is the recommended
-setup for production apps.
+Create `src/i18n.ts`:
 
-```tsx showLineNumbers
-import { configureTranslations } from "better-translate"
+```ts
+import { configureTranslations } from "@better-translate/core";
 
-const translator = await configureTranslations({
+const en = {
+  home: {
+    title: "Hello",
+    description: "This is the English version.",
+  },
+} as const;
+
+const es = {
+  home: {
+    title: "Hola",
+    description: "Esta es la version en espanol.",
+  },
+} as const;
+
+export const translator = await configureTranslations({
+  availableLocales: ["en", "es"] as const,
+  defaultLocale: "en",
+  fallbackLocale: "en",
+  messages: { en, es },
+});
+```
+
+## 3. Use the translator anywhere
+
+```ts
+import { translator } from "./i18n";
+
+translator.t("home.title"); // "Hello"
+translator.t("home.title", { locale: "es" }); // "Hola"
+translator.t("home.description", { locale: "es" });
+```
+
+## 4. Add another locale later
+
+```ts
+const fr = {
+  home: {
+    title: "Bonjour",
+    description: "Ceci est la version francaise.",
+  },
+} as const;
+
+export const translator = await configureTranslations({
   availableLocales: ["en", "es", "fr"] as const,
   defaultLocale: "en",
   fallbackLocale: "en",
-  directions: {
-    es: "rtl",
-  },
-  messages: { en, es },
-  loaders: {
-    fr: async () => ({
-      greeting: "Bonjour, {name}!",
-    }),
-  },
-})
-```
-
-`directions` is optional. Any locale you omit defaults to `"ltr"`.
-
-## Global helpers
-
-After configuring once, you can call these global helpers from anywhere:
-
-```tsx showLineNumbers
-import { t, loadLocale, getSupportedLocales, getMessages } from "better-translate"
-
-// translate with the active locale
-t("greeting", { params: { name: "World" } })
-
-// load a locale into cache without switching
-await loadLocale("fr")
-
-// get all supported locale codes
-getSupportedLocales() // ["en", "es", "fr"]
-
-// get a frozen snapshot of loaded messages
-getMessages()
+  messages: { en, es, fr },
+});
 ```
 
 ## Fallback behavior
 
-If the active locale does not have a key, Better Translate tries the fallback locale.
-If the fallback also does not have the key, it returns the key string itself.
+If the active locale doesn't have a key, better-translate tries the fallback locale.
+If the fallback doesn't have it either, it returns the key string itself.
 
 - → Missing locale value → fallback locale value
 - → Missing fallback value → key string
 
 ## Async loaders
 
-Register locale loaders for languages you do not want to preload. Loaded locales are
-cached after the first successful load.
+Register locale loaders for languages you don't want to preload. Loaded locales are cached after the first successful load.
 
-```tsx showLineNumbers
+```ts
 const translator = await configureTranslations({
   availableLocales: ["en", "fr"] as const,
   defaultLocale: "en",
@@ -97,57 +96,14 @@ const translator = await configureTranslations({
   loaders: {
     fr: async () => import("./messages/fr").then((m) => m.default),
   },
-})
+});
 
 // loads fr on demand and caches it
-await translator.loadLocale("fr")
+await translator.loadLocale("fr");
 ```
-
-## Direction metadata
-
-Use the configured translator when you need locale direction metadata:
-
-```tsx showLineNumbers
-translator.getDirection({ locale: "es" }) // "rtl"
-translator.isRtl({ locale: "es" }) // true
-
-// Per-call rtl overrides do not change message lookup.
-translator.t("greeting", {
-  locale: "es",
-  config: {
-    rtl: false,
-  },
-})
-```
-
-## JSON schema generation
-
-Build a JSON Schema from your source locale to help editors validate sibling locale files.
-
-```tsx showLineNumbers
-import { createTranslationJsonSchema } from "better-translate"
-
-const schema = createTranslationJsonSchema(en)
-// write schema to disk to enable editor validation
-```
-
-## Key source files
-
-- `packages/better-translate/src/core.ts`
-- `packages/better-translate/src/types.ts`
-- `packages/better-translate/src/normalize-config.ts`
-- `packages/better-translate/src/interpolate-message.ts`
 
 ## Continue with
 
-<div className="mt-6 flex flex-wrap gap-3">
-  <Button asChild variant="outline" size="lg">
-    <Link href="/docs/installation">Review installation</Link>
-  </Button>
-  <Button asChild variant="outline" size="lg">
-    <Link href="/docs/adapters/react">See the React layer</Link>
-  </Button>
-  <Button asChild size="lg">
-    <Link href="/docs/adapters/nextjs">See the Next.js layer</Link>
-  </Button>
-</div>
+- <Link href="/docs/adapters/react">React provider and hooks</Link>
+- <Link href="/docs/adapters/nextjs">Next.js App Router setup</Link>
+- <Link href="/docs/adapters/astro">Astro request helpers</Link>

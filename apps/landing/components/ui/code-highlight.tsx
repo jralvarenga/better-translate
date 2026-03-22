@@ -1,7 +1,7 @@
 import { CopyButton } from "@/components/copy-button";
 
 // Simple regex-based TypeScript syntax highlighter for fixed landing page code blocks.
-// No runtime dependencies — pure JSX span rendering.
+// No runtime dependencies, pure JSX span rendering.
 
 type Token = { text: string; cls: string; start: number }
 
@@ -70,19 +70,19 @@ export function CodeBlock({
     const lines = code.split('\n')
 
     return (
-        <div className="overflow-hidden rounded-2xl bg-zinc-950">
+        <div className="overflow-hidden rounded-lg border border-white/10 bg-zinc-950">
             {filename && (
-                <div className="flex items-center justify-between gap-3 border-b border-white/10 px-4 py-2">
-                    <div className="text-xs text-zinc-500">{filename}</div>
+                <div className="flex items-center justify-between gap-3 border-b border-white/8 bg-white/[0.02] px-4 py-2">
+                    <span className="font-mono text-xs text-zinc-400">{filename}</span>
                     <CopyButton
                         text={code}
                         label="Copy code"
                         copiedLabel="Copied"
-                        className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] font-medium text-zinc-300 transition hover:bg-white/10"
+                        iconOnly
                     />
                 </div>
             )}
-            <pre className="overflow-x-auto p-5 text-xs leading-relaxed sm:text-sm">
+            <pre className="overflow-x-auto p-4 text-sm leading-relaxed">
                 <code className="font-mono">
                     {showLineNumbers ? (
                         <span className="grid min-w-full">

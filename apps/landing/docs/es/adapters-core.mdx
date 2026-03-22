@@ -1,18 +1,17 @@
 ---
 title: Core
-description: better-translate es la librería principal. Es agnóstica al framework y funciona en TypeScript puro, Bun, Node.js, APIs y servidores.
+description: El paquete core funciona en cualquier proyecto TypeScript. No importa el framework o el entorno de ejecución, la misma configuración aplica siempre.
 ---
 
 # Core
 
-`better-translate` es
-la librería principal. Es agnóstica al framework y funciona en TypeScript puro, Bun, Node.js,
-APIs y servidores.
+`better-translate` funciona en cualquier proyecto TypeScript. No hay dependencias de framework ni de entorno de ejecución. La misma configuración y la misma API aplican ya sea que estés en Next.js, Astro, React, Bun, Node.js, un script o cualquier otro entorno TypeScript.
 
-## Cuándo usarlo
+Los **adaptadores** son extensiones del core que añaden helpers específicos del framework: rutas con locale, context de React, helpers por request, etc. Pero todo se apoya en el mismo core.
 
-Usa solo el paquete core cuando no necesites helpers de React o helpers de enrutamiento de Next.js.
-Esta es la opción correcta para un servidor, API, script o librería compartida.
+## Cuándo usarlo directamente
+
+Usa el paquete core sin adaptadores cuando no necesites helpers de framework. Esto incluye servidores, APIs, scripts, librerías compartidas o cualquier entorno TypeScript donde no uses un framework con adaptador propio.
 
 ## Configuración en forma corta
 
@@ -130,13 +129,6 @@ import { createTranslationJsonSchema } from "better-translate"
 const schema = createTranslationJsonSchema(en)
 // escribir el esquema en disco para habilitar validación del editor
 ```
-
-## Archivos fuente clave
-
-- `packages/better-translate/src/core.ts`
-- `packages/better-translate/src/types.ts`
-- `packages/better-translate/src/normalize-config.ts`
-- `packages/better-translate/src/interpolate-message.ts`
 
 ## Continúa con
 

@@ -3,7 +3,7 @@ import path from "node:path";
 
 import matter from "gray-matter";
 
-import type { TranslationMessages } from "better-translate";
+import type { TranslationMessages } from "@better-translate/core";
 
 import type { MarkdownExtension } from "./types.js";
 import { assert, isRecord } from "./validation.js";

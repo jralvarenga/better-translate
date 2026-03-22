@@ -1,8 +1,8 @@
 import type {
   ConfiguredTranslator,
   TranslationMessages,
-} from "better-translate/core";
-import { resolveRequestLocale } from "better-translate/server";
+} from "@better-translate/core";
+import { resolveRequestLocale } from "@better-translate/core/server";
 
 import { readRequestCached } from "./request-cache.js";
 import type {

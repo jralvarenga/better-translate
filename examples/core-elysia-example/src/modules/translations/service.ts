@@ -2,7 +2,7 @@ import {
   createTranslationHelpers,
   type DotKeys,
   type TranslationKeysWithOptionalParams,
-} from "better-translate/core";
+} from "@better-translate/core";
 
 import en from "../../locales/en.json";
 import es from "../../locales/es.json";

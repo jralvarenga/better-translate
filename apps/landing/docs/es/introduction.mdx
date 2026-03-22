@@ -31,15 +31,15 @@ const t = translator.getTranslator("en")
 
 t("greeting", { params: { name: "World" } }) // ✅ "Hello, World!"
 t("nav.home")                                 // ✅ "Home"
-t("nav.hoome")                                // ❌ Error de TypeScript — al instante
-t("greeting")                                 // ❌ Error de TypeScript — params.name es obligatorio
+t("nav.hoome")                                // ❌ Error de TypeScript ,  al instante
+t("greeting")                                 // ❌ Error de TypeScript ,  params.name es obligatorio
 ```
 
 Esas dos últimas líneas no son errores en tiempo de ejecución que se descubren en QA. Son errores de compilación que se detectan en el momento en que las escribes. Esa es la diferencia.
 
 ## ¿Por qué no simplemente usar i18next o next-intl?
 
-Son excelentes librerías — muy adoptadas, probadas en batalla y llenas de funcionalidades. Pero el type safety en ambas es opcional y aditivo:
+Son excelentes librerías ,  muy adoptadas, probadas en batalla y llenas de funcionalidades. Pero el type safety en ambas es opcional y aditivo:
 
 - **i18next** requiere que crees un archivo `i18next.d.ts`, que hagas *augment* de `CustomTypeOptions` y registres tus recursos manualmente. Si te saltas un paso, vuelves a `string`.
 - **next-intl** necesita un `global.d.ts` con tipos de mensajes importados manualmente. Funciona, pero es configuración que mantienes separada de tus traducciones reales.
@@ -65,12 +65,12 @@ Escala desde una API sencilla hasta una app completa en Next.js sin reescribir n
 
 ## Qué obtienes desde el primer momento
 
-- **Claves tipadas** — autocompletado y errores de compilación para cada clave, incluyendo rutas anidadas como `nav.home`
-- **Interpolación tipada** — si un mensaje recibe `{name}`, pasarla es obligatorio; pasar algo incorrecto es un error
-- **Soporte de locale de fallback** — lo defines una vez y las traducciones faltantes hacen fallback de forma controlada
-- **Carga asíncrona de locales** — carga solo lo que necesitas, cuando lo necesitas
-- **Adaptadores de framework** — React, Next.js App Router y TanStack Router, todos derivados del mismo core
-- **Extensión para VS Code** — navega claves de traducción en línea sin salir del editor
+- **Claves tipadas** ,  autocompletado y errores de compilación para cada clave, incluyendo rutas anidadas como `nav.home`
+- **Interpolación tipada** ,  si un mensaje recibe `{name}`, pasarla es obligatorio; pasar algo incorrecto es un error
+- **Soporte de locale de fallback** ,  lo defines una vez y las traducciones faltantes hacen fallback de forma controlada
+- **Carga asíncrona de locales** ,  carga solo lo que necesitas, cuando lo necesitas
+- **Adaptadores de framework** ,  React, Next.js App Router y TanStack Router, todos derivados del mismo core
+- **Extensión para VS Code** ,  navega claves de traducción en línea sin salir del editor
 
 ## Mapa de paquetes
 

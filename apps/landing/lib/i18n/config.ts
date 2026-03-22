@@ -3,7 +3,7 @@ import {
   configureTranslations,
   type TranslationLanguageMetadata,
   type TranslationConfigOptions,
-} from "better-translate/core";
+} from "@better-translate/core";
 
 import { ar } from "./messages/ar";
 import { en } from "./messages/en";

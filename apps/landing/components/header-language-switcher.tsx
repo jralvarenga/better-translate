@@ -3,7 +3,7 @@
 import * as React from "react";
 
 import { useTranslations } from "@better-translate/react";
-import type { TranslationLanguageMetadata } from "better-translate/core";
+import type { TranslationLanguageMetadata } from "@better-translate/core";
 
 import {
   Select,

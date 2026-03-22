@@ -9,9 +9,9 @@
   },
   "dependencies": {
     "@astrojs/mdx": "^5.0.0",
-    "@better-translate/astro": "0.0.0",
+    "@better-translate/astro": "workspace:*",
     "astro": "^6.0.0",
-    "better-translate": "0.0.0"
+    "@better-translate/core": "workspace:*"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.0.0",

@@ -5,5 +5,5 @@ const githubUrl =
 export const siteLinks = {
   changelog: `${githubUrl}/releases`,
   github: githubUrl,
-  npm: "https://www.npmjs.com/package/better-translate",
+  npm: "https://www.npmjs.com/package/@better-translate/core",
 } as const;

@@ -47,7 +47,7 @@ export default async function DocPage({
     }
   } else {
     // doc.source has frontmatter already stripped by gray-matter in getDocument()
-    // evaluate() compiles with jsx:false and runs — compatible with Node.js dynamic import
+    // evaluate() compiles with jsx:false and runs ,  compatible with Node.js dynamic import
     const result = await evaluate(doc.source, {
       ...(runtime as Parameters<typeof evaluate>[1]),
     });

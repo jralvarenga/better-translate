@@ -1,101 +1,47 @@
 ---
 title: التثبيت
-description: ثبّت الحزم التي تحتاجها. ابدأ بالحزمة الأساسية وأضف المحولات حسب الحاجة.
+description: تعمل حزمة النواة في أي مشروع TypeScript. المحولات إضافات اختيارية لأطر عمل محددة.
 ---
 
 # التثبيت
 
-ثبّت الحزم التي تحتاجها. ابدأ بالحزمة الأساسية وأضف المحولات حسب الحاجة.
+تعمل حزمة النواة في أي مشروع TypeScript، بغض النظر عن الإطار أو بيئة التشغيل. إذا كنت تستخدم إطاراً مثل Next.js أو React أو Astro، يمكنك إضافة المحول المناسب فوق النواة.
 
-## النواة فقط
+## النواة
 
-استخدم هذا عندما تريد الترجمات في TypeScript العادي، أو خادم، أو API، أو سكريبت.
-لا حاجة لأي إطار عمل.
-
-```tsx showLineNumbers
-bun add better-translate
+```sh
+npm install @better-translate/core
 ```
 
-```tsx showLineNumbers
-npm install better-translate
-```
+هذا كل ما تحتاجه في معظم الحالات. تعمل في Next.js وAstro وReact وBun وNode.js والسكريبتات وAPIs أو أي بيئة TypeScript.
 
-## النواة + React
+## المحولات
 
-استخدم هذا لتطبيقات React التي تحتاج تبديل اللغة من جانب العميل والوصول إلى
-الترجمات عبر السياق.
+المحولات هي امتدادات للنواة تضيف مساعدات خاصة بالإطار: التوجيه المدرك للغة، وcontext وhooks الخاصة بـ React، ومساعدات لكل طلب، وغيرها. لا تستبدل النواة بل تمدّها.
 
-```tsx showLineNumbers
-bun add better-translate @better-translate/react
-```
+يمكنك الاطلاع على المحولات المتاحة هنا:
 
-## النواة + Next.js
-
-استخدم هذا لتطبيقات Next.js App Router مع المسارات ذات البادئة اللغوية، ومساعدات
-مكونات الخادم، والتنقل المدرك للغة.
-
-```tsx showLineNumbers
-bun add better-translate @better-translate/nextjs
-```
-
-## النواة + Next.js + React
-
-استخدم الحزم الثلاث عندما يحتاج تطبيق Next.js الخاص بك إلى ترجمات من جانب الخادم
-وتبديل اللغة من جانب العميل.
-
-```tsx showLineNumbers
-bun add better-translate @better-translate/nextjs @better-translate/react
-```
-
-## اختيار الحزمة
-
-<Accordion type="single" collapsible className="mt-6">
-  <AccordionItem value="core-only">
-    <AccordionTrigger>النواة فقط</AccordionTrigger>
-    <AccordionContent>
-      <p>الأفضل لـ APIs والسكريبتات والخوادم وتطبيقات TypeScript المستقلة عن الإطار.</p>
-      <pre>
-        <code className="language-tsx">bun add better-translate</code>
-      </pre>
-    </AccordionContent>
-  </AccordionItem>
-  <AccordionItem value="core-react">
-    <AccordionTrigger>النواة + React</AccordionTrigger>
-    <AccordionContent>
-      <p>استخدم هذا عندما يحدث تبديل اللغة في مكونات العميل.</p>
-      <pre>
-        <code className="language-tsx">bun add better-translate @better-translate/react</code>
-      </pre>
-    </AccordionContent>
-  </AccordionItem>
-  <AccordionItem value="core-nextjs">
-    <AccordionTrigger>النواة + Next.js</AccordionTrigger>
-    <AccordionContent>
-      <p>استخدم هذا عندما تهمك صفحات App Router والمسارات ذات البادئة اللغوية ومساعدات الطلب.</p>
-      <pre>
-        <code className="language-tsx">bun add better-translate @better-translate/nextjs</code>
-      </pre>
-    </AccordionContent>
-  </AccordionItem>
-</Accordion>
+<div className="mt-4 flex flex-wrap gap-3">
+  <Button asChild variant="outline" size="lg">
+    <Link href="/docs/adapters/react">React</Link>
+  </Button>
+  <Button asChild variant="outline" size="lg">
+    <Link href="/docs/adapters/nextjs">Next.js</Link>
+  </Button>
+  <Button asChild variant="outline" size="lg">
+    <Link href="/docs/adapters/tanstack-router">TanStack Router</Link>
+  </Button>
+</div>
 
 ## المتطلبات
 
 - Node.js 18+ أو Bun 1.0+
 - يُنصح بـ TypeScript 5.x
-- Next.js 14+ (App Router) لمحول Next.js
-- React 18+ لمحول React
 
-## الخطوات التالية
-
-- → بعد التثبيت، اضبط إعداد الترجمة. راجع **المحولات ← النواة** لخيارات الإعداد.
-- → بالنسبة لـ Next.js، تحتاج إلى خمسة ملفات: `routing.ts` و`request.ts` و`server.ts` و`navigation.ts` و`proxy.ts`. راجع **المحولات ← Next.js**.
+## الخطوة التالية
 
 <div className="mt-6 flex flex-wrap gap-3">
-  <Button asChild variant="outline" size="lg">
-    <Link href="/docs/adapters/core">إعداد الحزمة الأساسية</Link>
-  </Button>
   <Button asChild size="lg">
-    <Link href="/docs/adapters/nextjs">فتح إعداد Next.js</Link>
+    <Link href="/docs/adapters/core">إعداد الحزمة الأساسية</Link>
   </Button>
 </div>

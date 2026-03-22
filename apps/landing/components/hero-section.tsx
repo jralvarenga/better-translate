@@ -70,7 +70,7 @@ export default function HeroSection({ locale, t }: HeroSectionProps) {
                         />
 
                         <div className="mx-auto max-w-7xl px-6">
-                            {/* Badge — centered on all sizes */}
+                            {/* Badge ,  centered on all sizes */}
                             <div className="flex justify-center">
                                 <AnimatedGroup variants={transitionVariants}>
                                     <div className="flex w-fit items-center gap-3 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-sm text-white/70">
@@ -165,7 +165,7 @@ const translator = await configureTranslations(landingTranslationsConfig);
 
 const { t } = createTranslationHelpers(translator);
 
-t("hero.title")                    // -> "Type-Safe Translations for TypeScript"
+t("hero.title")                    // -> "One i18n setup for any TypeScript project."
 t("hero.description")              // -> localized copy
 t("header.language", {
   locale: "es"

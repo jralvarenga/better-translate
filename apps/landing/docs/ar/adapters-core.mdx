@@ -1,25 +1,24 @@
 ---
 title: النواة
-description: better-translate هي المكتبة الرئيسية. إنها مستقلة عن الإطار وتعمل في TypeScript العادي وBun وNode.js وAPIs والخوادم.
+description: تعمل @better-translate/core في أي مشروع TypeScript. نفس الإعداد، نفس الـ API، بغض النظر عن الإطار أو بيئة التشغيل.
 ---
 
 # النواة
 
-`better-translate` هي
-المكتبة الرئيسية. إنها مستقلة عن الإطار وتعمل في TypeScript العادي وBun وNode.js
-وAPIs والخوادم.
+تعمل `@better-translate/core` في أي مشروع TypeScript. لا اعتماد على إطار بعينه، ولا اشتراط لبيئة تشغيل محددة. نفس الإعداد ونفس الـ API ينطبقان سواء كنت في Next.js أو Astro أو React أو Bun أو Node.js أو سكريبت أو أي بيئة TypeScript أخرى.
 
-## متى تستخدمها
+**المحولات** هي امتدادات للنواة تضيف مساعدات خاصة بالإطار: توجيه مدرك للغة، وcontext الخاصة بـ React، ومساعدات لكل طلب، وغيرها. لكن كل شيء مبني فوق نفس النواة.
 
-استخدم الحزمة الأساسية فقط عندما لا تحتاج إلى مساعدات React أو مساعدات توجيه Next.js.
-هذا هو الخيار الصحيح للخادم أو API أو سكريبت أو مكتبة مشتركة.
+## متى تستخدم النواة مباشرة
+
+استخدم النواة بدون محول عندما لا تحتاج إلى مساعدات خاصة بإطار عمل. يشمل ذلك الخوادم وAPIs والسكريبتات والمكتبات المشتركة أو أي بيئة TypeScript لا يوجد لها محول مخصص.
 
 ## إعداد النموذج المختصر
 
 مرّر خريطة اللغة مباشرة. تصبح اللغة الأولى الافتراضية والاحتياطية.
 
 ```tsx showLineNumbers
-import { configureTranslations } from "better-translate"
+import { configureTranslations } from "@better-translate/core"
 
 const en = { greeting: "Hello, {name}!" }
 const ar = { greeting: "مرحباً، {name}!" }
@@ -32,11 +31,10 @@ t("greeting", { params: { name: "عالم" } }) // "مرحباً، عالم!"
 
 ## إعداد النموذج بالخيارات
 
-حدد عقد اللغة مسبقاً. يدعم هذا أدوات التحميل غير المتزامن وهو الإعداد الموصى
-به للتطبيقات الإنتاجية.
+حدد عقد اللغة مسبقاً. يدعم هذا أدوات التحميل غير المتزامن وهو الإعداد الموصى به للتطبيقات الإنتاجية.
 
 ```tsx showLineNumbers
-import { configureTranslations } from "better-translate"
+import { configureTranslations } from "@better-translate/core"
 
 const translator = await configureTranslations({
   availableLocales: ["en", "ar", "fr"] as const,
@@ -61,7 +59,7 @@ const translator = await configureTranslations({
 بعد الضبط مرة واحدة، يمكنك استدعاء هذه المساعدات العالمية من أي مكان:
 
 ```tsx showLineNumbers
-import { t, loadLocale, getSupportedLocales, getMessages } from "better-translate"
+import { t, loadLocale, getSupportedLocales, getMessages } from "@better-translate/core"
 
 // ترجمة باللغة النشطة
 t("greeting", { params: { name: "عالم" } })
@@ -78,7 +76,7 @@ getMessages()
 
 ## سلوك الاحتياطية
 
-إذا لم تمتلك اللغة النشطة مفتاحاً، يحاول Better Translate اللغة الاحتياطية.
+إذا لم تمتلك اللغة النشطة مفتاحاً، يحاول better-translate اللغة الاحتياطية.
 إذا لم تمتلك الاحتياطية أيضاً المفتاح، يُعيد سلسلة المفتاح نفسها.
 
 - → قيمة اللغة مفقودة → قيمة اللغة الاحتياطية
@@ -86,8 +84,7 @@ getMessages()
 
 ## أدوات التحميل غير المتزامن
 
-سجّل أدوات تحميل اللغة للغات التي لا تريد تحميلها مسبقاً. اللغات المحملة
-تُخزّن في الذاكرة المؤقتة بعد أول تحميل ناجح.
+سجّل أدوات تحميل اللغة للغات التي لا تريد تحميلها مسبقاً. اللغات المحملة تُخزّن في الذاكرة المؤقتة بعد أول تحميل ناجح.
 
 ```tsx showLineNumbers
 const translator = await configureTranslations({
@@ -119,24 +116,6 @@ translator.t("greeting", {
   },
 })
 ```
-
-## توليد مخطط JSON
-
-ابنِ مخطط JSON من لغتك المصدر لمساعدة المحررين في التحقق من صحة ملفات اللغة الشقيقة.
-
-```tsx showLineNumbers
-import { createTranslationJsonSchema } from "better-translate"
-
-const schema = createTranslationJsonSchema(en)
-// اكتب المخطط على القرص لتمكين التحقق من المحرر
-```
-
-## الملفات المصدرية الرئيسية
-
-- `packages/better-translate/src/core.ts`
-- `packages/better-translate/src/types.ts`
-- `packages/better-translate/src/normalize-config.ts`
-- `packages/better-translate/src/interpolate-message.ts`
 
 ## تابع مع
 

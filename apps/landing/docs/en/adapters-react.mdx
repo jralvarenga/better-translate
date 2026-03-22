@@ -1,152 +1,104 @@
 ---
 title: React
-description: "@better-translate/react is the React layer on top of the core package."
+description: "@better-translate/react adds a provider and hooks on top of @better-translate/core."
 ---
 
 # React
 
-`@better-translate/react` is
-the React layer on top of the core package. It provides
-`BetterTranslateProvider` and
-`useTranslations()` for
-client-side locale switching and context-based translation access across
-web React and Expo/React Native apps.
+Use `@better-translate/react` when React components need translations and locale switching.
 
-## When to use it
+## 1. Install the packages
 
-Use the React adapter when your app has client components, you want to switch locale
-at runtime, or you want React context instead of calling global helpers directly.
-
-## Expo and React Native
-
-Expo uses this same package. There is no separate native adapter.
-If you are wiring Better Translate into an Expo app, keep this provider model
-and follow the native setup guide:
-
-<div className="mt-6 flex flex-wrap gap-3">
-  <Button asChild variant="outline" size="lg">
-    <Link href="/docs/adapters/expo">Open the Expo guide</Link>
-  </Button>
-</div>
-
-## Setup
-
-Create a core translator first, then pass it to `BetterTranslateProvider`.
-
-```tsx showLineNumbers
-// i18n.ts
-import { configureTranslations } from "better-translate"
-
-export async function createTranslator() {
-  return configureTranslations({
-    availableLocales: ["en", "es"] as const,
-    defaultLocale: "en",
-    directions: {
-      es: "rtl",
-    },
-    messages: { en, es },
-  })
-}
+```sh
+npm install @better-translate/core @better-translate/react
 ```
 
-```tsx showLineNumbers
-// main.tsx
-import { BetterTranslateProvider } from "@better-translate/react"
-import { createTranslator } from "./i18n"
+## 2. Create the shared translator
 
-const translator = await createTranslator()
+Create `src/i18n.ts`:
 
-root.render(
-  <BetterTranslateProvider translator={translator}>
-    <App />
-  </BetterTranslateProvider>
-)
+```ts
+import { configureTranslations } from "@better-translate/core";
+
+const en = {
+  home: {
+    title: "Hello",
+  },
+} as const;
+
+const es = {
+  home: {
+    title: "Hola",
+  },
+} as const;
+
+export const translator = await configureTranslations({
+  availableLocales: ["en", "es"] as const,
+  defaultLocale: "en",
+  fallbackLocale: "en",
+  messages: { en, es },
+});
 ```
 
-## useTranslations()
+## 3. Wrap your app
 
-Inside the provider, `useTranslations()` gives
-you everything you need:
+Create or update `src/main.tsx`:
 
-```tsx showLineNumbers
-import { useTranslations } from "@better-translate/react"
+```tsx
+import React from "react";
+import ReactDOM from "react-dom/client";
 
-function MyComponent() {
-  const {
-    t,
-    locale,
-    direction,
-    rtl,
-    setLocale,
-    loadLocale,
-    messages,
-    supportedLocales,
-    defaultLocale,
-    fallbackLocale,
-    isLoadingLocale,
-    loadingLocale,
-    localeError,
-    translator,
-  } = useTranslations()
+import { BetterTranslateProvider } from "@better-translate/react";
+
+import { App } from "./app";
+import { translator } from "./i18n";
+
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <React.StrictMode>
+    <BetterTranslateProvider translator={translator}>
+      <App />
+    </BetterTranslateProvider>
+  </React.StrictMode>,
+);
+```
+
+## 4. Read translations inside a component
+
+Create `src/header.tsx`:
+
+```tsx
+import { useTranslations } from "@better-translate/react";
+
+import { translator } from "./i18n";
+
+export function Header() {
+  const { locale, setLocale, t } = useTranslations<typeof translator>();
 
   return (
-    <div>
-      <p>{t("greeting", { params: { name: "World" } })}</p>
-      <p>{direction}</p>
-      <p>{String(rtl)}</p>
-      <button type="button" onClick={() => setLocale("es")}>
-        Switch to Spanish
+    <header>
+      <h1>{t("home.title")}</h1>
+      <button onClick={() => setLocale("en")} disabled={locale === "en"}>
+        English
       </button>
-    </div>
-  )
+      <button onClick={() => setLocale("es")} disabled={locale === "es"}>
+        Espanol
+      </button>
+    </header>
+  );
 }
 ```
 
-## Locale switching
+## When to use React only
 
-`setLocale()` changes
-the active locale for that provider tree. If the locale is not cached, it loads it first.
-If loading fails, the old locale stays active and `localeError` is set.
+Use only `@better-translate/core` + `@better-translate/react` when:
 
-`loadLocale()` warms
-the cache without changing the active locale. Use it to preload the next locale before
-the user switches, so the switch is instant.
+- your app is a React SPA
+- your app is an Expo app
+- locale changes happen in client components
 
-```tsx showLineNumbers
-// warm the cache before the user switches
-await loadLocale("fr")
-
-// switch instantly since it's already cached
-setLocale("fr")
-```
-
-Use `translator.getDirection()` or `translator.isRtl()` when you need per-call
-direction metadata or want to override it through `config.rtl`.
-
-## Provider scope
-
-Each provider has its own active locale state. You can nest multiple providers to give
-different parts of the UI independent locale states — useful for testing locale error
-behavior in isolation.
-
-## Key source files
-
-- `packages/react/src/provider.tsx`
-- `packages/react/src/use-translations.ts`
-- `packages/react/src/types.ts`
-- `apps/react-vite-example/src/i18n.ts`
-- `apps/react-vite-example/src/main.tsx`
+If you are in Next.js App Router, keep this package for client hooks and add the Next.js adapter for routing and server helpers.
 
 ## Continue with
 
-<div className="mt-6 flex flex-wrap gap-3">
-  <Button asChild variant="outline" size="lg">
-    <Link href="/docs/adapters/core">Understand the core config</Link>
-  </Button>
-  <Button asChild variant="outline" size="lg">
-    <Link href="/docs/adapters/expo">Wire it into Expo</Link>
-  </Button>
-  <Button asChild size="lg">
-    <Link href="/docs/adapters/nextjs">Pair it with Next.js</Link>
-  </Button>
-</div>
+- <Link href="/docs/adapters/expo">Expo setup</Link>
+- <Link href="/docs/adapters/nextjs">Next.js setup</Link>

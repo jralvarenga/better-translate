@@ -1,0 +1,23 @@
+{
+  "$schema": "https://unpkg.com/@changesets/config@3.1.1/schema.json",
+  "changelog": "@changesets/cli/changelog",
+  "commit": false,
+  "fixed": [],
+  "linked": [
+    [
+      "@better-translate/core",
+      "@better-translate/astro",
+      "@better-translate/cli",
+      "@better-translate/md",
+      "@better-translate/nextjs",
+      "@better-translate/react",
+      "@better-translate/tanstack-router"
+    ]
+  ],
+  "access": "public",
+  "baseBranch": "main",
+  "updateInternalDependencies": "patch",
+  "ignore": [
+    "@repo/typescript-config"
+  ]
+}

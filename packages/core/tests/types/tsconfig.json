@@ -1,7 +1,12 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
+    "baseUrl": "../..",
     "noEmit": true,
+    "paths": {
+      "@better-translate/core": ["./src/index.ts"],
+      "@better-translate/core/server": ["./src/server.ts"]
+    },
     "rootDir": "../.."
   },
   "include": ["./**/*.ts"],

@@ -1,6 +1,6 @@
 ---
 title: Configuration
-description: All configuration options for Better Translate in an Astro project — request config, i18n settings, and middleware.
+description: All configuration options for Better Translate in an Astro project ,  request config, i18n settings, and middleware.
 ---
 
 # Configuration

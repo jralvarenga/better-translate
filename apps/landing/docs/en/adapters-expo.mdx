@@ -1,168 +1,95 @@
 ---
 title: Expo
-description: "@better-translate/react is the adapter for Expo and React Native apps. There is no separate native package."
+description: "Expo uses @better-translate/react on top of @better-translate/core. There is no separate native package."
 ---
 
 # Expo
 
-Expo uses the same `@better-translate/react` adapter as web React.
-There is no separate native package. You install the core runtime,
-configure a translator, and pass it to `BetterTranslateProvider`.
+Expo uses the same React adapter as web React.
 
-## Install
+There is no separate `@better-translate/react-native` package.
 
-```sh showLineNumbers
-bun add better-translate @better-translate/react
+## 1. Install the packages
+
+```sh
+npm install @better-translate/core @better-translate/react
 ```
 
-If you use npm:
+## 2. Create the translator
 
-```sh showLineNumbers
-npm install better-translate @better-translate/react
+Create `lib/i18n.ts`:
+
+```ts
+import { configureTranslations } from "@better-translate/core";
+
+const en = {
+  home: {
+    title: "Hello from Expo",
+  },
+} as const;
+
+const es = {
+  home: {
+    title: "Hola desde Expo",
+  },
+} as const;
+
+export const translator = await configureTranslations({
+  availableLocales: ["en", "es"] as const,
+  defaultLocale: "en",
+  fallbackLocale: "en",
+  messages: { en, es },
+});
 ```
 
-## Configure the translator
+## 3. Wrap the app
 
-Create your translator once in shared app code:
+Create or update `App.tsx`:
 
-```tsx showLineNumbers
-// src/i18n.ts
-import { configureTranslations } from "better-translate"
+```tsx
+import { BetterTranslateProvider } from "@better-translate/react";
 
-import en from "./locales/en"
-import es from "./locales/es"
+import { HomeScreen } from "./components/home-screen";
+import { translator } from "./lib/i18n";
 
-export async function createTranslator() {
-  return configureTranslations({
-    availableLocales: ["en", "es"] as const,
-    defaultLocale: "en",
-    fallbackLocale: "en",
-    languages: [
-      {
-        locale: "en",
-        nativeLabel: "English",
-        shortLabel: "EN",
-      },
-      {
-        locale: "es",
-        nativeLabel: "Español",
-        shortLabel: "ES",
-      },
-    ],
-    messages: { en, es },
-  })
-}
-
-export type AppTranslator = Awaited<ReturnType<typeof createTranslator>>
-```
-
-## Mount the provider in Expo
-
-Wrap your app once at the root. With Expo Router, that usually means
-`app/_layout.tsx`:
-
-```tsx showLineNumbers
-// app/_layout.tsx
-import { Slot } from "expo-router"
-import { useEffect, useState } from "react"
-import { BetterTranslateProvider } from "@better-translate/react"
-
-import { createTranslator, type AppTranslator } from "../src/i18n"
-
-export default function RootLayout() {
-  const [translator, setTranslator] = useState<AppTranslator | null>(null)
-
-  useEffect(() => {
-    void createTranslator().then(setTranslator)
-  }, [])
-
-  if (!translator) {
-    return null
-  }
-
+export default function App() {
   return (
     <BetterTranslateProvider translator={translator}>
-      <Slot />
+      <HomeScreen />
     </BetterTranslateProvider>
-  )
+  );
 }
 ```
 
-If you are not using Expo Router, wrap your `App.tsx` root component the same way.
+## 4. Use translations in a screen
 
-## Use translations in React Native components
+Create `components/home-screen.tsx`:
 
-`useTranslations()` works the same way in Expo as it does on the web:
+```tsx
+import { Button, Text, View } from "react-native";
 
-```tsx showLineNumbers
-import { Pressable, Text, View } from "react-native"
-import { useTranslations } from "@better-translate/react"
+import { useTranslations } from "@better-translate/react";
 
-import type { AppTranslator } from "../src/i18n"
+import { translator } from "../lib/i18n";
 
 export function HomeScreen() {
-  const {
-    t,
-    locale,
-    rtl,
-    direction,
-    setLocale,
-    supportedLocales,
-  } = useTranslations<AppTranslator>()
+  const { locale, setLocale, t } = useTranslations<typeof translator>();
 
   return (
     <View style={{ gap: 12, padding: 24 }}>
-      <Text>{t("common.hello")}</Text>
-      <Text>Locale: {locale}</Text>
-      <Text>Direction: {direction}</Text>
-      <Text>{rtl ? "RTL layout" : "LTR layout"}</Text>
-
-      {supportedLocales.map((nextLocale) => (
-        <Pressable key={nextLocale} onPress={() => void setLocale(nextLocale)}>
-          <Text>Switch to {nextLocale}</Text>
-        </Pressable>
-      ))}
+      <Text>{t("home.title")}</Text>
+      <Button
+        title={locale === "en" ? "Spanish" : "English"}
+        onPress={() => setLocale(locale === "en" ? "es" : "en")}
+      />
     </View>
-  )
+  );
 }
 ```
 
-## Cache warming and lazy locales
+## Mental model
 
-Use `loadLocale()` to preload a locale before the user switches:
+- `@better-translate/core` owns the translation data
+- `@better-translate/react` gives Expo the provider and hook
 
-```tsx showLineNumbers
-const { loadLocale, setLocale } = useTranslations<AppTranslator>()
-
-await loadLocale("es")
-await setLocale("es")
-```
-
-This is useful when the next locale is code-split or loaded from an async loader.
-
-## Direction and RTL
-
-Expo gets the same direction metadata as web React:
-
-- `direction` gives you `"ltr"` or `"rtl"`
-- `rtl` gives you a boolean shortcut
-- `translator.getDirection(...)` and `translator.isRtl(...)` still work for per-call checks
-
-Use that metadata to flip layout order, spacing, alignment, or screen-level styles in your
-React Native components. Better Translate does not impose a native navigation or styling
-strategy; it gives you typed locale state and direction data, then Expo stays in control of UI rendering.
-
-## Relationship to the React adapter
-
-Expo support lives inside `@better-translate/react`.
-Start with the React adapter docs if you want the shared provider mental model,
-then use this page for native app wiring.
-
-<div className="mt-6 flex flex-wrap gap-3">
-  <Button asChild variant="outline" size="lg">
-    <Link href="/docs/adapters/react">Open the React adapter guide</Link>
-  </Button>
-  <Button asChild size="lg">
-    <Link href="/docs/adapters/core">Understand the core config</Link>
-  </Button>
-</div>
+That is the full setup for most Expo apps.

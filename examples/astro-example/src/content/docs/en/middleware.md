@@ -42,7 +42,7 @@ const t = await getTranslations();     // typed translation function
 <p>{t("home.title")}</p>
 ```
 
-Both helpers read from the same request context populated by the middleware — no prop drilling required.
+Both helpers read from the same request context populated by the middleware ,  no prop drilling required.
 
 ## Composing with other middleware
 

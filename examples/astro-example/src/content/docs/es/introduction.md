@@ -9,7 +9,7 @@ description: Qué es Better Translate, por qué funciona bien con Astro y cómo 
 
 ## ¿Por qué Better Translate con Astro?
 
-Astro incluye un excelente enrutamiento i18n incorporado. Better Translate agrega la capa superior — gestionando mensajes de traducción, negociación de idioma y respaldos de contenido — para que puedas enfocarte en tu contenido en lugar de conectar utilidades.
+Astro incluye un excelente enrutamiento i18n incorporado. Better Translate agrega la capa superior ,  gestionando mensajes de traducción, negociación de idioma y respaldos de contenido ,  para que puedas enfocarte en tu contenido en lugar de conectar utilidades.
 
 Ventajas principales:
 

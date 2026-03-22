@@ -97,7 +97,7 @@ try {
   result = await docs.renderDocument("getting-started", { locale });
 } catch (e) {
   if (e instanceof ContentDocumentNotFoundError) {
-    // No content in any locale — true 404
+    // No content in any locale ,  true 404
   }
 }
 

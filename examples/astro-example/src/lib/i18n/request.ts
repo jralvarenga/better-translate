@@ -1,5 +1,5 @@
 import { getRequestConfig } from "@better-translate/astro";
-import { configureTranslations } from "better-translate/core";
+import { configureTranslations } from "@better-translate/core";
 
 import { en } from "./messages/en";
 import { es } from "./messages/es";

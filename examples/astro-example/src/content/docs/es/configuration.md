@@ -1,6 +1,6 @@
 ---
 title: Configuración
-description: Todas las opciones de configuración para Better Translate en un proyecto Astro — request config, ajustes i18n y middleware.
+description: Todas las opciones de configuración para Better Translate en un proyecto Astro ,  request config, ajustes i18n y middleware.
 ---
 
 # Configuración

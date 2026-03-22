@@ -12,7 +12,7 @@ import type {
   TranslateCall,
   TranslateFunction,
   TranslationKey,
-} from "better-translate/core";
+} from "@better-translate/core";
 
 /**
  * Provides a configured Better Translate translator to a React subtree.

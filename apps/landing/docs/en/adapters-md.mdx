@@ -1,0 +1,99 @@
+---
+title: MD & MDX
+description: "@better-translate/md loads localized Markdown and MDX files on top of @better-translate/core."
+---
+
+# MD & MDX
+
+Use `@better-translate/md` when your docs, blog posts, or content pages live in localized `.md` or `.mdx` files.
+
+This package does not replace the core translator. It reads the locale rules from the translator you already created.
+
+## 1. Install the packages
+
+```sh
+npm install @better-translate/core @better-translate/md
+```
+
+## 2. Create the translator
+
+Create `src/i18n.ts`:
+
+```ts
+import { configureTranslations } from "@better-translate/core";
+
+const en = {
+  docs: {
+    title: "Docs",
+  },
+} as const;
+
+const es = {
+  docs: {
+    title: "Documentacion",
+  },
+} as const;
+
+export const translator = await configureTranslations({
+  availableLocales: ["en", "es"] as const,
+  defaultLocale: "en",
+  fallbackLocale: "en",
+  messages: { en, es },
+});
+```
+
+## 3. Create the content folders
+
+Put one folder per locale under the same root:
+
+```txt
+content/docs/
+  en/
+    getting-started.mdx
+  es/
+    getting-started.mdx
+```
+
+## 4. Create the markdown helpers
+
+Create `src/docs.ts`:
+
+```ts
+import { createMarkdownHelpers } from "@better-translate/md";
+
+import { translator } from "./i18n";
+
+export const docs = createMarkdownHelpers(translator, {
+  rootDir: "./content/docs",
+});
+```
+
+## 5. Read one document
+
+```ts
+import { docs } from "./docs";
+
+const englishDoc = await docs.getDocument("getting-started", {
+  locale: "en",
+});
+
+const spanishDoc = await docs.getDocument("getting-started", {
+  locale: "es",
+});
+```
+
+## 6. Compile it when you need output
+
+```ts
+const compiled = await docs.compileDocument("getting-started", {
+  locale: "en",
+});
+
+compiled.kind; // "md" or "mdx"
+compiled.path;
+compiled.usedFallback;
+```
+
+## When to use the server helpers
+
+If your app already resolves the request locale on the server, use `@better-translate/md/server` so markdown loading follows the same request locale automatically.

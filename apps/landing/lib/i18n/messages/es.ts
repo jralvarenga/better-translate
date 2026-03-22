@@ -1,18 +1,18 @@
 export const es = {
   "codeDemo": {
-    "description": "Configura una vez, crea ayudantes tipados en todas partes.",
-    "title": "API simple de dos pasos"
+    "description": "La misma config funciona igual en Next.js, Astro, React o Node puro.",
+    "title": "Una API. Cada entorno"
   },
   "features": {
-    "description": "Todo lo que necesitas para i18n de producción, nada más.",
+    "description": "La misma configuración, la misma API, la misma experiencia ,  sin importar en qué entorno TypeScript estés.",
     "items": {
       "autocomplete": {
         "description": "Tu editor conoce cada clave en tu objeto de mensajes. Ya no tendrás que adivinar, porque `t(\"home.` empieza a completarse de inmediato.",
         "title": "Autocompletado en todas partes"
       },
       "frameworkAgnostic": {
-        "description": "Sin acoplamiento a frameworks. Un paquete central, adaptadores de primera clase para React, Next.js, TanStack Router y Node puro.",
-        "title": "Independiente del framework"
+        "description": "Escribe tu config de traducciones una vez. Funciona igual en Next.js, Astro, React, TanStack Router y Node puro. Cambia de entorno, conserva tu configuración.",
+        "title": "La misma config, cada entorno"
       },
       "localeSwitching": {
         "description": "Cambia locales en tiempo de ejecución sin recargar la página. Sobrescrituras por llamada te permiten renderizar cualquier locale a demanda.",
@@ -23,7 +23,7 @@ export const es = {
         "title": "Tipado seguro por defecto"
       }
     },
-    "title": "Construido para equipos de TypeScript"
+    "title": "La misma configuración. Cada entorno"
   },
   "footer": {
     "docs": "Documentación",
@@ -32,9 +32,9 @@ export const es = {
     "npm": "npm"
   },
   "frameworks": {
-    "description": "Un núcleo de traducción compartido. Adaptadores nativos para cada framework de TypeScript importante, o usa el núcleo directamente.",
-    "heroDescription": "Sin acoplamiento a frameworks - un núcleo, cero dependencias en tiempo de ejecución",
-    "heroTitle": "Funciona con cualquier proyecto TypeScript",
+    "description": "Tu config de traducciones funciona igual en cada entorno TypeScript. Adaptadores nativos, API idéntica.",
+    "heroDescription": "Cambia de framework sin reescribir tu configuración i18n",
+    "heroTitle": "La misma config en todos lados",
     "items": {
       "astro": {
         "description": "Ayudantes por solicitud y Astro content collections localizadas para .md y .mdx."
@@ -71,11 +71,11 @@ export const es = {
     "openMenu": "Abrir menú"
   },
   "hero": {
-    "badge": "Independiente del framework - funciona en cualquier proyecto TypeScript",
-    "description": "Define tus traducciones una vez. Obtén autocompletado, errores de tipo y conmutación de locales - sin acoplamiento a un framework. Funciona en cualquier código TypeScript.",
+    "badge": "La misma config. Cada entorno TypeScript",
+    "description": "Misma config. Misma API. Funciona en Next.js, Astro, React, TanStack Router y Node puro. Sin reescrituras.",
     "primaryCta": "Ver documentación",
     "secondaryCta": "Ver en GitHub",
-    "title": "Traducciones seguras de tipos para TypeScript"
+    "title": "Una configuración i18n para cualquier proyecto TypeScript"
   },
   "docs": {
     "copyMarkdown": "Copiar markdown",

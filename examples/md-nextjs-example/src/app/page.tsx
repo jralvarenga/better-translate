@@ -47,7 +47,7 @@ export default async function HomePage() {
               },
               {
                 pkg: "Cookie-based locale",
-                desc: "Language stored in a cookie. Normal routes — no /[lang] in the URL.",
+                desc: "Language stored in a cookie. Normal routes ,  no /[lang] in the URL.",
               },
               {
                 pkg: "@mdx-js/mdx evaluate()",

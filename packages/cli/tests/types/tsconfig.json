@@ -3,6 +3,10 @@
   "compilerOptions": {
     "baseUrl": "../..",
     "noEmit": true,
+    "paths": {
+      "@better-translate/core": ["../core/src/index.ts"],
+      "@better-translate/core/server": ["../core/src/server.ts"]
+    },
     "rootDir": "../.."
   },
   "include": ["../../src/**/*.ts", "./**/*.ts"],

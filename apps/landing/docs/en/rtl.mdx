@@ -1,11 +1,11 @@
 ---
 title: RTL
-description: better-translate has built-in RTL support. Declare directions per locale, query them at runtime, and override them per call.
+description: "@better-translate/core has built-in RTL support. Declare directions per locale, query them at runtime, and override them per call."
 ---
 
 # RTL
 
-`better-translate` has built-in RTL support.
+`@better-translate/core` has built-in RTL support.
 You declare which locales are right-to-left in config, then query direction at runtime
 using `getDirection` or `isRtl`.
 
@@ -20,7 +20,7 @@ without managing a separate lookup table.
 Add a `directions` key to your `configureTranslations` call. Any locale you omit defaults to `"ltr"`.
 
 ```tsx showLineNumbers
-import { configureTranslations } from "better-translate"
+import { configureTranslations } from "@better-translate/core";
 
 const translator = await configureTranslations({
   availableLocales: ["en", "ar"] as const,
@@ -29,7 +29,7 @@ const translator = await configureTranslations({
   directions: {
     ar: "rtl",
   },
-})
+});
 ```
 
 ## Querying direction
@@ -38,30 +38,30 @@ Call `getDirection` to get `"ltr"` or `"rtl"` for any locale.
 Call `isRtl` to get a boolean shorthand.
 
 ```tsx showLineNumbers
-translator.getDirection({ locale: "ar" }) // "rtl"
-translator.getDirection({ locale: "en" }) // "ltr"
+translator.getDirection({ locale: "ar" }); // "rtl"
+translator.getDirection({ locale: "en" }); // "ltr"
 
-translator.isRtl({ locale: "ar" }) // true
-translator.isRtl({ locale: "en" }) // false
+translator.isRtl({ locale: "ar" }); // true
+translator.isRtl({ locale: "en" }); // false
 ```
 
 ## Per-call override
 
 Pass `config.rtl` to override the configured direction for a single call.
-This does not affect message lookup — it only changes what direction is resolved.
+This does not affect message lookup , it only changes what direction is resolved.
 
 ```tsx showLineNumbers
 // Force LTR even for an RTL locale
 translator.t("greeting", {
   locale: "ar",
   config: { rtl: false },
-})
+});
 
 // Force RTL even for an LTR locale
 translator.t("greeting", {
   locale: "en",
   config: { rtl: true },
-})
+});
 ```
 
 ## Applying to HTML
@@ -80,9 +80,9 @@ Use `getDirection` when rendering the `dir` attribute on root elements.
 
 ## Key source files
 
-- `packages/better-translate/src/types.ts`
-- `packages/better-translate/src/create-configured-translator.ts`
-- `packages/better-translate/src/normalize-config.ts`
+- `packages/core/src/types.ts`
+- `packages/core/src/create-configured-translator.ts`
+- `packages/core/src/normalize-config.ts`
 
 ## Continue with
 

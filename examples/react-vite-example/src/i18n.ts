@@ -1,4 +1,4 @@
-import { configureTranslations } from "better-translate/core";
+import { configureTranslations } from "@better-translate/core";
 
 function wait(ms: number) {
   return new Promise((resolve) => {

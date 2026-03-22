@@ -4,7 +4,7 @@ import path from "node:path";
 import {
   createTranslationJsonSchema,
   type TranslationMessages,
-} from "better-translate";
+} from "@better-translate/core";
 
 import { importModule } from "./module-loader.js";
 import {

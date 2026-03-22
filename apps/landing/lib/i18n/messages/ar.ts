@@ -1,18 +1,18 @@
 export const ar = {
   "codeDemo": {
-    "description": "ضبط مرة واحدة، ثم إنشاء مساعدات محدّدة النوع في كل مكان.",
-    "title": "واجهة API بسيطة بخطوتين"
+    "description": "نفس التكوين يعمل بالطريقة ذاتها سواء كنت في Next.js أو Astro أو React أو Node عادي.",
+    "title": "واجهة API واحدة. كل بيئة"
   },
   "features": {
-    "description": "كل ما تحتاجه من i18n للإنتاج، بلا إضافات.",
+    "description": "نفس الإعداد، نفس الـ API، نفس التجربة ,  بغض النظر عن بيئة TypeScript التي تعمل بها.",
     "items": {
       "autocomplete": {
         "description": "المحرر الخاص بك يعرف كل مفتاح في كائن رسائلك. لا مزيد من التخمين لأن `t(\"home.` يبدأ الإكمال فورًا.",
         "title": "الإكمال التلقائي في كل مكان"
       },
       "frameworkAgnostic": {
-        "description": "بدون ارتباط إطار—حزمة أساسية واحدة، موائمات من الدرجة الأولى لـ React وNext.js وTanStack Router وNode عادي.",
-        "title": "مستقل الإطار"
+        "description": "اكتب تكوين الترجمة مرة واحدة. يعمل بالطريقة ذاتها في Next.js وAstro وReact وTanStack Router وNode عادي. غيّر البيئة، واحتفظ بإعدادك.",
+        "title": "نفس التكوين، كل بيئة"
       },
       "localeSwitching": {
         "description": "تبديل اللغات أثناء التشغيل بدون إعادة تحميل الصفحة. السماحات المستندة إلى الاستدعاء تتيح لك عرض أي لغة عند الطلب.",
@@ -23,7 +23,7 @@ export const ar = {
         "title": "نوع آمن افتراضيًا"
       }
     },
-    "title": "مصمم لفرق TypeScript"
+    "title": "نفس الإعداد. كل بيئة"
   },
   "footer": {
     "docs": "الوثائق",
@@ -32,9 +32,9 @@ export const ar = {
     "npm": "npm"
   },
   "frameworks": {
-    "description": "نواة ترجمة مشتركة واحدة. موائمات أصلية لكل إطار TypeScript رئيسي، أو استخدم النواة مباشرة.",
-    "heroDescription": "لا ارتباط بإطار—نواة واحدة، بدون تبعيات وقت التشغيل",
-    "heroTitle": "يعمل مع أي مشروع TypeScript",
+    "description": "تكوين الترجمة الخاص بك يعمل بنفس الطريقة في كل بيئة TypeScript. موائمات أصلية، API متطابقة.",
+    "heroDescription": "غيّر الإطار بدون إعادة كتابة إعداد i18n الخاص بك",
+    "heroTitle": "نفس التكوين في كل مكان",
     "items": {
       "astro": {
         "description": "مساعدات لكل طلب ومجموعات محتوى Astro محلية لكل من .md و .mdx."
@@ -71,11 +71,11 @@ export const ar = {
     "openMenu": "فتح القائمة"
   },
   "hero": {
-    "badge": "بدون ارتباط بإطار - يعمل في أي مشروع TypeScript",
-    "description": "عرف ترجماتك مرة واحدة. احصل على الإكمال التلقائي، وأخطاء النوع، وتبديل اللغة - بلا ارتباط بإطار. يعمل في أي قاعدة كود TypeScript.",
+    "badge": "نفس التكوين. كل بيئة TypeScript",
+    "description": "نفس التكوين. نفس الـ API. يعمل في Next.js وAstro وReact وTanStack Router وNode عادي بدون إعادة كتابة.",
     "primaryCta": "عرض الوثائق",
     "secondaryCta": "عرض على GitHub",
-    "title": "ترجمات آمنة النوع لـ TypeScript"
+    "title": "إعداد i18n واحد لأي مشروع TypeScript"
   },
   "docs": {
     "copyMarkdown": "نسخ ماركداون",

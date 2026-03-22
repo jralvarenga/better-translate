@@ -1,7 +1,7 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 
-import type { TranslationMessages } from "better-translate";
+import type { TranslationMessages } from "@better-translate/core";
 
 import { loadCliConfig } from "./config-loader.js";
 import {

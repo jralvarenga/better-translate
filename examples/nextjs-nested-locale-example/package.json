@@ -9,8 +9,8 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@better-translate/nextjs": "0.0.0",
-    "better-translate": "0.0.0",
+    "@better-translate/nextjs": "workspace:*",
+    "@better-translate/core": "workspace:*",
     "next": "16.1.6",
     "react": "19.2.3",
     "react-dom": "19.2.3"

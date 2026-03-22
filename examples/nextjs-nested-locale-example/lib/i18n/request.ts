@@ -1,5 +1,5 @@
 import { getRequestConfig } from "@better-translate/nextjs/server";
-import { configureTranslations } from "better-translate/core";
+import { configureTranslations } from "@better-translate/core";
 
 import { en, es } from "./messages";
 import { routing } from "./routing";

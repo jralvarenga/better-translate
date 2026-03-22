@@ -1,4 +1,4 @@
-import { configureTranslations } from "better-translate/core";
+import { configureTranslations } from "@better-translate/core";
 
 import { BetterTranslateProvider, useTranslations } from "../../dist/index.js";
 

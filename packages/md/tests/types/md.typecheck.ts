@@ -1,5 +1,5 @@
-import { configureTranslations } from "better-translate/core";
-import { setRequestLocale } from "better-translate/server";
+import { configureTranslations } from "@better-translate/core";
+import { setRequestLocale } from "@better-translate/core/server";
 
 import {
   createMarkdownCollection,

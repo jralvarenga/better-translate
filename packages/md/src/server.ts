@@ -3,11 +3,11 @@ import { cache } from "react";
 import type {
   ConfiguredTranslator,
   TranslationMessages,
-} from "better-translate/core";
+} from "@better-translate/core";
 import {
   getRequestLocale as getStoredRequestLocale,
   resolveRequestLocale,
-} from "better-translate/server";
+} from "@better-translate/core/server";
 
 import { createMarkdownCollection } from "./collection.js";
 import type {

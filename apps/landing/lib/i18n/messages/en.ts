@@ -1,10 +1,10 @@
 export const en = {
   codeDemo: {
-    description: "Configure once, create typed helpers everywhere.",
-    title: "Simple two-step API",
+    description: "The same config works identically whether you're in Next.js, Astro, React, or plain Node.",
+    title: "One API. Every environment",
   },
   features: {
-    description: "Everything you need for production-grade i18n, nothing extra.",
+    description: "The same setup, the same API, the same experience ,  no matter which TypeScript environment you're in.",
     items: {
       autocomplete: {
         description:
@@ -13,8 +13,8 @@ export const en = {
       },
       frameworkAgnostic: {
         description:
-          "Zero framework lock-in. One core package, first-class adapters for React, Next.js, TanStack Router, and plain Node.",
-        title: "Framework Agnostic",
+          "Write your translation config once. It works identically in Next.js, Astro, React, TanStack Router, and plain Node. Switch environments, keep your setup.",
+        title: "Same Config, Every Environment",
       },
       localeSwitching: {
         description:
@@ -27,7 +27,7 @@ export const en = {
         title: "Type-Safe by Default",
       },
     },
-    title: "Built for TypeScript teams",
+    title: "Same setup. Every environment",
   },
   footer: {
     docs: "Docs",
@@ -37,10 +37,10 @@ export const en = {
   },
   frameworks: {
     description:
-      "One shared translation core. Native adapters for every major TypeScript framework, or use the core directly.",
+      "Your translation config works the same way in every TypeScript environment. Native adapters, identical API.",
     heroDescription:
-      "No framework lock-in - one core, zero runtime dependencies",
-    heroTitle: "Works with any TypeScript project",
+      "Switch frameworks without rewriting your i18n setup",
+    heroTitle: "Same config everywhere",
     items: {
       astro: {
         description: "Request-scoped helpers and localized Astro content collections for .md and .mdx.",
@@ -77,12 +77,12 @@ export const en = {
     openMenu: "Open menu",
   },
   hero: {
-    badge: "Framework agnostic - works in any TypeScript project",
+    badge: "Same config. Every TypeScript environment",
     description:
-      "Define your translations once. Get autocomplete, type errors, and locale switching - no framework lock-in. Works in any TypeScript codebase.",
+      "Same config. Same API. Works in Next.js, Astro, React, TanStack Router, and plain Node. No rewrites.",
     primaryCta: "View docs",
     secondaryCta: "View on GitHub",
-    title: "Type-Safe Translations for TypeScript",
+    title: "One i18n setup for any TypeScript project",
   },
   docs: {
     copyMarkdown: "Copy markdown",

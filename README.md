@@ -1,51 +1,30 @@
 # Better Translate
 
-Better Translate is a Bun + Turborepo monorepo for type-safe translations in TypeScript projects.
+Better Translate is a monorepo for `@better-translate/core` and its adapters for React, Next.js, Astro, TanStack Router, Markdown/MDX, and the CLI.
 
-The main package is `better-translate`, exposed both from the package root and from the `better-translate/core` subpath. It is framework-agnostic and is intended to be installed into any TypeScript project, including Astro, React, Expo, Next.js, TanStack Router, TanStack Start, and future adapters such as Svelte or Vue.
+Each package is published separately on npm, so you can install only the pieces your app needs.
 
 ## Packages
 
-- `better-translate`: framework-agnostic translation configuration runtime and typed lookup core.
-- `@better-translate/astro`: Astro request helpers and localized content collection helpers.
-- `@better-translate/md`: localized Markdown and MDX helpers built on top of a configured Better Translate translator.
-- `@better-translate/react`: React adapter package for web React and Expo/React Native.
-- `@better-translate/nextjs`: Next.js adapter package.
-- `@better-translate/tanstack-router`: TanStack Router adapter package that also works in TanStack Start apps.
-- `@repo/typescript-config`: internal shared TypeScript presets used by the workspace.
+- `@better-translate/core` for framework-agnostic translations in TypeScript, Node.js, APIs, and shared libraries.
+- `@better-translate/react` for providers and hooks in React and Expo apps.
+- `@better-translate/nextjs` for locale routing, server helpers, navigation helpers, and proxy support in Next.js App Router.
+- `@better-translate/astro` for request helpers, middleware, and localized Astro content collections.
+- `@better-translate/tanstack-router` for locale-aware routing and navigation in TanStack Router and TanStack Start apps.
+- `@better-translate/md` for localized Markdown and MDX loading on top of an existing translator.
+- `@better-translate/cli` for generating translated message files and markdown from a source locale.
 
-## Repository Layout
+## Docs
 
-```txt
-apps/
-  docs/
-  web/
-packages/
-  astro/
-  better-translate/
-  nextjs/
-  react/
-  tanstack-router/
-  typescript-config/
-```
+- Installation: [better-translate-placeholder.com/en/docs/installation](https://better-translate-placeholder.com/en/docs/installation)
+- Core: [better-translate-placeholder.com/en/docs/adapters/core](https://better-translate-placeholder.com/en/docs/adapters/core)
+- React: [better-translate-placeholder.com/en/docs/adapters/react](https://better-translate-placeholder.com/en/docs/adapters/react)
+- Next.js: [better-translate-placeholder.com/en/docs/adapters/nextjs](https://better-translate-placeholder.com/en/docs/adapters/nextjs)
+- Astro: [better-translate-placeholder.com/en/docs/adapters/astro](https://better-translate-placeholder.com/en/docs/adapters/astro)
+- TanStack Router: [better-translate-placeholder.com/en/docs/adapters/tanstack-router](https://better-translate-placeholder.com/en/docs/adapters/tanstack-router)
+- MD & MDX: [better-translate-placeholder.com/en/docs/adapters/md](https://better-translate-placeholder.com/en/docs/adapters/md)
+- CLI: [better-translate-placeholder.com/en/docs/cli](https://better-translate-placeholder.com/en/docs/cli)
 
-## Scripts
+## Workspace
 
-```sh
-bun run build
-bun run build:packages
-bun run check-types
-bun run check-types:packages
-```
-
-`build:packages` and `check-types:packages` include `better-translate` and the framework packages.
-
-## Core Direction
-
-The `better-translate` package is responsible for:
-
-- configuring translations globally for a TypeScript project
-- deriving dot-notation translation keys from source messages
-- supporting fallback locales
-- supporting async locale loaders for future services
-- remaining independent from framework-specific runtime concerns
+The repository uses Bun and Turborepo. Public packages live in `packages/`, the landing site lives in `apps/landing`, and runnable integration examples live in `examples/`.

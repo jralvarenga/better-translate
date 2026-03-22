@@ -3,7 +3,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 
 import { createElement, type ReactNode } from "react";
 
-import { configureTranslations } from "better-translate/core";
+import { configureTranslations } from "@better-translate/core";
 
 import { createNavigationFunctions } from "../../src/navigation.js";
 import {

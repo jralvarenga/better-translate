@@ -1,6 +1,6 @@
 {
   "name": "@better-translate/nextjs",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Next.js integration package for Better Translate.",
   "license": "MIT",
   "type": "module",
@@ -33,6 +33,7 @@
   },
   "files": [
     "dist",
+    "LICENSE",
     "README.md"
   ],
   "scripts": {
@@ -44,9 +45,18 @@
   "publishConfig": {
     "access": "public"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jralvarenga/better-translate.git",
+    "directory": "packages/nextjs"
+  },
+  "homepage": "https://github.com/jralvarenga/better-translate/tree/main/packages/nextjs#readme",
+  "bugs": {
+    "url": "https://github.com/jralvarenga/better-translate/issues"
+  },
   "dependencies": {
     "@formatjs/intl-localematcher": "^0.6.2",
-    "better-translate": "0.0.0",
+    "@better-translate/core": "workspace:^",
     "negotiator": "^1.0.0"
   },
   "peerDependencies": {

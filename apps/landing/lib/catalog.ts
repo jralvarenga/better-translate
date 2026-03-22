@@ -1,4 +1,4 @@
-import type { TranslationKey } from "better-translate/core";
+import type { TranslationKey } from "@better-translate/core";
 
 import { createElement, type ComponentType } from "react";
 
@@ -75,7 +75,7 @@ const catalog = [
     icon: TypeScriptIcon,
     iconClassName: "text-blue-500",
     id: "typescript",
-    install: "bun add better-translate",
+    install: "bun add @better-translate/core",
     kind: "framework",
     name: "TypeScript",
   },
@@ -92,7 +92,7 @@ const catalog = [
     descriptionKey: "frameworks.items.bun.description",
     icon: BunIcon,
     id: "bun",
-    install: "bun add better-translate",
+    install: "bun add @better-translate/core",
     kind: "framework",
     name: "Bun",
   },
@@ -101,7 +101,7 @@ const catalog = [
     icon: RiNodejsLine,
     iconClassName: "text-green-500",
     id: "nodejs",
-    install: "bun add better-translate",
+    install: "bun add @better-translate/core",
     kind: "framework",
     name: "Node.js",
   },

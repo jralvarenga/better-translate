@@ -42,7 +42,7 @@ const t = await getTranslations();     // función de traducción tipada
 <p>{t("home.title")}</p>
 ```
 
-Ambos helpers leen desde el mismo contexto de solicitud poblado por el middleware — sin necesidad de pasar props.
+Ambos helpers leen desde el mismo contexto de solicitud poblado por el middleware ,  sin necesidad de pasar props.
 
 ## Composición con otro middleware
 

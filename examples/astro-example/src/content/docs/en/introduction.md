@@ -9,7 +9,7 @@ description: What Better Translate is, why it works well with Astro, and how it 
 
 ## Why Better Translate with Astro?
 
-Astro ships with excellent built-in i18n routing. Better Translate adds the layer above that — managing translation messages, locale negotiation, and content fallbacks — so you can focus on your content instead of wiring utilities together.
+Astro ships with excellent built-in i18n routing. Better Translate adds the layer above that ,  managing translation messages, locale negotiation, and content fallbacks ,  so you can focus on your content instead of wiring utilities together.
 
 Key advantages:
 

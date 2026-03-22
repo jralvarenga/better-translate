@@ -4,13 +4,13 @@ A Next.js App Router example demonstrating localized `.md` and `.mdx` content us
 
 ## What this example shows
 
-- **Normal routes only** — no `/[lang]` in the URL. Routes are `/`, `/docs`, and `/docs/[...slug]`.
-- **Cookie-based locale** — language is stored in a `bt-locale` cookie. Switching languages updates the cookie and refreshes the current route.
-- **UI translations** — `better-translate/core` handles app-level strings with typed keys and per-call locale override.
-- **Localized content** — `@better-translate/md` resolves locale-specific Markdown and MDX files from `content/{locale}/`.
-- **Automatic fallback** — missing locale files fall back to the default locale. The document exposes `usedFallback: true` so you can surface a notice in the UI.
-- **MDX rendering** — `.mdx` documents are evaluated server-side using `evaluate()` from `@mdx-js/mdx` with custom components passed via the `components` prop.
-- **No `@better-translate/nextjs`** — this example does not use the Next.js adapter package.
+- **Normal routes only** ,  no `/[lang]` in the URL. Routes are `/`, `/docs`, and `/docs/[...slug]`.
+- **Cookie-based locale** ,  language is stored in a `bt-locale` cookie. Switching languages updates the cookie and refreshes the current route.
+- **UI translations** ,  `better-translate/core` handles app-level strings with typed keys and per-call locale override.
+- **Localized content** ,  `@better-translate/md` resolves locale-specific Markdown and MDX files from `content/{locale}/`.
+- **Automatic fallback** ,  missing locale files fall back to the default locale. The document exposes `usedFallback: true` so you can surface a notice in the UI.
+- **MDX rendering** ,  `.mdx` documents are evaluated server-side using `evaluate()` from `@mdx-js/mdx` with custom components passed via the `components` prop.
+- **No `@better-translate/nextjs`** ,  this example does not use the Next.js adapter package.
 
 ## Routes
 
@@ -44,7 +44,7 @@ User clicks locale button in header
 content/
   en/
     docs/getting-started.md       ← .md document (both locales)
-    docs/component-demo.mdx       ← .mdx document (English only — fallback demo)
+    docs/component-demo.mdx       ← .mdx document (English only ,  fallback demo)
   es/
     docs/getting-started.md       ← .md document (Spanish translation)
     (no component-demo.mdx)       ← intentionally missing to show fallback
@@ -57,21 +57,21 @@ Switching to Spanish on the Component Demo page shows a fallback banner because 
 ```
 src/
   lib/i18n/
-    locale.ts          — locales, defaultLocale, cookie name, helpers
-    config.ts          — configureTranslations() singleton
-    server.ts          — getCurrentLocale(), getTranslations(), getMarkdownHelpers()
-    actions.ts         — setLocale() server action (updates the cookie)
+    locale.ts          ,  locales, defaultLocale, cookie name, helpers
+    config.ts          ,  configureTranslations() singleton
+    server.ts          ,  getCurrentLocale(), getTranslations(), getMarkdownHelpers()
+    actions.ts         ,  setLocale() server action (updates the cookie)
     messages/
-      en.ts            — English UI strings
-      es.ts            — Spanish UI strings
+      en.ts            ,  English UI strings
+      es.ts            ,  Spanish UI strings
   components/
-    header.tsx         — client component: nav + locale switcher
-    mdx-components.tsx — Callout and Card components for MDX
+    header.tsx         ,  client component: nav + locale switcher
+    mdx-components.tsx ,  Callout and Card components for MDX
   app/
-    page.tsx           — home page (server component)
-    docs/page.tsx      — docs index (server component)
+    page.tsx           ,  home page (server component)
+    docs/page.tsx      ,  docs index (server component)
     docs/[...slug]/
-      page.tsx         — document page (.md HTML or .mdx evaluated)
+      page.tsx         ,  document page (.md HTML or .mdx evaluated)
 ```
 
 ## Running
@@ -97,6 +97,6 @@ bun run dev
 
 ## Packages used
 
-- `better-translate` — core translation engine
-- `@better-translate/md` — localized Markdown/MDX content helpers
-- `@mdx-js/mdx` — MDX compilation and evaluation at render time
+- `better-translate` ,  core translation engine
+- `@better-translate/md` ,  localized Markdown/MDX content helpers
+- `@mdx-js/mdx` ,  MDX compilation and evaluation at render time

@@ -1,18 +1,18 @@
 export const ja = {
   "codeDemo": {
-    "description": "一度設定すれば、どこでも型付きのヘルパーを作成できます。",
-    "title": "シンプルな二段階 API"
+    "description": "Next.js でも Astro でも React でもプレーン Node でも、同じ設定がそのまま動きます。",
+    "title": "1つの API。あらゆる環境"
   },
   "features": {
-    "description": "本番環境向け i18n に必要なものはすべて揃っており、余計なものは一切ありません。",
+    "description": "同じセットアップ、同じ API、同じ体験 ,  どの TypeScript 環境にいても変わりません。",
     "items": {
       "autocomplete": {
         "description": "エディタはメッセージオブジェクト内のすべてのキーを認識します。`t(\"home.` が瞬時に補完を始めます。",
         "title": "あらゆる場所でのオートコンプリート"
       },
       "frameworkAgnostic": {
-        "description": "フレームワークに縛られない。1つのコアパッケージと、React、Next.js、TanStack Router、そしてプレーンな Node の一流アダプター。",
-        "title": "フレームワーク非依存"
+        "description": "翻訳設定を一度書けば、Next.js、Astro、React、TanStack Router、プレーン Node で同じように動きます。環境を変えても、設定はそのまま。",
+        "title": "同じ設定、あらゆる環境"
       },
       "localeSwitching": {
         "description": "ページの再読み込みなしで実行時にロケールを切り替えます。呼び出しごとのオーバーライドにより、任意のロケールを必要に応じてレンダリングできます。",
@@ -23,7 +23,7 @@ export const ja = {
         "title": "デフォルトで型安全"
       }
     },
-    "title": "TypeScript チームのために設計されたツール"
+    "title": "同じセットアップ。あらゆる環境"
   },
   "footer": {
     "docs": "ドキュメント",
@@ -32,9 +32,9 @@ export const ja = {
     "npm": "npm"
   },
   "frameworks": {
-    "description": "共通の翻訳コアを1つ。主要な TypeScript フレームワーク向けのネイティブアダプター、あるいはコアを直接使用。",
-    "heroDescription": "フレームワークに縛られない - 1つのコア、ランタイム依存性ゼロ",
-    "heroTitle": "任意の TypeScript プロジェクトで動作します",
+    "description": "どの TypeScript 環境でも同じように動く翻訳設定。ネイティブアダプター、同一 API。",
+    "heroDescription": "i18n 設定を書き直さずにフレームワークを切り替えられます",
+    "heroTitle": "どこでも同じ設定",
     "items": {
       "astro": {
         "description": ".md と .mdx の両方に対応する、リクエスト単位のヘルパーとローカライズされた Astro コンテンツコレクション。"
@@ -71,11 +71,11 @@ export const ja = {
     "openMenu": "メニューを開く"
   },
   "hero": {
-    "badge": "フレームワーク非依存 - どんな TypeScript プロジェクトでも動作",
-    "description": "翻訳を一度定義します。オートコンプリート、型エラー、ロケール切替を――フレームワーク縛りなし。任意の TypeScript コードベースで動作します。",
+    "badge": "同じ設定。あらゆる TypeScript 環境",
+    "description": "同じ設定。同じ API。Next.js、Astro、React、TanStack Router、プレーン Node で書き直しなしで動きます。",
     "primaryCta": "ドキュメントを見る",
     "secondaryCta": "GitHub で見る",
-    "title": "TypeScript の型安全な翻訳"
+    "title": "あらゆる TypeScript プロジェクトに対応する i18n 設定"
   },
   "docs": {
     "copyMarkdown": "マークダウンをコピー",
