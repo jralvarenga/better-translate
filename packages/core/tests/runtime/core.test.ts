@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from "bun:test";
+import { beforeEach, describe, expect, it } from "bun:test";
 
 import {
   configureTranslations,
@@ -51,7 +51,7 @@ const jaLanguage = {
 } as const;
 
 describe("better-translate core", () => {
-  afterEach(() => {
+  beforeEach(() => {
     resetTranslationsForTests();
   });
 
