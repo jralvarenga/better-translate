@@ -8,7 +8,6 @@ import {
   getMessages,
   getSupportedLocales,
   loadLocale,
-  resetTranslationsForTests,
   t,
 } from "../../src/core.js";
 import { readConfiguredTranslationsFromAnotherFile } from "../../src/cross-file-access.js";
@@ -51,6 +50,15 @@ const jaLanguage = {
 } as const;
 
 describe("better-translate core", () => {
+  it("throws before configuration", () => {
+    expect(() => t("common.hello")).toThrow(
+      'Translations have not been configured. Call configureTranslations(...) before using "t(...)".',
+    );
+    expect(() => getMessages()).toThrow(
+      'Translations have not been configured. Call configureTranslations(...) before using "t(...)".',
+    );
+  });
+
   it("supports the short configuration form", async () => {
     const translator = await configureTranslations({ en, es });
 
@@ -529,16 +537,6 @@ describe("better-translate core", () => {
         ],
       } as const),
     ).rejects.toThrow('Duplicate locale "es" found in languages config.');
-  });
-
-  it("throws before configuration", () => {
-    resetTranslationsForTests();
-    expect(() => t("common.hello")).toThrow(
-      'Translations have not been configured. Call configureTranslations(...) before using "t(...)".',
-    );
-    expect(() => getMessages()).toThrow(
-      'Translations have not been configured. Call configureTranslations(...) before using "t(...)".',
-    );
   });
 
   it("creates a JSON schema from a source locale", () => {
