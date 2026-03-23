@@ -222,9 +222,9 @@
     },
     "packages/astro": {
       "name": "@better-translate/astro",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "dependencies": {
-        "@better-translate/core": "workspace:^",
+        "@better-translate/core": "^1.0.0",
       },
       "devDependencies": {
         "@repo/typescript-config": "*",
@@ -235,13 +235,13 @@
     },
     "packages/cli": {
       "name": "@better-translate/cli",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "bin": {
         "bt": "./dist/bin.js",
       },
       "dependencies": {
         "@ai-sdk/openai": "^3.0.41",
-        "@better-translate/core": "workspace:^",
+        "@better-translate/core": "^1.0.0",
         "ai": "^6.0.116",
         "dotenv": "^17.2.3",
         "gray-matter": "^4.0.3",
@@ -263,9 +263,9 @@
     },
     "packages/md": {
       "name": "@better-translate/md",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "dependencies": {
-        "@better-translate/core": "workspace:^",
+        "@better-translate/core": "^1.0.0",
         "@mdx-js/mdx": "^3.1.1",
         "gray-matter": "^4.0.3",
         "rehype-stringify": "^10.0.1",
@@ -285,9 +285,9 @@
     },
     "packages/nextjs": {
       "name": "@better-translate/nextjs",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "dependencies": {
-        "@better-translate/core": "workspace:^",
+        "@better-translate/core": "^1.0.0",
         "@formatjs/intl-localematcher": "^0.6.2",
         "negotiator": "^1.0.0",
       },
@@ -302,9 +302,9 @@
     },
     "packages/react": {
       "name": "@better-translate/react",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "dependencies": {
-        "@better-translate/core": "workspace:^",
+        "@better-translate/core": "^1.0.0",
       },
       "devDependencies": {
         "@repo/typescript-config": "*",
@@ -316,9 +316,9 @@
     },
     "packages/tanstack-router": {
       "name": "@better-translate/tanstack-router",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "dependencies": {
-        "@better-translate/core": "workspace:^",
+        "@better-translate/core": "^1.0.0",
       },
       "devDependencies": {
         "@repo/typescript-config": "*",
