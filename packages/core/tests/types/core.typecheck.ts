@@ -75,6 +75,7 @@ const translator = await configureTranslations({
 } as const);
 
 translator.t("common.hello");
+translator.t("Welcome back", { bt: true });
 translator.t(translationKey, { locale: "es" });
 translator.t("common.hello", {
   config: {

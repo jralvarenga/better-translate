@@ -118,8 +118,15 @@ export function BetterTranslateProvider<
   ) => {
     const [key, options] = args as unknown as [
       string,
-      ({ locale?: InferLocale<TTranslator> } & Record<string, unknown>)?,
+      ({ bt?: boolean; locale?: InferLocale<TTranslator> } & Record<
+        string,
+        unknown
+      >)?,
     ];
+
+    if (options?.bt === true) {
+      return key;
+    }
 
     return translator.t(
       key as never,

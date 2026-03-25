@@ -115,6 +115,11 @@ export function createConfiguredTranslator<
       string,
       TranslateOptions<TLocale> | undefined,
     ];
+
+    if ((options as { bt?: boolean } | undefined)?.bt === true) {
+      return key;
+    }
+
     const locale = resolveLocale(options);
     const activeValue = resolveMessageValue(messageCache[locale], key);
 

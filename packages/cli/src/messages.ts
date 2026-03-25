@@ -124,6 +124,40 @@ export function deriveTargetMessagesPath(
   return path.join(path.dirname(sourcePath), `${replaced}${extension}`);
 }
 
+function formatTsPropertyKey(key: string): string {
+  return /^[A-Za-z_$][A-Za-z0-9_$]*$/u.test(key)
+    ? key
+    : JSON.stringify(key);
+}
+
+function serializeTsObject(
+  messages: TranslationMessages,
+  indentLevel = 0,
+): string {
+  const entries = Object.entries(messages);
+
+  if (entries.length === 0) {
+    return "{}";
+  }
+
+  const indent = "  ".repeat(indentLevel);
+  const childIndent = "  ".repeat(indentLevel + 1);
+  const lines = entries.map(([key, value]) => {
+    const propertyKey = formatTsPropertyKey(key);
+
+    if (typeof value === "string") {
+      return `${childIndent}${propertyKey}: ${JSON.stringify(value)},`;
+    }
+
+    return `${childIndent}${propertyKey}: ${serializeTsObject(
+      value as TranslationMessages,
+      indentLevel + 1,
+    )},`;
+  });
+
+  return `{\n${lines.join("\n")}\n${indent}}`;
+}
+
 export function serializeMessages(
   messages: TranslationMessages,
   format: "json" | "ts",
@@ -134,7 +168,7 @@ export function serializeMessages(
   }
 
   const identifier = toJavaScriptIdentifier(locale);
-  const objectLiteral = JSON.stringify(messages, null, 2);
+  const objectLiteral = serializeTsObject(messages);
 
   return `export const ${identifier} = ${objectLiteral} as const;\n\nexport default ${identifier};\n`;
 }

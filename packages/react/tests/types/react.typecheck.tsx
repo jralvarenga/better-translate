@@ -56,6 +56,7 @@ function Consumer() {
   const translations = useTranslations<typeof translator>();
 
   translations.t("common.hello");
+  translations.t("Welcome back", { bt: true });
   translations.t("account.balance.label");
   translations.t("common.greeting", {
     params: {

@@ -1,21 +1,25 @@
 import pc from "picocolors";
 
+import { extractProject } from "./extract.js";
 import { generateProject } from "./generate.js";
 import { createSpinnerLogger } from "./logger.js";
 
 function usage(): string {
   return [
     "Usage:",
+    "  bt extract [--config ./better-translate.config.ts] [--dry-run] [--max-length 40]",
     "  bt generate [--config ./better-translate.config.ts] [--dry-run]",
   ].join("\n");
 }
 
-function parseArgs(argv: readonly string[]): {
+function parseCommonArgs(argv: readonly string[]): {
   configPath?: string;
   dryRun: boolean;
+  maxLength?: number;
 } {
   let configPath: string | undefined;
   let dryRun = false;
+  let maxLength: number | undefined;
 
   for (let index = 0; index < argv.length; index += 1) {
     const arg = argv[index];
@@ -37,12 +41,31 @@ function parseArgs(argv: readonly string[]): {
       continue;
     }
 
+    if (arg === "--max-length") {
+      const value = argv[index + 1];
+
+      if (!value) {
+        throw new Error("--max-length requires a number.");
+      }
+
+      const parsed = Number.parseInt(value, 10);
+
+      if (!Number.isInteger(parsed) || parsed <= 0) {
+        throw new Error("--max-length must be a positive integer.");
+      }
+
+      maxLength = parsed;
+      index += 1;
+      continue;
+    }
+
     throw new Error(`Unknown argument "${arg}".`);
   }
 
   return {
     configPath,
     dryRun,
+    maxLength,
   };
 }
 
@@ -63,27 +86,37 @@ export async function runCli(
     return command ? 0 : 1;
   }
 
-  if (command !== "generate") {
+  if (command !== "extract" && command !== "generate") {
     stderr(`Unknown command "${command}".\n${usage()}`);
     return 1;
   }
 
   try {
-    const parsed = parseArgs(args);
+    const parsed = parseCommonArgs(args);
 
     console.log(pc.bold("\n  better-translate\n"));
 
-    await generateProject({
-      configPath: parsed.configPath,
-      cwd: options.cwd,
-      dryRun: parsed.dryRun,
-      logger: createSpinnerLogger(),
-    });
+    if (command === "extract") {
+      await extractProject({
+        configPath: parsed.configPath,
+        cwd: options.cwd,
+        dryRun: parsed.dryRun,
+        logger: createSpinnerLogger(),
+        maxLength: parsed.maxLength,
+      });
+    } else {
+      await generateProject({
+        configPath: parsed.configPath,
+        cwd: options.cwd,
+        dryRun: parsed.dryRun,
+        logger: createSpinnerLogger(),
+      });
+    }
 
     return 0;
   } catch (error) {
     stderr(
-      `Better Translate generation failed: ${
+      `Better Translate ${command} failed: ${
         error instanceof Error ? error.message : String(error)
       }`,
     );

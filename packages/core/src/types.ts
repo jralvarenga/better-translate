@@ -206,6 +206,13 @@ export type TranslationKeysWithOptionalParams<
   TranslationKeysWithRequiredParams<TMessages>
 >;
 
+export interface BtTranslateOptions {
+  bt: true;
+  config?: never;
+  locale?: never;
+  params?: never;
+}
+
 export type TranslateOptionsForKey<
   TLocale extends string,
   TMessages extends TranslationMessages,
@@ -236,12 +243,17 @@ export type TranslateCall<
   TKey extends TranslationKey<TMessages> = TranslationKey<TMessages>,
 > = [key: TKey, ...args: TranslateArgs<TLocale, TMessages, TKey>];
 
+export type BtTranslateCall = [value: string, options: BtTranslateOptions];
+
 export type TranslateFunction<
   TLocale extends string,
   TMessages extends TranslationMessages,
-> = <TKey extends TranslationKey<TMessages>>(
-  ...args: TranslateCall<TLocale, TMessages, TKey>
-) => string;
+> = {
+  <TKey extends TranslationKey<TMessages>>(
+    ...args: TranslateCall<TLocale, TMessages, TKey>
+  ): string;
+  (...args: BtTranslateCall): string;
+};
 
 export interface TranslationJsonStringSchema {
   type: "string";
@@ -277,6 +289,13 @@ export interface TranslationConfig<TLocale extends string> {
  * Optional overrides for a single translation lookup.
  */
 export interface TranslateOptions<TLocale extends string> {
+  /**
+   * Marks this call for `bt extract`.
+   *
+   * When true, `t(...)` returns the provided string unchanged until the CLI
+   * rewrites it to a strict keyed call.
+   */
+  bt?: true;
   /**
    * Uses a specific locale for this call instead of the configured default locale.
    */

@@ -51,6 +51,7 @@ const jaLanguage = {
 
 describe("better-translate core", () => {
   it("throws before configuration", async () => {
+    expect(t("Welcome back", { bt: true })).toBe("Welcome back");
     expect(() => t("common.hello")).toThrow(
       'Translations have not been configured. Call configureTranslations(...) before using "t(...)".',
     );
@@ -87,6 +88,7 @@ describe("better-translate core", () => {
         },
       }),
     ).toBe("Good morning Ada");
+    expect(translator.t("Welcome back", { bt: true })).toBe("Welcome back");
     expect(translator.getMessages()).toEqual({ en, es });
   });
 
@@ -362,6 +364,7 @@ describe("better-translate core", () => {
         },
       }),
     ).toBe("Good morning Ada");
+    expect(helpers.t("Welcome back", { bt: true })).toBe("Welcome back");
     expect(helpers.getSupportedLocales()).toEqual(["en", "es", "ja"]);
     expect(helpers.getAvailableLanguages()).toEqual([
       jaLanguage,

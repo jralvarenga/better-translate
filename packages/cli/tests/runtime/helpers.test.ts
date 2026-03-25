@@ -336,6 +336,27 @@ export default config;
         "pt-BR",
       ),
     ).toContain("export const ptBr");
+    expect(
+      serializeMessages(
+        {
+          greeting: "Hola",
+          nested: {
+            home: "Inicio",
+          },
+        },
+        "ts",
+        "pt-BR",
+      ),
+    ).toContain('greeting: "Hola"');
+    expect(
+      serializeMessages(
+        {
+          greeting: "Hola",
+        },
+        "ts",
+        "pt-BR",
+      ),
+    ).not.toContain('"greeting": "Hola"');
 
     expect(await importModule(jsModulePath)).toEqual({
       default: {
@@ -627,12 +648,26 @@ count: 1
       }),
     ).toBe(1);
     expect(
+      await runCli(["extract", "--config"], {
+        stderr(message) {
+          stderr.push(message);
+        },
+      }),
+    ).toBe(1);
+    expect(
       stderr.some((message) => message.includes('Unknown command "unknown".')),
     ).toBe(true);
     expect(
       stderr.some((message) =>
         message.includes(
-          "Better Translate generation failed: --config requires a file path.",
+          "Better Translate generate failed: --config requires a file path.",
+        ),
+      ),
+    ).toBe(true);
+    expect(
+      stderr.some((message) =>
+        message.includes(
+          "Better Translate extract failed: --config requires a file path.",
         ),
       ),
     ).toBe(true);

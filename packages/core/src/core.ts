@@ -5,6 +5,7 @@ import { normalizeConfig } from "./normalize-config.js";
 import type {
   AnyTranslationHelpers,
   AnyConfiguredTranslator,
+  BtTranslateOptions,
   ConfiguredTranslator,
   OptionsFormTranslator,
   RuntimeConfigInput,
@@ -19,6 +20,8 @@ import type {
 } from "./types.js";
 
 export type {
+  BtTranslateCall,
+  BtTranslateOptions,
   CachedMessages,
   ConfiguredTranslator,
   DeepPartialMessages,
@@ -215,7 +218,16 @@ export function getTranslator(): AnyConfiguredTranslator {
  * This is the top-level convenience helper for projects that configure Better
  * Translate once and then translate from shared global state.
  */
-export function t(key: string, options?: TranslateOptions<string>): string {
+export function t(key: string, options: BtTranslateOptions): string;
+export function t(key: string, options?: TranslateOptions<string>): string;
+export function t(
+  key: string,
+  options?: BtTranslateOptions | TranslateOptions<string>,
+): string {
+  if ((options as { bt?: boolean } | undefined)?.bt === true) {
+    return key;
+  }
+
   return (
     getTranslator() as {
       t(key: string, options?: TranslateOptions<string>): string;

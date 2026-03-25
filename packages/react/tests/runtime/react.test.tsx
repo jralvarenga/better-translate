@@ -114,6 +114,7 @@ describe("@better-translate/react", () => {
       },
     ]);
     expect(latestValue?.t("common.hello")).toBe("Hello");
+    expect(latestValue?.t("Welcome back", { bt: true })).toBe("Welcome back");
     expect(
       latestValue?.t("common.greeting", {
         params: {
