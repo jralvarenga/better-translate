@@ -1,6 +1,6 @@
 {
   "name": "astro-example",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "scripts": {
     "dev": "astro dev --port 3006",
@@ -9,9 +9,9 @@
   },
   "dependencies": {
     "@astrojs/mdx": "^5.0.0",
-    "@better-translate/astro": "^1.0.1",
+    "@better-translate/astro": "^1.0.2",
     "astro": "^6.0.0",
-    "@better-translate/core": "^1.0.0"
+    "@better-translate/core": "^2.0.0"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.0.0",

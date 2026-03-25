@@ -1,6 +1,6 @@
 {
   "name": "md-nextjs-example",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "scripts": {
     "dev": "next dev --port 3004",
@@ -8,9 +8,9 @@
     "start": "next start"
   },
   "dependencies": {
-    "@better-translate/md": "^1.0.1",
+    "@better-translate/md": "^1.0.2",
     "@mdx-js/mdx": "^3.1.1",
-    "@better-translate/core": "^1.0.0",
+    "@better-translate/core": "^2.0.0",
     "next": "16.1.6",
     "react": "^19",
     "react-dom": "^19"
@@ -23,6 +23,12 @@
     "tailwindcss": "^4",
     "typescript": "^5"
   },
-  "ignoreScripts": ["sharp", "unrs-resolver"],
-  "trustedDependencies": ["sharp", "unrs-resolver"]
+  "ignoreScripts": [
+    "sharp",
+    "unrs-resolver"
+  ],
+  "trustedDependencies": [
+    "sharp",
+    "unrs-resolver"
+  ]
 }
