@@ -126,7 +126,10 @@ function getMessageValue(
   let current: TranslationMessages | string | undefined = messages;
 
   for (const segment of keyPath.split(".")) {
-    if (!isRecord(current) || !(segment in current)) {
+    if (
+      !isRecord(current) ||
+      !Object.prototype.hasOwnProperty.call(current, segment)
+    ) {
       return undefined;
     }
 
@@ -146,7 +149,9 @@ function setMessageValue(
   let current = messages as Record<string, unknown>;
 
   for (const segment of segments.slice(0, -1)) {
-    const existing = current[segment];
+    const existing = Object.prototype.hasOwnProperty.call(current, segment)
+      ? current[segment]
+      : undefined;
 
     if (existing !== undefined && !isRecord(existing)) {
       logWarning?.(
@@ -163,7 +168,9 @@ function setMessageValue(
   }
 
   const finalSegment = segments[segments.length - 1]!;
-  const finalExisting = current[finalSegment];
+  const finalExisting = Object.prototype.hasOwnProperty.call(current, finalSegment)
+    ? current[finalSegment]
+    : undefined;
 
   if (isRecord(finalExisting)) {
     logWarning?.(
@@ -388,6 +395,27 @@ function analyzeFile(options: {
     const leafKey = createLeafKey(literalValue, maxLength);
     const fullKey = namespace ? `${namespace}.${leafKey}` : leafKey;
 
+    const nodeStart = node.getStart(sourceFile);
+    const nodeEnd = node.getEnd();
+
+    const overlapping = literalCandidates.some((existing) => {
+      const existingStart = existing.callExpression.getStart(sourceFile);
+      const existingEnd = existing.callExpression.getEnd();
+      return nodeStart < existingEnd && nodeEnd > existingStart;
+    });
+
+    if (overlapping) {
+      logWarning(
+        createWarning(
+          sourceFile,
+          node,
+          "skipped marked t() call because it overlaps with another marked t() call.",
+        ),
+      );
+      ts.forEachChild(node, visit);
+      return;
+    }
+
     literalCandidates.push({
       callExpression: node,
       fullKey,
@@ -513,9 +541,11 @@ async function collectSourceFiles(
   directory: string,
   ignoredPaths: ReadonlySet<string>,
 ): Promise<string[]> {
-  const entries = await readdir(directory, {
-    withFileTypes: true,
-  });
+  const entries = (
+    await readdir(directory, {
+      withFileTypes: true,
+    })
+  ).sort((a, b) => a.name.localeCompare(b.name));
   const files: string[] = [];
 
   for (const entry of entries) {
