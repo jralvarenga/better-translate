@@ -140,12 +140,20 @@ function setMessageValue(
   messages: TranslationMessages,
   keyPath: string,
   value: string,
-): void {
+  logWarning?: (msg: string) => void,
+): boolean {
   const segments = keyPath.split(".");
   let current = messages as Record<string, unknown>;
 
   for (const segment of segments.slice(0, -1)) {
     const existing = current[segment];
+
+    if (existing !== undefined && !isRecord(existing)) {
+      logWarning?.(
+        `key "${keyPath}" conflicts with existing leaf value at segment "${segment}"; skipping.`,
+      );
+      return false;
+    }
 
     if (!isRecord(existing)) {
       current[segment] = {};
@@ -155,6 +163,7 @@ function setMessageValue(
   }
 
   current[segments[segments.length - 1]!] = value;
+  return true;
 }
 
 function createScriptKind(sourcePath: string): ts.ScriptKind {
@@ -434,9 +443,16 @@ function analyzeFile(options: {
     const existingValue = getMessageValue(messages, candidate.fullKey);
 
     if (existingValue === undefined) {
-      setMessageValue(messages, candidate.fullKey, candidate.sourceValue);
-      addedKeys.push(candidate.fullKey);
-      successfulCandidates.push(candidate);
+      const written = setMessageValue(
+        messages,
+        candidate.fullKey,
+        candidate.sourceValue,
+        logWarning,
+      );
+      if (written) {
+        addedKeys.push(candidate.fullKey);
+        successfulCandidates.push(candidate);
+      }
       continue;
     }
 

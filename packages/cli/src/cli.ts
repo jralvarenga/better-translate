@@ -48,6 +48,10 @@ function parseCommonArgs(argv: readonly string[]): {
         throw new Error("--max-length requires a number.");
       }
 
+      if (!/^\d+$/.test(value)) {
+        throw new Error("--max-length must be a positive integer.");
+      }
+
       const parsed = Number.parseInt(value, 10);
 
       if (!Number.isInteger(parsed) || parsed <= 0) {
@@ -93,6 +97,11 @@ export async function runCli(
 
   try {
     const parsed = parseCommonArgs(args);
+
+    if (command === "generate" && parsed.maxLength !== undefined) {
+      stderr(`--max-length is not valid for "generate".\n${usage()}`);
+      return 1;
+    }
 
     console.log(pc.bold("\n  better-translate\n"));
 
