@@ -6,6 +6,7 @@ import { pathToFileURL } from "node:url";
 import { afterEach, describe, expect, it } from "bun:test";
 
 import { loadCliConfig } from "../../src/config-loader.js";
+import { extractProject } from "../../src/extract.js";
 import { generateProject } from "../../src/generate.js";
 
 const tempDirectories: string[] = [];
@@ -275,6 +276,654 @@ export default defineConfig({
   });
 });
 
+describe("extractProject", () => {
+  it("rewrites marked t() calls and syncs source locale JSON", async () => {
+    const workspace = await createWorkspace();
+    const sourcePath = path.join(workspace, "src/components/sidebar/Nav.ts");
+
+    await mkdir(path.dirname(sourcePath), {
+      recursive: true,
+    });
+    await mkdir(path.join(workspace, "messages"), {
+      recursive: true,
+    });
+    await writeFile(
+      path.join(workspace, "messages/en.json"),
+      JSON.stringify({}, null, 2),
+      "utf8",
+    );
+    await writeFile(
+      sourcePath,
+      `import { t } from "@better-translate/core";
+
+export function navLabel() {
+  return t("Home", { bt: true });
+}
+`,
+      "utf8",
+    );
+    await writeFile(
+      path.join(workspace, "better-translate.config.ts"),
+      `export default {
+  gateway: {
+    apiKey: "test-gateway-key",
+  },
+  sourceLocale: "en",
+  locales: ["es"],
+  model: "anthropic/claude-sonnet-4.5",
+  messages: {
+    entry: "./messages/en.json",
+  },
+};`,
+      "utf8",
+    );
+
+    const infoMessages: string[] = [];
+    await extractProject({
+      cwd: workspace,
+      logger: {
+        error() {},
+        info(message) {
+          infoMessages.push(message);
+        },
+      },
+    });
+
+    expect(
+      JSON.parse(
+        await readFile(path.join(workspace, "messages/en.json"), "utf8"),
+      ),
+    ).toEqual({
+      sidebar: {
+        nav: {
+          home: "Home",
+        },
+      },
+    });
+
+    const updatedSource = await readFile(sourcePath, "utf8");
+    expect(updatedSource).toContain('return t("sidebar.nav.home");');
+    expect(updatedSource).not.toContain("{ bt: true }");
+    expect(infoMessages).toContain(`rewrote ${sourcePath}`);
+  });
+
+  it("rewrites marked property-access t() calls", async () => {
+    const workspace = await createWorkspace();
+    const sourcePath = path.join(workspace, "src/routes/login.ts");
+
+    await mkdir(path.dirname(sourcePath), {
+      recursive: true,
+    });
+    await mkdir(path.join(workspace, "messages"), {
+      recursive: true,
+    });
+    await writeFile(
+      path.join(workspace, "messages/en.json"),
+      JSON.stringify({}, null, 2),
+      "utf8",
+    );
+    await writeFile(
+      sourcePath,
+      `export function loginTitle(translator: { t(value: string, options?: { bt?: true }): string }) {
+  return translator.t("Welcome back", { bt: true });
+}
+`,
+      "utf8",
+    );
+    await writeFile(
+      path.join(workspace, "better-translate.config.ts"),
+      `export default {
+  gateway: {
+    apiKey: "test-gateway-key",
+  },
+  sourceLocale: "en",
+  locales: ["es"],
+  model: "anthropic/claude-sonnet-4.5",
+  messages: {
+    entry: "./messages/en.json",
+  },
+};`,
+      "utf8",
+    );
+
+    await extractProject({
+      cwd: workspace,
+      logger: {
+        error() {},
+        info() {},
+      },
+    });
+
+    expect(
+      JSON.parse(
+        await readFile(path.join(workspace, "messages/en.json"), "utf8"),
+      ),
+    ).toEqual({
+      login: {
+        welcomeBack: "Welcome back",
+      },
+    });
+
+    const updatedSource = await readFile(sourcePath, "utf8");
+    expect(updatedSource).toContain(
+      'return translator.t("login.welcomeBack");',
+    );
+    expect(updatedSource).not.toContain("{ bt: true }");
+  });
+
+  it("preserves params while removing only the bt marker", async () => {
+    const workspace = await createWorkspace();
+    const sourcePath = path.join(workspace, "src/components/hero-section.ts");
+
+    await mkdir(path.dirname(sourcePath), {
+      recursive: true,
+    });
+    await mkdir(path.join(workspace, "messages"), {
+      recursive: true,
+    });
+    await writeFile(
+      path.join(workspace, "messages/en.json"),
+      JSON.stringify({}, null, 2),
+      "utf8",
+    );
+    await writeFile(
+      sourcePath,
+      `export function heroBadge() {
+  return t("Same config. Every {language} environment", {
+    bt: true,
+    params: {
+      language: "",
+    },
+  });
+}
+`,
+      "utf8",
+    );
+    await writeFile(
+      path.join(workspace, "better-translate.config.ts"),
+      `export default {
+  gateway: {
+    apiKey: "test-gateway-key",
+  },
+  sourceLocale: "en",
+  locales: ["es"],
+  model: "anthropic/claude-sonnet-4.5",
+  messages: {
+    entry: "./messages/en.json",
+  },
+};`,
+      "utf8",
+    );
+
+    await extractProject({
+      cwd: workspace,
+      logger: {
+        error() {},
+        info() {},
+      },
+    });
+
+    expect(
+      JSON.parse(
+        await readFile(path.join(workspace, "messages/en.json"), "utf8"),
+      ),
+    ).toEqual({
+      heroSection: {
+        sameConfigEveryLanguageEnvironment:
+          "Same config. Every {language} environment",
+      },
+    });
+
+    const updatedSource = await readFile(sourcePath, "utf8");
+    expect(updatedSource).toContain(
+      't("heroSection.sameConfigEveryLanguageEnvironment", {',
+    );
+    expect(updatedSource).toContain("params:");
+    expect(updatedSource).toContain('language: ""');
+    expect(updatedSource).not.toContain("bt: true");
+  });
+
+  it("preserves other options when removing the bt marker", async () => {
+    const workspace = await createWorkspace();
+    const sourcePath = path.join(workspace, "src/components/sidebar/Nav.ts");
+
+    await mkdir(path.dirname(sourcePath), {
+      recursive: true,
+    });
+    await mkdir(path.join(workspace, "messages"), {
+      recursive: true,
+    });
+    await writeFile(
+      path.join(workspace, "messages/en.json"),
+      JSON.stringify({}, null, 2),
+      "utf8",
+    );
+    await writeFile(
+      sourcePath,
+      `export function navLabel() {
+  return t("Home", { bt: true, locale: "es" });
+}
+`,
+      "utf8",
+    );
+    await writeFile(
+      path.join(workspace, "better-translate.config.ts"),
+      `export default {
+  gateway: {
+    apiKey: "test-gateway-key",
+  },
+  sourceLocale: "en",
+  locales: ["es"],
+  model: "anthropic/claude-sonnet-4.5",
+  messages: {
+    entry: "./messages/en.json",
+  },
+};`,
+      "utf8",
+    );
+
+    await extractProject({
+      cwd: workspace,
+      logger: {
+        error() {},
+        info() {},
+      },
+    });
+
+    const updatedSource = await readFile(sourcePath, "utf8");
+    expect(updatedSource).toContain('return t("sidebar.nav.home", { locale: "es" });');
+    expect(updatedSource).not.toContain("bt: true");
+  });
+
+  it("ignores unmarked t() calls", async () => {
+    const workspace = await createWorkspace();
+    const sourcePath = path.join(workspace, "src/components/sidebar/Nav.ts");
+
+    await mkdir(path.dirname(sourcePath), {
+      recursive: true,
+    });
+    await mkdir(path.join(workspace, "messages"), {
+      recursive: true,
+    });
+    await writeFile(
+      path.join(workspace, "messages/en.json"),
+      JSON.stringify({}, null, 2),
+      "utf8",
+    );
+    await writeFile(
+      sourcePath,
+      `export function navLabel() {
+  return t("sidebar.nav.home");
+}
+`,
+      "utf8",
+    );
+    await writeFile(
+      path.join(workspace, "better-translate.config.ts"),
+      `export default {
+  gateway: {
+    apiKey: "test-gateway-key",
+  },
+  sourceLocale: "en",
+  locales: ["es"],
+  model: "anthropic/claude-sonnet-4.5",
+  messages: {
+    entry: "./messages/en.json",
+  },
+};`,
+      "utf8",
+    );
+
+    const result = await extractProject({
+      cwd: workspace,
+      logger: {
+        error() {},
+        info() {},
+      },
+    });
+
+    expect(result.filePaths).toEqual([]);
+    expect(result.updatedMessages).toEqual([]);
+    expect(await readFile(sourcePath, "utf8")).toContain(
+      'return t("sidebar.nav.home");',
+    );
+  });
+
+  it("warns and skips duplicate strings in the same file", async () => {
+    const workspace = await createWorkspace();
+    const sourcePath = path.join(workspace, "src/components/sidebar/Nav.ts");
+    const messages: string[] = [];
+
+    await mkdir(path.dirname(sourcePath), {
+      recursive: true,
+    });
+    await mkdir(path.join(workspace, "messages"), {
+      recursive: true,
+    });
+    await writeFile(
+      path.join(workspace, "messages/en.json"),
+      JSON.stringify({}, null, 2),
+      "utf8",
+    );
+    await writeFile(
+      sourcePath,
+      `export function labels() {
+  return [t("Home", { bt: true }), t("Home", { bt: true })];
+}
+`,
+      "utf8",
+    );
+    await writeFile(
+      path.join(workspace, "better-translate.config.ts"),
+      `export default {
+  gateway: {
+    apiKey: "test-gateway-key",
+  },
+  sourceLocale: "en",
+  locales: ["es"],
+  model: "anthropic/claude-sonnet-4.5",
+  messages: {
+    entry: "./messages/en.json",
+  },
+};`,
+      "utf8",
+    );
+
+    await extractProject({
+      cwd: workspace,
+      logger: {
+        error(message) {
+          messages.push(message);
+        },
+        info(message) {
+          messages.push(message);
+        },
+      },
+    });
+
+    expect(
+      JSON.parse(
+        await readFile(path.join(workspace, "messages/en.json"), "utf8"),
+      ),
+    ).toEqual({});
+    expect(await readFile(sourcePath, "utf8")).toContain("{ bt: true }");
+    expect(
+      messages.some((message) =>
+        message.includes("same string appears more than once in the file"),
+      ),
+    ).toBe(true);
+  });
+
+  it("truncates generated keys based on --max-length", async () => {
+    const workspace = await createWorkspace();
+    const sourcePath = path.join(workspace, "src/routes/checkout.ts");
+    const messages: string[] = [];
+    const longText = "This string is definitely longer than forty characters.";
+
+    await mkdir(path.dirname(sourcePath), {
+      recursive: true,
+    });
+    await mkdir(path.join(workspace, "messages"), {
+      recursive: true,
+    });
+    await writeFile(
+      path.join(workspace, "messages/en.json"),
+      JSON.stringify({}, null, 2),
+      "utf8",
+    );
+    await writeFile(
+      sourcePath,
+      `export const checkoutLabel = () => t(${JSON.stringify(longText)}, { bt: true });
+`,
+      "utf8",
+    );
+    await writeFile(
+      path.join(workspace, "better-translate.config.ts"),
+      `export default {
+  gateway: {
+    apiKey: "test-gateway-key",
+  },
+  sourceLocale: "en",
+  locales: ["es"],
+  model: "anthropic/claude-sonnet-4.5",
+  messages: {
+    entry: "./messages/en.json",
+  },
+};`,
+      "utf8",
+    );
+
+    await extractProject({
+      cwd: workspace,
+      logger: {
+        error() {},
+        info(message) {
+          messages.push(message);
+        },
+      },
+      maxLength: 20,
+    });
+
+    expect(
+      JSON.parse(
+        await readFile(path.join(workspace, "messages/en.json"), "utf8"),
+      ),
+    ).toEqual({
+      checkout: {
+        thisStringIsDefinite: longText,
+      },
+    });
+    expect(await readFile(sourcePath, "utf8")).toContain(
+      't("checkout.thisStringIsDefinite")',
+    );
+    expect(
+      messages.some((message) => message.includes("longer than --max-length")),
+    ).toBe(false);
+  });
+
+  it("warns and skips existing key conflicts", async () => {
+    const workspace = await createWorkspace();
+    const sourcePath = path.join(workspace, "src/components/sidebar/Nav.ts");
+    const messages: string[] = [];
+
+    await mkdir(path.dirname(sourcePath), {
+      recursive: true,
+    });
+    await mkdir(path.join(workspace, "messages"), {
+      recursive: true,
+    });
+    await writeFile(
+      path.join(workspace, "messages/en.json"),
+      JSON.stringify(
+        {
+          sidebar: {
+            nav: {
+              home: "Dashboard",
+            },
+          },
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+    await writeFile(
+      sourcePath,
+      `export function navLabel() {
+  return t("Home", { bt: true });
+}
+`,
+      "utf8",
+    );
+    await writeFile(
+      path.join(workspace, "better-translate.config.ts"),
+      `export default {
+  gateway: {
+    apiKey: "test-gateway-key",
+  },
+  sourceLocale: "en",
+  locales: ["es"],
+  model: "anthropic/claude-sonnet-4.5",
+  messages: {
+    entry: "./messages/en.json",
+  },
+};`,
+      "utf8",
+    );
+
+    await extractProject({
+      cwd: workspace,
+      logger: {
+        error(message) {
+          messages.push(message);
+        },
+        info(message) {
+          messages.push(message);
+        },
+      },
+    });
+
+    expect(
+      JSON.parse(
+        await readFile(path.join(workspace, "messages/en.json"), "utf8"),
+      ),
+    ).toEqual({
+      sidebar: {
+        nav: {
+          home: "Dashboard",
+        },
+      },
+    });
+    expect(await readFile(sourcePath, "utf8")).toContain("{ bt: true }");
+    expect(
+      messages.some((message) =>
+        message.includes("already exists with a different value"),
+      ),
+    ).toBe(true);
+  });
+
+  it("supports dry-run without mutating files", async () => {
+    const workspace = await createWorkspace();
+    const sourcePath = path.join(workspace, "src/components/sidebar/Nav.ts");
+    const originalSource = `import { t } from "@better-translate/core";
+
+export function navLabel() {
+  return t("Home", { bt: true });
+}
+`;
+
+    await mkdir(path.dirname(sourcePath), {
+      recursive: true,
+    });
+    await mkdir(path.join(workspace, "messages"), {
+      recursive: true,
+    });
+    await writeFile(
+      path.join(workspace, "messages/en.json"),
+      JSON.stringify({}, null, 2),
+      "utf8",
+    );
+    await writeFile(sourcePath, originalSource, "utf8");
+    await writeFile(
+      path.join(workspace, "better-translate.config.ts"),
+      `export default {
+  gateway: {
+    apiKey: "test-gateway-key",
+  },
+  sourceLocale: "en",
+  locales: ["es"],
+  model: "anthropic/claude-sonnet-4.5",
+  messages: {
+    entry: "./messages/en.json",
+  },
+};`,
+      "utf8",
+    );
+
+    const result = await extractProject({
+      cwd: workspace,
+      dryRun: true,
+      logger: {
+        error() {},
+        info() {},
+      },
+    });
+
+    expect(result.dryRun).toBe(true);
+    expect(result.updatedMessages).toEqual(["sidebar.nav.home"]);
+    expect(await readFile(sourcePath, "utf8")).toBe(originalSource);
+    expect(
+      JSON.parse(
+        await readFile(path.join(workspace, "messages/en.json"), "utf8"),
+      ),
+    ).toEqual({});
+  });
+
+  it("supports ts source message entries from config", async () => {
+    const workspace = await createWorkspace();
+    const sourcePath = path.join(workspace, "src/components/sidebar/Nav.ts");
+
+    await mkdir(path.dirname(sourcePath), {
+      recursive: true,
+    });
+    await mkdir(path.join(workspace, "messages"), {
+      recursive: true,
+    });
+    await writeFile(
+      sourcePath,
+      `export function navLabel() {
+  return t("Home", { bt: true });
+}
+`,
+      "utf8",
+    );
+    await writeFile(
+      path.join(workspace, "messages/en.ts"),
+      `// generated by @better-translate/cli\nexport const en = {
+  greeting: "Hello",
+} as const;
+
+export default en;
+`,
+      "utf8",
+    );
+    await writeFile(
+      path.join(workspace, "better-translate.config.ts"),
+      `export default {
+  gateway: {
+    apiKey: "test-gateway-key",
+  },
+  sourceLocale: "en",
+  locales: ["es"],
+  model: "anthropic/claude-sonnet-4.5",
+  messages: {
+    entry: "./messages/en.ts",
+  },
+};`,
+      "utf8",
+    );
+
+    await extractProject({
+      cwd: workspace,
+      logger: {
+        error() {},
+        info() {},
+      },
+    });
+
+    const updatedMessages = await readFile(
+      path.join(workspace, "messages/en.ts"),
+      "utf8",
+    );
+
+    expect(updatedMessages).toContain("export const en = {");
+    expect(updatedMessages).toContain('greeting: "Hello"');
+    expect(updatedMessages).toContain("sidebar: {");
+    expect(updatedMessages).toContain('home: "Home"');
+    expect(updatedMessages).toContain("export default en;");
+  });
+});
+
 describe("generateProject", () => {
   it("fails early when the configured gateway env var is missing", async () => {
     const workspace = await createWorkspace();
@@ -520,7 +1169,7 @@ export default en;
       "utf8",
     );
 
-    expect(contents).toContain('"greeting": "Hola"');
+    expect(contents).toContain('greeting: "Hola"');
     expect(contents).not.toContain('"greeting": "Viejo"');
   });
 

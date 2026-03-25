@@ -183,7 +183,8 @@ t("hero.descriptionParam", {
 })              // -> localized copy param
 t("header.language", {
   locale: "es"
-})                                 // -> "Idioma"`}
+})                                 // -> "Idioma"
+t("Write source strings", { bt: true })  // -> auto-extracted & keyed by CLI`}
                     />
                   </div>
                 </AnimatedGroup>

@@ -1,6 +1,7 @@
 import type {
   AnyConfiguredTranslator,
   AnyTranslationHelpers,
+  BtTranslateOptions,
   CachedMessages,
   ConfiguredTranslator,
   DeepPartialMessages,
@@ -17,6 +18,8 @@ import type {
 } from "./types.js";
 
 export type {
+  BtTranslateCall,
+  BtTranslateOptions,
   AnyTranslationHelpers,
   CachedMessages,
   ConfiguredTranslator,
@@ -137,6 +140,8 @@ export declare function createTranslationJsonSchema(
 ): TranslationJsonSchema;
 
 export declare function getTranslator(): AnyConfiguredTranslator;
+
+export declare function t(key: string, options: BtTranslateOptions): string;
 
 export declare function t(
   key: string,

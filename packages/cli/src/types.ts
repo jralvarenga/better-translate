@@ -112,3 +112,19 @@ export interface GenerateProjectResult {
   loadedConfig: LoadedBetterTranslateCliConfig;
   writes: CliWriteOperation[];
 }
+
+export interface ExtractProjectOptions {
+  configPath?: string;
+  cwd?: string;
+  dryRun?: boolean;
+  logger?: CliLogger;
+  maxLength?: number;
+}
+
+export interface ExtractProjectResult {
+  dryRun: boolean;
+  filePaths: string[];
+  loadedConfig: LoadedBetterTranslateCliConfig;
+  updatedMessages: string[];
+  warnings: string[];
+}

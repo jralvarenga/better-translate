@@ -1,11 +1,11 @@
 ---
 title: CLI
-description: "@better-translate/cli generates translated files from one source locale file."
+description: "@better-translate/cli extracts marked strings into your source locale file and generates translated files."
 ---
 
 # CLI
 
-Use `@better-translate/cli` when you want Better Translate to generate locale files for you.
+Use `@better-translate/cli` when you want Better Translate to build and update locale files for you.
 
 You do not need the CLI to use the runtime packages. It is optional.
 
@@ -47,7 +47,29 @@ export default defineConfig({
 });
 ```
 
-## 4. Run the generator
+## 4. Mark pending strings
+
+Mark strings with `{ bt: true }` to write source text directly — the CLI will name the keys for you:
+
+```ts
+import { t } from "@better-translate/core";
+
+export function navLabel() {
+  return t("Home", { bt: true });
+}
+```
+
+`{ bt: true }` loosens the first argument so you can write the source string directly. At runtime it returns the string unchanged until extraction happens.
+
+## 5. Extract source keys
+
+```sh
+npx bt extract --config ./better-translate.config.ts
+```
+
+That command scans marked `t(..., { bt: true })` calls, adds missing keys to your source locale file, and rewrites successful calls to plain strict `t("namespace.generatedKey")`.
+
+## 6. Run the generator
 
 ```sh
 npx bt generate --config ./better-translate.config.ts
@@ -55,7 +77,7 @@ npx bt generate --config ./better-translate.config.ts
 
 That command creates the target locale files next to your source file.
 
-## 5. Use the generated files in your app
+## 7. Use the generated files in your app
 
 After the files exist, import them into your `@better-translate/core` config just like any hand-written locale file.
 

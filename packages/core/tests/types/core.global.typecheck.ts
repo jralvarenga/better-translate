@@ -57,6 +57,13 @@ const helpers = await createTranslationHelpers({
 });
 
 helpers.t("common.hello");
+helpers.t("Welcome back", { bt: true });
+helpers.t("Welcome {name}", {
+  bt: true,
+  params: {
+    name: "Ada",
+  },
+});
 helpers.t("account.balance.label");
 helpers.t("common.hello", {
   config: {
@@ -96,6 +103,13 @@ const {
 } = helpers;
 
 translate("common.hello");
+translate("Welcome back", { bt: true });
+translate("Welcome {name}", {
+  bt: true,
+  params: {
+    name: "Ada",
+  },
+});
 translate("account.balance.label");
 translate("common.hello", {
   config: {
@@ -114,6 +128,13 @@ getAvailableLanguages();
 getSupportedLocales();
 void loadLocale("fr");
 void t("common.hello");
+void t("Welcome back", { bt: true });
+void t("Welcome {name}", {
+  bt: true,
+  params: {
+    name: "Ada",
+  },
+});
 
 // @ts-expect-error invalid translation key should fail for the configured helpers
 translate("account.balance.total");
