@@ -4,7 +4,7 @@ export const en = {
     title: "One API. Every environment",
   },
   features: {
-    description: "The same setup, the same API, the same experience ,  no matter which TypeScript environment you're in.",
+    description: "The same setup, the same API, the same experience, no matter which TypeScript environment you're in.",
     items: {
       autocomplete: {
         description: "Your editor knows every key in your messages object. No more guessing because `t(\"home.` starts completing instantly.",

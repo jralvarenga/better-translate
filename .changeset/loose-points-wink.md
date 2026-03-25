@@ -4,4 +4,4 @@
 "@better-translate/cli": major
 ---
 
-new bt param functionality to auto translate and key a string
+Add a new bt parameter to automatically translate and key strings.
