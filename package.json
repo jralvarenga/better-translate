@@ -4,6 +4,7 @@
   "version": "1.0.1",
   "scripts": {
     "build": "turbo run build",
+    "build:landing": "turbo run build --filter=landing --only",
     "build:packages": "turbo run build --filter=@better-translate/core --filter=@better-translate/*",
     "dev": "turbo run dev --concurrency=20",
     "dev:landing": "turbo run dev --filter=landing",
