@@ -102,6 +102,19 @@ const translator = await configureTranslations({
 await translator.loadLocale("fr");
 ```
 
+## 5. Auto-extract strings with the CLI
+
+Instead of naming keys by hand, mark strings with `{ bt: true }` and let the CLI extract and key them automatically:
+
+```ts
+import { t } from "@better-translate/core";
+
+// Write the source string directly — CLI converts it to a proper key
+t("Hello world", { bt: true });
+```
+
+Run `npx bt extract` to sync the strings into your source locale file and rewrite calls to proper keys. See the [CLI docs](/docs/cli) for the full setup.
+
 ## Continue with
 
 - <Link href="/docs/adapters/react">React provider and hooks</Link>

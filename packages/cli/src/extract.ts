@@ -537,9 +537,6 @@ export async function extractProject(
 
   logger.info(`Using config: ${loadedConfig.path}`);
   logger.info(`Source locale: ${loadedConfig.config.sourceLocale}`);
-  logger.info(
-    `Scanning for marked t() calls with --max-length=${maxLength}...`,
-  );
 
   const loadedSourceMessages = await loadSourceMessages(
     loadedConfig.config.messages.entry,

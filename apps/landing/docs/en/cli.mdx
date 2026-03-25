@@ -49,7 +49,7 @@ export default defineConfig({
 
 ## 4. Mark pending strings
 
-Use the same `t()` function with the extraction marker while you are still naming keys:
+Mark strings with `{ bt: true }` to write source text directly — the CLI will name the keys for you:
 
 ```ts
 import { t } from "@better-translate/core";
