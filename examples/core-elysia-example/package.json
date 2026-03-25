@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "@sinclair/typebox": "^0.34.41",
-    "@better-translate/core": "workspace:*",
+    "@better-translate/core": "^1.0.0",
     "elysia": "latest"
   },
   "devDependencies": {

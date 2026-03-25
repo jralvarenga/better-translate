@@ -8,12 +8,12 @@
     "start": "next start"
   },
   "dependencies": {
-    "@better-translate/md": "workspace:*",
+    "@better-translate/md": "^1.0.1",
     "@mdx-js/mdx": "^3.1.1",
-    "@better-translate/core": "workspace:*",
+    "@better-translate/core": "^1.0.0",
     "next": "16.1.6",
-    "react": "19.2.3",
-    "react-dom": "19.2.3"
+    "react": "^19",
+    "react-dom": "^19"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
