@@ -103,9 +103,6 @@ export const en = {
       tanstackStart: "TanStack Router",
     },
   },
-  heroSection: {
-    sameConfigEveryTypescriptEnvironment: "Same config. Every TypeScript environment",
-  },
 } as const;
 
 export default en;

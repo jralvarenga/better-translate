@@ -206,12 +206,11 @@ export type TranslationKeysWithOptionalParams<
   TranslationKeysWithRequiredParams<TMessages>
 >;
 
-export interface BtTranslateOptions {
-  bt: true;
-  config?: never;
-  locale?: never;
-  params?: never;
-}
+export type BtTranslateOptions<TLocale extends string = string> = Simplify<
+  TranslateOptions<TLocale> & {
+    bt: true;
+  }
+>;
 
 export type TranslateOptionsForKey<
   TLocale extends string,
@@ -243,7 +242,10 @@ export type TranslateCall<
   TKey extends TranslationKey<TMessages> = TranslationKey<TMessages>,
 > = [key: TKey, ...args: TranslateArgs<TLocale, TMessages, TKey>];
 
-export type BtTranslateCall = [value: string, options: BtTranslateOptions];
+export type BtTranslateCall<TLocale extends string = string> = [
+  value: string,
+  options: BtTranslateOptions<TLocale>,
+];
 
 export type TranslateFunction<
   TLocale extends string,
@@ -252,7 +254,7 @@ export type TranslateFunction<
   <TKey extends TranslationKey<TMessages>>(
     ...args: TranslateCall<TLocale, TMessages, TKey>
   ): string;
-  (...args: BtTranslateCall): string;
+  (...args: BtTranslateCall<TLocale>): string;
 };
 
 export interface TranslationJsonStringSchema {

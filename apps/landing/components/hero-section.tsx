@@ -76,7 +76,7 @@ export default function HeroSection({ locale, t }: HeroSectionProps) {
                 <AnimatedGroup variants={transitionVariants}>
                   <div className="flex w-fit items-center gap-3 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-sm text-white/70">
                     <RiArrowRightLine className="size-3.5" />
-                    <span>{t("heroSection.sameConfigEveryTypescriptEnvironment")}</span>
+                    <span>{t("hero.badge")}</span>
                   </div>
                 </AnimatedGroup>
               </div>

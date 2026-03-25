@@ -89,6 +89,23 @@ describe("better-translate core", () => {
       }),
     ).toBe("Good morning Ada");
     expect(translator.t("Welcome back", { bt: true })).toBe("Welcome back");
+    expect(
+      translator.t("Welcome {name}", {
+        bt: true,
+        params: {
+          name: "Ada",
+        },
+      }),
+    ).toBe("Welcome {name}");
+    expect(
+      translator.t("Welcome back", {
+        bt: true,
+        locale: "es",
+        config: {
+          rtl: true,
+        },
+      }),
+    ).toBe("Welcome back");
     expect(translator.getMessages()).toEqual({ en, es });
   });
 
@@ -365,6 +382,14 @@ describe("better-translate core", () => {
       }),
     ).toBe("Good morning Ada");
     expect(helpers.t("Welcome back", { bt: true })).toBe("Welcome back");
+    expect(
+      helpers.t("Welcome {name}", {
+        bt: true,
+        params: {
+          name: "Ada",
+        },
+      }),
+    ).toBe("Welcome {name}");
     expect(helpers.getSupportedLocales()).toEqual(["en", "es", "ja"]);
     expect(helpers.getAvailableLanguages()).toEqual([
       jaLanguage,

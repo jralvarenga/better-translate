@@ -411,6 +411,130 @@ export function navLabel() {
     expect(updatedSource).not.toContain("{ bt: true }");
   });
 
+  it("preserves params while removing only the bt marker", async () => {
+    const workspace = await createWorkspace();
+    const sourcePath = path.join(workspace, "src/components/hero-section.ts");
+
+    await mkdir(path.dirname(sourcePath), {
+      recursive: true,
+    });
+    await mkdir(path.join(workspace, "messages"), {
+      recursive: true,
+    });
+    await writeFile(
+      path.join(workspace, "messages/en.json"),
+      JSON.stringify({}, null, 2),
+      "utf8",
+    );
+    await writeFile(
+      sourcePath,
+      `export function heroBadge() {
+  return t("Same config. Every {language} environment", {
+    bt: true,
+    params: {
+      language: "",
+    },
+  });
+}
+`,
+      "utf8",
+    );
+    await writeFile(
+      path.join(workspace, "better-translate.config.ts"),
+      `export default {
+  gateway: {
+    apiKey: "test-gateway-key",
+  },
+  sourceLocale: "en",
+  locales: ["es"],
+  model: "anthropic/claude-sonnet-4.5",
+  messages: {
+    entry: "./messages/en.json",
+  },
+};`,
+      "utf8",
+    );
+
+    await extractProject({
+      cwd: workspace,
+      logger: {
+        error() {},
+        info() {},
+      },
+    });
+
+    expect(
+      JSON.parse(
+        await readFile(path.join(workspace, "messages/en.json"), "utf8"),
+      ),
+    ).toEqual({
+      heroSection: {
+        sameConfigEveryLanguageEnvironment:
+          "Same config. Every {language} environment",
+      },
+    });
+
+    const updatedSource = await readFile(sourcePath, "utf8");
+    expect(updatedSource).toContain(
+      't("heroSection.sameConfigEveryLanguageEnvironment", {',
+    );
+    expect(updatedSource).toContain("params:");
+    expect(updatedSource).toContain('language: ""');
+    expect(updatedSource).not.toContain("bt: true");
+  });
+
+  it("preserves other options when removing the bt marker", async () => {
+    const workspace = await createWorkspace();
+    const sourcePath = path.join(workspace, "src/components/sidebar/Nav.ts");
+
+    await mkdir(path.dirname(sourcePath), {
+      recursive: true,
+    });
+    await mkdir(path.join(workspace, "messages"), {
+      recursive: true,
+    });
+    await writeFile(
+      path.join(workspace, "messages/en.json"),
+      JSON.stringify({}, null, 2),
+      "utf8",
+    );
+    await writeFile(
+      sourcePath,
+      `export function navLabel() {
+  return t("Home", { bt: true, locale: "es" });
+}
+`,
+      "utf8",
+    );
+    await writeFile(
+      path.join(workspace, "better-translate.config.ts"),
+      `export default {
+  gateway: {
+    apiKey: "test-gateway-key",
+  },
+  sourceLocale: "en",
+  locales: ["es"],
+  model: "anthropic/claude-sonnet-4.5",
+  messages: {
+    entry: "./messages/en.json",
+  },
+};`,
+      "utf8",
+    );
+
+    await extractProject({
+      cwd: workspace,
+      logger: {
+        error() {},
+        info() {},
+      },
+    });
+
+    const updatedSource = await readFile(sourcePath, "utf8");
+    expect(updatedSource).toContain('return t("sidebar.nav.home", { locale: "es" });');
+    expect(updatedSource).not.toContain("bt: true");
+  });
+
   it("ignores unmarked t() calls", async () => {
     const workspace = await createWorkspace();
     const sourcePath = path.join(workspace, "src/components/sidebar/Nav.ts");

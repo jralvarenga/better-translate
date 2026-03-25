@@ -68,7 +68,7 @@ export function HeaderLanguageSwitcher({
     .filter((item) => supportedLocales.includes(item.locale))
     .map((item) => ({
       ...item,
-      ...fallbackLanguageMap.get(item.locale),
+      ...fallbackLanguageMap.get(item.locale as LandingLocale),
     }));
   const selectedLocale = locale ?? currentLocale;
 

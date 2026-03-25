@@ -47,6 +47,7 @@ type BtMarkerState = "invalid" | "none" | "valid";
 interface ExtractCandidate {
   callExpression: ts.CallExpression;
   fullKey: string;
+  rewrittenOptionsText: string | null;
   sourceValue: string;
 }
 
@@ -202,32 +203,61 @@ function getBtMarkerState(node: ts.Expression | undefined): BtMarkerState {
     return "none";
   }
 
-  if (node.properties.length !== 1) {
-    return node.properties.some(
-      (property) =>
-        ts.isPropertyAssignment(property) &&
-        property.name &&
-        getObjectPropertyName(property.name) === "bt",
-    )
-      ? "invalid"
-      : "none";
+  let sawBt = false;
+
+  for (const property of node.properties) {
+    if (!ts.isPropertyAssignment(property)) {
+      continue;
+    }
+
+    const name = getObjectPropertyName(property.name);
+
+    if (name !== "bt") {
+      continue;
+    }
+
+    sawBt = true;
+
+    if (property.initializer.kind !== ts.SyntaxKind.TrueKeyword) {
+      return "invalid";
+    }
   }
 
-  const property = node.properties[0];
+  return sawBt ? "valid" : "none";
+}
 
-  if (!property || !ts.isPropertyAssignment(property)) {
-    return "invalid";
+function buildPreservedOptionsText(
+  sourceFile: ts.SourceFile,
+  node: ts.Expression | undefined,
+): string | null {
+  if (!node || !ts.isObjectLiteralExpression(node)) {
+    return null;
   }
 
-  const name = getObjectPropertyName(property.name);
+  const remainingProperties = node.properties.filter((property) => {
+    if (!ts.isPropertyAssignment(property)) {
+      return true;
+    }
 
-  if (name !== "bt") {
-    return "none";
+    const name = getObjectPropertyName(property.name);
+    return name !== "bt";
+  });
+
+  if (remainingProperties.length === 0) {
+    return null;
   }
 
-  return property.initializer.kind === ts.SyntaxKind.TrueKeyword
-    ? "valid"
-    : "invalid";
+  const printer = ts.createPrinter();
+  const objectLiteral = ts.factory.updateObjectLiteralExpression(
+    node,
+    remainingProperties,
+  );
+
+  return printer.printNode(
+    ts.EmitHint.Unspecified,
+    objectLiteral,
+    sourceFile,
+  );
 }
 
 function createWarning(
@@ -301,7 +331,7 @@ function analyzeFile(options: {
         createWarning(
           sourceFile,
           node,
-          "skipped marked t() call because the second argument must be exactly { bt: true }.",
+          "skipped marked t() call because the bt marker must be written as bt: true.",
         ),
       );
       ts.forEachChild(node, visit);
@@ -342,6 +372,7 @@ function analyzeFile(options: {
     literalCandidates.push({
       callExpression: node,
       fullKey,
+      rewrittenOptionsText: buildPreservedOptionsText(sourceFile, node.arguments[1]),
       sourceValue: literalValue,
     });
 
@@ -438,7 +469,9 @@ function analyzeFile(options: {
       const end = candidate.callExpression.getEnd();
       const expressionText =
         candidate.callExpression.expression.getText(sourceFile);
-      const replacement = `${expressionText}(${JSON.stringify(candidate.fullKey)})`;
+      const replacement = candidate.rewrittenOptionsText
+        ? `${expressionText}(${JSON.stringify(candidate.fullKey)}, ${candidate.rewrittenOptionsText})`
+        : `${expressionText}(${JSON.stringify(candidate.fullKey)})`;
 
       return `${currentText.slice(0, start)}${replacement}${currentText.slice(end)}`;
     }, sourceText);
