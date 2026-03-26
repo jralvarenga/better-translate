@@ -55,7 +55,7 @@ const testLanguageModel = {
   async doStream() {
     throw new Error("not implemented");
   },
-} as LanguageModelV3;
+} satisfies LanguageModelV3;
 
 mock.module("ora", () => ({
   default() {
@@ -711,7 +711,9 @@ count: 1
       },
       async generateText(input: Record<string, unknown>) {
         if ("experimental_output" in input) {
-          throw new Error("simplify your tool schemas");
+          throw new Error(
+            "The compiled grammar is too large, which would cause performance issues. Simplify your tool schemas or reduce the number of strict tools.",
+          );
         }
 
         return {

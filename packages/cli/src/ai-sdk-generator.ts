@@ -48,8 +48,10 @@ function isSchemaTooLargeError(error: unknown): boolean {
   return (
     normalizedMessage.includes("compiled grammar is too large") ||
     normalizedMessage.includes("reduce the number of strict tools") ||
-    normalizedMessage.includes("simplify your tool schemas") ||
-    normalizedMessage.includes("tool schemas")
+    normalizedMessage.includes("tool schemas exceed") ||
+    normalizedMessage.includes("tool schema size") ||
+    normalizedMessage.includes("exceeds maximum schema size") ||
+    normalizedMessage.includes("too many tools")
   );
 }
 
@@ -75,6 +77,12 @@ function parseJsonText<TOutput>(
   text: string,
   request: StructuredGenerationRequest<TOutput>,
 ): TOutput {
+  if (!request.validate) {
+    throw new Error(
+      `Fallback JSON parsing failed for "${request.sourcePath}": no validator provided`,
+    );
+  }
+
   const payload = extractJsonPayload(text);
 
   try {

@@ -8,6 +8,20 @@ import type {
 
 import { defineConfig } from "../../src/index.js";
 
+import type {
+  BetterTranslateCliConfig as ConfigBetterTranslateCliConfig,
+  BetterTranslateCliDirectModelConfig as ConfigBetterTranslateCliDirectModelConfig,
+  CliLanguageModel as ConfigCliLanguageModel,
+  MarkdownExtension as ConfigMarkdownExtension,
+} from "../../src/config.js";
+import { defineConfig as defineConfigFromConfig } from "../../src/config.js";
+
+void (undefined as unknown as ConfigBetterTranslateCliConfig);
+void (undefined as unknown as ConfigBetterTranslateCliDirectModelConfig);
+void (undefined as unknown as ConfigCliLanguageModel);
+void (undefined as unknown as ConfigMarkdownExtension);
+void defineConfigFromConfig;
+
 const providerModel: CliLanguageModel = {
   specificationVersion: "v3",
   provider: "moonshotai",

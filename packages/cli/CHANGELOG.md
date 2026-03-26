@@ -4,7 +4,7 @@
 
 ### Patch Changes
 
-- adding support for ai providers, now users caninstall their favorite ai provider and use their own api key
+- Adding support for AI providers; now users can install their favorite AI provider and use their own API key
 
 ## 2.0.0
 
