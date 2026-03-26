@@ -29,7 +29,7 @@ export const ja = {
   footer: {
     docs: "ドキュメント",
     github: "GitHub",
-    legal: "MIT License · built with TypeScript",
+    legal: "MITライセンス · TypeScriptで構築",
     npm: "npm",
   },
   frameworks: {

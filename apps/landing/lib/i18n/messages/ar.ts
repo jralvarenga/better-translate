@@ -5,7 +5,7 @@ export const ar = {
     title: "واجهة برمجية واحدة. كل بيئة",
   },
   features: {
-    description: "نفس الإعداد، نفس واجهة البرمجية، نفس التجربة، بغض النظر عن بيئة TypeScript التي تستخدمها.",
+    description: "نفس الإعداد، نفس الواجهة البرمجية، نفس التجربة، بغض النظر عن بيئة TypeScript التي تستخدمها.",
     items: {
       autocomplete: {
         description: "محررك يعرف كل مفتاح في كائن الرسائل الخاص بك. لا مزيد من التخمين لأن `t(\"home.` يبدأ الإكمال على الفور.",
@@ -73,7 +73,7 @@ export const ar = {
   },
   hero: {
     badge: "نفس الإعدادات. كل بيئة TypeScript",
-    description: "نفس الإعدادات. نفس واجهة البرمجية. تعمل في Next.js و Astro و React و TanStack Router و Node عادي. بدون إعادة كتابة.",
+    description: "نفس الإعدادات. نفس الواجهة البرمجية. تعمل في Next.js و Astro و React و TanStack Router و Node عادي. بدون إعادة كتابة.",
     primaryCta: "عرض التوثيق",
     secondaryCta: "عرض على GitHub",
     title: "إعداد i18n واحد لأي مشروع TypeScript",

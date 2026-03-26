@@ -4,7 +4,7 @@
 
 ### Patch Changes
 
-- adding support for ai providers, now users caninstall their favorite ai provider and use their own api key
+- Adding support for AI providers; users can install their favorite AI provider and use their own API key
 - Updated dependencies
   - @better-translate/cli@2.0.1
 

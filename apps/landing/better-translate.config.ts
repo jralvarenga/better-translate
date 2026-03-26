@@ -2,8 +2,15 @@ import { defineConfig } from "@better-translate/cli/config";
 import { createAnthropic } from "@ai-sdk/anthropic";
 import { createMoonshotAI } from "@ai-sdk/moonshotai";
 
+const anthropicApiKey = process.env.ANTHROPIC_API_KEY;
+if (!anthropicApiKey) {
+  throw new Error(
+    "Missing required environment variable: ANTHROPIC_API_KEY. Set it before running Better Translate.",
+  );
+}
+
 const anthropic = createAnthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY!,
+  apiKey: anthropicApiKey,
 });
 
 // const moonshotai = createMoonshotAI({
