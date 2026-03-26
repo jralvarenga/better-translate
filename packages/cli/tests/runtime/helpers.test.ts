@@ -3,6 +3,7 @@ import os from "node:os";
 import path from "node:path";
 
 import { afterEach, beforeEach, describe, expect, it, mock } from "bun:test";
+import type { LanguageModelV3 } from "@ai-sdk/provider";
 
 import { generateWithAiSdk } from "../../src/ai-sdk-generator.js";
 import { runCli } from "../../src/cli.js";
@@ -27,7 +28,6 @@ import {
   createMarkdownPrompt,
   createMessagesPrompt,
 } from "../../src/prompts.js";
-import { openai } from "../../src/provider-models.js";
 import {
   assert,
   assertExactMessageShape,
@@ -44,6 +44,18 @@ const spinnerEvents: Array<{ type: string; value?: unknown }> = [];
 const consoleMessages: string[] = [];
 const originalNodeEnv = process.env.NODE_ENV;
 const originalConsoleLog = console.log;
+const testLanguageModel = {
+  specificationVersion: "v3",
+  provider: "openai",
+  modelId: "gpt-5",
+  supportedUrls: {},
+  async doGenerate() {
+    throw new Error("not implemented");
+  },
+  async doStream() {
+    throw new Error("not implemented");
+  },
+} as LanguageModelV3;
 
 mock.module("ora", () => ({
   default() {
@@ -486,11 +498,22 @@ count: 1
       model: "openai/gpt-4.1",
       sourceLocale: "en",
     });
-    expect(openai("gpt-4.1", { apiKey: "test-key" })).toEqual({
-      apiKey: "test-key",
-      kind: "provider-model",
-      modelId: "gpt-4.1",
-      provider: "openai",
+    expect(
+      defineConfig({
+        locales: ["es"],
+        messages: {
+          entry: "./messages/en.json",
+        },
+        model: testLanguageModel,
+        sourceLocale: "en",
+      }),
+    ).toEqual({
+      locales: ["es"],
+      messages: {
+        entry: "./messages/en.json",
+      },
+      model: testLanguageModel,
+      sourceLocale: "en",
     });
 
     const messagesPrompt = createMessagesPrompt({
@@ -524,6 +547,12 @@ count: 1
       'Translate this markdown document into "es".',
     );
     expect(markdownPrompt.prompt).toContain('"title": "Intro"');
+  });
+
+  it("does not export the removed openai config helper", async () => {
+    const configModule = await import("../../src/config.js");
+
+    expect("openai" in configModule).toBe(false);
   });
 
   it("maps AI SDK generation requests and logger output", async () => {
@@ -604,6 +633,127 @@ count: 1
       "stopAndPersist",
       "fail",
     ]);
+  });
+
+  it("falls back to plain JSON when structured output grammar is too large", async () => {
+    const generateTextInputs: Record<string, unknown>[] = [];
+
+    mock.module("ai", () => ({
+      Output: {
+        object(value: unknown) {
+          return value;
+        },
+      },
+      async generateText(input: Record<string, unknown>) {
+        generateTextInputs.push(input);
+
+        if (generateTextInputs.length === 1) {
+          throw new Error(
+            "The compiled grammar is too large, which would cause performance issues. Simplify your tool schemas or reduce the number of strict tools.",
+          );
+        }
+
+        return {
+          text: '{"greeting":"Hola"}',
+        };
+      },
+      jsonSchema(schema: unknown, options: Record<string, unknown>) {
+        return {
+          options,
+          schema,
+        };
+      },
+    }));
+
+    const generated = await generateWithAiSdk(
+      {
+        id: "model",
+      },
+      {
+        kind: "messages",
+        prompt: "prompt",
+        schema: {
+          type: "object",
+        },
+        sourcePath: "/messages/en.json",
+        system: "system",
+        targetLocale: "es",
+        validate(value: unknown) {
+          assert(
+            isRecord(value) && value.greeting === "Hola",
+            "invalid generated value",
+          );
+          return value as {
+            greeting: string;
+          };
+        },
+      },
+    );
+
+    expect(generated).toEqual({
+      greeting: "Hola",
+    });
+    expect(generateTextInputs).toHaveLength(2);
+    expect(generateTextInputs[0]).toHaveProperty("experimental_output");
+    expect(generateTextInputs[1]).not.toHaveProperty("experimental_output");
+    expect(generateTextInputs[1]?.system).toContain("Return only valid JSON.");
+    expect(generateTextInputs[1]?.prompt).toContain(
+      "Do not wrap the JSON in markdown fences.",
+    );
+  });
+
+  it("parses fenced JSON from the plain-text fallback", async () => {
+    mock.module("ai", () => ({
+      Output: {
+        object(value: unknown) {
+          return value;
+        },
+      },
+      async generateText(input: Record<string, unknown>) {
+        if ("experimental_output" in input) {
+          throw new Error("simplify your tool schemas");
+        }
+
+        return {
+          text: '```json\n{"greeting":"Hola"}\n```',
+        };
+      },
+      jsonSchema(schema: unknown, options: Record<string, unknown>) {
+        return {
+          options,
+          schema,
+        };
+      },
+    }));
+
+    const generated = await generateWithAiSdk(
+      {
+        id: "model",
+      },
+      {
+        kind: "messages",
+        prompt: "prompt",
+        schema: {
+          type: "object",
+        },
+        sourcePath: "/messages/en.json",
+        system: "system",
+        targetLocale: "es",
+        validate(value: unknown) {
+          assert(
+            isRecord(value) && value.greeting === "Hola",
+            "invalid generated value",
+          );
+          return value as {
+            greeting: string;
+          };
+        },
+      },
+    );
+
+    expect(generated).toEqual({
+      greeting: "Hola",
+    });
   });
 
   it("handles CLI help and argument errors", async () => {

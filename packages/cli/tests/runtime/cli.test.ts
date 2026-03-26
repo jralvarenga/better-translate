@@ -22,6 +22,21 @@ async function createWorkspace(): Promise<string> {
   return directory;
 }
 
+function directModelConfig(provider = "moonshotai", modelId = "kimi-k2-0905-preview"): string {
+  return `({
+  specificationVersion: "v3",
+  provider: ${JSON.stringify(provider)},
+  modelId: ${JSON.stringify(modelId)},
+  supportedUrls: {},
+  async doGenerate() {
+    throw new Error("not implemented");
+  },
+  async doStream() {
+    throw new Error("not implemented");
+  },
+})`;
+}
+
 afterEach(async () => {
   await Promise.all(
     tempDirectories.splice(0).map((directory) =>
@@ -117,27 +132,20 @@ describe("loadCliConfig", () => {
     expect(loaded.config.gateway.apiKey).toBe("nested-gateway-key");
   });
 
-  it("loads provider mode config built with openai(...)", async () => {
+  it("loads direct model config built with an AI SDK language model", async () => {
     const workspace = await createWorkspace();
 
     await mkdir(path.join(workspace, "messages"), {
       recursive: true,
     });
     await writeFile(
-      path.join(workspace, ".env"),
-      "OPENAI_API_KEY=test-openai-key\n",
-      "utf8",
-    );
-    await writeFile(
       path.join(workspace, "better-translate.config.ts"),
-      `import { defineConfig, openai } from ${JSON.stringify(configModuleUrl)};
+      `import { defineConfig } from ${JSON.stringify(configModuleUrl)};
 
 export default defineConfig({
   sourceLocale: "en",
   locales: ["es"],
-  model: openai("gpt-4.1", {
-    apiKey: process.env.OPENAI_API_KEY!,
-  }),
+  model: ${directModelConfig()},
   messages: {
     entry: "./messages/en.json",
   },
@@ -155,12 +163,8 @@ export default defineConfig({
     });
 
     expect("gateway" in loaded.config).toBe(false);
-    expect(loaded.config.model).toEqual({
-      apiKey: "test-openai-key",
-      kind: "provider-model",
-      modelId: "gpt-4.1",
-      provider: "openai",
-    });
+    expect(loaded.config.model.provider).toBe("moonshotai");
+    expect(loaded.config.model.modelId).toBe("kimi-k2-0905-preview");
   });
 
   it("rejects target locales that include the source locale", async () => {
@@ -189,12 +193,12 @@ export default defineConfig({
     ).rejects.toThrow("Config locales must not include the sourceLocale.");
   });
 
-  it("rejects configs that mix gateway mode with openai(...)", async () => {
+  it("rejects configs that mix gateway mode with an AI SDK language model", async () => {
     const workspace = await createWorkspace();
 
     await writeFile(
       path.join(workspace, "better-translate.config.ts"),
-      `import { defineConfig, openai } from ${JSON.stringify(configModuleUrl)};
+      `import { defineConfig } from ${JSON.stringify(configModuleUrl)};
 
 export default defineConfig({
   gateway: {
@@ -202,9 +206,7 @@ export default defineConfig({
   },
   sourceLocale: "en",
   locales: ["es"],
-  model: openai("gpt-4.1", {
-    apiKey: "test-openai-key",
-  }),
+  model: ${directModelConfig("anthropic", "claude-sonnet-4-5")},
   messages: {
     entry: "./messages/en.json",
   },
@@ -217,23 +219,25 @@ export default defineConfig({
         cwd: workspace,
       }),
     ).rejects.toThrow(
-      "Config must not include gateway when model is created with openai(...).",
+      "Config must not include gateway when model is an AI SDK language model instance.",
     );
   });
 
-  it("rejects provider mode without an api key", async () => {
+  it("rejects invalid direct model configs missing language model methods", async () => {
     const workspace = await createWorkspace();
 
     await writeFile(
       path.join(workspace, "better-translate.config.ts"),
-      `import { defineConfig, openai } from ${JSON.stringify(configModuleUrl)};
+      `import { defineConfig } from ${JSON.stringify(configModuleUrl)};
 
 export default defineConfig({
   sourceLocale: "en",
   locales: ["es"],
-  model: openai("gpt-4.1", {
-    apiKey: "",
-  }),
+  model: {
+    specificationVersion: "v3",
+    provider: "openai",
+    modelId: "gpt-5",
+  },
   messages: {
     entry: "./messages/en.json",
   },
@@ -246,7 +250,7 @@ export default defineConfig({
         cwd: workspace,
       }),
     ).rejects.toThrow(
-      'openai("model-id", { apiKey }) requires a non-empty apiKey string.',
+      "AI SDK language model instances must provide a doGenerate function.",
     );
   });
 
@@ -1173,7 +1177,7 @@ export default en;
     expect(contents).not.toContain('"greeting": "Viejo"');
   });
 
-  it("supports provider mode and logs the built-in OpenAI model", async () => {
+  it("supports direct model mode and logs the configured provider model", async () => {
     const workspace = await createWorkspace();
     const messages: string[] = [];
 
@@ -1187,14 +1191,12 @@ export default en;
     );
     await writeFile(
       path.join(workspace, "better-translate.config.ts"),
-      `import { defineConfig, openai } from ${JSON.stringify(configModuleUrl)};
+      `import { defineConfig } from ${JSON.stringify(configModuleUrl)};
 
 export default defineConfig({
   sourceLocale: "en",
   locales: ["es"],
-  model: openai("gpt-4.1", {
-    apiKey: "test-openai-key",
-  }),
+  model: ${directModelConfig("anthropic.messages", "claude-sonnet-4-5")},
   messages: {
     entry: "./messages/en.json",
   },
@@ -1224,6 +1226,8 @@ export default defineConfig({
     ).toEqual({
       greeting: "Hola",
     });
-    expect(messages).toContain("Using built-in OpenAI provider model: gpt-4.1");
+    expect(messages).toContain(
+      "Using configured provider model: anthropic.messages/claude-sonnet-4-5",
+    );
   });
 });

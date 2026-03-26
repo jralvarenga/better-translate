@@ -2,8 +2,8 @@ import { existsSync } from "node:fs";
 import path from "node:path";
 
 import type {
+  CliLanguageModel,
   LoadedBetterTranslateCliConfig,
-  OpenAIProviderModelSpec,
   ResolvedBetterTranslateCliConfig,
 } from "./types.js";
 import { loadEnvFilesFromDirectories } from "./env.js";
@@ -12,34 +12,33 @@ import { assert, isRecord, normalizeMarkdownExtensions } from "./validation.js";
 
 const DEFAULT_CONFIG_FILE = "better-translate.config.ts";
 
-function resolveProviderModelSpec(model: unknown): OpenAIProviderModelSpec {
+function resolveCliLanguageModel(model: unknown): CliLanguageModel {
   assert(
     isRecord(model),
-    'Config requires model to be a non-empty string or openai("model-id", { apiKey }).',
+    "Config requires model to be a non-empty string or an AI SDK language model instance.",
   );
   assert(
-    model.kind === "provider-model",
-    'Config requires model to be a non-empty string or openai("model-id", { apiKey }).',
+    model.specificationVersion === "v3",
+    "Config requires model to be a non-empty string or an AI SDK language model instance.",
   );
   assert(
-    model.provider === "openai",
-    'Only openai("model-id", { apiKey }) is supported for built-in provider mode right now.',
+    typeof model.provider === "string" && model.provider.trim().length > 0,
+    "AI SDK language model instances require a non-empty provider string.",
   );
   assert(
     typeof model.modelId === "string" && model.modelId.trim().length > 0,
-    'openai("model-id", { apiKey }) requires a non-empty model id.',
+    "AI SDK language model instances require a non-empty modelId string.",
   );
   assert(
-    typeof model.apiKey === "string" && model.apiKey.trim().length > 0,
-    'openai("model-id", { apiKey }) requires a non-empty apiKey string.',
+    typeof model.doGenerate === "function",
+    "AI SDK language model instances must provide a doGenerate function.",
+  );
+  assert(
+    typeof model.doStream === "function",
+    "AI SDK language model instances must provide a doStream function.",
   );
 
-  return {
-    apiKey: model.apiKey.trim(),
-    kind: "provider-model",
-    modelId: model.modelId.trim(),
-    provider: "openai",
-  };
+  return model as CliLanguageModel;
 }
 
 function resolveConfig(
@@ -123,7 +122,7 @@ function resolveConfig(
   if (typeof model === "string") {
     assert(
       model.trim().length > 0,
-      'Config requires a non-empty model string, for example "openai/gpt-4.1".',
+      'Config requires a non-empty model string, for example "provider/model-id".',
     );
     assert(
       isRecord(gateway),
@@ -145,10 +144,10 @@ function resolveConfig(
 
   assert(
     gateway === undefined,
-    "Config must not include gateway when model is created with openai(...).",
+    "Config must not include gateway when model is an AI SDK language model instance.",
   );
 
-  const resolvedModel = resolveProviderModelSpec(model);
+  const resolvedModel = resolveCliLanguageModel(model);
 
   return {
     ...resolvedBase,

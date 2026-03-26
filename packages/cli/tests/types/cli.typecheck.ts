@@ -1,12 +1,25 @@
 import type {
   BetterTranslateCliConfig,
+  BetterTranslateCliDirectModelConfig,
   BetterTranslateCliGatewayConfig,
-  BetterTranslateCliOpenAIConfig,
+  CliLanguageModel,
   MarkdownExtension,
-  OpenAIProviderModelSpec,
 } from "../../src/index.js";
 
-import { defineConfig, openai } from "../../src/index.js";
+import { defineConfig } from "../../src/index.js";
+
+const providerModel: CliLanguageModel = {
+  specificationVersion: "v3",
+  provider: "moonshotai",
+  modelId: "kimi-k2-0905-preview",
+  supportedUrls: {},
+  async doGenerate() {
+    return {} as never;
+  },
+  async doStream() {
+    return {} as never;
+  },
+};
 
 const gatewayConfig = defineConfig({
   gateway: {
@@ -24,10 +37,6 @@ const gatewayConfig = defineConfig({
   sourceLocale: "en",
 });
 
-const providerModel = openai("gpt-5.1", {
-  apiKey: process.env.OPENAI_API_KEY ?? "test-openai-key",
-});
-
 const providerConfig = defineConfig({
   locales: ["es"] as const,
   messages: {
@@ -37,21 +46,19 @@ const providerConfig = defineConfig({
   sourceLocale: "en",
 });
 
-const providerKind: "provider-model" = providerModel.kind;
-const providerName: "openai" = providerModel.provider;
+const providerSpecVersion: "v3" = providerModel.specificationVersion;
+const providerName: string = providerModel.provider;
 const providerModelId: string = providerModel.modelId;
-const providerApiKey: string = providerModel.apiKey;
 const markdownExtensions: readonly MarkdownExtension[] =
   gatewayConfig.markdown?.extensions ?? [];
 const typedGatewayConfig: BetterTranslateCliGatewayConfig = gatewayConfig;
-const typedProviderConfig: BetterTranslateCliOpenAIConfig = providerConfig;
+const typedProviderConfig: BetterTranslateCliDirectModelConfig = providerConfig;
 const genericConfig: BetterTranslateCliConfig = providerConfig;
-const typedProviderModel: OpenAIProviderModelSpec = providerModel;
+const typedProviderModel: CliLanguageModel = providerModel;
 
-void providerKind;
+void providerSpecVersion;
 void providerName;
 void providerModelId;
-void providerApiKey;
 void markdownExtensions;
 void typedGatewayConfig;
 void typedProviderConfig;
@@ -68,7 +75,7 @@ defineConfig({
   sourceLocale: "en",
 });
 
-// @ts-expect-error provider-model configs cannot also declare a gateway
+// @ts-expect-error direct-model configs cannot also declare a gateway
 defineConfig({
   gateway: {
     apiKey: "gateway-key",
@@ -77,9 +84,7 @@ defineConfig({
   messages: {
     entry: "./messages/en.json",
   },
-  model: openai("gpt-5.1", {
-    apiKey: "openai-key",
-  }),
+  model: providerModel,
   sourceLocale: "en",
 });
 
