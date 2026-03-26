@@ -91,7 +91,7 @@ export function createSpinnerLogger(): CliLogger {
       // Dim info lines
       if (
         message.startsWith("Using AI Gateway model:") ||
-        message.startsWith("Using built-in OpenAI provider model:") ||
+        message.startsWith("Using configured provider model:") ||
         message.startsWith("Source locale:") ||
         message.startsWith("Target locales:")
       ) {

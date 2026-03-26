@@ -12,8 +12,18 @@ You do not need the CLI to use the runtime packages. It is optional.
 ## 1. Install the package
 
 ```sh
-npm install -D @better-translate/cli
+npm install -D @better-translate/cli @ai-sdk/openai
 ```
+
+Or install a different provider package:
+
+```sh
+npm install -D @better-translate/cli @ai-sdk/anthropic
+# or
+npm install -D @better-translate/cli @ai-sdk/moonshotai
+```
+
+The CLI no longer bundles provider helpers. Your app installs and configures the AI SDK provider directly.
 
 ## 2. Create a source locale file
 
@@ -30,22 +40,72 @@ Create `src/messages/en.json`:
 
 ## 3. Create the CLI config
 
-Create `better-translate.config.ts`:
+Create `better-translate.config.ts`. The direct-model flow is the same for any provider:
 
 ```ts
-import { defineConfig, openai } from "@better-translate/cli/config";
+import { openai } from "@ai-sdk/openai";
+import { defineConfig } from "@better-translate/cli/config";
 
 export default defineConfig({
   sourceLocale: "en",
   locales: ["es", "fr"],
-  model: openai("gpt-4.1-mini", {
-    apiKey: process.env.OPENAI_API_KEY!,
-  }),
+  model: openai("gpt-5"),
   messages: {
     entry: "./src/messages/en.json",
   },
 });
 ```
+
+```ts
+import { anthropic } from "@ai-sdk/anthropic";
+import { defineConfig } from "@better-translate/cli/config";
+
+export default defineConfig({
+  sourceLocale: "en",
+  locales: ["es", "fr"],
+  model: anthropic("claude-sonnet-4-5"),
+  messages: {
+    entry: "./src/messages/en.json",
+  },
+});
+```
+
+```ts
+import { moonshotai } from "@ai-sdk/moonshotai";
+import { defineConfig } from "@better-translate/cli/config";
+
+export default defineConfig({
+  sourceLocale: "en",
+  locales: ["es", "fr"],
+  model: moonshotai("kimi-k2-0905-preview"),
+  messages: {
+    entry: "./src/messages/en.json",
+  },
+});
+```
+
+If you need custom provider settings, create the model yourself and pass it to the CLI. Credentials and provider-specific setup stay in your chosen provider package:
+
+```ts
+import { createOpenAI } from "@ai-sdk/openai";
+import { defineConfig } from "@better-translate/cli/config";
+
+const model = createOpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+  baseURL: process.env.OPENAI_BASE_URL,
+})("gpt-5");
+
+export default defineConfig({
+  sourceLocale: "en",
+  locales: ["es", "fr"],
+  model,
+  messages: {
+    entry: "./src/messages/en.json",
+  },
+});
+```
+
+This is a breaking change from older CLI versions that exposed `openai(...)` from `@better-translate/cli/config`.
 
 ## 4. Mark pending strings
 
@@ -83,17 +143,16 @@ After the files exist, import them into your `@better-translate/core` config jus
 
 ## Markdown
 
-If you also want localized markdown generation, add the `markdown.rootDir` option:
+If you also want localized markdown generation, add the `markdown.rootDir` option. This works the same with any AI SDK provider model:
 
 ```ts
-import { defineConfig, openai } from "@better-translate/cli/config";
+import { openai } from "@ai-sdk/openai";
+import { defineConfig } from "@better-translate/cli/config";
 
 export default defineConfig({
   sourceLocale: "en",
   locales: ["es", "fr"],
-  model: openai("gpt-4.1-mini", {
-    apiKey: process.env.OPENAI_API_KEY!,
-  }),
+  model: openai("gpt-5"),
   messages: {
     entry: "./src/messages/en.json",
   },

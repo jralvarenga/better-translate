@@ -1,65 +1,163 @@
 ---
 title: واجهة سطر الأوامر
-description: سكريبتات مساحة العمل لبناء الحزم والتطبيقات وفحص الأنواع وتطويرها في المستودع الموحد.
+description: "تستخرج @better-translate/cli السلاسل المعلَّمة إلى ملف اللغة المصدر وتولّد الملفات المترجمة."
 ---
 
 # واجهة سطر الأوامر
 
-يأتي Better Translate مع سكريبتات مساحة العمل للبناء وفحص الأنواع والتطوير
-للحزم والتطبيقات في المستودع الموحد. إذا كنت تستخدم هذا كمكتبة في مشروعك الخاص،
-فهذه هي السكريبتات التي ستستخدمها أكثر.
+استخدم `@better-translate/cli` عندما تريد من Better Translate إنشاء ملفات اللغات وتحديثها لك.
 
-## سكريبتات مساحة العمل
+أنت لا تحتاج إلى CLI لاستخدام حزم وقت التشغيل. هي اختيارية.
 
-شغّل هذه من جذر المستودع باستخدام Bun وTurborepo.
+## 1. تثبيت الحزم
 
-- `bun run dev` ,  تشغيل جميع التطبيقات في وضع التطوير.
-- `bun run build` ,  بناء جميع الحزم والتطبيقات.
-- `bun run build:packages` ,  بناء حزم المكتبة فقط.
-- `bun run check-types` ,  تشغيل فحص أنواع TypeScript عبر مساحة العمل بالكامل.
-- `bun run check-types:packages` ,  تشغيل فحص الأنواع على الحزم فقط.
-
-## توليد مخطط JSON
-
-تُصدّر الحزمة الأساسية `createTranslationJsonSchema` لتوليد
-مخطط JSON من كائن اللغة المصدر. يساعد هذا المحررين في التحقق من صحة ملفات
-اللغة الشقيقة.
-
-```tsx showLineNumbers
-import { createTranslationJsonSchema } from "better-translate"
-import { en } from "./messages/en"
-import { writeFileSync } from "fs"
-
-const schema = createTranslationJsonSchema(en)
-writeFileSync("./messages/schema.json", JSON.stringify(schema, null, 2))
+```sh
+npm install -D @better-translate/cli @ai-sdk/openai
 ```
 
-## امتداد VS Code
+أو ثبّت حزمة موفّر أخرى:
 
-يضيف امتداد `@better-translate/vscode`
-تنقل مفاتيح الترجمة في VS Code. ثبّته من سوق الامتدادات
-أو ابنه محلياً من `packages/vscode`.
+```sh
+npm install -D @better-translate/cli @ai-sdk/anthropic
+# أو
+npm install -D @better-translate/cli @ai-sdk/moonshotai
+```
 
-<div className="mt-6 flex flex-wrap gap-3">
-  <Button asChild variant="outline" size="lg">
-    <Link href="/docs/installation">تثبيت الحزم</Link>
-  </Button>
-  <Button asChild size="lg">
-    <Link href="/docs/changelog">التحقق من الإصدارات الأخيرة</Link>
-  </Button>
-</div>
+لم تعد CLI تتضمن مساعدات خاصة بالموفّر. تطبيقك هو الذي يثبّت موفّر AI SDK ويضبطه مباشرة.
 
-## سكريبتات كل حزمة
+## 2. أنشئ ملف اللغة المصدر
 
-كل حزمة لها سكريبتاتها المحلية الخاصة. من أي دليل حزمة:
+أنشئ `src/messages/en.json`:
 
-```tsx showLineNumbers
-# بناء الحزمة
-bun run build
+```json
+{
+  "home": {
+    "title": "Hello",
+    "description": "Welcome to the app"
+  }
+}
+```
 
-# فحص أنواع الحزمة
-bun run check-types
+## 3. أنشئ إعداد CLI
 
-# تشغيل الاختبارات (حيثما توفرت)
-bun test
+أنشئ `better-translate.config.ts`. مسار `model` المباشر هو نفسه مع أي موفّر:
+
+```ts
+import { openai } from "@ai-sdk/openai";
+import { defineConfig } from "@better-translate/cli/config";
+
+export default defineConfig({
+  sourceLocale: "en",
+  locales: ["es", "fr"],
+  model: openai("gpt-5"),
+  messages: {
+    entry: "./src/messages/en.json",
+  },
+});
+```
+
+```ts
+import { anthropic } from "@ai-sdk/anthropic";
+import { defineConfig } from "@better-translate/cli/config";
+
+export default defineConfig({
+  sourceLocale: "en",
+  locales: ["es", "fr"],
+  model: anthropic("claude-sonnet-4-5"),
+  messages: {
+    entry: "./src/messages/en.json",
+  },
+});
+```
+
+```ts
+import { moonshotai } from "@ai-sdk/moonshotai";
+import { defineConfig } from "@better-translate/cli/config";
+
+export default defineConfig({
+  sourceLocale: "en",
+  locales: ["es", "fr"],
+  model: moonshotai("kimi-k2-0905-preview"),
+  messages: {
+    entry: "./src/messages/en.json",
+  },
+});
+```
+
+إذا كنت تحتاج إعدادات مخصّصة للموفّر، فأنشئ النموذج بنفسك ومرّره إلى CLI. بيانات الاعتماد والإعدادات الخاصة بالموفّر تبقى داخل حزمة الموفّر التي تختارها:
+
+```ts
+import { createOpenAI } from "@ai-sdk/openai";
+import { defineConfig } from "@better-translate/cli/config";
+
+const model = createOpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+  baseURL: process.env.OPENAI_BASE_URL,
+})("gpt-5");
+
+export default defineConfig({
+  sourceLocale: "en",
+  locales: ["es", "fr"],
+  model,
+  messages: {
+    entry: "./src/messages/en.json",
+  },
+});
+```
+
+هذا تغيير غير متوافق مع الإصدارات الأقدم من CLI التي كانت تصدّر `openai(...)` من `@better-translate/cli/config`.
+
+## 4. علّم السلاسل المعلّقة
+
+علّم السلاسل باستخدام `{ bt: true }` لكي تكتب النص المصدر مباشرة، وستقوم CLI بتسمية المفاتيح نيابةً عنك:
+
+```ts
+import { t } from "@better-translate/core";
+
+export function navLabel() {
+  return t("Home", { bt: true });
+}
+```
+
+الخيار `{ bt: true }` يجعل الوسيط الأول أكثر مرونة حتى تتمكن من كتابة النص المصدر مباشرة. أثناء التشغيل يعيد النص كما هو إلى أن تتم عملية الاستخراج.
+
+## 5. استخرج المفاتيح المصدرية
+
+```sh
+npx bt extract --config ./better-translate.config.ts
+```
+
+هذا الأمر يفحص الاستدعاءات المعلّمة `t(..., { bt: true })` ويضيف المفاتيح الناقصة إلى ملف اللغة المصدر ويعيد كتابة الاستدعاءات الناجحة إلى `t("namespace.generatedKey")`.
+
+## 6. شغّل المولّد
+
+```sh
+npx bt generate --config ./better-translate.config.ts
+```
+
+هذا الأمر ينشئ ملفات اللغات الهدف بجانب ملف اللغة المصدر.
+
+## 7. استخدم الملفات المولّدة في تطبيقك
+
+بعد إنشاء الملفات، استوردها في إعداد `@better-translate/core` تماماً كما تفعل مع أي ملفات لغات مكتوبة يدوياً.
+
+## Markdown
+
+إذا كنت تريد أيضاً توليد ملفات Markdown مترجمة، فأضف الخيار `markdown.rootDir`. هذا يعمل بالطريقة نفسها مع أي نموذج موفّر من AI SDK:
+
+```ts
+import { openai } from "@ai-sdk/openai";
+import { defineConfig } from "@better-translate/cli/config";
+
+export default defineConfig({
+  sourceLocale: "en",
+  locales: ["es", "fr"],
+  model: openai("gpt-5"),
+  messages: {
+    entry: "./src/messages/en.json",
+  },
+  markdown: {
+    rootDir: "./content/docs",
+  },
+});
 ```

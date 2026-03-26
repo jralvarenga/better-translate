@@ -1,4 +1,8 @@
+import type { LanguageModelV3 } from "@ai-sdk/provider";
+
 export type MarkdownExtension = ".md" | ".mdx";
+
+export type CliLanguageModel = LanguageModelV3;
 
 interface BetterTranslateCliConfigBase {
   locales: string[];
@@ -12,13 +16,6 @@ interface BetterTranslateCliConfigBase {
   sourceLocale: string;
 }
 
-export interface OpenAIProviderModelSpec {
-  apiKey: string;
-  kind: "provider-model";
-  modelId: string;
-  provider: "openai";
-}
-
 export interface BetterTranslateCliGatewayConfig
   extends BetterTranslateCliConfigBase {
   gateway: {
@@ -27,15 +24,15 @@ export interface BetterTranslateCliGatewayConfig
   model: string;
 }
 
-export interface BetterTranslateCliOpenAIConfig
+export interface BetterTranslateCliDirectModelConfig
   extends BetterTranslateCliConfigBase {
   gateway?: never;
-  model: OpenAIProviderModelSpec;
+  model: CliLanguageModel;
 }
 
 export type BetterTranslateCliConfig =
   | BetterTranslateCliGatewayConfig
-  | BetterTranslateCliOpenAIConfig;
+  | BetterTranslateCliDirectModelConfig;
 
 interface ResolvedBetterTranslateCliConfigBase {
   locales: readonly string[];
@@ -57,14 +54,14 @@ export interface ResolvedBetterTranslateCliGatewayConfig
   model: string;
 }
 
-export interface ResolvedBetterTranslateCliOpenAIConfig
+export interface ResolvedBetterTranslateCliDirectModelConfig
   extends ResolvedBetterTranslateCliConfigBase {
-  model: OpenAIProviderModelSpec;
+  model: CliLanguageModel;
 }
 
 export type ResolvedBetterTranslateCliConfig =
   | ResolvedBetterTranslateCliGatewayConfig
-  | ResolvedBetterTranslateCliOpenAIConfig;
+  | ResolvedBetterTranslateCliDirectModelConfig;
 
 export interface LoadedBetterTranslateCliConfig {
   config: ResolvedBetterTranslateCliConfig;

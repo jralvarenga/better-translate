@@ -1,65 +1,163 @@
 ---
 title: CLI
-description: Scripts del workspace para compilar, verificar tipos y desarrollar paquetes y apps en el monorepo.
+description: "@better-translate/cli extrae strings marcados a tu archivo de locale fuente y genera archivos traducidos."
 ---
 
 # CLI
 
-Better Translate incluye scripts del workspace para compilar, verificar tipos y desarrollar
-paquetes y apps en el monorepo. Si estás usando esto como librería en tu propio proyecto,
-estos son los scripts que más usarás.
+Usa `@better-translate/cli` cuando quieras que Better Translate cree y actualice tus archivos de locale.
 
-## Scripts del workspace
+No necesitas la CLI para usar los paquetes de runtime. Es opcional.
 
-Ejecuta estos desde la raíz del repositorio usando Bun y Turborepo.
+## 1. Instala los paquetes
 
-- `bun run dev` ,  Inicia todas las apps en modo desarrollo.
-- `bun run build` ,  Compila todos los paquetes y apps.
-- `bun run build:packages` ,  Compila solo los paquetes de la librería.
-- `bun run check-types` ,  Ejecuta verificación de tipos TypeScript en todo el workspace.
-- `bun run check-types:packages` ,  Ejecuta verificación de tipos solo en paquetes.
-
-## Generación de esquema JSON
-
-El paquete core exporta `createTranslationJsonSchema` para
-generar un JSON Schema desde tu objeto de locale fuente. Esto ayuda a los editores a validar
-archivos de locale hermanos.
-
-```tsx showLineNumbers
-import { createTranslationJsonSchema } from "better-translate"
-import { en } from "./messages/en"
-import { writeFileSync } from "fs"
-
-const schema = createTranslationJsonSchema(en)
-writeFileSync("./messages/schema.json", JSON.stringify(schema, null, 2))
+```sh
+npm install -D @better-translate/cli @ai-sdk/openai
 ```
 
-## Extensión de VS Code
+O instala otro paquete de provider:
 
-La extensión `@better-translate/vscode`
-agrega navegación de claves de traducción en VS Code. Instálala desde el marketplace de extensiones
-o compílala localmente desde `packages/vscode`.
+```sh
+npm install -D @better-translate/cli @ai-sdk/anthropic
+# o
+npm install -D @better-translate/cli @ai-sdk/moonshotai
+```
 
-<div className="mt-6 flex flex-wrap gap-3">
-  <Button asChild variant="outline" size="lg">
-    <Link href="/docs/installation">Instalar los paquetes</Link>
-  </Button>
-  <Button asChild size="lg">
-    <Link href="/docs/changelog">Ver lanzamientos recientes</Link>
-  </Button>
-</div>
+La CLI ya no incluye helpers de provider. Tu app instala y configura el provider de AI SDK directamente.
 
-## Scripts por paquete
+## 2. Crea un archivo de locale fuente
 
-Cada paquete tiene sus propios scripts locales. Desde cualquier directorio de paquete:
+Crea `src/messages/en.json`:
 
-```tsx showLineNumbers
-# compilar el paquete
-bun run build
+```json
+{
+  "home": {
+    "title": "Hello",
+    "description": "Welcome to the app"
+  }
+}
+```
 
-# verificar tipos del paquete
-bun run check-types
+## 3. Crea la configuración de la CLI
 
-# ejecutar tests (donde estén disponibles)
-bun test
+Crea `better-translate.config.ts`. El flujo con `model` directo es el mismo para cualquier provider:
+
+```ts
+import { openai } from "@ai-sdk/openai";
+import { defineConfig } from "@better-translate/cli/config";
+
+export default defineConfig({
+  sourceLocale: "en",
+  locales: ["es", "fr"],
+  model: openai("gpt-5"),
+  messages: {
+    entry: "./src/messages/en.json",
+  },
+});
+```
+
+```ts
+import { anthropic } from "@ai-sdk/anthropic";
+import { defineConfig } from "@better-translate/cli/config";
+
+export default defineConfig({
+  sourceLocale: "en",
+  locales: ["es", "fr"],
+  model: anthropic("claude-sonnet-4-5"),
+  messages: {
+    entry: "./src/messages/en.json",
+  },
+});
+```
+
+```ts
+import { moonshotai } from "@ai-sdk/moonshotai";
+import { defineConfig } from "@better-translate/cli/config";
+
+export default defineConfig({
+  sourceLocale: "en",
+  locales: ["es", "fr"],
+  model: moonshotai("kimi-k2-0905-preview"),
+  messages: {
+    entry: "./src/messages/en.json",
+  },
+});
+```
+
+Si necesitas configuración personalizada del provider, crea el modelo tú mismo y pásalo a la CLI. Las credenciales y la configuración específica viven en el paquete del provider que elijas:
+
+```ts
+import { createOpenAI } from "@ai-sdk/openai";
+import { defineConfig } from "@better-translate/cli/config";
+
+const model = createOpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+  baseURL: process.env.OPENAI_BASE_URL,
+})("gpt-5");
+
+export default defineConfig({
+  sourceLocale: "en",
+  locales: ["es", "fr"],
+  model,
+  messages: {
+    entry: "./src/messages/en.json",
+  },
+});
+```
+
+Este es un cambio incompatible con versiones anteriores de la CLI que exportaban `openai(...)` desde `@better-translate/cli/config`.
+
+## 4. Marca strings pendientes
+
+Marca strings con `{ bt: true }` para escribir el texto fuente directamente. La CLI generará las claves por ti:
+
+```ts
+import { t } from "@better-translate/core";
+
+export function navLabel() {
+  return t("Home", { bt: true });
+}
+```
+
+`{ bt: true }` flexibiliza el primer argumento para que puedas escribir el string fuente directamente. En runtime devuelve el string sin cambios hasta que ocurra la extracción.
+
+## 5. Extrae claves fuente
+
+```sh
+npx bt extract --config ./better-translate.config.ts
+```
+
+Ese comando busca llamadas marcadas `t(..., { bt: true })`, agrega las claves faltantes a tu archivo de locale fuente y reescribe las llamadas exitosas a `t("namespace.generatedKey")`.
+
+## 6. Ejecuta el generador
+
+```sh
+npx bt generate --config ./better-translate.config.ts
+```
+
+Ese comando crea los archivos de locale destino junto a tu archivo fuente.
+
+## 7. Usa los archivos generados en tu app
+
+Después de que existan los archivos, impórtalos en tu configuración de `@better-translate/core` igual que cualquier otro archivo de locale escrito a mano.
+
+## Markdown
+
+Si también quieres generar markdown localizado, agrega la opción `markdown.rootDir`. Esto funciona igual con cualquier modelo de provider de AI SDK:
+
+```ts
+import { openai } from "@ai-sdk/openai";
+import { defineConfig } from "@better-translate/cli/config";
+
+export default defineConfig({
+  sourceLocale: "en",
+  locales: ["es", "fr"],
+  model: openai("gpt-5"),
+  messages: {
+    entry: "./src/messages/en.json",
+  },
+  markdown: {
+    rootDir: "./content/docs",
+  },
+});
 ```

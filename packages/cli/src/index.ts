@@ -2,12 +2,12 @@ export { loadCliConfig } from "./config-loader.js";
 export { defineConfig } from "./define-config.js";
 export { extractProject } from "./extract.js";
 export { generateProject } from "./generate.js";
-export { openai } from "./provider-models.js";
 
 export type {
   BetterTranslateCliConfig,
+  BetterTranslateCliDirectModelConfig,
   BetterTranslateCliGatewayConfig,
-  BetterTranslateCliOpenAIConfig,
+  CliLanguageModel,
   CliLogger,
   ExtractProjectOptions,
   ExtractProjectResult,
@@ -16,10 +16,9 @@ export type {
   GenerateProjectResult,
   LoadedBetterTranslateCliConfig,
   MarkdownExtension,
-  OpenAIProviderModelSpec,
   ResolvedBetterTranslateCliConfig,
+  ResolvedBetterTranslateCliDirectModelConfig,
   ResolvedBetterTranslateCliGatewayConfig,
-  ResolvedBetterTranslateCliOpenAIConfig,
   StructuredGenerationRequest,
   StructuredGenerator,
 } from "./types.js";

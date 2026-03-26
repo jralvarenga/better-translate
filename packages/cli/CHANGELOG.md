@@ -1,5 +1,11 @@
 # @better-translate/cli
 
+## 2.0.1
+
+### Patch Changes
+
+- Adding support for AI providers; now users can install their favorite AI provider and use their own API key
+
 ## 2.0.0
 
 ### Major Changes

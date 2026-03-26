@@ -96,14 +96,9 @@ async function resolveRuntimeModel(
     };
   }
 
-  const { createOpenAI } = await import("@ai-sdk/openai");
-  const provider = createOpenAI({
-    apiKey: config.model.apiKey,
-  });
-
   return {
-    description: `Using built-in OpenAI provider model: ${config.model.modelId}`,
-    model: provider(config.model.modelId),
+    description: `Using configured provider model: ${config.model.provider}/${config.model.modelId}`,
+    model: config.model,
   };
 }
 
