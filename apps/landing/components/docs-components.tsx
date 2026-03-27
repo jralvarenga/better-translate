@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { CodeBlock } from "@/components/ui/code-highlight";
+import { PackageManagerBlock } from "@/components/ui/package-manager-block";
 import { cn } from "@/lib/utils";
 
 type PreCodeElement = React.ReactElement<{
@@ -215,6 +216,17 @@ export const mdxComponents = {
         >
           {children}
         </pre>
+      );
+    }
+
+    const isSh = language === "sh" || language === "bash" || language === "shell";
+    const hasNpmCommand = /^(npm |npx )/m.test(code);
+
+    if (isSh && hasNpmCommand) {
+      return (
+        <figure className="mt-6">
+          <PackageManagerBlock code={code} />
+        </figure>
       );
     }
 

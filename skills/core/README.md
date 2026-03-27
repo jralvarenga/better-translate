@@ -53,6 +53,16 @@ translator.t("home.title", { locale: "es" });
 - Add `@better-translate/astro` when Astro requests need locale awareness
 - Add `@better-translate/md` when content files should follow the same locale setup
 
+## Auto-extract strings without naming keys
+
+Use `{ bt: true }` in any `t()` call to write source text directly instead of inventing a key:
+
+```ts
+t("Hello world", { bt: true })
+```
+
+Then run `npx bt extract` to generate keys automatically and rewrite the calls. See `skills/cli/README.md` for the full setup.
+
 ## Main idea
 
 Do not create one translation system per framework.

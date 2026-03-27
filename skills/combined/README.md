@@ -32,6 +32,16 @@ Use this guide when the app needs more than one Better Translate package.
 - `@better-translate/astro`
 - `@better-translate/md`
 
+### Any app with AI-generated locale files
+
+Add `@better-translate/cli` to any combination above when you want the CLI to manage locale file creation.
+
+Example — Next.js app with generated translations:
+
+- `@better-translate/core`
+- `@better-translate/nextjs`
+- `@better-translate/cli`
+
 ## Rule to keep the setup clean
 
 Every combination still has one source of truth:

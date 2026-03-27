@@ -36,6 +36,27 @@ You can check the available adapters here:
   </Button>
 </div>
 
+## CLI
+
+The CLI is an optional dev tool that removes the manual work of managing locale files.
+
+It does two things:
+
+- **Extract** — scans your code for strings marked with `{ bt: true }`, adds them to your source locale file with auto-generated keys, and rewrites the calls in place
+- **Generate** — reads your source locale file and uses an AI model to produce translated versions for every other locale
+
+```sh
+npm install -D @better-translate/cli @ai-sdk/openai
+```
+
+Once installed, running `npx bt extract` and `npx bt generate` is all it takes to go from writing source strings to having a fully translated app.
+
+<div className="mt-4 flex flex-wrap gap-3">
+  <Button asChild variant="outline" size="lg">
+    <Link href="/docs/cli">CLI guide</Link>
+  </Button>
+</div>
+
 ## Requirements
 
 - Node.js 18+ or Bun 1.0+
