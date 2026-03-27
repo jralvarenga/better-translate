@@ -10,11 +10,17 @@ interface FooterProps {
 
 export function Footer({ locale, t }: FooterProps) {
   return (
-    <footer className="border-t border-white/10 py-12 z-10">
+    <footer className="border-t border-white/10 py-12 z-20">
       <div className="mx-auto max-w-5xl px-6">
         <div className="flex flex-col items-center justify-between gap-6 sm:flex-row">
           <Logo onlyIcon />
           <div className="flex gap-6 text-sm text-muted-foreground">
+            <Link
+              href={`/${locale}/docs`}
+              className="hover:text-foreground transition-colors"
+            >
+              {t("footer.docs")}
+            </Link>
             <Link
               href={siteLinks.github}
               target="_blank"

@@ -1,5 +1,5 @@
 const githubUrl =
-  process.env.NEXT_PUBLIC_GITHUB_URL ??
+  process.env.NEXT_PUBLIC_GITHUB_URL ||
   "https://github.com/jralvarenga/better-translate";
 
 export const siteLinks = {
