@@ -28,3 +28,13 @@ Each package is published separately on npm, so you can install only the pieces 
 ## Workspace
 
 The repository uses Bun and Turborepo. Public packages live in `packages/`, the landing site lives in `apps/landing`, and runnable integration examples live in `examples/`.
+
+## Lockfile
+
+`bun.lock` is committed and must stay in sync with the workspace manifests.
+CI uses Bun `1.2.23` together with `bun install --frozen-lockfile`, so lockfile drift will fail builds.
+
+Floating specs such as `latest` tags and nightly tags in workspace examples can cause Bun to re-resolve dependencies and report lockfile changes even when no local files changed.
+When intentionally changing dependencies, rerun `bun install` and commit the updated `bun.lock`.
+
+The release workflow's post-`changeset:version` `bun install` is intentional because version bumps change workspace manifests and require a lockfile refresh.

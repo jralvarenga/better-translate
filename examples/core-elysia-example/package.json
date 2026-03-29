@@ -9,10 +9,10 @@
   "dependencies": {
     "@sinclair/typebox": "^0.34.41",
     "@better-translate/core": "^2.0.0",
-    "elysia": "latest"
+    "elysia": "1.4.28"
   },
   "devDependencies": {
-    "bun-types": "latest"
+    "bun-types": "1.3.11"
   },
   "module": "src/index.js"
 }
