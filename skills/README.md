@@ -13,7 +13,7 @@ Then add only the adapter your app needs:
 - Astro request helpers and middleware: `@better-translate/astro`
 - TanStack Router locale-aware routing: `@better-translate/tanstack-router`
 - Localized Markdown or MDX: `@better-translate/md`
-- Generated locale files: `@better-translate/cli`
+- Auto-extract strings and generate locale files: `@better-translate/cli`
 
 ## Fast package chooser
 
@@ -23,11 +23,13 @@ Then add only the adapter your app needs:
 - Next.js App Router apps: read `skills/nextjs/README.md`
 - Markdown or MDX content: read `skills/md/README.md`
 - Mixed app with routing, server rendering, and client hooks: read `skills/combined/README.md`
+- CLI or bt-extracted strings: read `skills/cli/README.md`
 
 ## Reading order
 
 1. `skills/core/README.md`
-2. `skills/react/README.md`
-3. `skills/nextjs/README.md`
-4. `skills/md/README.md`
-5. `skills/combined/README.md`
+2. `skills/cli/README.md`
+3. `skills/react/README.md`
+4. `skills/nextjs/README.md`
+5. `skills/md/README.md`
+6. `skills/combined/README.md`
