@@ -1,5 +1,23 @@
 # landing
 
+## 1.0.0
+
+### Major Changes
+
+- 250f405: Adding confirmation when adding new md files and translations
+
+### Minor Changes
+
+- Addin confirmation message when running cli
+
+### Patch Changes
+
+- Updated dependencies
+- Updated dependencies [250f405]
+  - @better-translate/cli@3.0.0
+  - @better-translate/core@2.1.0
+  - @better-translate/md@2.0.0
+
 ## 0.1.2
 
 ### Patch Changes

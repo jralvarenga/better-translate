@@ -1,5 +1,20 @@
 # @better-translate/cli
 
+## 3.0.0
+
+### Major Changes
+
+- 250f405: Adding confirmation when adding new md files and translations
+
+### Minor Changes
+
+- Addin confirmation message when running cli
+
+### Patch Changes
+
+- Updated dependencies
+  - @better-translate/core@2.1.0
+
 ## 2.0.1
 
 ### Patch Changes

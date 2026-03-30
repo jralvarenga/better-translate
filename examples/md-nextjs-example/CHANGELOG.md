@@ -1,5 +1,14 @@
 # md-nextjs-example
 
+## 0.1.2
+
+### Patch Changes
+
+- Updated dependencies
+- Updated dependencies [250f405]
+  - @better-translate/core@2.1.0
+  - @better-translate/md@2.0.0
+
 ## 0.1.1
 
 ### Patch Changes

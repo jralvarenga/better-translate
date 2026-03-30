@@ -20,7 +20,7 @@
     "@tanstack/react-router-ssr-query": "1.166.10",
     "@tanstack/react-start": "1.167.12",
     "@tanstack/router-plugin": "^1.132.0",
-    "@better-translate/core": "^2.0.0",
+    "@better-translate/core": "^2.1.0",
     "lucide-react": "^0.545.0",
     "nitro": "npm:nitro-nightly@3.0.1-20260326-192208-2888e8f9",
     "react": "^19.2.0",

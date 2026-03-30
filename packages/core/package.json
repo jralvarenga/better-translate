@@ -1,6 +1,6 @@
 {
   "name": "@better-translate/core",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Framework-agnostic translation configuration runtime for TypeScript projects.",
   "license": "MIT",
   "type": "module",
