@@ -167,4 +167,39 @@ describe("@better-translate/md collection helpers", () => {
     expect(document.requestedLocale).toBe("es");
     expect(document.usedFallback).toBe(true);
   });
+
+  it("rethrows non-ENOENT access errors when checking locale candidates", async () => {
+    await mkdir(join(rootDir, "en", "docs"), {
+      recursive: true,
+    });
+    await writeFile(join(rootDir, "en", "docs", "intro.md"), "# Intro\n", "utf8");
+    await writeFile(join(rootDir, "es"), "not-a-directory", "utf8");
+    const translator = await configureTranslations({
+      availableLocales: ["en", "es"] as const,
+      defaultLocale: "en",
+      fallbackLocale: "en",
+      messages: {
+        en: {
+          common: {
+            hello: "Hello",
+          },
+        },
+        es: {
+          common: {
+            hello: "Hola",
+          },
+        },
+      },
+    });
+    const collection = createMarkdownCollection({
+      rootDir,
+      translator,
+    });
+
+    await expect(
+      collection.getDocument("docs/intro", {
+        locale: "es",
+      }),
+    ).rejects.toThrow(/ENOTDIR|not a directory/i);
+  });
 });

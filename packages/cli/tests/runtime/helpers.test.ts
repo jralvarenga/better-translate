@@ -773,6 +773,7 @@ count: 1
       }),
     ).toBe(1);
     expect(stdout[0]).toContain("Usage:");
+    expect(stdout[0]).toContain("[--yes|-y]");
 
     expect(
       await runCli(["--help"], {
@@ -823,5 +824,43 @@ count: 1
         ),
       ),
     ).toBe(true);
+  });
+
+  it("passes --yes through generate", async () => {
+    const generateCalls: Array<Record<string, unknown>> = [];
+
+    expect(
+      await runCli(["generate", "--yes"], {
+        async generateProjectImpl(options) {
+          generateCalls.push(options as Record<string, unknown>);
+          return {
+            dryRun: false,
+            loadedConfig: null as never,
+            writes: [],
+          };
+        },
+        stderr() {},
+        stdout() {},
+      }),
+    ).toBe(0);
+
+    expect(
+      await runCli(["generate", "-y"], {
+        async generateProjectImpl(options) {
+          generateCalls.push(options as Record<string, unknown>);
+          return {
+            dryRun: false,
+            loadedConfig: null as never,
+            writes: [],
+          };
+        },
+        stderr() {},
+        stdout() {},
+      }),
+    ).toBe(0);
+
+    expect(generateCalls).toHaveLength(2);
+    expect(generateCalls[0]?.yes).toBe(true);
+    expect(generateCalls[1]?.yes).toBe(true);
   });
 });

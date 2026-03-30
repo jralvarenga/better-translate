@@ -84,8 +84,17 @@ async function pathExists(pathname: string): Promise<boolean> {
   try {
     await access(pathname);
     return true;
-  } catch {
-    return false;
+  } catch (error) {
+    if (
+      error &&
+      typeof error === "object" &&
+      "code" in error &&
+      error.code === "ENOENT"
+    ) {
+      return false;
+    }
+
+    throw error;
   }
 }
 

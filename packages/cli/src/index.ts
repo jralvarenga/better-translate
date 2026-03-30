@@ -15,6 +15,8 @@ export type {
   GenerateProjectOptions,
   GenerateProjectResult,
   LoadedBetterTranslateCliConfig,
+  MarkdownWriteConfirmationEntry,
+  MarkdownWriteConfirmationRequest,
   MarkdownExtension,
   ResolvedBetterTranslateCliConfig,
   ResolvedBetterTranslateCliDirectModelConfig,

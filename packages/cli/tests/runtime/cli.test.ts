@@ -1045,6 +1045,7 @@ This is the intro.
         error() {},
         info() {},
       },
+      yes: true,
     });
 
     expect(
@@ -1115,6 +1116,621 @@ export default en;
     expect(
       await Bun.file(path.join(workspace, "messages/es.ts")).exists(),
     ).toBe(false);
+  });
+
+  it("prompts once before markdown generation and classifies planned writes", async () => {
+    const workspace = await createWorkspace();
+    let confirmationCalls = 0;
+    let confirmationRequest:
+      | {
+          createCount: number;
+          overwriteCount: number;
+          writes: readonly {
+            action: "create" | "overwrite";
+            locale: string;
+            sourcePath: string;
+            targetPath: string;
+          }[];
+        }
+      | undefined;
+
+    await mkdir(path.join(workspace, "messages"), {
+      recursive: true,
+    });
+    await mkdir(path.join(workspace, "docs/en/guides"), {
+      recursive: true,
+    });
+    await mkdir(path.join(workspace, "docs/es/guides"), {
+      recursive: true,
+    });
+    await writeFile(
+      path.join(workspace, "messages/en.json"),
+      JSON.stringify(
+        {
+          greeting: "Hello",
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+    await writeFile(
+      path.join(workspace, "docs/en/guides/intro.md"),
+      `---
+title: Intro
+---
+
+# Welcome
+`,
+      "utf8",
+    );
+    await writeFile(
+      path.join(workspace, "docs/es/guides/intro.md"),
+      `---
+title: Viejo
+---
+
+# Antiguo
+`,
+      "utf8",
+    );
+    await writeFile(
+      path.join(workspace, "better-translate.config.ts"),
+      `export default {
+  gateway: {
+    apiKey: "test-gateway-key",
+  },
+  sourceLocale: "en",
+  locales: ["es", "fr"],
+  model: "anthropic/claude-sonnet-4.5",
+  messages: {
+    entry: "./messages/en.json",
+  },
+  markdown: {
+    rootDir: "./docs/en",
+  },
+};`,
+      "utf8",
+    );
+
+    await generateProject({
+      confirmMarkdownWrites: async (request) => {
+        confirmationCalls += 1;
+        confirmationRequest = request;
+        return true;
+      },
+      cwd: workspace,
+      async generator(request) {
+        expect(confirmationCalls).toBe(1);
+
+        if (request.kind === "messages") {
+          return {
+            greeting: request.targetLocale === "es" ? "Hola" : "Bonjour",
+          };
+        }
+
+        return {
+          body:
+            request.targetLocale === "es"
+              ? "# Bienvenido\n"
+              : "# Bienvenue\n",
+          frontmatter: {
+            title: request.targetLocale === "es" ? "Introduccion" : "Introduction",
+          },
+        };
+      },
+      logger: {
+        error() {},
+        info() {},
+      },
+    });
+
+    expect(confirmationCalls).toBe(1);
+    expect(confirmationRequest).toMatchObject({
+      createCount: 1,
+      overwriteCount: 1,
+    });
+    expect(confirmationRequest?.writes).toEqual([
+      {
+        action: "overwrite",
+        locale: "es",
+        sourcePath: path.join(workspace, "docs/en/guides/intro.md"),
+        targetPath: path.join(workspace, "docs/es/guides/intro.md"),
+      },
+      {
+        action: "create",
+        locale: "fr",
+        sourcePath: path.join(workspace, "docs/en/guides/intro.md"),
+        targetPath: path.join(workspace, "docs/fr/guides/intro.md"),
+      },
+    ]);
+  });
+
+  it("does not prompt for message-only runs", async () => {
+    const workspace = await createWorkspace();
+    let confirmationCalls = 0;
+
+    await mkdir(path.join(workspace, "messages"), {
+      recursive: true,
+    });
+    await writeFile(
+      path.join(workspace, "messages/en.json"),
+      JSON.stringify({ greeting: "Hello" }, null, 2),
+      "utf8",
+    );
+    await writeFile(
+      path.join(workspace, "better-translate.config.ts"),
+      `export default {
+  gateway: {
+    apiKey: "test-gateway-key",
+  },
+  sourceLocale: "en",
+  locales: ["es"],
+  model: "anthropic/claude-sonnet-4.5",
+  messages: {
+    entry: "./messages/en.json",
+  },
+};`,
+      "utf8",
+    );
+
+    await generateProject({
+      confirmMarkdownWrites: async () => {
+        confirmationCalls += 1;
+        return true;
+      },
+      cwd: workspace,
+      async generator() {
+        return {
+          greeting: "Hola",
+        };
+      },
+      logger: {
+        error() {},
+        info() {},
+      },
+    });
+
+    expect(confirmationCalls).toBe(0);
+  });
+
+  it("does not prompt during dry-run markdown generation", async () => {
+    const workspace = await createWorkspace();
+    let confirmationCalls = 0;
+
+    await mkdir(path.join(workspace, "messages"), {
+      recursive: true,
+    });
+    await mkdir(path.join(workspace, "docs/en/guides"), {
+      recursive: true,
+    });
+    await writeFile(
+      path.join(workspace, "messages/en.json"),
+      JSON.stringify({ greeting: "Hello" }, null, 2),
+      "utf8",
+    );
+    await writeFile(
+      path.join(workspace, "docs/en/guides/intro.mdx"),
+      `---
+title: Intro
+---
+
+# Welcome
+`,
+      "utf8",
+    );
+    await writeFile(
+      path.join(workspace, "better-translate.config.ts"),
+      `export default {
+  gateway: {
+    apiKey: "test-gateway-key",
+  },
+  sourceLocale: "en",
+  locales: ["es"],
+  model: "anthropic/claude-sonnet-4.5",
+  messages: {
+    entry: "./messages/en.json",
+  },
+  markdown: {
+    rootDir: "./docs/en",
+  },
+};`,
+      "utf8",
+    );
+
+    await generateProject({
+      confirmMarkdownWrites: async () => {
+        confirmationCalls += 1;
+        return true;
+      },
+      cwd: workspace,
+      dryRun: true,
+      async generator(request) {
+        if (request.kind === "messages") {
+          return {
+            greeting: "Hola",
+          };
+        }
+
+        return {
+          body: "# Bienvenido\n",
+          frontmatter: {
+            title: "Introduccion",
+          },
+        };
+      },
+      logger: {
+        error() {},
+        info() {},
+      },
+    });
+
+    expect(confirmationCalls).toBe(0);
+    expect(
+      await Bun.file(path.join(workspace, "docs/es/guides/intro.mdx")).exists(),
+    ).toBe(false);
+  });
+
+  it("skips markdown confirmation when yes is enabled", async () => {
+    const workspace = await createWorkspace();
+    let confirmationCalls = 0;
+
+    await mkdir(path.join(workspace, "messages"), {
+      recursive: true,
+    });
+    await mkdir(path.join(workspace, "docs/en/guides"), {
+      recursive: true,
+    });
+    await writeFile(
+      path.join(workspace, "messages/en.json"),
+      JSON.stringify({ greeting: "Hello" }, null, 2),
+      "utf8",
+    );
+    await writeFile(
+      path.join(workspace, "docs/en/guides/intro.md"),
+      `---
+title: Intro
+---
+
+# Welcome
+`,
+      "utf8",
+    );
+    await writeFile(
+      path.join(workspace, "better-translate.config.ts"),
+      `export default {
+  gateway: {
+    apiKey: "test-gateway-key",
+  },
+  sourceLocale: "en",
+  locales: ["es"],
+  model: "anthropic/claude-sonnet-4.5",
+  messages: {
+    entry: "./messages/en.json",
+  },
+  markdown: {
+    rootDir: "./docs/en",
+  },
+};`,
+      "utf8",
+    );
+
+    await generateProject({
+      confirmMarkdownWrites: async () => {
+        confirmationCalls += 1;
+        return true;
+      },
+      cwd: workspace,
+      async generator(request) {
+        if (request.kind === "messages") {
+          return {
+            greeting: "Hola",
+          };
+        }
+
+        return {
+          body: "# Bienvenido\n",
+          frontmatter: {
+            title: "Introduccion",
+          },
+        };
+      },
+      logger: {
+        error() {},
+        info() {},
+      },
+      yes: true,
+    });
+
+    expect(confirmationCalls).toBe(0);
+  });
+
+  it("cancels before writing files when markdown confirmation is declined", async () => {
+    const workspace = await createWorkspace();
+    let generatorCalls = 0;
+
+    await mkdir(path.join(workspace, "messages"), {
+      recursive: true,
+    });
+    await mkdir(path.join(workspace, "docs/en/guides"), {
+      recursive: true,
+    });
+    await writeFile(
+      path.join(workspace, "messages/en.json"),
+      JSON.stringify({ greeting: "Hello" }, null, 2),
+      "utf8",
+    );
+    await writeFile(
+      path.join(workspace, "docs/en/guides/intro.md"),
+      `---
+title: Intro
+---
+
+# Welcome
+`,
+      "utf8",
+    );
+    await writeFile(
+      path.join(workspace, "better-translate.config.ts"),
+      `export default {
+  gateway: {
+    apiKey: "test-gateway-key",
+  },
+  sourceLocale: "en",
+  locales: ["es"],
+  model: "anthropic/claude-sonnet-4.5",
+  messages: {
+    entry: "./messages/en.json",
+  },
+  markdown: {
+    rootDir: "./docs/en",
+  },
+};`,
+      "utf8",
+    );
+
+    await expect(
+      generateProject({
+        confirmMarkdownWrites: async () => false,
+        cwd: workspace,
+        async generator() {
+          generatorCalls += 1;
+          return {
+            greeting: "Hola",
+          };
+        },
+        logger: {
+          error() {},
+          info() {},
+        },
+      }),
+    ).rejects.toThrow("Markdown translation cancelled. No files were written.");
+
+    expect(generatorCalls).toBe(0);
+    expect(
+      await Bun.file(path.join(workspace, "messages/es.json")).exists(),
+    ).toBe(false);
+    expect(
+      await Bun.file(path.join(workspace, "docs/es/guides/intro.md")).exists(),
+    ).toBe(false);
+  });
+
+  it("aborts without yes and succeeds with yes in non-interactive environments", async () => {
+    const workspace = await createWorkspace();
+    const stdin = process.stdin as NodeJS.ReadStream & { isTTY?: boolean };
+    const stdout = process.stdout as NodeJS.WriteStream & { isTTY?: boolean };
+    const originalStdinDescriptor = Object.getOwnPropertyDescriptor(
+      stdin,
+      "isTTY",
+    );
+    const originalStdoutDescriptor = Object.getOwnPropertyDescriptor(
+      stdout,
+      "isTTY",
+    );
+
+    await mkdir(path.join(workspace, "messages"), {
+      recursive: true,
+    });
+    await mkdir(path.join(workspace, "docs/en/guides"), {
+      recursive: true,
+    });
+    await writeFile(
+      path.join(workspace, "messages/en.json"),
+      JSON.stringify({ greeting: "Hello" }, null, 2),
+      "utf8",
+    );
+    await writeFile(
+      path.join(workspace, "docs/en/guides/intro.md"),
+      `---
+title: Intro
+---
+
+# Welcome
+`,
+      "utf8",
+    );
+    await writeFile(
+      path.join(workspace, "better-translate.config.ts"),
+      `export default {
+  gateway: {
+    apiKey: "test-gateway-key",
+  },
+  sourceLocale: "en",
+  locales: ["es"],
+  model: "anthropic/claude-sonnet-4.5",
+  messages: {
+    entry: "./messages/en.json",
+  },
+  markdown: {
+    rootDir: "./docs/en",
+  },
+};`,
+      "utf8",
+    );
+
+    Object.defineProperty(stdin, "isTTY", {
+      configurable: true,
+      value: false,
+    });
+    Object.defineProperty(stdout, "isTTY", {
+      configurable: true,
+      value: false,
+    });
+
+    try {
+      await expect(
+        generateProject({
+          cwd: workspace,
+          async generator(request) {
+            if (request.kind === "messages") {
+              return {
+                greeting: "Hola",
+              };
+            }
+
+            return {
+              body: "# Bienvenido\n",
+              frontmatter: {
+                title: "Introduccion",
+              },
+            };
+          },
+          logger: {
+            error() {},
+            info() {},
+          },
+        }),
+      ).rejects.toThrow(
+        "Markdown translation would create or overwrite translated .md/.mdx files in a non-interactive environment. Re-run with --yes to continue.",
+      );
+
+      await expect(
+        generateProject({
+          cwd: workspace,
+          async generator(request) {
+            if (request.kind === "messages") {
+              return {
+                greeting: "Hola",
+              };
+            }
+
+            return {
+              body: "# Bienvenido\n",
+              frontmatter: {
+                title: "Introduccion",
+              },
+            };
+          },
+          logger: {
+            error() {},
+            info() {},
+          },
+          yes: true,
+        }),
+      ).resolves.toMatchObject({
+        dryRun: false,
+      });
+
+      expect(
+        JSON.parse(
+          await readFile(path.join(workspace, "messages/es.json"), "utf8"),
+        ),
+      ).toEqual({
+        greeting: "Hola",
+      });
+      expect(
+        await readFile(path.join(workspace, "docs/es/guides/intro.md"), "utf8"),
+      ).toContain("# Bienvenido");
+    } finally {
+      if (originalStdinDescriptor) {
+        Object.defineProperty(stdin, "isTTY", originalStdinDescriptor);
+      } else {
+        delete stdin.isTTY;
+      }
+
+      if (originalStdoutDescriptor) {
+        Object.defineProperty(stdout, "isTTY", originalStdoutDescriptor);
+      } else {
+        delete stdout.isTTY;
+      }
+    }
+  });
+
+  it("rethrows non-ENOENT access errors while planning markdown writes", async () => {
+    const workspace = await createWorkspace();
+    let confirmationCalls = 0;
+    let generatorCalls = 0;
+
+    await mkdir(path.join(workspace, "messages"), {
+      recursive: true,
+    });
+    await mkdir(path.join(workspace, "docs/en/guides"), {
+      recursive: true,
+    });
+    await mkdir(path.join(workspace, "docs"), {
+      recursive: true,
+    });
+    await writeFile(
+      path.join(workspace, "messages/en.json"),
+      JSON.stringify({ greeting: "Hello" }, null, 2),
+      "utf8",
+    );
+    await writeFile(
+      path.join(workspace, "docs/en/guides/intro.md"),
+      `---
+title: Intro
+---
+
+# Welcome
+`,
+      "utf8",
+    );
+    await writeFile(
+      path.join(workspace, "docs/es"),
+      "not-a-directory",
+      "utf8",
+    );
+    await writeFile(
+      path.join(workspace, "better-translate.config.ts"),
+      `export default {
+  gateway: {
+    apiKey: "test-gateway-key",
+  },
+  sourceLocale: "en",
+  locales: ["es"],
+  model: "anthropic/claude-sonnet-4.5",
+  messages: {
+    entry: "./messages/en.json",
+  },
+  markdown: {
+    rootDir: "./docs/en",
+  },
+};`,
+      "utf8",
+    );
+
+    await expect(
+      generateProject({
+        confirmMarkdownWrites: async () => {
+          confirmationCalls += 1;
+          return true;
+        },
+        cwd: workspace,
+        async generator() {
+          generatorCalls += 1;
+          return {
+            greeting: "Hola",
+          };
+        },
+        logger: {
+          error() {},
+          info() {},
+        },
+      }),
+    ).rejects.toThrow(/ENOTDIR|not a directory/i);
+
+    expect(confirmationCalls).toBe(0);
+    expect(generatorCalls).toBe(0);
   });
 
   it("overwrites existing files in place", async () => {
