@@ -97,6 +97,14 @@ npx bt generate
 
 This creates the target locale files next to your source file.
 
+If `markdown.rootDir` is enabled and the run would create or overwrite translated `.md` or `.mdx` files, the CLI asks for confirmation before making changes. Use `--yes` or `-y` to skip the prompt:
+
+```sh
+npx bt generate --yes
+```
+
+Non-interactive runs that need to write translated markdown files must pass `--yes`.
+
 ## 7. Use the generated files in your app
 
 After the files exist, import them into your `@better-translate/core` config just like any hand-written locale file.

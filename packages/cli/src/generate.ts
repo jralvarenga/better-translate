@@ -1,8 +1,9 @@
-import { mkdir, writeFile } from "node:fs/promises";
+import { access, mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import type { TranslationMessages } from "@better-translate/core";
 
+import { confirmMarkdownWrites as defaultConfirmMarkdownWrites } from "./confirm.js";
 import { loadCliConfig } from "./config-loader.js";
 import {
   applyMarkdownTranslation,
@@ -21,6 +22,8 @@ import type {
   CliWriteOperation,
   GenerateProjectOptions,
   GenerateProjectResult,
+  MarkdownWriteConfirmationEntry,
+  MarkdownWriteConfirmationRequest,
   ResolvedBetterTranslateCliConfig,
   StructuredGenerator,
 } from "./types.js";
@@ -39,6 +42,64 @@ function createConsoleLogger(): CliLogger {
 
 function describeError(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
+}
+
+async function pathExists(filePath: string): Promise<boolean> {
+  try {
+    await access(filePath);
+    return true;
+  } catch (error) {
+    if (
+      error &&
+      typeof error === "object" &&
+      "code" in error &&
+      error.code === "ENOENT"
+    ) {
+      return false;
+    }
+
+    throw error;
+  }
+}
+
+function toMarkdownRelativePath(rootDir: string, sourcePath: string): string {
+  return path.relative(rootDir, sourcePath).split(path.sep).join("/");
+}
+
+async function createMarkdownWriteConfirmationRequest(options: {
+  locales: readonly string[];
+  markdownRootDir: string;
+  projectCwd: string;
+  sourceLocale: string;
+  sourcePaths: readonly string[];
+}): Promise<MarkdownWriteConfirmationRequest> {
+  const writes = await Promise.all(
+    options.locales.flatMap((locale) =>
+      options.sourcePaths.map(async (sourcePath) => {
+        const targetPath = deriveTargetMarkdownPath(
+          options.markdownRootDir,
+          options.sourceLocale,
+          locale,
+          toMarkdownRelativePath(options.markdownRootDir, sourcePath),
+        );
+
+        return {
+          action: (await pathExists(targetPath)) ? "overwrite" : "create",
+          locale,
+          sourcePath,
+          targetPath,
+        } satisfies MarkdownWriteConfirmationEntry;
+      }),
+    ),
+  );
+
+  return {
+    createCount: writes.filter((write) => write.action === "create").length,
+    overwriteCount: writes.filter((write) => write.action === "overwrite")
+      .length,
+    projectCwd: options.projectCwd,
+    writes,
+  };
 }
 
 async function persistWrite(
@@ -174,6 +235,29 @@ export async function generateProject(
     );
   } else {
     logger.info("Markdown generation disabled.");
+  }
+
+  if (
+    config.markdown &&
+    markdownSources.length > 0 &&
+    !options.dryRun &&
+    !options.yes
+  ) {
+    const confirmationRequest = await createMarkdownWriteConfirmationRequest({
+      locales: config.locales,
+      markdownRootDir: config.markdown.rootDir,
+      projectCwd: cwd,
+      sourceLocale: config.sourceLocale,
+      sourcePaths: markdownSources,
+    });
+
+    const confirmed = await (
+      options.confirmMarkdownWrites ?? defaultConfirmMarkdownWrites
+    )(confirmationRequest);
+
+    if (!confirmed) {
+      throw new Error("Markdown translation cancelled. No files were written.");
+    }
   }
 
   for (const locale of config.locales) {

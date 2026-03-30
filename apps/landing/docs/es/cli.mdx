@@ -137,6 +137,14 @@ npx bt generate --config ./better-translate.config.ts
 
 Ese comando crea los archivos de locale destino junto a tu archivo fuente.
 
+Si `markdown.rootDir` está habilitado y la ejecución va a crear o sobrescribir archivos traducidos `.md` o `.mdx`, la CLI te pedirá confirmación antes de hacer cambios. Usa `--yes` o `-y` para saltarte el prompt:
+
+```sh
+npx bt generate --yes
+```
+
+Las ejecuciones no interactivas que necesiten escribir markdown traducido deben pasar `--yes`.
+
 ## 7. Usa los archivos generados en tu app
 
 Después de que existan los archivos, impórtalos en tu configuración de `@better-translate/core` igual que cualquier otro archivo de locale escrito a mano.

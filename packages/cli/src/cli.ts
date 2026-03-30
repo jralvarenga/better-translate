@@ -8,7 +8,7 @@ function usage(): string {
   return [
     "Usage:",
     "  bt extract [--config ./better-translate.config.ts] [--dry-run] [--max-length 40]",
-    "  bt generate [--config ./better-translate.config.ts] [--dry-run]",
+    "  bt generate [--config ./better-translate.config.ts] [--dry-run] [--yes|-y]",
   ].join("\n");
 }
 
@@ -16,16 +16,23 @@ function parseCommonArgs(argv: readonly string[]): {
   configPath?: string;
   dryRun: boolean;
   maxLength?: number;
+  yes: boolean;
 } {
   let configPath: string | undefined;
   let dryRun = false;
   let maxLength: number | undefined;
+  let yes = false;
 
   for (let index = 0; index < argv.length; index += 1) {
     const arg = argv[index];
 
     if (arg === "--dry-run") {
       dryRun = true;
+      continue;
+    }
+
+    if (arg === "--yes" || arg === "-y") {
+      yes = true;
       continue;
     }
 
@@ -70,6 +77,7 @@ function parseCommonArgs(argv: readonly string[]): {
     configPath,
     dryRun,
     maxLength,
+    yes,
   };
 }
 
@@ -77,12 +85,16 @@ export async function runCli(
   argv = process.argv.slice(2),
   options: {
     cwd?: string;
+    extractProjectImpl?: typeof extractProject;
+    generateProjectImpl?: typeof generateProject;
     stderr?: (message: string) => void;
     stdout?: (message: string) => void;
   } = {},
 ): Promise<number> {
   const stderr = options.stderr ?? console.error;
   const stdout = options.stdout ?? console.log;
+  const extractProjectImpl = options.extractProjectImpl ?? extractProject;
+  const generateProjectImpl = options.generateProjectImpl ?? generateProject;
   const [command, ...args] = argv;
 
   if (!command || command === "--help" || command === "-h") {
@@ -103,10 +115,15 @@ export async function runCli(
       return 1;
     }
 
+    if (command === "extract" && parsed.yes) {
+      stderr(`--yes is not valid for "extract".\n${usage()}`);
+      return 1;
+    }
+
     console.log(pc.bold("\n  better-translate\n"));
 
     if (command === "extract") {
-      await extractProject({
+      await extractProjectImpl({
         configPath: parsed.configPath,
         cwd: options.cwd,
         dryRun: parsed.dryRun,
@@ -114,11 +131,12 @@ export async function runCli(
         maxLength: parsed.maxLength,
       });
     } else {
-      await generateProject({
+      await generateProjectImpl({
         configPath: parsed.configPath,
         cwd: options.cwd,
         dryRun: parsed.dryRun,
         logger: createSpinnerLogger(),
+        yes: parsed.yes,
       });
     }
 

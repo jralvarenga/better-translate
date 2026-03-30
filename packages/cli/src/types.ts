@@ -77,6 +77,20 @@ export interface CliWriteOperation {
   targetPath: string;
 }
 
+export interface MarkdownWriteConfirmationEntry {
+  action: "create" | "overwrite";
+  locale: string;
+  sourcePath: string;
+  targetPath: string;
+}
+
+export interface MarkdownWriteConfirmationRequest {
+  createCount: number;
+  overwriteCount: number;
+  projectCwd?: string;
+  writes: readonly MarkdownWriteConfirmationEntry[];
+}
+
 export interface CliLogger {
   error(message: string): void;
   info(message: string): void;
@@ -98,10 +112,14 @@ export type StructuredGenerator = <TOutput>(
 
 export interface GenerateProjectOptions {
   configPath?: string;
+  confirmMarkdownWrites?: (
+    request: MarkdownWriteConfirmationRequest,
+  ) => Promise<boolean>;
   cwd?: string;
   dryRun?: boolean;
   generator?: StructuredGenerator;
   logger?: CliLogger;
+  yes?: boolean;
 }
 
 export interface GenerateProjectResult {
