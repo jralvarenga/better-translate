@@ -1,5 +1,13 @@
 # landing
 
+## 1.0.1
+
+### Patch Changes
+
+- 1b9388e: Fixed typing for `useTranslations`; apps can type zero-argument `useTranslations()` through module augmentation instead of passing the translator type at each call site
+- Updated dependencies [1b9388e]
+  - @better-translate/react@2.1.0
+
 ## 1.0.0
 
 ### Major Changes

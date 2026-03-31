@@ -1,6 +1,6 @@
 {
   "name": "@better-translate/react",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "React context and hooks for Better Translate in web and native React apps.",
   "license": "MIT",
   "type": "module",
