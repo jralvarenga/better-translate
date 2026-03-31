@@ -52,6 +52,14 @@ const translator = await configureTranslations({
   },
 } as const);
 
+type AppTranslator = typeof translator;
+
+declare module "../../dist/index.js" {
+  interface BetterTranslateReactTypes {
+    translator: AppTranslator;
+  }
+}
+
 function Consumer() {
   const translations = useTranslations<typeof translator>();
 
@@ -100,9 +108,70 @@ function Consumer() {
   // @ts-expect-error messages with placeholders should require params
   translations.t("common.greeting");
 
+  // @ts-expect-error placeholder names should be inferred from the source message
   translations.t("common.greeting", {
     params: {
-      // @ts-expect-error placeholder names should be inferred from the source message
+      user: "Ada",
+    },
+  });
+
+  // @ts-expect-error unsupported locale should fail
+  void translations.setLocale("pt");
+
+  return null;
+}
+
+function AugmentedConsumer() {
+  const translations = useTranslations();
+
+  translations.t("common.hello");
+  translations.t("Welcome back", { bt: true });
+  translations.t("Welcome {name}", {
+    bt: true,
+    params: {
+      name: "Ada",
+    },
+  });
+  translations.t("account.balance.label");
+  translations.t("common.greeting", {
+    params: {
+      name: "Ada",
+    },
+  });
+  translations.t("common.formalGreeting", {
+    params: {
+      salute: "Dr.",
+      name: "Ada",
+    },
+  });
+  void translations.setLocale("es");
+  void translations.loadLocale("fr");
+  translations.availableLanguages[0]?.locale;
+  translations.direction;
+  translations.messages.en;
+  translations.messages.fr;
+  translations.rtl;
+  translations.translator.getDirection({ locale: "es" });
+  translations.translator.isRtl({
+    config: {
+      rtl: true,
+    },
+  });
+  translations.t("common.hello", {
+    config: {
+      rtl: false,
+    },
+  });
+
+  // @ts-expect-error invalid translation key should fail
+  translations.t("account.balance.total");
+
+  // @ts-expect-error messages with placeholders should require params
+  translations.t("common.greeting");
+
+  // @ts-expect-error placeholder names should be inferred from the source message
+  translations.t("common.greeting", {
+    params: {
       user: "Ada",
     },
   });
@@ -115,6 +184,10 @@ function Consumer() {
 
 <BetterTranslateProvider translator={translator}>
   <Consumer />
+</BetterTranslateProvider>;
+
+<BetterTranslateProvider translator={translator}>
+  <AugmentedConsumer />
 </BetterTranslateProvider>;
 
 <BetterTranslateProvider translator={translator} initialLocale="es">

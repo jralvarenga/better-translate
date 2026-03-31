@@ -3,6 +3,7 @@ import { useContext } from "react";
 import { BetterTranslateContext } from "./context.js";
 import type {
   AnyBetterTranslateTranslator,
+  DefaultBetterTranslateTranslator,
   UseTranslationsValue,
 } from "./types.js";
 
@@ -13,7 +14,7 @@ import type {
  */
 export function useTranslations<
   TTranslator extends
-    AnyBetterTranslateTranslator = AnyBetterTranslateTranslator,
+    AnyBetterTranslateTranslator = DefaultBetterTranslateTranslator,
 >(): UseTranslationsValue<TTranslator> {
   const context = useContext(BetterTranslateContext);
 
