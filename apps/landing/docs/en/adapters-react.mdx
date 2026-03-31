@@ -88,6 +88,48 @@ export function Header() {
 }
 ```
 
+## Optional: type `useTranslations()` once for the whole app
+
+If you want plain `useTranslations()` to autocomplete your translation keys without
+repeating `<typeof translator>` in every component, add one declaration file:
+
+Create `src/better-translate.d.ts`:
+
+```ts
+import { translator } from "./i18n";
+
+declare module "@better-translate/react" {
+  interface BetterTranslateReactTypes {
+    translator: typeof translator;
+  }
+}
+```
+
+Then your components can call the hook without a generic:
+
+```tsx
+import { useTranslations } from "@better-translate/react";
+
+export function Header() {
+  const { locale, setLocale, t } = useTranslations();
+
+  return (
+    <header>
+      <h1>{t("home.title")}</h1>
+      <button onClick={() => setLocale("en")} disabled={locale === "en"}>
+        English
+      </button>
+      <button onClick={() => setLocale("es")} disabled={locale === "es"}>
+        Espanol
+      </button>
+    </header>
+  );
+}
+```
+
+Explicit generics still work, so you can keep using `useTranslations<typeof translator>()`
+where that fits your codebase better.
+
 ## When to use React only
 
 Use only `@better-translate/core` + `@better-translate/react` when:
