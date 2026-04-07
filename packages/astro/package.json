@@ -1,6 +1,6 @@
 {
   "name": "@better-translate/astro",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Astro integration package for Better Translate.",
   "license": "MIT",
   "type": "module",
@@ -45,7 +45,7 @@
     "url": "git+https://github.com/jralvarenga/better-translate.git",
     "directory": "packages/astro"
   },
-  "homepage": "https://www.npmjs.com/package/@better-translate/astro",
+  "homepage": "https://better-translate.com",
   "bugs": {
     "url": "https://github.com/jralvarenga/better-translate/issues"
   },

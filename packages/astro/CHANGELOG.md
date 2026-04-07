@@ -1,5 +1,11 @@
 # @better-translate/astro
 
+## 1.1.2
+
+### Patch Changes
+
+- minor homepage issue
+
 ## 1.1.1
 
 ### Patch Changes
