@@ -1,6 +1,6 @@
 {
   "name": "landing",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -13,11 +13,11 @@
   "dependencies": {
     "@ai-sdk/anthropic": "^3.0.64",
     "@ai-sdk/moonshotai": "^2.0.12",
-    "@better-translate/cli": "^3.1.0",
-    "@better-translate/core": "^2.2.0",
-    "@better-translate/md": "^2.1.0",
-    "@better-translate/nextjs": "^1.1.0",
-    "@better-translate/react": "^2.1.0",
+    "@better-translate/cli": "^3.1.1",
+    "@better-translate/core": "^2.2.1",
+    "@better-translate/md": "^2.1.1",
+    "@better-translate/nextjs": "^1.1.1",
+    "@better-translate/react": "^2.1.1",
     "@mdx-js/mdx": "^3.1.1",
     "@remixicon/react": "^4.9.0",
     "class-variance-authority": "^0.7.1",

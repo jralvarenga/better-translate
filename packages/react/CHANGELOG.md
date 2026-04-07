@@ -1,5 +1,13 @@
 # @better-translate/react
 
+## 2.1.1
+
+### Patch Changes
+
+- package homepage updated
+- Updated dependencies
+  - @better-translate/core@2.2.1
+
 ## 2.1.0
 
 ### Minor Changes
