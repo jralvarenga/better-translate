@@ -82,10 +82,10 @@ async function main() {
       const pkgJson = JSON.parse(
         await readFile(path.join(pkgDir, "package.json"), "utf8"),
       );
-      const expectedPrefix = "https://www.npmjs.com/package/@better-translate/";
-      if (!pkgJson.homepage?.startsWith(expectedPrefix)) {
+      const expectedHomepage = "https://better-translate.com";
+      if (pkgJson.homepage !== expectedHomepage) {
         throw new Error(
-          `${pkgDir} homepage "${pkgJson.homepage}" does not start with ${expectedPrefix}`,
+          `${pkgDir} homepage "${pkgJson.homepage}" must equal ${expectedHomepage}`,
         );
       }
     }
