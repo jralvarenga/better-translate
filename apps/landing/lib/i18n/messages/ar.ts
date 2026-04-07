@@ -31,6 +31,7 @@ export const ar = {
     github: "GitHub",
     legal: "رخصة MIT · مبني باستخدام TypeScript",
     npm: "npm",
+    sponsor: "ادعم المشروع",
   },
   frameworks: {
     description: "إعدادات الترجمة الخاصة بك تعمل بنفس الطريقة في كل بيئة TypeScript. محولات أصلية، واجهة برمجية متطابقة.",
@@ -70,13 +71,24 @@ export const ar = {
     language: "اللغة",
     languageSwitcher: "تبديل اللغة",
     openMenu: "فتح القائمة",
+    sponsor: "ادعم المشروع",
   },
   hero: {
     badge: "نفس الإعدادات. كل بيئة TypeScript",
     description: "نفس الإعدادات. نفس الواجهة البرمجية. تعمل في Next.js و Astro و React و TanStack Router و Node عادي. بدون إعادة كتابة.",
     primaryCta: "عرض التوثيق",
     secondaryCta: "عرض على GitHub",
+    sponsorCta: "ادعم المشروع",
     title: "إعداد i18n واحد لأي مشروع TypeScript",
+  },
+  thanksForSupport: {
+    title: "شكراً لدعمك!",
+    description: "رعايتك تعني الكثير. تساعد في إبقاء better-translate مفتوح المصدر، مُصاناً، ومجانياً للجميع.",
+    impact1: "يُتيح الاستمرار في التطوير والصيانة",
+    impact2: "يبقي المكتبة مجانية ومفتوحة المصدر",
+    impact3: "يموّل محولات أطر عمل جديدة وميزات إضافية",
+    backHome: "العودة إلى الرئيسية",
+    viewGithub: "عرض على GitHub",
   },
   docs: {
     copyMarkdown: "نسخ markdown",

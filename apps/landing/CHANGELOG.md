@@ -1,5 +1,24 @@
 # landing
 
+## 2.0.0
+
+### Major Changes
+
+- Refresh landing page content and release metadata
+
+### Minor Changes
+
+- README files fixed
+
+### Patch Changes
+
+- Updated dependencies
+  - @better-translate/nextjs@1.1.0
+  - @better-translate/react@2.1.0
+  - @better-translate/core@2.2.0
+  - @better-translate/cli@3.1.0
+  - @better-translate/md@2.1.0
+
 ## 1.0.0
 
 ### Major Changes

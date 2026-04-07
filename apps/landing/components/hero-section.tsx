@@ -1,5 +1,10 @@
 import Link from "next/link";
-import { RiArrowRightLine, RiBook2Line, RiGithubLine } from "@remixicon/react";
+import {
+  RiArrowRightLine,
+  RiBook2Line,
+  RiGithubLine,
+  RiHeart3Line,
+} from "@remixicon/react";
 import { Button } from "@/components/ui/button";
 import { TextEffect } from "@/components/ui/text-effect";
 import { AnimatedGroup } from "@/components/ui/animated-group";
@@ -13,12 +18,10 @@ const transitionVariants = {
   item: {
     hidden: {
       opacity: 0,
-      filter: "blur(12px)",
       y: 12,
     },
     visible: {
       opacity: 1,
-      filter: "blur(0px)",
       y: 0,
       transition: {
         type: "spring" as const,
@@ -86,7 +89,7 @@ export default function HeroSection({ locale, t }: HeroSectionProps) {
                 {/* Left: title + subtitle + CTAs */}
                 <div className="flex-1 text-center md:text-left">
                   <TextEffect
-                    preset="fade-in-blur"
+                    preset="slide"
                     speedSegment={0.3}
                     as="h1"
                     className="text-balance text-3xl font-semibold md:text-4xl lg:text-5xl"
@@ -95,7 +98,7 @@ export default function HeroSection({ locale, t }: HeroSectionProps) {
                   </TextEffect>
                   <TextEffect
                     per="line"
-                    preset="fade-in-blur"
+                    preset="slide"
                     speedSegment={0.3}
                     delay={0.5}
                     as="p"
@@ -116,7 +119,7 @@ export default function HeroSection({ locale, t }: HeroSectionProps) {
                       },
                       ...transitionVariants,
                     }}
-                    className="mt-8 flex items-center justify-start "
+                    className="mt-8 flex flex-wrap items-center justify-center gap-3 md:justify-start"
                   >
                     <Button asChild size="lg" className="text-sm text-zinc-950">
                       <Link href={docsHref}>
@@ -144,6 +147,18 @@ export default function HeroSection({ locale, t }: HeroSectionProps) {
                       </Link>
                     </Button>
                   </AnimatedGroup>
+
+                  <div className="mt-4 flex justify-center md:justify-start">
+                    <Link
+                      href={siteLinks.sponsor}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group inline-flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-pink-400"
+                    >
+                      <RiHeart3Line className="size-3.5 text-pink-500/60 transition-colors group-hover:text-pink-400" />
+                      <span>{t("hero.sponsorCta")}</span>
+                    </Link>
+                  </div>
                 </div>
 
                 {/* Right: code snippet */}
@@ -161,7 +176,7 @@ export default function HeroSection({ locale, t }: HeroSectionProps) {
                   }}
                   className="w-full md:flex-1"
                 >
-                  <div className="rounded-2xl font-mono border border-white/10 p-px">
+                  <div className="overflow-hidden rounded-2xl font-mono border border-white/10 p-px">
                     <CodeBlock
                       filename="translate.ts"
                       code={`export const landingTranslationsConfig = {
@@ -201,11 +216,11 @@ t("Write source strings", { bt: true })  // -> auto-extracted & keyed by CLI`}
             <p className="mb-10 text-center text-sm text-muted-foreground">
               {t("frameworks.heroDescription")}
             </p>
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
               {frameworks.map((fw) => (
                 <div
                   key={fw.name}
-                  className="flex flex-col items-center gap-3 rounded-xl border border-white/10 bg-white/5 p-5 text-center transition-all hover:bg-white/8 hover:border-white/20"
+                  className="flex flex-col items-center gap-3 rounded-xl border border-white/10 bg-white/5 p-3 text-center transition-all hover:bg-white/8 hover:border-white/20 sm:p-5"
                 >
                   <fw.icon
                     className={`size-8 ${fw.iconClassName ?? ""} rounded-full`}

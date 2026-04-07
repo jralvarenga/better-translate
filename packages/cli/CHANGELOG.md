@@ -1,5 +1,17 @@
 # @better-translate/cli
 
+## 3.1.0
+
+### Minor Changes
+
+- Fix README formatting and package documentation links
+- Align landing page references and release metadata
+
+### Patch Changes
+
+- Updated dependencies
+  - @better-translate/core@2.2.0
+
 ## 3.0.0
 
 ### Major Changes

@@ -1,0 +1,68 @@
+name: Feature request
+description: Suggest an improvement or new capability for Better Translate
+title: "[Feature]: "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for sharing an idea with us.
+  - type: dropdown
+    id: affected_packages
+    attributes:
+      label: Affected package
+      description: Select the main package or area this request relates to.
+      multiple: true
+      options:
+        - "@better-translate/core"
+        - "@better-translate/react"
+        - "@better-translate/nextjs"
+        - "@better-translate/astro"
+        - "@better-translate/tanstack-router"
+        - "@better-translate/md"
+        - "@better-translate/cli"
+        - "apps/landing"
+        - "examples"
+        - "docs"
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem to solve
+      description: What problem or limitation are you running into?
+      placeholder: Describe the current pain point.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: Describe the change you would like to see.
+      placeholder: Explain the feature or behavior you want.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: What other solutions or workarounds have you tried?
+      placeholder: Share alternatives you considered, if any.
+    validations:
+      required: false
+  - type: textarea
+    id: use_case
+    attributes:
+      label: Use case
+      description: Help us understand how this would be used in practice.
+      placeholder: Describe the user workflow or application scenario.
+    validations:
+      required: true
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Before submitting
+      options:
+        - label: I searched existing issues and did not find a duplicate.
+          required: true

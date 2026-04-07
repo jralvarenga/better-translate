@@ -1,5 +1,17 @@
 # @better-translate/react
 
+## 2.1.0
+
+### Minor Changes
+
+- Improved README documentation with setup and usage guides
+- Updated landing page references and package release metadata
+
+### Patch Changes
+
+- Updated dependencies
+  - @better-translate/core@2.2.0
+
 ## 2.0.0
 
 ### Major Changes

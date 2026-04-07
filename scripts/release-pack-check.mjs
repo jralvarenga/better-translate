@@ -1,4 +1,4 @@
-import { mkdtemp, rm } from "node:fs/promises";
+import { mkdtemp, readFile, rm } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { spawn } from "node:child_process";
@@ -77,6 +77,16 @@ async function main() {
             `${pkgDir} is missing ${requiredFile} in npm pack output.`,
           );
         }
+      }
+
+      const pkgJson = JSON.parse(
+        await readFile(path.join(pkgDir, "package.json"), "utf8"),
+      );
+      const expectedPrefix = "https://www.npmjs.com/package/@better-translate/";
+      if (!pkgJson.homepage?.startsWith(expectedPrefix)) {
+        throw new Error(
+          `${pkgDir} homepage "${pkgJson.homepage}" does not start with ${expectedPrefix}`,
+        );
       }
     }
   } finally {

@@ -1,5 +1,12 @@
 # @better-translate/core
 
+## 2.2.0
+
+### Minor Changes
+
+- README files fixed
+- Refresh landing page references, documentation copy, and release metadata
+
 ## 2.1.0
 
 ### Minor Changes

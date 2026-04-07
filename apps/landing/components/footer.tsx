@@ -30,6 +30,14 @@ export function Footer({ locale, t }: FooterProps) {
               {t("footer.github")}
             </Link>
             <Link
+              href={siteLinks.sponsor}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-foreground transition-colors"
+            >
+              {t("footer.sponsor")}
+            </Link>
+            <Link
               href={siteLinks.npm}
               target="_blank"
               rel="noopener noreferrer"

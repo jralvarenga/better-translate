@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability report
+    url: https://github.com/jralvarenga/better-translate/security/advisories/new
+    about: Report suspected vulnerabilities privately through GitHub Security Advisories.
