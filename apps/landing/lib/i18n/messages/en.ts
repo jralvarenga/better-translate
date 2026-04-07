@@ -30,6 +30,7 @@ export const en = {
     github: "GitHub",
     legal: "MIT License · built with TypeScript",
     npm: "npm",
+    sponsor: "Sponsor",
   },
   frameworks: {
     description: "Your translation config works the same way in every TypeScript environment. Native adapters, identical API.",
@@ -69,13 +70,24 @@ export const en = {
     language: "Language",
     languageSwitcher: "Switch language",
     openMenu: "Open menu",
+    sponsor: "Sponsor",
   },
   hero: {
     badge: "Same config. Every TypeScript environment",
     description: "Same config. Same API. Works in Next.js, Astro, React, TanStack Router, and plain Node. No rewrites.",
     primaryCta: "View docs",
     secondaryCta: "View on GitHub",
+    sponsorCta: "Sponsor the project",
     title: "One i18n setup for any TypeScript project",
+  },
+  thanksForSupport: {
+    title: "Thank you for your support!",
+    description: "Your sponsorship means a lot. It helps keep better-translate open source, maintained, and free for everyone.",
+    impact1: "Enables continued development and maintenance",
+    impact2: "Keeps the library free and open source",
+    impact3: "Funds new framework adapters and features",
+    backHome: "Back to home",
+    viewGithub: "View on GitHub",
   },
   docs: {
     copyMarkdown: "Copy markdown",

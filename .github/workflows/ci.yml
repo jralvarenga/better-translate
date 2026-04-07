@@ -4,12 +4,17 @@ on:
   push:
     branches:
       - main
+      - dev
   pull_request:
     types:
       - opened
       - synchronize
       - reopened
       - ready_for_review
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   packages:

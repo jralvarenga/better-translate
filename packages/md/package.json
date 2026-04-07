@@ -1,6 +1,6 @@
 {
   "name": "@better-translate/md",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Markdown and MDX helpers for Better Translate.",
   "license": "MIT",
   "type": "module",
@@ -40,13 +40,13 @@
     "url": "git+https://github.com/jralvarenga/better-translate.git",
     "directory": "packages/md"
   },
-  "homepage": "https://github.com/jralvarenga/better-translate/tree/main/packages/md#readme",
+  "homepage": "https://www.npmjs.com/package/@better-translate/md",
   "bugs": {
     "url": "https://github.com/jralvarenga/better-translate/issues"
   },
   "dependencies": {
     "@mdx-js/mdx": "^3.1.1",
-    "@better-translate/core": "^2.1.0",
+    "@better-translate/core": "^2.2.0",
     "gray-matter": "^4.0.3",
     "rehype-stringify": "^10.0.1",
     "remark-parse": "^11.0.0",

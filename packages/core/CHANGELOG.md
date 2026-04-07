@@ -1,5 +1,12 @@
 # @better-translate/core
 
+## 2.2.0
+
+### Minor Changes
+
+- Read me files fixed
+- Major changes for landing page, fixing readme files, versions, more stuff
+
 ## 2.1.0
 
 ### Minor Changes

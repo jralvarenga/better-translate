@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Logo } from "@/components/logo";
-import { RiMenuLine, RiCloseLine, RiGithubLine } from "@remixicon/react";
+import { RiCloseLine, RiGithubLine, RiMenuLine } from "@remixicon/react";
 import { Button } from "@/components/ui/button";
 import React from "react";
 import { cn } from "@/lib/utils";
@@ -58,7 +58,7 @@ export const HeroHeader = ({
           className={cn(
             "mx-auto mt-2 max-w-6xl px-6 transition-all duration-300 lg:px-12",
             isScrolled &&
-              "bg-background/50 max-w-4xl rounded-2xl border backdrop-blur-lg lg:px-5",
+              "bg-background/50 max-w-4xl rounded-2xl border backdrop-blur-lg lg:px-5"
           )}
         >
           <div className="relative flex flex-wrap items-center justify-between gap-6 py-3 lg:gap-0 lg:py-4">
@@ -72,8 +72,9 @@ export const HeroHeader = ({
               </I18nLink>
 
               <button
+                type="button"
                 onClick={() => setMenuState(!menuState)}
-                aria-label={menuState == true ? closeMenuLabel : openMenuLabel}
+                aria-label={menuState ? closeMenuLabel : openMenuLabel}
                 className="relative z-20 -m-2.5 -mr-4 block cursor-pointer p-2.5 lg:hidden"
               >
                 <RiMenuLine className="in-data-[state=active]:rotate-180 in-data-[state=active]:scale-0 in-data-[state=active]:opacity-0 m-auto size-6 duration-200" />
@@ -135,8 +136,13 @@ export const HeroHeader = ({
                   ))}
                 </ul>
               </div>
-              <div className="flex w-full flex-col items-center space-y-3 sm:flex-row sm:gap-3 sm:space-y-0 md:w-fit">
-                <Button asChild variant="outline" size="sm">
+              <div className="flex w-full flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:gap-3 md:w-fit">
+                <Button
+                  asChild
+                  variant="ghost"
+                  size="sm"
+                  className="w-full sm:w-auto"
+                >
                   <Link
                     href={siteLinks.github}
                     target="_blank"
