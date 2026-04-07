@@ -14,6 +14,21 @@ export type AnyBetterTranslateTranslator = ConfiguredTranslator<
   TranslationMessages
 >;
 
+/**
+ * App-level type registry for `@better-translate/react`.
+ *
+ * Consumers can augment this interface once to make zero-argument
+ * `useTranslations()` return their configured translator type.
+ */
+export interface BetterTranslateReactTypes {}
+
+export type DefaultBetterTranslateTranslator =
+  BetterTranslateReactTypes extends { translator: infer TTranslator }
+    ? TTranslator extends AnyBetterTranslateTranslator
+      ? TTranslator
+      : AnyBetterTranslateTranslator
+    : AnyBetterTranslateTranslator;
+
 export type InferLocale<TTranslator extends AnyBetterTranslateTranslator> =
   TTranslator extends ConfiguredTranslator<infer TLocale, TranslationMessages>
     ? TLocale

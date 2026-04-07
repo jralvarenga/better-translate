@@ -168,6 +168,33 @@ describe("@better-translate/react", () => {
     expect(latestValue?.rtl).toBe(true);
   });
 
+  it("keeps zero-argument useTranslations working at runtime", async () => {
+    const translator = await configureTranslations({
+      availableLocales: ["en", "es"] as const,
+      defaultLocale: "en",
+      fallbackLocale: "en",
+      messages: { en, es },
+    });
+
+    let latestValue: ReturnType<typeof useTranslations> | undefined;
+
+    function Consumer() {
+      latestValue = useTranslations();
+      return null;
+    }
+
+    await act(async () => {
+      create(
+        <BetterTranslateProvider translator={translator}>
+          <Consumer />
+        </BetterTranslateProvider>,
+      );
+    });
+
+    expect(latestValue?.locale).toBe("en");
+    expect(latestValue?.t("common.hello")).toBe("Hello");
+  });
+
   it("switches to a cached locale", async () => {
     const translator = await configureTranslations({
       availableLocales: ["en", "es"] as const,
