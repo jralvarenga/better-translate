@@ -1,6 +1,6 @@
 {
   "name": "@better-translate/astro",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Astro integration package for Better Translate.",
   "license": "MIT",
   "type": "module",
@@ -50,7 +50,7 @@
     "url": "https://github.com/jralvarenga/better-translate/issues"
   },
   "dependencies": {
-    "@better-translate/core": "^2.2.0"
+    "@better-translate/core": "^2.2.1"
   },
   "peerDependencies": {
     "astro": "^5.0.0 || ^6.0.0"

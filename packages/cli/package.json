@@ -1,6 +1,6 @@
 {
   "name": "@better-translate/cli",
-  "version": "3.1.0",
+  "version": "3.1.1",
   "description": "AI-powered translation generation CLI for Better Translate.",
   "license": "MIT",
   "type": "module",
@@ -40,13 +40,13 @@
     "url": "git+https://github.com/jralvarenga/better-translate.git",
     "directory": "packages/cli"
   },
-  "homepage": "https://www.npmjs.com/package/@better-translate/cli",
+  "homepage": "https://better-translate.com",
   "bugs": {
     "url": "https://github.com/jralvarenga/better-translate/issues"
   },
   "dependencies": {
     "@ai-sdk/provider": "^3.0.8",
-    "@better-translate/core": "^2.2.0",
+    "@better-translate/core": "^2.2.1",
     "ai": "^6.0.116",
     "dotenv": "^17.2.3",
     "gray-matter": "^4.0.3",

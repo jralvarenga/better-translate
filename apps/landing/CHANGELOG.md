@@ -1,5 +1,17 @@
 # landing
 
+## 2.0.1
+
+### Patch Changes
+
+- package homepage updated
+- Updated dependencies
+  - @better-translate/nextjs@1.1.1
+  - @better-translate/react@2.1.1
+  - @better-translate/core@2.2.1
+  - @better-translate/cli@3.1.1
+  - @better-translate/md@2.1.1
+
 ## 2.0.0
 
 ### Major Changes
