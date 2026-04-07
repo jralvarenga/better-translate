@@ -45,7 +45,7 @@
     "url": "git+https://github.com/jralvarenga/better-translate.git",
     "directory": "packages/astro"
   },
-  "homepage": "https://better-translate.com",
+  "homepage": "https://www.npmjs.com/package/@better-translate/astro",
   "bugs": {
     "url": "https://github.com/jralvarenga/better-translate/issues"
   },
