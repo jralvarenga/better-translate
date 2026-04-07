@@ -119,8 +119,6 @@ jobs:
       id-token: write
       pull-requests: write
     env:
-      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       NPM_CONFIG_PROVENANCE: true
 
     steps:
@@ -144,6 +142,8 @@ jobs:
         run: bun install --frozen-lockfile
 
       - name: Verify npm registry and authentication
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           set -euo pipefail
           registry="$(npm config get registry)"
@@ -166,3 +166,5 @@ jobs:
           commit: Release packages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

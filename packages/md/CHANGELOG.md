@@ -4,12 +4,11 @@
 
 ### Minor Changes
 
-- Read me files fixed
-- Major changes for landing page, fixing readme files, versions, more stuff
+- Fix README formatting and documentation copy
+- Update landing page references and release metadata
 
 ### Patch Changes
 
-- Updated dependencies
 - Updated dependencies
   - @better-translate/core@2.2.0
 

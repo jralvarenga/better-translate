@@ -4,15 +4,14 @@
 
 ### Major Changes
 
-- Major changes for landing page, fixing readme files, versions, more stuff
+- Refresh landing page content and release metadata
 
 ### Minor Changes
 
-- Read me files fixed
+- README files fixed
 
 ### Patch Changes
 
-- Updated dependencies
 - Updated dependencies
   - @better-translate/nextjs@1.1.0
   - @better-translate/react@2.1.0

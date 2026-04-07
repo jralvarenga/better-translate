@@ -34,7 +34,6 @@ export const LogoIcon = ({
   className,
 }: {
   className?: string;
-  uniColor?: boolean;
 }) => {
   return <Image src={logo} alt="Better Translate" width={20} height={20} />;
 };
@@ -113,6 +112,7 @@ export function AstroLogo({ className }: { className?: string }) {
       viewBox="0 0 85 107"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
       className={cn("size-8", className)}
     >
       <path

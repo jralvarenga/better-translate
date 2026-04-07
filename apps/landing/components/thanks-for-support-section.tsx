@@ -43,9 +43,9 @@ export function ThanksForSupportSection({
   checkoutId,
 }: ThanksForSupportSectionProps) {
   const impacts = [
-    t("thanksForSupport.impact1"),
-    t("thanksForSupport.impact2"),
-    t("thanksForSupport.impact3"),
+    { id: "impact1", label: t("thanksForSupport.impact1") },
+    { id: "impact2", label: t("thanksForSupport.impact2") },
+    { id: "impact3", label: t("thanksForSupport.impact3") },
   ];
 
   return (
@@ -129,12 +129,12 @@ export function ThanksForSupportSection({
                 className="mt-8 flex flex-col items-start gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-6 text-left"
               >
                 {impacts.map((impact) => (
-                  <div key={impact} className="flex items-center gap-3">
+                  <div key={impact.id} className="flex items-center gap-3">
                     <div className="flex size-5 shrink-0 items-center justify-center rounded-full bg-rose-500/15">
                       <RiCheckLine className="size-3 text-rose-400" />
                     </div>
                     <span className="text-sm text-muted-foreground">
-                      {impact}
+                      {impact.label}
                     </span>
                   </div>
                 ))}

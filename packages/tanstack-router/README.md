@@ -138,7 +138,7 @@ If you are using TanStack Start, keep the same routing and navigation setup. The
 
 ## Generate locale files automatically
 
-Instead of writing every translation by hand, use the CLI to extract strings and generate locale files: [CLI guide](https://better-translate-placeholder.com/en/docs/cli)
+Instead of writing every translation by hand, use the CLI to extract strings and generate locale files: [CLI guide](https://better-translate.com/en/docs/cli)
 
 ## Examples
 

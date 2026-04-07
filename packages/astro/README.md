@@ -99,7 +99,7 @@ If your Astro docs or blog posts live in localized content collections, add Astr
 
 ## Generate locale files automatically
 
-Instead of writing every translation by hand, use the CLI to extract strings and generate locale files: [CLI guide](https://better-translate-placeholder.com/en/docs/cli)
+Instead of writing every translation by hand, use the CLI to extract strings and generate locale files: [CLI guide](https://better-translate.com/en/docs/cli)
 
 ## Examples
 

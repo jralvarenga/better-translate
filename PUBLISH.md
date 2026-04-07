@@ -109,8 +109,6 @@ jobs:
     name: Release
     runs-on: ubuntu-latest
     env:
-      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       NPM_CONFIG_PROVENANCE: true
     steps:
       - uses: actions/checkout@v4
@@ -126,6 +124,8 @@ jobs:
         run: bun install
 
       - name: Verify npm auth
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           npm config get registry
           npm whoami
@@ -133,9 +133,14 @@ jobs:
       - name: Create release pull request or publish
         uses: changesets/action@v1
         with:
+          version: bun run changeset:version && bun install
           publish: bun run release:publish
+          title: Release packages
+          commit: Release packages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 ```
 
 ### How it works

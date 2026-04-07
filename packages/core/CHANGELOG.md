@@ -4,8 +4,8 @@
 
 ### Minor Changes
 
-- Read me files fixed
-- Major changes for landing page, fixing readme files, versions, more stuff
+- README files fixed
+- Refresh landing page references, documentation copy, and release metadata
 
 ## 2.1.0
 

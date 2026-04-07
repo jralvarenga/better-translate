@@ -108,13 +108,13 @@ import { t } from "@better-translate/core";
 t("Hello world", { bt: true });
 ```
 
-Run `npx bt extract` to sync the strings into your source locale file and rewrite calls to proper keys. See the [CLI docs](https://better-translate-placeholder.com/en/docs/cli) for the full setup.
+Run `npx bt extract` to sync the strings into your source locale file and rewrite calls to proper keys. See the [CLI docs](https://better-translate.com/en/docs/cli) for the full setup.
 
 ## Continue with
 
-- [React provider and hooks](https://better-translate-placeholder.com/en/docs/adapters/react)
-- [Next.js App Router setup](https://better-translate-placeholder.com/en/docs/adapters/nextjs)
-- [Astro request helpers](https://better-translate-placeholder.com/en/docs/adapters/astro)
+- [React provider and hooks](https://better-translate.com/en/docs/adapters/react)
+- [Next.js App Router setup](https://better-translate.com/en/docs/adapters/nextjs)
+- [Astro request helpers](https://better-translate.com/en/docs/adapters/astro)
 
 ## Examples
 

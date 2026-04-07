@@ -95,12 +95,12 @@ If you are in Next.js App Router, keep this package for client hooks and add the
 
 ## Generate locale files automatically
 
-Instead of writing every translation by hand, use the CLI to extract strings and generate locale files: [CLI guide](https://better-translate-placeholder.com/en/docs/cli)
+Instead of writing every translation by hand, use the CLI to extract strings and generate locale files: [CLI guide](https://better-translate.com/en/docs/cli)
 
 ## Continue with
 
-- [Expo setup](https://better-translate-placeholder.com/en/docs/adapters/expo)
-- [Next.js setup](https://better-translate-placeholder.com/en/docs/adapters/nextjs)
+- [Expo setup](https://better-translate.com/en/docs/adapters/expo)
+- [Next.js setup](https://better-translate.com/en/docs/adapters/nextjs)
 
 ## Examples
 

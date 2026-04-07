@@ -95,7 +95,7 @@ If your app already resolves the request locale on the server, use `@better-tran
 
 ## Generate localized markdown automatically
 
-Use the CLI's `markdown.rootDir` option to have the generator translate your markdown files: [CLI guide](https://better-translate-placeholder.com/en/docs/cli)
+Use the CLI's `markdown.rootDir` option to have the generator translate your markdown files: [CLI guide](https://better-translate.com/en/docs/cli)
 
 ## Examples
 
