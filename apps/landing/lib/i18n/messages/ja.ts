@@ -31,6 +31,7 @@ export const ja = {
     github: "GitHub",
     legal: "MITライセンス · TypeScriptで構築",
     npm: "npm",
+    sponsor: "スポンサー",
   },
   frameworks: {
     description: "翻訳設定はすべてのTypeScript環境で同じように機能します。ネイティブアダプタ、同じAPI。",
@@ -70,13 +71,24 @@ export const ja = {
     language: "言語",
     languageSwitcher: "言語を切り替える",
     openMenu: "メニューを開く",
+    sponsor: "スポンサー",
   },
   hero: {
     badge: "同じ設定。すべてのTypeScript環境",
     description: "同じ設定。同じAPI。Next.js、Astro、React、TanStack Router、プレーンNodeで機能します。書き直しなし。",
     primaryCta: "ドキュメントを表示",
     secondaryCta: "GitHubで表示",
+    sponsorCta: "プロジェクトを支援する",
     title: "任意のTypeScriptプロジェクト用の1つのi18nセットアップ",
+  },
+  thanksForSupport: {
+    title: "ご支援ありがとうございます！",
+    description: "あなたのスポンサーシップはとても重要です。better-translateをオープンソースで維持し、誰もが無料で使えるよう支えてくれています。",
+    impact1: "継続的な開発とメンテナンスを可能にする",
+    impact2: "ライブラリを無料かつオープンソースに保つ",
+    impact3: "新しいフレームワークアダプタと機能の開発を支援する",
+    backHome: "ホームに戻る",
+    viewGithub: "GitHubで表示",
   },
   docs: {
     copyMarkdown: "マークダウンをコピー",

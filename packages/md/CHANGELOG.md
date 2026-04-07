@@ -1,5 +1,17 @@
 # @better-translate/md
 
+## 2.1.0
+
+### Minor Changes
+
+- Fix README formatting and documentation copy
+- Update landing page references and release metadata
+
+### Patch Changes
+
+- Updated dependencies
+  - @better-translate/core@2.2.0
+
 ## 2.0.0
 
 ### Major Changes

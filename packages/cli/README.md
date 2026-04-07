@@ -1,8 +1,10 @@
-# @better-translate/cli
+# CLI
 
-`@better-translate/cli` extracts marked source strings into your source locale file, generates translated message files, and localizes markdown. Use it when you want Better Translate to create or update locale files for you.
+Use `@better-translate/cli` when you want Better Translate to build and update locale files for you.
 
-Install the CLI and the provider package you want to use in your own project:
+You do not need the CLI to use the runtime packages. It is optional.
+
+## 1. Install the package
 
 ```sh
 npm install -D @better-translate/cli @ai-sdk/openai
@@ -10,7 +12,101 @@ npm install -D @better-translate/cli @ai-sdk/openai
 # or: npm install -D @better-translate/cli @ai-sdk/moonshotai
 ```
 
-Then configure the CLI with a real AI SDK language model. The flow is the same for any provider package:
+## 2. Create a source locale file
+
+Create `src/messages/en.json`:
+
+```json
+{
+  "home": {
+    "title": "Hello",
+    "description": "Welcome to the app"
+  }
+}
+```
+
+You can also start with an empty `{}` and let `bt extract` populate it.
+
+## 3. Create the CLI config
+
+Create `better-translate.config.ts`:
+
+```ts
+import { openai } from "@ai-sdk/openai";
+import { defineConfig } from "@better-translate/cli/config";
+
+// Works the same with @ai-sdk/anthropic or @ai-sdk/moonshotai — just swap the import and model name.
+export default defineConfig({
+  sourceLocale: "en",
+  locales: ["es", "fr"],
+  model: openai("gpt-4o"),
+  messages: {
+    entry: "./src/messages/en.json",
+  },
+});
+```
+
+## 4. Mark strings in your code
+
+Instead of naming translation keys by hand, write the source text directly and add `{ bt: true }`:
+
+```ts
+import { t } from "@better-translate/core";
+
+export function navLabel() {
+  return t("Home", { bt: true });
+}
+```
+
+At runtime, `{ bt: true }` returns the string unchanged. The CLI will replace these calls with proper keys on the next extract.
+
+You can also pass other options like `params` — they are preserved after extraction:
+
+```ts
+// You write:
+t("Hello world", { bt: true })
+t("Hello {name}", { bt: true, params: { name: "" } })
+
+// After bt extract rewrites the file:
+t("components.nav.helloWorld")
+t("components.nav.helloName", { params: { name: "" } })
+```
+
+The key namespace comes from the source file path (`components/nav.tsx` -> `components.nav`). `bt: true` is always removed on rewrite.
+
+## 5. Extract source keys
+
+```sh
+npx bt extract
+```
+
+This scans for `t(..., { bt: true })` calls, adds the missing keys to your source locale file, and rewrites the calls to plain strict keys.
+
+The CLI automatically finds `better-translate.config.ts` in your project root. The `--config` flag is only needed if your config file is in a different location.
+
+## 6. Run the generator
+
+```sh
+npx bt generate
+```
+
+This creates the target locale files next to your source file.
+
+If `markdown.rootDir` is enabled and the run would create or overwrite translated `.md` or `.mdx` files, the CLI asks for confirmation before making changes. Use `--yes` or `-y` to skip the prompt:
+
+```sh
+npx bt generate --yes
+```
+
+Non-interactive runs that need to write translated markdown files must pass `--yes`.
+
+## 7. Use the generated files in your app
+
+After the files exist, import them into your `@better-translate/core` config just like any hand-written locale file.
+
+## Markdown
+
+If you also want localized markdown generation, add the `markdown.rootDir` option:
 
 ```ts
 import { openai } from "@ai-sdk/openai";
@@ -19,84 +115,20 @@ import { defineConfig } from "@better-translate/cli/config";
 export default defineConfig({
   sourceLocale: "en",
   locales: ["es", "fr"],
-  model: openai("gpt-5"),
+  model: openai("gpt-4o"),
   messages: {
     entry: "./src/messages/en.json",
+  },
+  markdown: {
+    rootDir: "./content/docs",
   },
 });
 ```
 
-```ts
-import { anthropic } from "@ai-sdk/anthropic";
-import { defineConfig } from "@better-translate/cli/config";
+## Examples
 
-export default defineConfig({
-  sourceLocale: "en",
-  locales: ["es", "fr"],
-  model: anthropic("claude-sonnet-4-5"),
-  messages: {
-    entry: "./src/messages/en.json",
-  },
-});
-```
+Full working examples are in the [GitHub repo](https://github.com/jralvarenga/better-translate/tree/main/examples):
 
-```ts
-import { moonshotai } from "@ai-sdk/moonshotai";
-import { defineConfig } from "@better-translate/cli/config";
-
-export default defineConfig({
-  sourceLocale: "en",
-  locales: ["es", "fr"],
-  model: moonshotai("kimi-k2-0905-preview"),
-  messages: {
-    entry: "./src/messages/en.json",
-  },
-});
-```
-
-If you need provider-specific settings, create the model in your app first and pass it through. Credentials and provider configuration stay entirely in the provider package setup:
-
-```ts
-import { createOpenAI } from "@ai-sdk/openai";
-import { defineConfig } from "@better-translate/cli/config";
-
-const model = createOpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-  baseURL: process.env.OPENAI_BASE_URL,
-})("gpt-5");
-
-export default defineConfig({
-  sourceLocale: "en",
-  locales: ["es", "fr"],
-  model,
-  messages: {
-    entry: "./src/messages/en.json",
-  },
-});
-```
-
-Full docs: [better-translate-placeholder.com/en/docs/cli](https://better-translate-placeholder.com/en/docs/cli)
-
-## Commands
-
-Extract new source keys:
-
-```sh
-npx bt extract
-```
-
-Generate translated locale files:
-
-```sh
-npx bt generate
-```
-
-When markdown generation is enabled and `bt generate` would create or overwrite translated `.md` or `.mdx` files, the CLI asks for confirmation before it makes changes.
-
-Use `--yes` or `-y` to skip that confirmation, especially in CI or other non-interactive environments:
-
-```sh
-npx bt generate --yes
-```
-
-In non-interactive environments, markdown generation requires `--yes` when translated markdown files would be written.
+- [nextjs-example](https://github.com/jralvarenga/better-translate/tree/main/examples/nextjs-example)
+- [react-vite-example](https://github.com/jralvarenga/better-translate/tree/main/examples/react-vite-example)
+- [core-elysia-example](https://github.com/jralvarenga/better-translate/tree/main/examples/core-elysia-example)

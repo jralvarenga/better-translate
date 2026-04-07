@@ -5,6 +5,10 @@ on:
     branches:
       - main
 
+concurrency:
+  group: release-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   packages:
     if: >
@@ -106,11 +110,16 @@ jobs:
   release:
     needs:
       - packages
+    if: >
+      github.event_name == 'push' &&
+      github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
       contents: write
       id-token: write
       pull-requests: write
+    env:
+      NPM_CONFIG_PROVENANCE: true
 
     steps:
       - name: Checkout repository
@@ -132,6 +141,22 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
+      - name: Verify npm registry and authentication
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          set -euo pipefail
+          registry="$(npm config get registry)"
+          echo "npm registry: $registry"
+
+          if [ "$registry" != "https://registry.npmjs.org/" ]; then
+            echo "Expected npm registry to be https://registry.npmjs.org/ but got: $registry"
+            exit 1
+          fi
+
+          npm ping
+          npm whoami
+
       - name: Create release pull request or publish
         uses: changesets/action@v1
         with:
@@ -141,5 +166,5 @@ jobs:
           commit: Release packages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          NPM_CONFIG_PROVENANCE: true

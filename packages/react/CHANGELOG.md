@@ -4,7 +4,13 @@
 
 ### Minor Changes
 
-- 1b9388e: Fixed typing for `useTranslations`; apps can type zero-argument `useTranslations()` through module augmentation instead of passing the translator type at each call site
+- Improved README documentation with setup and usage guides
+- Updated landing page references and package release metadata
+
+### Patch Changes
+
+- Updated dependencies
+  - @better-translate/core@2.2.0
 
 ## 2.0.0
 

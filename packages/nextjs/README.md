@@ -1,5 +1,180 @@
-# @better-translate/nextjs
+# Next.js
 
-`@better-translate/nextjs` adds locale routing, request helpers, navigation helpers, and proxy support for Next.js App Router. Use it with `@better-translate/core`, and add `@better-translate/react` only if you need client-side hooks.
+Use `@better-translate/nextjs` when you want locale-prefixed URLs, server-side translations, and locale-aware navigation in App Router.
 
-Full docs: [better-translate-placeholder.com/en/docs/adapters/nextjs](https://better-translate-placeholder.com/en/docs/adapters/nextjs)
+If you also need client-side hooks, add `@better-translate/react` on top of this setup.
+
+## 1. Install the packages
+
+```sh
+npm install @better-translate/core @better-translate/nextjs
+```
+
+## 2. Create the translator
+
+Create `src/lib/i18n/config.ts`:
+
+```ts
+import { configureTranslations } from "@better-translate/core";
+
+const en = {
+  home: {
+    title: "Hello from Next.js",
+  },
+} as const;
+
+const es = {
+  home: {
+    title: "Hola desde Next.js",
+  },
+} as const;
+
+export const translator = await configureTranslations({
+  availableLocales: ["en", "es"] as const,
+  defaultLocale: "en",
+  fallbackLocale: "en",
+  messages: { en, es },
+});
+```
+
+## 3. Add the routing file
+
+Create `src/lib/i18n/routing.ts`:
+
+```ts
+import { defineRouting } from "@better-translate/nextjs";
+
+export const routing = defineRouting({
+  defaultLocale: "en",
+  locales: ["en", "es"] as const,
+  routeTemplate: "/[lang]",
+});
+```
+
+## 4. Add the request and server helpers
+
+Create `src/lib/i18n/request.ts`:
+
+```ts
+import { getRequestConfig } from "@better-translate/nextjs/server";
+
+import { translator } from "./config";
+
+export const requestConfig = getRequestConfig(async () => ({
+  translator,
+}));
+```
+
+Create `src/lib/i18n/server.ts`:
+
+```ts
+import { createServerHelpers } from "@better-translate/nextjs/server";
+
+import { requestConfig } from "./request";
+
+export const { getTranslations } = createServerHelpers(requestConfig);
+```
+
+## 5. Add locale-aware navigation
+
+Create `src/lib/i18n/navigation.ts`:
+
+```tsx
+"use client";
+
+import Link from "next/link";
+import { useParams, usePathname, useRouter } from "next/navigation";
+
+import { createNavigationFunctions } from "@better-translate/nextjs/navigation";
+
+import { routing } from "./routing";
+
+export const {
+  Link: I18nLink,
+  usePathname: useI18nPathname,
+  useRouter: useI18nRouter,
+} = createNavigationFunctions({
+  Link,
+  routing,
+  useParams,
+  usePathname,
+  useRouter,
+});
+```
+
+## 6. Add the proxy
+
+Create `src/proxy.ts`:
+
+```ts
+import { createProxy, getProxyMatcher } from "@better-translate/nextjs/proxy";
+
+import { routing } from "./lib/i18n/routing";
+
+export const proxy = createProxy(routing);
+
+export const config = {
+  matcher: getProxyMatcher(routing),
+};
+```
+
+## 7. Render a translated page
+
+Create `src/app/[lang]/page.tsx`:
+
+```tsx
+import { setRequestLocale } from "@better-translate/nextjs/server";
+
+import { getTranslations } from "../../lib/i18n/server";
+
+export default async function HomePage({
+  params,
+}: {
+  params: Promise<{ lang: string }>;
+}) {
+  const { lang } = await params;
+
+  setRequestLocale(lang);
+
+  const t = await getTranslations();
+
+  return <h1>{t("home.title")}</h1>;
+}
+```
+
+## 8. Add links that keep the locale
+
+Create `src/components/language-links.tsx`:
+
+```tsx
+"use client";
+
+import { I18nLink } from "../lib/i18n/navigation";
+
+export function LanguageLinks() {
+  return (
+    <nav>
+      <I18nLink href="/" locale="en">
+        English
+      </I18nLink>
+      {" | "}
+      <I18nLink href="/" locale="es">
+        Espanol
+      </I18nLink>
+    </nav>
+  );
+}
+```
+
+## When to add the React adapter
+
+Add `@better-translate/react` only when client components need `useTranslations()` or a provider.
+
+## Generate locale files automatically
+
+Instead of writing every translation by hand, use the CLI to extract strings and generate locale files: [CLI guide](https://better-translate.com/en/docs/cli)
+
+## Examples
+
+- [nextjs-example](https://github.com/jralvarenga/better-translate/tree/main/examples/nextjs-example)
+- [nextjs-nested-locale-example](https://github.com/jralvarenga/better-translate/tree/main/examples/nextjs-nested-locale-example)

@@ -31,7 +31,7 @@ export function CodeDemo({ t }: CodeDemoProps) {
             {t("codeDemo.description")}
           </p>
         </div>
-        <div className="rounded-2xl border border-white/10 p-px">
+        <div className="overflow-hidden rounded-2xl border border-white/10 p-px">
           <CodeBlock filename="translate.ts" code={code} />
         </div>
       </div>

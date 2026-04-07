@@ -1,6 +1,6 @@
 {
   "name": "@better-translate/core",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "Framework-agnostic translation configuration runtime for TypeScript projects.",
   "license": "MIT",
   "type": "module",
@@ -52,7 +52,7 @@
     "url": "git+https://github.com/jralvarenga/better-translate.git",
     "directory": "packages/core"
   },
-  "homepage": "https://github.com/jralvarenga/better-translate/tree/main/packages/core#readme",
+  "homepage": "https://www.npmjs.com/package/@better-translate/core",
   "bugs": {
     "url": "https://github.com/jralvarenga/better-translate/issues"
   },

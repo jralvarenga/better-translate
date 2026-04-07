@@ -3,20 +3,22 @@ import { notFound } from "next/navigation";
 import { hasLocale } from "@better-translate/nextjs";
 import { setRequestLocale } from "@better-translate/nextjs/server";
 
-import { CodeDemo } from "@/components/code-demo";
-import { Features } from "@/components/features";
-import { Footer } from "@/components/footer";
-import { Frameworks } from "@/components/frameworks";
-import HeroSection from "@/components/hero-section";
+import { ThanksForSupportSection } from "@/components/thanks-for-support-section";
 import { ResponsiveParticles } from "@/components/ui/responsive-particles";
 import type { LandingLocale } from "@/lib/i18n/config";
 import { routing } from "@/lib/i18n/routing";
 import { getTranslations } from "@/lib/i18n/server";
 
-export default async function LocalizedHomePage({
+export default async function ThanksForSupportPage({
   params,
-}: PageProps<"/[lang]">) {
+  searchParams,
+}: PageProps<"/[lang]"> & {
+  searchParams: Promise<{ id?: string; checkout_id?: string }>;
+}) {
   const { lang } = await params;
+  const { id, checkout_id } = await searchParams;
+  const raw = id ?? checkout_id;
+  const checkoutId = raw && /^[\w-]+$/.test(raw) ? raw : undefined;
 
   if (!hasLocale(routing.locales, lang)) {
     notFound();
@@ -37,11 +39,7 @@ export default async function LocalizedHomePage({
         ease={50}
       />
       <div className="relative z-10">
-        <HeroSection locale={locale} t={t} />
-        <Features t={t} />
-        <CodeDemo t={t} />
-        <Frameworks t={t} />
-        <Footer locale={locale} t={t} />
+        <ThanksForSupportSection locale={locale} t={t} checkoutId={checkoutId} />
       </div>
     </div>
   );
