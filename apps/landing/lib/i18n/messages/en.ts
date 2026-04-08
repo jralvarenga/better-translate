@@ -52,6 +52,9 @@ export const en = {
       react: {
         description: "Context, hooks, and locale-aware client rendering for React apps.",
       },
+      expo: {
+        description: "Same React hooks and context for Expo and React Native apps. No separate native package needed.",
+      },
       tanstack: {
         description: "Type-safe routing support for TanStack Router projects, including TanStack Start apps.",
       },

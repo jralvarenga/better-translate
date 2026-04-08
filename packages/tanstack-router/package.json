@@ -1,6 +1,6 @@
 {
   "name": "@better-translate/tanstack-router",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "TanStack Router integration package for Better Translate.",
   "license": "MIT",
   "type": "module",
@@ -50,7 +50,7 @@
     "url": "https://github.com/jralvarenga/better-translate/issues"
   },
   "dependencies": {
-    "@better-translate/core": "^2.2.1"
+    "@better-translate/core": "^2.2.2"
   },
   "peerDependencies": {
     "@tanstack/react-router": "^1.167.3",

@@ -53,6 +53,9 @@ export const ja = {
       react: {
         description: "Context、フック、およびReactアプリ用のロケール対応クライアントレンダリング。",
       },
+      expo: {
+        description: "ExpoとReact NativeアプリにもReactと同じフックとコンテキスト。別のネイティブパッケージは不要。",
+      },
       tanstack: {
         description: "TanStack Routerプロジェクト（TanStack Startアプリを含む）のタイプセーフなルーティングサポート。",
       },

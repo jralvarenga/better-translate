@@ -1,6 +1,6 @@
 {
   "name": "@better-translate/nextjs",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Next.js integration package for Better Translate.",
   "license": "MIT",
   "type": "module",
@@ -56,7 +56,7 @@
   },
   "dependencies": {
     "@formatjs/intl-localematcher": "^0.6.2",
-    "@better-translate/core": "^2.2.1",
+    "@better-translate/core": "^2.2.2",
     "negotiator": "^1.0.0"
   },
   "peerDependencies": {

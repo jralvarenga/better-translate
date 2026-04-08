@@ -39,7 +39,7 @@ interface HeroSectionProps {
 
 export default function HeroSection({ locale, t }: HeroSectionProps) {
   const frameworks = getCatalogItems("framework");
-  const docsHref = `/${locale}#docs`;
+  const docsHref = `/${locale}/docs`;
 
   return (
     <>

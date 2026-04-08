@@ -53,6 +53,9 @@ export const es = {
       react: {
         description: "Contexto, hooks y renderizado del cliente consciente del idioma para aplicaciones React.",
       },
+      expo: {
+        description: "Los mismos hooks y contexto de React para apps de Expo y React Native. Sin paquete nativo separado.",
+      },
       tanstack: {
         description: "Soporte de enrutamiento seguro de tipos para proyectos de TanStack Router, incluidas aplicaciones de TanStack Start.",
       },

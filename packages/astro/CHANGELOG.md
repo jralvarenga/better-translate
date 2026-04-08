@@ -1,5 +1,13 @@
 # @better-translate/astro
 
+## 1.1.3
+
+### Patch Changes
+
+- SEO and site console setup for search engines
+- Updated dependencies
+  - @better-translate/core@2.2.2
+
 ## 1.1.2
 
 ### Patch Changes

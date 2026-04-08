@@ -143,3 +143,17 @@ export function AstroLogo({ className }: { className?: string }) {
     </svg>
   );
 }
+
+export const ExpoIcon = ({ className }: { className?: string }) => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+      className={cn("size-8", className)}
+      fill="currentColor"
+    >
+      <path d="M23.7669 17.0676L13.7638 1.08005C13.1944 0.143885 12.6297-0.004375 12 0.000125C11.3703-0.004375 10.8056 0.143885 10.2362 1.08005L0.233124 17.0676C-0.332625 17.9881 0.0731249 18.5238 0.619624 18.8431C1.16612 19.1625 1.87687 19.19 2.44275 18.2697L12 2.87137L21.5572 18.2697C22.1231 19.19 22.8339 19.1625 23.3804 18.8431C23.9269 18.5238 24.3326 17.9881 23.7669 17.0676Z" />
+    </svg>
+  );
+};

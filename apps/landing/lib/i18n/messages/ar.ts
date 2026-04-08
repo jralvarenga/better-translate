@@ -53,6 +53,9 @@ export const ar = {
       react: {
         description: "السياق والخطافات وعرض العميل الذي يدرك اللغة لتطبيقات React.",
       },
+      expo: {
+        description: "نفس خطافات وسياق React لتطبيقات Expo و React Native. لا حاجة لحزمة أصلية منفصلة.",
+      },
       tanstack: {
         description: "دعم التوجيه الآمن من حيث النوع لمشاريع TanStack Router، بما في ذلك تطبيقات TanStack Start.",
       },

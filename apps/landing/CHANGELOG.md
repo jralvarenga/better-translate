@@ -1,5 +1,20 @@
 # landing
 
+## 2.1.0
+
+### Minor Changes
+
+- SEO and site console setup for search engines
+
+### Patch Changes
+
+- Updated dependencies
+  - @better-translate/nextjs@1.1.2
+  - @better-translate/react@2.1.2
+  - @better-translate/core@2.2.2
+  - @better-translate/cli@3.1.2
+  - @better-translate/md@2.1.2
+
 ## 2.0.1
 
 ### Patch Changes

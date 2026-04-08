@@ -1,8 +1,16 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
 import { localizePathname } from "@better-translate/nextjs";
 
 import { routing } from "@/lib/i18n/routing";
+
+export const metadata: Metadata = {
+  robots: {
+    follow: false,
+    index: false,
+  },
+};
 
 // Polar checkout IDs are alphanumeric with hyphens and underscores only.
 // Reject anything else to prevent query-string injection.

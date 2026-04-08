@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Noto_Sans_Arabic } from "next/font/google";
 import "./globals.css";
+import { getSiteMetadata } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 
 const fontMono = Geist_Mono({ subsets: ["latin"], variable: "--font-mono" });
@@ -10,11 +11,7 @@ const fontArabic = Noto_Sans_Arabic({
   variable: "--font-arabic",
 });
 
-export const metadata: Metadata = {
-  title: "better-translate ,  Type-Safe Translations for TypeScript",
-  description:
-    "Define your translations once. Get autocomplete, type errors, and locale switching ,  with adapters for React, Next.js, TanStack Router, TanStack Start, and any Node server.",
-};
+export const metadata: Metadata = getSiteMetadata();
 
 export default function RootLayout({
   children,

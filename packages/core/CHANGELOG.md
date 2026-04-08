@@ -1,5 +1,11 @@
 # @better-translate/core
 
+## 2.2.2
+
+### Patch Changes
+
+- SEO and site console setup for search engines
+
 ## 2.2.1
 
 ### Patch Changes

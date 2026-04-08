@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import { useTranslations } from "@better-translate/react";
 import { I18nLink } from "@/lib/i18n/navigation";
+import { adapterDocsRoutes, gettingStartedDocsRoutes } from "@/lib/docs";
 import type { LandingTranslator } from "@/lib/i18n/config";
 import {
   Sidebar,
@@ -14,26 +15,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-
-const GETTING_STARTED = [
-  { nameKey: "introduction" as const, href: "/docs" },
-  { nameKey: "mission" as const, href: "/docs/mission" },
-  { nameKey: "installation" as const, href: "/docs/installation" },
-  { nameKey: "cli" as const, href: "/docs/cli" },
-  { nameKey: "skills" as const, href: "/docs/skills" },
-  { nameKey: "rtl" as const, href: "/docs/rtl" },
-  { nameKey: "changelog" as const, href: "/docs/changelog" },
-];
-
-const ADAPTERS = [
-  { nameKey: "core" as const, href: "/docs/adapters/core" },
-  { nameKey: "react" as const, href: "/docs/adapters/react" },
-  { nameKey: "expo" as const, href: "/docs/adapters/expo" },
-  { nameKey: "astro" as const, href: "/docs/adapters/astro" },
-  { nameKey: "mdAndMdx" as const, href: "/docs/adapters/md" },
-  { nameKey: "nextjs" as const, href: "/docs/adapters/nextjs" },
-  { nameKey: "tanstackStart" as const, href: "/docs/adapters/tanstack-router" },
-];
 
 export function DocsSidebar({
   ...props
@@ -64,7 +45,7 @@ export function DocsSidebar({
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {GETTING_STARTED.map(({ nameKey, href }) => (
+              {gettingStartedDocsRoutes.map(({ nameKey, href }) => (
                 <SidebarMenuItem key={href}>
                   <SidebarMenuButton
                     asChild
@@ -88,7 +69,7 @@ export function DocsSidebar({
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu className="gap-0.5">
-              {ADAPTERS.map(({ nameKey, href }) => (
+              {adapterDocsRoutes.map(({ nameKey, href }) => (
                 <SidebarMenuItem key={href}>
                   <SidebarMenuButton
                     asChild

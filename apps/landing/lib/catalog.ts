@@ -4,7 +4,7 @@ import { createElement, type ComponentType } from "react";
 
 import { RiNextjsFill, RiNodejsLine, RiReactjsLine } from "@remixicon/react";
 
-import { AstroLogo, BunIcon, TanStackIcon } from "@/components/logo";
+import { AstroLogo, BunIcon, ExpoIcon, TanStackIcon } from "@/components/logo";
 import { en } from "@/lib/i18n/messages/en";
 
 export type CatalogKind = "framework";
@@ -91,6 +91,15 @@ const catalog = [
     install: "bun add @better-translate/react",
     kind: "framework",
     name: "React",
+  },
+  {
+    descriptionKey: "frameworks.items.expo.description",
+    icon: ExpoIcon,
+    iconClassName: "text-white",
+    id: "expo",
+    install: "bun add @better-translate/react",
+    kind: "framework",
+    name: "Expo",
   },
   {
     descriptionKey: "frameworks.items.nextjs.description",

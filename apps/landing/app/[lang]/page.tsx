@@ -1,9 +1,9 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { hasLocale } from "@better-translate/nextjs";
 import { setRequestLocale } from "@better-translate/nextjs/server";
 
-import { CodeDemo } from "@/components/code-demo";
 import { Features } from "@/components/features";
 import { Footer } from "@/components/footer";
 import { Frameworks } from "@/components/frameworks";
@@ -11,7 +11,20 @@ import HeroSection from "@/components/hero-section";
 import { ResponsiveParticles } from "@/components/ui/responsive-particles";
 import type { LandingLocale } from "@/lib/i18n/config";
 import { routing } from "@/lib/i18n/routing";
+import { getHomePageMetadata } from "@/lib/seo";
 import { getTranslations } from "@/lib/i18n/server";
+
+export async function generateMetadata({
+  params,
+}: PageProps<"/[lang]">): Promise<Metadata> {
+  const { lang } = await params;
+
+  if (!hasLocale(routing.locales, lang)) {
+    notFound();
+  }
+
+  return getHomePageMetadata(lang as LandingLocale);
+}
 
 export default async function LocalizedHomePage({
   params,
@@ -39,7 +52,6 @@ export default async function LocalizedHomePage({
       <div className="relative z-10">
         <HeroSection locale={locale} t={t} />
         <Features t={t} />
-        <CodeDemo t={t} />
         <Frameworks t={t} />
         <Footer locale={locale} t={t} />
       </div>
