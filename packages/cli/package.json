@@ -21,11 +21,7 @@
     },
     "./package.json": "./package.json"
   },
-  "files": [
-    "dist",
-    "LICENSE",
-    "README.md"
-  ],
+  "files": ["dist", "LICENSE", "README.md"],
   "scripts": {
     "build": "tsup src/index.ts src/config.ts src/bin.ts --format esm --clean && tsc -p tsconfig.build.json",
     "check-types": "tsc --noEmit",
@@ -59,12 +55,5 @@
     "@types/node": "^24.5.2",
     "ollama-ai-provider-v2": "^3.5.0"
   },
-  "keywords": [
-    "ai",
-    "cli",
-    "i18n",
-    "l10n",
-    "translations",
-    "typescript"
-  ]
+  "keywords": ["ai", "cli", "i18n", "l10n", "translations", "typescript"]
 }
