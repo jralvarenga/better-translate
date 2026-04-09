@@ -1,6 +1,6 @@
 {
   "name": "@better-translate/cli",
-  "version": "3.1.2",
+  "version": "1.1.2",
   "description": "AI-powered translation generation CLI for Better Translate.",
   "license": "MIT",
   "type": "module",
@@ -42,7 +42,7 @@
   },
   "dependencies": {
     "@ai-sdk/provider": "^3.0.8",
-    "@better-translate/core": "^2.2.1",
+    "@better-translate/core": "^1.2.1",
     "ai": "^6.0.116",
     "dotenv": "^17.2.3",
     "gray-matter": "^4.0.3",

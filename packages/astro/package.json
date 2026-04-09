@@ -50,7 +50,7 @@
     "url": "https://github.com/jralvarenga/better-translate/issues"
   },
   "dependencies": {
-    "@better-translate/core": "^2.2.1"
+    "@better-translate/core": "^1.2.1"
   },
   "peerDependencies": {
     "astro": "^5.0.0 || ^6.0.0"

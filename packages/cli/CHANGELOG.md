@@ -1,20 +1,20 @@
 # @better-translate/cli
 
-## 3.1.2
+## 1.1.2
 
 ### Patch Changes
 
 - 4261148: Update the landing app and CLI package for the latest release automation changes.
 
-## 3.1.1
+## 1.1.1
 
 ### Patch Changes
 
 - package homepage updated
 - Updated dependencies
-  - @better-translate/core@2.2.1
+  - @better-translate/core@1.1.1
 
-## 3.1.0
+## 1.1.0
 
 ### Minor Changes
 
@@ -24,30 +24,15 @@
 ### Patch Changes
 
 - Updated dependencies
-  - @better-translate/core@2.2.0
+  - @better-translate/core@1.1.0
 
-## 3.0.0
-
-### Major Changes
-
-- 250f405: Adding confirmation when adding new md files and translations
-
-### Minor Changes
-
-- Addin confirmation message when running cli
-
-### Patch Changes
-
-- Updated dependencies
-  - @better-translate/core@2.1.0
-
-## 2.0.1
+## 1.0.1
 
 ### Patch Changes
 
 - Adding support for AI providers; now users can install their favorite AI provider and use their own API key
 
-## 2.0.0
+## 1.0.0
 
 ### Major Changes
 
@@ -58,4 +43,4 @@
 
 - Updated dependencies
 - Updated dependencies [7241cf6]
-  - @better-translate/core@2.0.0
+  - @better-translate/core@1.0.0
