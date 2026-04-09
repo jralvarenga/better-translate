@@ -1,5 +1,11 @@
 # @better-translate/cli
 
+## 3.1.2
+
+### Patch Changes
+
+- 4261148: Update the landing app and CLI package for the latest release automation changes.
+
 ## 3.1.1
 
 ### Patch Changes
