@@ -1,31 +1,24 @@
 ---
-title: واجهة سطر الأوامر
-description: "تستخرج @better-translate/cli السلاسل المعلَّمة إلى ملف اللغة المصدر وتولّد الملفات المترجمة."
+title: CLI
+description: >-
+  يقوم @better-translate/cli باستخراج السلاسل المعلّمة إلى ملف اللغة المصدر
+  وإنشاء الملفات المترجمة.
 ---
+# CLI
 
-# واجهة سطر الأوامر
+استخدم `@better-translate/cli` عندما تريد من Better Translate بناء وتحديث ملفات اللغة نيابة عنك.
 
-استخدم `@better-translate/cli` عندما تريد من Better Translate إنشاء ملفات اللغات وتحديثها لك.
+لا تحتاج إلى CLI لاستخدام حزم وقت التشغيل. إنه اختياري.
 
-أنت لا تحتاج إلى CLI لاستخدام حزم وقت التشغيل. هي اختيارية.
-
-## 1. تثبيت الحزم
-
-```sh
-npm install -D @better-translate/cli @ai-sdk/openai
-```
-
-أو ثبّت حزمة موفّر أخرى:
+## 1. تثبيت الحزمة
 
 ```sh
-npm install -D @better-translate/cli @ai-sdk/anthropic
-# أو
-npm install -D @better-translate/cli @ai-sdk/moonshotai
+npm install -D @better-translate/cli
 ```
 
-لم تعد CLI تتضمن مساعدات خاصة بالموفّر. تطبيقك هو الذي يثبّت موفّر AI SDK ويضبطه مباشرة.
+يبقى CLI محايداً فيما يتعلق بمزود الخدمة. يقوم تطبيقك بتثبيت وتكوين حزمة مزود SDK للذكاء الاصطناعي مباشرة.
 
-## 2. أنشئ ملف اللغة المصدر
+## 2. إنشاء ملف اللغة المصدر
 
 أنشئ `src/messages/en.json`:
 
@@ -38,78 +31,44 @@ npm install -D @better-translate/cli @ai-sdk/moonshotai
 }
 ```
 
-## 3. أنشئ إعداد CLI
+يمكنك أيضاً البداية بملف فارغ `{}` ودع `bt extract` يملأه.
 
-أنشئ `better-translate.config.ts`. مسار `model` المباشر هو نفسه مع أي موفّر:
+## 3. إنشاء إعدادات CLI
+
+أنشئ `better-translate.config.ts`:
 
 ```ts
-import { openai } from "@ai-sdk/openai";
+import { createOllama } from "ollama-ai-provider-v2";
 import { defineConfig } from "@better-translate/cli/config";
+
+const ollama = createOllama({
+  baseURL: process.env.OLLAMA_BASE_URL ?? "http://localhost:11434/api",
+});
 
 export default defineConfig({
   sourceLocale: "en",
   locales: ["es", "fr"],
-  model: openai("gpt-5"),
+  model: ollama("qwen3:4b"),
+  providerOptions: {
+    ollama: {
+      think: true,
+    },
+  },
   messages: {
     entry: "./src/messages/en.json",
   },
 });
 ```
 
-```ts
-import { anthropic } from "@ai-sdk/anthropic";
-import { defineConfig } from "@better-translate/cli/config";
+إذا كنت تستخدم Ollama، ثبّت `ollama-ai-provider-v2`. إذا كنت تستخدم مزوداً مستضافاً، ثبّت حزمة ذلك المزود بدلاً من ذلك، مثل `@ai-sdk/openai` أو `@ai-sdk/anthropic` أو `@ai-sdk/moonshotai`.
 
-export default defineConfig({
-  sourceLocale: "en",
-  locales: ["es", "fr"],
-  model: anthropic("claude-sonnet-4-5"),
-  messages: {
-    entry: "./src/messages/en.json",
-  },
-});
-```
+عنوان URL الافتراضي لـ Ollama API هو محلي: `http://localhost:11434/api`.
 
-```ts
-import { moonshotai } from "@ai-sdk/moonshotai";
-import { defineConfig } from "@better-translate/cli/config";
+هذا يعمل بنفس الطريقة مع المزودين المستضافين مثل OpenAI وAnthropic وMoonshot AI. لم يعد CLI يتضمن مساعدي المزودين.
 
-export default defineConfig({
-  sourceLocale: "en",
-  locales: ["es", "fr"],
-  model: moonshotai("kimi-k2-0905-preview"),
-  messages: {
-    entry: "./src/messages/en.json",
-  },
-});
-```
+## 4. وضع علامة على السلاسل في الكود
 
-إذا كنت تحتاج إعدادات مخصّصة للموفّر، فأنشئ النموذج بنفسك ومرّره إلى CLI. بيانات الاعتماد والإعدادات الخاصة بالموفّر تبقى داخل حزمة الموفّر التي تختارها:
-
-```ts
-import { createOpenAI } from "@ai-sdk/openai";
-import { defineConfig } from "@better-translate/cli/config";
-
-const model = createOpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-  baseURL: process.env.OPENAI_BASE_URL,
-})("gpt-5");
-
-export default defineConfig({
-  sourceLocale: "en",
-  locales: ["es", "fr"],
-  model,
-  messages: {
-    entry: "./src/messages/en.json",
-  },
-});
-```
-
-هذا تغيير غير متوافق مع الإصدارات الأقدم من CLI التي كانت تصدّر `openai(...)` من `@better-translate/cli/config`.
-
-## 4. علّم السلاسل المعلّقة
-
-علّم السلاسل باستخدام `{ bt: true }` لكي تكتب النص المصدر مباشرة، وستقوم CLI بتسمية المفاتيح نيابةً عنك:
+بدلاً من تسمية مفاتيح الترجمة يدوياً، اكتب النص المصدر مباشرة وأضف `{ bt: true }`:
 
 ```ts
 import { t } from "@better-translate/core";
@@ -119,48 +78,68 @@ export function navLabel() {
 }
 ```
 
-الخيار `{ bt: true }` يجعل الوسيط الأول أكثر مرونة حتى تتمكن من كتابة النص المصدر مباشرة. أثناء التشغيل يعيد النص كما هو إلى أن تتم عملية الاستخراج.
+في وقت التشغيل، يُعيد `{ bt: true }` السلسلة دون تغيير. سيستبدل CLI هذه المكالمات بمفاتيح مناسبة في الاستخراج التالي.
 
-## 5. استخرج المفاتيح المصدرية
+يمكنك أيضاً تمرير خيارات أخرى مثل `params` — يتم الاحتفاظ بها بعد الاستخراج:
 
-```sh
-npx bt extract --config ./better-translate.config.ts
+```ts
+// ما تكتبه:
+t("Hello world", { bt: true })
+t("Hello {name}", { bt: true, params: { name: "" } })
+
+// بعد أن يعيد bt extract كتابة الملف:
+t("components.nav.helloWorld")
+t("components.nav.helloName", { params: { name: "" } })
 ```
 
-هذا الأمر يفحص الاستدعاءات المعلّمة `t(..., { bt: true })` ويضيف المفاتيح الناقصة إلى ملف اللغة المصدر ويعيد كتابة الاستدعاءات الناجحة إلى `t("namespace.generatedKey")`.
+يأتي نطاق المفتاح من مسار الملف المصدر (`components/nav.tsx` → `components.nav`). يتم دائماً إزالة `bt: true` عند إعادة الكتابة.
 
-## 6. شغّل المولّد
+## 5. استخراج مفاتيح المصدر
 
 ```sh
-npx bt generate --config ./better-translate.config.ts
+npx bt extract
 ```
 
-هذا الأمر ينشئ ملفات اللغات الهدف بجانب ملف اللغة المصدر.
+يقوم هذا بفحص مكالمات `t(..., { bt: true })`، ويضيف المفاتيح المفقودة إلى ملف اللغة المصدر، ويعيد كتابة المكالمات إلى مفاتيح صارمة عادية.
 
-إذا كان `markdown.rootDir` مفعّلًا وكانت العملية ستنشئ أو تستبدل ملفات `.md` أو `.mdx` المترجمة، فستطلب CLI تأكيدًا قبل إجراء التغييرات. استخدم `--yes` أو `-y` لتجاوز التأكيد:
+يجد CLI تلقائياً `better-translate.config.ts` في جذر مشروعك. يُستخدم علم `--config` فقط إذا كان ملف الإعدادات في موقع مختلف.
+
+## 6. تشغيل المولد
+
+```sh
+npx bt generate
+```
+
+يقوم هذا بإنشاء ملفات اللغة المستهدفة بجانب ملف المصدر.
+
+إذا كان `markdown.rootDir` مُمكّناً وكان التشغيل سيُنشئ أو يستبدل ملفات `.md` أو `.mdx` مترجمة، يسأل CLI عن التأكيد قبل إجراء التغييرات. استخدم `--yes` أو `-y` لتخطي التأكيد:
 
 ```sh
 npx bt generate --yes
 ```
 
-في البيئات غير التفاعلية، يجب تمرير `--yes` عندما تحتاج العملية إلى كتابة ملفات Markdown مترجمة.
+يجب أن تمرر `--yes` في التشغيلات غير التفاعلية التي تحتاج إلى كتابة ملفات markdown مترجمة.
 
-## 7. استخدم الملفات المولّدة في تطبيقك
+## 7. استخدام الملفات المُنشأة في تطبيقك
 
-بعد إنشاء الملفات، استوردها في إعداد `@better-translate/core` تماماً كما تفعل مع أي ملفات لغات مكتوبة يدوياً.
+بعد وجود الملفات، استوردها إلى إعدادات `@better-translate/core` الخاصة بك تماماً مثل أي ملف لغة مكتوب يدوياً.
 
 ## Markdown
 
-إذا كنت تريد أيضاً توليد ملفات Markdown مترجمة، فأضف الخيار `markdown.rootDir`. هذا يعمل بالطريقة نفسها مع أي نموذج موفّر من AI SDK:
+إذا كنت تريد أيضاً إنشاء markdown مُترجم، أضف خيار `markdown.rootDir`:
 
 ```ts
-import { openai } from "@ai-sdk/openai";
+import { createOllama } from "ollama-ai-provider-v2";
 import { defineConfig } from "@better-translate/cli/config";
+
+const ollama = createOllama({
+  baseURL: process.env.OLLAMA_BASE_URL ?? "http://localhost:11434/api",
+});
 
 export default defineConfig({
   sourceLocale: "en",
   locales: ["es", "fr"],
-  model: openai("gpt-5"),
+  model: ollama("qwen3:4b"),
   messages: {
     entry: "./src/messages/en.json",
   },
@@ -169,3 +148,11 @@ export default defineConfig({
   },
 });
 ```
+
+## Examples
+
+أمثلة عملية كاملة متوفرة في [GitHub repo](https://github.com/jralvarenga/better-translate/tree/main/examples):
+
+- [nextjs-example](https://github.com/jralvarenga/better-translate/tree/main/examples/nextjs-example)
+- [react-vite-example](https://github.com/jralvarenga/better-translate/tree/main/examples/react-vite-example)
+- [core-elysia-example](https://github.com/jralvarenga/better-translate/tree/main/examples/core-elysia-example)

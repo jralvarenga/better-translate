@@ -1,0 +1,153 @@
+---
+title: React
+description: '@better-translate/reactは@better-translate/coreの上にプロバイダーとフックを追加します。'
+---
+# React
+
+Reactコンポーネントで翻訳やロケール切り替えが必要な場合は、`@better-translate/react`を使用してください。
+
+## 1. パッケージのインストール
+
+```sh
+npm install @better-translate/core @better-translate/react
+```
+
+## 2. 共有トランスレーターの作成
+
+`src/i18n.ts`を作成してください：
+
+```ts
+import { configureTranslations } from "@better-translate/core";
+
+const en = {
+  home: {
+    title: "Hello",
+  },
+} as const;
+
+const es = {
+  home: {
+    title: "Hola",
+  },
+} as const;
+
+export const translator = await configureTranslations({
+  availableLocales: ["en", "es"] as const,
+  defaultLocale: "en",
+  fallbackLocale: "en",
+  messages: { en, es },
+});
+```
+
+## 3. アプリをラップする
+
+`src/main.tsx`を作成または更新してください：
+
+```tsx
+import React from "react";
+import ReactDOM from "react-dom/client";
+
+import { BetterTranslateProvider } from "@better-translate/react";
+
+import { App } from "./app";
+import { translator } from "./i18n";
+
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <React.StrictMode>
+    <BetterTranslateProvider translator={translator}>
+      <App />
+    </BetterTranslateProvider>
+  </React.StrictMode>,
+);
+```
+
+## 4. コンポーネント内で翻訳を読み取る
+
+`src/header.tsx`を作成してください：
+
+```tsx
+import { useTranslations } from "@better-translate/react";
+
+import { translator } from "./i18n";
+
+export function Header() {
+  const { locale, setLocale, t } = useTranslations<typeof translator>();
+
+  return (
+    <header>
+      <h1>{t("home.title")}</h1>
+      <button onClick={() => setLocale("en")} disabled={locale === "en"}>
+        English
+      </button>
+      <button onClick={() => setLocale("es")} disabled={locale === "es"}>
+        Español
+      </button>
+    </header>
+  );
+}
+```
+
+## オプション: アプリ全体で`useTranslations()`を一度だけ型付けする
+
+プレーンな`useTranslations()`で翻訳キーの自動補完を行い、
+各コンポーネントで`<typeof translator>`を繰り返し記述したくない場合は、宣言ファイルを1つ追加してください：
+
+`src/better-translate.d.ts`を作成してください：
+
+```ts
+import { translator } from "./i18n";
+
+declare module "@better-translate/react" {
+  interface BetterTranslateReactTypes {
+    translator: typeof translator;
+  }
+}
+```
+
+これにより、コンポーネントではジェネリックなしでフックを呼び出せます：
+
+```tsx
+import { useTranslations } from "@better-translate/react";
+
+export function Header() {
+  const { locale, setLocale, t } = useTranslations();
+
+  return (
+    <header>
+      <h1>{t("home.title")}</h1>
+      <button onClick={() => setLocale("en")} disabled={locale === "en"}>
+        English
+      </button>
+      <button onClick={() => setLocale("es")} disabled={locale === "es"}>
+        Español
+      </button>
+    </header>
+  );
+}
+```
+
+明示的なジェネリックも引き続き機能するため、コードベースに適合する場合は`useTranslations<typeof translator>()`を使い続けることもできます。
+
+## Reactのみを使用する場合
+
+以下の場合は、`@better-translate/core` + `@better-translate/react`のみを使用してください：
+
+- アプリがReact SPAの場合
+- アプリがExpoアプリの場合
+- ロケールの変更がクライアントコンポーネントで行われる場合
+
+Next.js App Routerを使用している場合は、このパッケージをクライアントフック用に保持し、ルーティングとサーバーヘルパー用にNext.jsアダプターを追加してください。
+
+## ロケールファイルの自動生成
+
+すべての翻訳を手動で書く代わりに、CLIを使用して文字列を抽出し、ロケールファイルを生成してください：[CLIガイド](/docs/cli)
+
+## 次のステップ
+
+- <Link href="/docs/adapters/expo">Expoのセットアップ</Link>
+- <Link href="/docs/adapters/nextjs">Next.jsのセットアップ</Link>
+
+## サンプル
+
+- [react-vite-example](https://github.com/jralvarenga/better-translate/tree/main/examples/react-vite-example)
+- [expo-example](https://github.com/jralvarenga/better-translate/tree/main/examples/expo-example)

@@ -1,0 +1,112 @@
+---
+title: Astro
+description: >-
+  @better-translate/astro agrega helpers de solicitud y middleware sobre
+  @better-translate/core.
+---
+# Astro
+
+Usa `@better-translate/astro` cuando tu aplicación de Astro necesite traducciones conscientes de la solicitud.
+
+## 1. Instalar los paquetes
+
+```sh
+npm install @better-translate/core @better-translate/astro astro
+```
+
+## 2. Crear el traductor
+
+Crea `src/lib/i18n.ts`:
+
+```ts
+import { configureTranslations } from "@better-translate/core";
+
+const en = {
+  home: {
+    title: "Hello from Astro",
+  },
+} as const;
+
+const es = {
+  home: {
+    title: "Hola desde Astro",
+  },
+} as const;
+
+export const translator = await configureTranslations({
+  availableLocales: ["en", "es"] as const,
+  defaultLocale: "en",
+  fallbackLocale: "en",
+  messages: { en, es },
+});
+```
+
+## 3. Exponer la configuración de la solicitud
+
+Crea `src/lib/request.ts`:
+
+```ts
+import { getRequestConfig } from "@better-translate/astro";
+
+import { translator } from "./i18n";
+
+export const requestConfig = getRequestConfig(async () => ({
+  translator,
+}));
+```
+
+## 4. Establecer el idioma de la solicitud en el middleware
+
+Crea `src/middleware.ts`:
+
+```ts
+import { createBetterTranslateMiddleware } from "@better-translate/astro/middleware";
+
+import { requestConfig } from "./lib/request";
+
+export const onRequest = createBetterTranslateMiddleware(requestConfig, {
+  resolveLocale: ({ params }) => params?.lang,
+});
+```
+
+## 5. Leer las traducciones en una página
+
+Crea `src/lib/server.ts`:
+
+```ts
+import { createServerHelpers } from "@better-translate/astro";
+
+import { requestConfig } from "./request";
+
+export const { getLocale, getTranslations } =
+  createServerHelpers(requestConfig);
+```
+
+Crea `src/pages/[lang]/index.astro`:
+
+```astro
+---
+import { getLocale, getTranslations } from "../../lib/server";
+
+const locale = await getLocale();
+const t = await getTranslations();
+---
+
+<html lang={locale}>
+  <body>
+    <h1>{t("home.title")}</h1>
+  </body>
+</html>
+```
+
+## Paso siguiente opcional
+
+Si tu documentación o publicaciones de blog de Astro viven en colecciones de contenido localizadas, agrega los helpers de contenido de Astro o el adaptador de MDX después de que esta configuración básica funcione.
+
+## Generar archivos de idioma automáticamente
+
+En lugar de escribir cada traducción a mano, usa la CLI para extraer cadenas y generar archivos de idioma: [Guía de la CLI](/docs/cli)
+
+## Ejemplos
+
+- [astro-example](https://github.com/jralvarenga/better-translate/tree/main/examples/astro-example)

@@ -1,31 +1,24 @@
 ---
 title: CLI
-description: "@better-translate/cli extrae strings marcados a tu archivo de locale fuente y genera archivos traducidos."
+description: >-
+  @better-translate/cli extrae las cadenas marcadas a tu archivo de idioma
+  fuente y genera archivos traducidos.
 ---
-
 # CLI
 
-Usa `@better-translate/cli` cuando quieras que Better Translate cree y actualice tus archivos de locale.
+Usa `@better-translate/cli` cuando quieras que Better Translate construya y actualice los archivos de idioma por ti.
 
-No necesitas la CLI para usar los paquetes de runtime. Es opcional.
+No necesitas el CLI para usar los paquetes de tiempo de ejecución. Es opcional.
 
-## 1. Instala los paquetes
-
-```sh
-npm install -D @better-translate/cli @ai-sdk/openai
-```
-
-O instala otro paquete de provider:
+## 1. Instala el paquete
 
 ```sh
-npm install -D @better-translate/cli @ai-sdk/anthropic
-# o
-npm install -D @better-translate/cli @ai-sdk/moonshotai
+npm install -D @better-translate/cli
 ```
 
-La CLI ya no incluye helpers de provider. Tu app instala y configura el provider de AI SDK directamente.
+El CLI permanece agnóstico al proveedor. Tu aplicación instala y configura el paquete de proveedor del AI SDK directamente.
 
-## 2. Crea un archivo de locale fuente
+## 2. Crea un archivo de idioma fuente
 
 Crea `src/messages/en.json`:
 
@@ -38,78 +31,44 @@ Crea `src/messages/en.json`:
 }
 ```
 
-## 3. Crea la configuración de la CLI
+También puedes empezar con un `{}` vacío y dejar que `bt extract` lo complete.
 
-Crea `better-translate.config.ts`. El flujo con `model` directo es el mismo para cualquier provider:
+## 3. Crea la configuración del CLI
+
+Crea `better-translate.config.ts`:
 
 ```ts
-import { openai } from "@ai-sdk/openai";
+import { createOllama } from "ollama-ai-provider-v2";
 import { defineConfig } from "@better-translate/cli/config";
+
+const ollama = createOllama({
+  baseURL: process.env.OLLAMA_BASE_URL ?? "http://localhost:11434/api",
+});
 
 export default defineConfig({
   sourceLocale: "en",
   locales: ["es", "fr"],
-  model: openai("gpt-5"),
+  model: ollama("qwen3:4b"),
+  providerOptions: {
+    ollama: {
+      think: true,
+    },
+  },
   messages: {
     entry: "./src/messages/en.json",
   },
 });
 ```
 
-```ts
-import { anthropic } from "@ai-sdk/anthropic";
-import { defineConfig } from "@better-translate/cli/config";
+Si usas Ollama, instala `ollama-ai-provider-v2`. Si usas un proveedor alojado, instala ese paquete de proveedor en su lugar, como `@ai-sdk/openai`, `@ai-sdk/anthropic` o `@ai-sdk/moonshotai`.
 
-export default defineConfig({
-  sourceLocale: "en",
-  locales: ["es", "fr"],
-  model: anthropic("claude-sonnet-4-5"),
-  messages: {
-    entry: "./src/messages/en.json",
-  },
-});
-```
+La URL de API predeterminada de Ollama es local: `http://localhost:11434/api`.
 
-```ts
-import { moonshotai } from "@ai-sdk/moonshotai";
-import { defineConfig } from "@better-translate/cli/config";
+Esto funciona igual con proveedores alojados como OpenAI, Anthropic y Moonshot AI. El CLI ya no incluye helpers de proveedores.
 
-export default defineConfig({
-  sourceLocale: "en",
-  locales: ["es", "fr"],
-  model: moonshotai("kimi-k2-0905-preview"),
-  messages: {
-    entry: "./src/messages/en.json",
-  },
-});
-```
+## 4. Marca cadenas en tu código
 
-Si necesitas configuración personalizada del provider, crea el modelo tú mismo y pásalo a la CLI. Las credenciales y la configuración específica viven en el paquete del provider que elijas:
-
-```ts
-import { createOpenAI } from "@ai-sdk/openai";
-import { defineConfig } from "@better-translate/cli/config";
-
-const model = createOpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-  baseURL: process.env.OPENAI_BASE_URL,
-})("gpt-5");
-
-export default defineConfig({
-  sourceLocale: "en",
-  locales: ["es", "fr"],
-  model,
-  messages: {
-    entry: "./src/messages/en.json",
-  },
-});
-```
-
-Este es un cambio incompatible con versiones anteriores de la CLI que exportaban `openai(...)` desde `@better-translate/cli/config`.
-
-## 4. Marca strings pendientes
-
-Marca strings con `{ bt: true }` para escribir el texto fuente directamente. La CLI generará las claves por ti:
+En lugar de nombrar claves de traducción a mano, escribe el texto fuente directamente y añade `{ bt: true }`:
 
 ```ts
 import { t } from "@better-translate/core";
@@ -119,48 +78,68 @@ export function navLabel() {
 }
 ```
 
-`{ bt: true }` flexibiliza el primer argumento para que puedas escribir el string fuente directamente. En runtime devuelve el string sin cambios hasta que ocurra la extracción.
+En tiempo de ejecución, `{ bt: true }` devuelve la cadena sin cambios. El CLI reemplazará estas llamadas con claves apropiadas en la siguiente extracción.
 
-## 5. Extrae claves fuente
+También puedes pasar otras opciones como `params` — se conservan después de la extracción:
 
-```sh
-npx bt extract --config ./better-translate.config.ts
+```ts
+// Escribes:
+t("Hello world", { bt: true })
+t("Hello {name}", { bt: true, params: { name: "" } })
+
+// Después de que bt extract reescriba el archivo:
+t("components.nav.helloWorld")
+t("components.nav.helloName", { params: { name: "" } })
 ```
 
-Ese comando busca llamadas marcadas `t(..., { bt: true })`, agrega las claves faltantes a tu archivo de locale fuente y reescribe las llamadas exitosas a `t("namespace.generatedKey")`.
+El espacio de nombres de la clave proviene de la ruta del archivo fuente (`components/nav.tsx` → `components.nav`). `bt: true` siempre se elimina al reescribir.
+
+## 5. Extrae las claves fuente
+
+```sh
+npx bt extract
+```
+
+Esto busca llamadas a `t(..., { bt: true })`, añade las claves faltantes a tu archivo de idioma fuente y reescribe las llamadas con claves estrictas simples.
+
+El CLI encuentra automáticamente `better-translate.config.ts` en la raíz de tu proyecto. La bandera `--config` solo es necesaria si tu archivo de configuración está en una ubicación diferente.
 
 ## 6. Ejecuta el generador
 
 ```sh
-npx bt generate --config ./better-translate.config.ts
+npx bt generate
 ```
 
-Ese comando crea los archivos de locale destino junto a tu archivo fuente.
+Esto crea los archivos de idioma de destino junto a tu archivo fuente.
 
-Si `markdown.rootDir` está habilitado y la ejecución va a crear o sobrescribir archivos traducidos `.md` o `.mdx`, la CLI te pedirá confirmación antes de hacer cambios. Usa `--yes` o `-y` para saltarte el prompt:
+Si `markdown.rootDir` está habilitado y la ejecución crearía o sobrescribiría archivos `.md` o `.mdx` traducidos, el CLI solicita confirmación antes de realizar cambios. Usa `--yes` o `-y` para omitir el mensaje:
 
 ```sh
 npx bt generate --yes
 ```
 
-Las ejecuciones no interactivas que necesiten escribir markdown traducido deben pasar `--yes`.
+Las ejecuciones no interactivas que necesiten escribir archivos markdown traducidos deben pasar `--yes`.
 
-## 7. Usa los archivos generados en tu app
+## 7. Usa los archivos generados en tu aplicación
 
-Después de que existan los archivos, impórtalos en tu configuración de `@better-translate/core` igual que cualquier otro archivo de locale escrito a mano.
+Después de que los archivos existen, impórtalos en tu configuración de `@better-translate/core` igual que cualquier archivo de idioma escrito a mano.
 
 ## Markdown
 
-Si también quieres generar markdown localizado, agrega la opción `markdown.rootDir`. Esto funciona igual con cualquier modelo de provider de AI SDK:
+Si también quieres generación de markdown localizado, añade la opción `markdown.rootDir`:
 
 ```ts
-import { openai } from "@ai-sdk/openai";
+import { createOllama } from "ollama-ai-provider-v2";
 import { defineConfig } from "@better-translate/cli/config";
+
+const ollama = createOllama({
+  baseURL: process.env.OLLAMA_BASE_URL ?? "http://localhost:11434/api",
+});
 
 export default defineConfig({
   sourceLocale: "en",
   locales: ["es", "fr"],
-  model: openai("gpt-5"),
+  model: ollama("qwen3:4b"),
   messages: {
     entry: "./src/messages/en.json",
   },
@@ -169,3 +148,11 @@ export default defineConfig({
   },
 });
 ```
+
+## Ejemplos
+
+Los ejemplos completos funcionando están en el [repositorio de GitHub](https://github.com/jralvarenga/better-translate/tree/main/examples):
+
+- [nextjs-example](https://github.com/jralvarenga/better-translate/tree/main/examples/nextjs-example)
+- [react-vite-example](https://github.com/jralvarenga/better-translate/tree/main/examples/react-vite-example)
+- [core-elysia-example](https://github.com/jralvarenga/better-translate/tree/main/examples/core-elysia-example)

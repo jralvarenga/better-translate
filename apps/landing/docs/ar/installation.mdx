@@ -1,25 +1,26 @@
 ---
 title: التثبيت
-description: تعمل حزمة النواة في أي مشروع TypeScript. المحولات إضافات اختيارية لأطر عمل محددة.
+description: >-
+  تعمل الحزمة الأساسية في أي مشروع TypeScript. المحولات هي امتدادات اختيارية
+  لإطارات عمل محددة.
 ---
-
 # التثبيت
 
-تعمل حزمة النواة في أي مشروع TypeScript، بغض النظر عن الإطار أو بيئة التشغيل. إذا كنت تستخدم إطاراً مثل Next.js أو React أو Astro، يمكنك إضافة المحول المناسب فوق النواة.
+تعمل الحزمة الأساسية في أي مشروع TypeScript، بغض النظر عن الإطار أو بيئة التشغيل. إذا كنت تستخدم إطار عمل مثل Next.js أو React أو Astro، يمكنك إضافة المحول المطابق فوق الحزمة الأساسية.
 
-## النواة
+## الحزمة الأساسية
 
 ```sh
 npm install @better-translate/core
 ```
 
-هذا كل ما تحتاجه في معظم الحالات. تعمل في Next.js وAstro وReact وBun وNode.js والسكريبتات وAPIs أو أي بيئة TypeScript.
+هذا كل ما تحتاجه في معظم الحالات. يعمل في Next.js وAstro وReact وBun وNode.js والنصوص البرمجية وواجهات API أو أي بيئة TypeScript.
 
 ## المحولات
 
-المحولات هي امتدادات للنواة تضيف مساعدات خاصة بالإطار: التوجيه المدرك للغة، وcontext وhooks الخاصة بـ React، ومساعدات لكل طلب، وغيرها. لا تستبدل النواة بل تمدّها.
+المحولات هي امتدادات للحزمة الأساسية تضيف مساعدات خاصة بالإطار: التوجيه المدرك للإعدادات المحلية، وسياق React والخطافات، والمساعدات لكل طلب، إلخ. لا تحل محل الحزمة الأساسية، بل تمدها.
 
-يمكنك الاطلاع على المحولات المتاحة هنا:
+يمكنك التحقق من المحولات المتاحة هنا:
 
 <div className="mt-4 flex flex-wrap gap-3">
   <Button asChild variant="outline" size="lg">
@@ -29,19 +30,45 @@ npm install @better-translate/core
     <Link href="/docs/adapters/nextjs">Next.js</Link>
   </Button>
   <Button asChild variant="outline" size="lg">
+    <Link href="/docs/adapters/astro">Astro</Link>
+  </Button>
+  <Button asChild variant="outline" size="lg">
     <Link href="/docs/adapters/tanstack-router">TanStack Router</Link>
+  </Button>
+</div>
+
+## واجهة سطر الأوامر
+
+واجهة سطر الأوامر هي أداة تطوير اختيارية تزيل العمل اليدوي في إدارة ملفات الإعدادات المحلية.
+
+تقوم بأمرين:
+
+- **استخراج** — تفحص الكود بحثًا عن النصوص المعلمة بـ `{ bt: true }`، وتضيفها إلى ملف الإعدادات المحلية المصدر بمفاتيح مُنشأة تلقائيًا، وإعادة كتابة الاستدعاءات في مكانها
+- **توليد** — تقرأ ملف الإعدادات المحلية المصدر وتستخدم نموذج ذكاء اصطناعي لإنتاج نسخ مترجمة لكل إعداد محلي آخر
+
+```sh
+npm install -D @better-translate/cli
+```
+
+بالنسبة لإعدادات gateway، يكفي تثبيت `@better-translate/cli`. إذا كان `better-translate.config.ts` لديك يستورد مزود نموذج مباشر مثل Ollama، ثبّت أيضًا حزمة المزود المناسبة، مثل `npm install -D ollama-ai-provider-v2`.
+
+قبل تشغيل `npx bt extract` أو `npx bt generate`، أنشئ ملف `better-translate.config.ts`. بعد ضبط الإعدادات، تعمل واجهة سطر الأوامر مع أي نموذج من مزودي AI SDK، بما في ذلك نماذج Ollama المحلية.
+
+<div className="mt-4 flex flex-wrap gap-3">
+  <Button asChild variant="outline" size="lg">
+    <Link href="/docs/cli">دليل واجهة سطر الأوامر</Link>
   </Button>
 </div>
 
 ## المتطلبات
 
 - Node.js 18+ أو Bun 1.0+
-- يُنصح بـ TypeScript 5.x
+- TypeScript 5.x موصى به
 
 ## الخطوة التالية
 
 <div className="mt-6 flex flex-wrap gap-3">
   <Button asChild size="lg">
-    <Link href="/docs/adapters/core">إعداد الحزمة الأساسية</Link>
+    <Link href="/docs/adapters/core">إعداد المترجم الأساسي</Link>
   </Button>
 </div>

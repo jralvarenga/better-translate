@@ -12,8 +12,7 @@ Use this guide when you want the CLI to manage locale files for you, or when you
 ### 1. Install
 
 ```sh
-npm install -D @better-translate/cli @ai-sdk/openai
-# or @ai-sdk/anthropic / @ai-sdk/moonshotai
+npm install -D @better-translate/cli ollama-ai-provider-v2
 ```
 
 ### 2. Create a source locale file
@@ -31,20 +30,31 @@ An empty object is fine. `bt extract` will populate it.
 Create `better-translate.config.ts`:
 
 ```ts
-import { openai } from "@ai-sdk/openai";
+import { createOllama } from "ollama-ai-provider-v2";
 import { defineConfig } from "@better-translate/cli/config";
+
+const ollama = createOllama({
+  baseURL: process.env.OLLAMA_BASE_URL ?? "http://localhost:11434/api",
+});
 
 export default defineConfig({
   sourceLocale: "en",
   locales: ["es", "fr"],
-  model: openai("gpt-4o"),
+  model: ollama("qwen3:4b"),
+  providerOptions: {
+    ollama: {
+      think: true,
+    },
+  },
   messages: {
     entry: "./src/messages/en.json",
   },
 });
 ```
 
-Swap `openai(...)` for `anthropic(...)` or `moonshotai(...)` if you use a different provider.
+If you use Ollama, install `ollama-ai-provider-v2`. If you use a hosted provider, install the matching AI SDK provider package.
+
+The CLI stays provider-agnostic. Swap `ollama(...)` for any other AI SDK provider model if you use a different provider.
 
 ### 4. Mark strings in your code
 

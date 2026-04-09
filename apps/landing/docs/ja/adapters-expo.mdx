@@ -1,0 +1,103 @@
+---
+title: Expo
+description: >-
+  Expoは@better-translate/coreの上に@better-translate/reactを使用します。別のネイティブパッケージは存在しません。
+---
+# Expo
+
+ExpoはWeb Reactと同じReactアダプターを使用します。
+
+`@better-translate/react-native`パッケージは別途存在しません。
+
+## 1. パッケージのインストール
+
+```sh
+npm install @better-translate/core @better-translate/react
+```
+
+## 2. 翻訳ツールの作成
+
+`lib/i18n.ts`を作成します：
+
+```ts
+import { configureTranslations } from "@better-translate/core";
+
+const en = {
+  home: {
+    title: "Hello from Expo",
+  },
+} as const;
+
+const es = {
+  home: {
+    title: "Hola desde Expo",
+  },
+} as const;
+
+export const translator = await configureTranslations({
+  availableLocales: ["en", "es"] as const,
+  defaultLocale: "en",
+  fallbackLocale: "en",
+  messages: { en, es },
+});
+```
+
+## 3. アプリのラッピング
+
+`App.tsx`を作成または更新します：
+
+```tsx
+import { BetterTranslateProvider } from "@better-translate/react";
+
+import { HomeScreen } from "./components/home-screen";
+import { translator } from "./lib/i18n";
+
+export default function App() {
+  return (
+    <BetterTranslateProvider translator={translator}>
+      <HomeScreen />
+    </BetterTranslateProvider>
+  );
+}
+```
+
+## 4. 画面での翻訳の使用
+
+`components/home-screen.tsx`を作成します：
+
+```tsx
+import { Button, Text, View } from "react-native";
+
+import { useTranslations } from "@better-translate/react";
+
+import { translator } from "../lib/i18n";
+
+export function HomeScreen() {
+  const { locale, setLocale, t } = useTranslations<typeof translator>();
+
+  return (
+    <View style={{ gap: 12, padding: 24 }}>
+      <Text>{t("home.title")}</Text>
+      <Button
+        title={locale === "en" ? "Spanish" : "English"}
+        onPress={() => setLocale(locale === "en" ? "es" : "en")}
+      />
+    </View>
+  );
+}
+```
+
+## メンタルモデル
+
+- `@better-translate/core`は翻訳データを管理します
+- `@better-translate/react`はExpoにプロバイダーとフックを提供します
+
+これがほとんどのExpoアプリの完全なセットアップです。
+
+## ロケールファイルの自動生成
+
+すべての翻訳を手書きする代わりに、CLIを使用して文字列を抽出し、ロケールファイルを生成できます：[CLIガイド](/docs/cli)
+
+## 例
+
+- [expo-example](https://github.com/jralvarenga/better-translate/tree/main/examples/expo-example)

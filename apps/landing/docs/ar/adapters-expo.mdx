@@ -1,0 +1,104 @@
+---
+title: Expo
+description: >-
+  يستخدم Expo الحزمة @better-translate/react فوق @better-translate/core. لا
+  توجد حزمة أصلية منفصلة.
+---
+# Expo
+
+Expo يستخدم نفس محوّل React المستخدم في الويب.
+
+لا يوجد حزمة منفصلة باسم `@better-translate/react-native`.
+
+## 1. تثبيت الحزم
+
+```sh
+npm install @better-translate/core @better-translate/react
+```
+
+## 2. إنشاء المترجم
+
+أنشئ `lib/i18n.ts`:
+
+```ts
+import { configureTranslations } from "@better-translate/core";
+
+const en = {
+  home: {
+    title: "Hello from Expo",
+  },
+} as const;
+
+const es = {
+  home: {
+    title: "Hola desde Expo",
+  },
+} as const;
+
+export const translator = await configureTranslations({
+  availableLocales: ["en", "es"] as const,
+  defaultLocale: "en",
+  fallbackLocale: "en",
+  messages: { en, es },
+});
+```
+
+## 3. تغليف التطبيق
+
+أنشئ أو حدّث `App.tsx`:
+
+```tsx
+import { BetterTranslateProvider } from "@better-translate/react";
+
+import { HomeScreen } from "./components/home-screen";
+import { translator } from "./lib/i18n";
+
+export default function App() {
+  return (
+    <BetterTranslateProvider translator={translator}>
+      <HomeScreen />
+    </BetterTranslateProvider>
+  );
+}
+```
+
+## 4. استخدام الترجمات في شاشة
+
+أنشئ `components/home-screen.tsx`:
+
+```tsx
+import { Button, Text, View } from "react-native";
+
+import { useTranslations } from "@better-translate/react";
+
+import { translator } from "../lib/i18n";
+
+export function HomeScreen() {
+  const { locale, setLocale, t } = useTranslations<typeof translator>();
+
+  return (
+    <View style={{ gap: 12, padding: 24 }}>
+      <Text>{t("home.title")}</Text>
+      <Button
+        title={locale === "en" ? "Spanish" : "English"}
+        onPress={() => setLocale(locale === "en" ? "es" : "en")}
+      />
+    </View>
+  );
+}
+```
+
+## النموذج الذهني
+
+- `@better-translate/core` تمتلك بيانات الترجمة
+- `@better-translate/react` يمنح Expo الـ provider والـ hook
+
+هذا هو الإعداد الكامل لمعظم تطبيقات Expo.
+
+## توليد ملفات اللغة تلقائياً
+
+بدلاً من كتابة كل ترجمة يدوياً، استخدم CLI لاستخراج النصوص وتوليد ملفات اللغة: [دليل CLI](/docs/cli)
+
+## أمثلة
+
+- [expo-example](https://github.com/jralvarenga/better-translate/tree/main/examples/expo-example)

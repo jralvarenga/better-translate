@@ -1,29 +1,30 @@
 ---
 title: سجل التغييرات
-description: ملاحظات الإصدار وتاريخ الإصدارات لـ Better Translate.
+description: ملاحظات الإصدار وسجل الإصدارات لـ Better Translate.
 ---
-
 # سجل التغييرات
 
-ملاحظات الإصدار وتاريخ الإصدارات لـ Better Translate. جميع الإصدارات منشورة على
-GitHub.
+ملاحظات الإصدار وسجل الإصدارات لـ Better Translate. يتم نشر جميع الإصدارات على GitHub.
 
-يتم الحفاظ على سجل التغييرات الكامل على [GitHub Releases](https://github.com/jralvarenga/better-translate/releases).
-عرض جميع الإصدارات والتغييرات الجذرية وأدلة الترحيل هناك.
+يتم الاحتفاظ بسجل التغييرات الكامل على [GitHub Releases](https://github.com/jralvarenga/better-translate/releases).
+عرض جميع الإصدارات، التغييرات الكسرية، وأدلة الترقية هناك.
 
 <div className="mt-6 flex flex-wrap gap-3">
   <Button asChild size="lg">
-    <Link href="https://github.com/jralvarenga/better-translate/releases" target="_blank">
-      فتح GitHub Releases
+    <Link
+      href="https://github.com/jralvarenga/better-translate/releases"
+      rel="noopener noreferrer"
+      target="_blank"
+    >
+      فتح إصدارات GitHub
     </Link>
   </Button>
 </div>
 
-## الإصدار الدلالي
+## الإصدارات
 
-يتبع Better Translate الإصدار الدلالي. يتم إصدار جميع الحزم في المستودع الموحد
-معاً.
+يتبع Better Translate الإصدار الدلالي. يتم توحيد إصدارات جميع الحزم في الـ monorepo.
 
-- **Patch** ,  إصلاح الأخطاء، بدون تغييرات في واجهة برمجة التطبيقات
-- **Minor** ,  ميزات جديدة، متوافقة للخلف
-- **Major** ,  تغييرات جذرية
+- **Patch** ، إصلاحات الأخطاء، بدون تغييرات في API
+- **Minor** ، ميزات جديدة، متوافقة مع الإصدارات السابقة
+- **Major** ، تغييرات كسرية

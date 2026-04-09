@@ -1,4 +1,7 @@
-import type { LanguageModelV3 } from "@ai-sdk/provider";
+import type {
+  LanguageModelV3,
+  SharedV3ProviderOptions,
+} from "@ai-sdk/provider";
 
 export type MarkdownExtension = ".md" | ".mdx";
 
@@ -13,6 +16,7 @@ interface BetterTranslateCliConfigBase {
   messages: {
     entry: string;
   };
+  providerOptions?: SharedV3ProviderOptions;
   sourceLocale: string;
 }
 
@@ -43,6 +47,7 @@ interface ResolvedBetterTranslateCliConfigBase {
   messages: {
     entry: string;
   };
+  providerOptions?: SharedV3ProviderOptions;
   sourceLocale: string;
 }
 
@@ -99,6 +104,7 @@ export interface CliLogger {
 export interface StructuredGenerationRequest<TOutput> {
   kind: "markdown" | "messages";
   prompt: string;
+  providerOptions?: SharedV3ProviderOptions;
   schema: object;
   sourcePath: string;
   system: string;
