@@ -1,19 +1,26 @@
 import { CodeBlock } from "@/components/ui/code-highlight";
 import type { LandingTranslator } from "@/lib/i18n/config";
 
-const code = `export const landingTranslationsConfig = {
-  availableLocales: ["en", "es"] as const,
-  defaultLocale: "en",
-  fallbackLocale: "en",
-  messages: { en, es },
-} as const;
+const code = `import { createOllama } from "ollama-ai-provider-v2";
+import { defineConfig } from "@better-translate/cli/config";
 
-const translator = await configureTranslations(landingTranslationsConfig);
-const { t } = createTranslationHelpers(translator);
+const ollama = createOllama({
+  baseURL: process.env.OLLAMA_BASE_URL ?? "http://127.0.0.1:11434/api",
+});
 
-t("hero.title")
-t("hero.description")
-t("header.language", { locale: "es" })`;
+export default defineConfig({
+  sourceLocale: "en",
+  locales: ["es", "fr"],
+  model: ollama("qwen3:4b"),
+  providerOptions: {
+    ollama: {
+      think: true,
+    },
+  },
+  messages: {
+    entry: "./src/messages/en.json",
+  },
+});`;
 
 interface CodeDemoProps {
   t: LandingTranslator["t"];
@@ -32,7 +39,7 @@ export function CodeDemo({ t }: CodeDemoProps) {
           </p>
         </div>
         <div className="overflow-hidden rounded-2xl border border-white/10 p-px">
-          <CodeBlock filename="translate.ts" code={code} />
+          <CodeBlock filename="better-translate.config.ts" code={code} />
         </div>
       </div>
     </section>

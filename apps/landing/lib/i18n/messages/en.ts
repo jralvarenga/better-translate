@@ -1,25 +1,31 @@
 export const en = {
   codeDemo: {
-    description: "The same config works identically whether you're in Next.js, Astro, React, or plain Node.",
-    title: "One API. Every environment",
+    description:
+      "Generate locale files with the same CLI whether you're using AI Gateway or local Ollama models.",
+    title: "Hosted or local. Same CLI",
   },
   features: {
-    description: "The same setup, the same API, the same experience, no matter which TypeScript environment you're in.",
+    description:
+      "The same setup, the same API, the same experience, no matter which TypeScript environment you're in.",
     items: {
       autocomplete: {
-        description: "Your editor knows every key in your messages object. No more guessing because `t(\"home.` starts completing instantly.",
+        description:
+          'Your editor knows every key in your messages object. No more guessing because `t("home.` starts completing instantly.',
         title: "Autocomplete Everywhere",
       },
       frameworkAgnostic: {
-        description: "Write your translation config once. It works identically in Next.js, Astro, React, TanStack Router, and plain Node. Switch environments, keep your setup.",
+        description:
+          "Write your translation config once. It works identically in Next.js, Astro, React, TanStack Router, and plain Node. Switch environments, keep your setup.",
         title: "Same Config, Every Environment",
       },
       localeSwitching: {
-        description: "Switch locales at runtime without a page reload. Per-call overrides let you render any locale on demand.",
+        description:
+          "Switch locales at runtime without a page reload. Per-call overrides let you render any locale on demand.",
         title: "Locale Switching",
       },
       typeSafe: {
-        description: "Full TypeScript inference on translation keys and interpolation variables. Typos and missing keys become compile errors.",
+        description:
+          "Full TypeScript inference on translation keys and interpolation variables. Typos and missing keys become compile errors.",
         title: "Type-Safe by Default",
       },
     },
@@ -33,30 +39,37 @@ export const en = {
     sponsor: "Sponsor",
   },
   frameworks: {
-    description: "Your translation config works the same way in every TypeScript environment. Native adapters, identical API.",
+    description:
+      "Your translation config works the same way in every TypeScript environment. Native adapters, identical API.",
     heroDescription: "Switch frameworks without rewriting your i18n setup",
     heroTitle: "Same config everywhere",
     items: {
       astro: {
-        description: "Request-scoped helpers and localized Astro content collections for .md and .mdx.",
+        description:
+          "Request-scoped helpers and localized Astro content collections for .md and .mdx.",
       },
       bun: {
         description: "Native Bun runtime support with zero extra setup.",
       },
       nextjs: {
-        description: "Server components, App Router, and route-aware locale helpers.",
+        description:
+          "Server components, App Router, and route-aware locale helpers.",
       },
       nodejs: {
-        description: "Zero-dependency core for scripts, servers, and background jobs.",
+        description:
+          "Zero-dependency core for scripts, servers, and background jobs.",
       },
       react: {
-        description: "Context, hooks, and locale-aware client rendering for React apps.",
+        description:
+          "Context, hooks, and locale-aware client rendering for React apps.",
       },
       tanstack: {
-        description: "Type-safe routing support for TanStack Router projects, including TanStack Start apps.",
+        description:
+          "Type-safe routing support for TanStack Router projects, including TanStack Start apps.",
       },
       typescript: {
-        description: "Strong types, autocomplete, and compile-time feedback from your messages.",
+        description:
+          "Strong types, autocomplete, and compile-time feedback from your messages.",
       },
     },
     title: "Your framework, your choice",
@@ -73,8 +86,9 @@ export const en = {
     sponsor: "Sponsor",
   },
   hero: {
-    badge: "Same config. Every TypeScript environment",
-    description: "Same config. Same API. Works in Next.js, Astro, React, TanStack Router, and plain Node. No rewrites.",
+    badge: "Same config. Hosted or local models",
+    description:
+      "Same config. Same API. Use AI Gateway or local Ollama models across Next.js, Astro, React, TanStack Router, and plain Node. No rewrites.",
     primaryCta: "View docs",
     secondaryCta: "View on GitHub",
     sponsorCta: "Sponsor the project",
@@ -82,7 +96,8 @@ export const en = {
   },
   thanksForSupport: {
     title: "Thank you for your support!",
-    description: "Your sponsorship means a lot. It helps keep better-translate open source, maintained, and free for everyone.",
+    description:
+      "Your sponsorship means a lot. It helps keep better-translate open source, maintained, and free for everyone.",
     impact1: "Enables continued development and maintenance",
     impact2: "Keeps the library free and open source",
     impact3: "Funds new framework adapters and features",

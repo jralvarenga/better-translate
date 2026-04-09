@@ -1,174 +1,186 @@
 ---
 title: Next.js
-description: "@better-translate/nextjs هي طبقة Next.js App Router فوق الحزمة الأساسية."
+description: >-
+  يضيف @better-translate/nextjs توجيه اللغة، ومساعدي الطلب، ومساعدي التنقل، ودعم
+  الوكيل لـ Next.js App Router.
 ---
-
 # Next.js
 
-`@better-translate/nextjs` هي
-طبقة Next.js App Router فوق الحزمة الأساسية. تضيف ضبط توجيه اللغة،
-ومساعدات الوكيل، ومساعدات الخادم ذات النطاق المحدد للطلب، وأغلفة التنقل المدركة للغة.
+استخدم `@better-translate/nextjs` عندما تريد روابط مسبوقة بمعرف اللغة، وترجمات من جانب الخادم، وتنقل مدرك للغة في App Router.
 
-## متى تستخدمها
+إذا كنت تحتاج أيضًا إلى hooks من جانب العميل، أضف `@better-translate/react` فوق هذا الإعداد.
 
-استخدم محول Next.js عندما تستخدم Next.js App Router، وتريد مسارات ذات بادئة لغوية،
-أو تريد مساعدات الطلب لمكونات الخادم، أو تريد روابط وطلبات router مدركة للغة.
+## 1. تثبيت الحزم
 
-## نمط الخمسة ملفات
+```sh
+npm install @better-translate/core @better-translate/nextjs
+```
 
-يحتاج إعداد Next.js القياسي إلى خمسة ملفات داخل مجلد `lib/i18n/` الخاص بك:
+## 2. إنشاء المترجم
 
-<Accordion type="single" collapsible className="mt-6">
-  <AccordionItem value="routing">
-    <AccordionTrigger>`routing.ts`</AccordionTrigger>
-    <AccordionContent>
-      <p>حدد قواعد توجيه اللغة وقالب المسار.</p>
-    </AccordionContent>
-  </AccordionItem>
-  <AccordionItem value="request">
-    <AccordionTrigger>`request.ts`</AccordionTrigger>
-    <AccordionContent>
-      <p>ربط المترجم الأساسي بدورة حياة طلب Next.js.</p>
-    </AccordionContent>
-  </AccordionItem>
-  <AccordionItem value="server">
-    <AccordionTrigger>`server.ts`</AccordionTrigger>
-    <AccordionContent>
-      <p>تصدير مساعدات ذات نطاق محدد للطلب مثل `getLocale()` و`getMessages()` و`getTranslations()`.</p>
-    </AccordionContent>
-  </AccordionItem>
-  <AccordionItem value="navigation">
-    <AccordionTrigger>`navigation.ts`</AccordionTrigger>
-    <AccordionContent>
-      <p>كشف التنقل المدرك للغة مثل `I18nLink` و`useI18nRouter()`.</p>
-    </AccordionContent>
-  </AccordionItem>
-  <AccordionItem value="proxy">
-    <AccordionTrigger>`proxy.ts`</AccordionTrigger>
-    <AccordionContent>
-      <p>امتلك وكيل middleware الخاص بك بدلاً من استبداله كلياً.</p>
-    </AccordionContent>
-  </AccordionItem>
-</Accordion>
+أنشئ `src/lib/i18n/config.ts`:
 
-## routing.ts
+```ts
+import { configureTranslations } from "@better-translate/core";
 
-```tsx showLineNumbers
-import { defineRouting } from "@better-translate/nextjs"
+const en = {
+  home: {
+    title: "Hello from Next.js",
+  },
+} as const;
+
+const es = {
+  home: {
+    title: "Hola desde Next.js",
+  },
+} as const;
+
+export const translator = await configureTranslations({
+  availableLocales: ["en", "es"] as const,
+  defaultLocale: "en",
+  fallbackLocale: "en",
+  messages: { en, es },
+});
+```
+
+## 3. إضافة ملف التوجيه
+
+أنشئ `src/lib/i18n/routing.ts`:
+
+```ts
+import { defineRouting } from "@better-translate/nextjs";
 
 export const routing = defineRouting({
-  locales: ["en", "ar"] as const,
   defaultLocale: "en",
-  routeTemplate: "/[lang]", // نطاق محدد: "/app/[lang]"
-})
+  locales: ["en", "es"] as const,
+  routeTemplate: "/[lang]",
+});
 ```
 
-## request.ts
+## 4. إضافة مساعدي الطلب والخادم
 
-```tsx showLineNumbers
-import { getRequestConfig } from "@better-translate/nextjs/server"
-import { configureTranslations } from "better-translate"
-import { routing } from "./routing"
-import { en } from "./messages/en"
-import { ar } from "./messages/ar"
+أنشئ `src/lib/i18n/request.ts`:
 
-export default getRequestConfig(async () => {
-  const translator = await configureTranslations({ en, ar })
-  return { translator }
-})
+```ts
+import { getRequestConfig } from "@better-translate/nextjs/server";
+
+import { translator } from "./config";
+
+export const requestConfig = getRequestConfig(async () => ({
+  translator,
+}));
 ```
 
-## server.ts
+أنشئ `src/lib/i18n/server.ts`:
 
-```tsx showLineNumbers
-import { createServerHelpers, setRequestLocale } from "@better-translate/nextjs/server"
-import requestConfig from "./request"
+```ts
+import { createServerHelpers } from "@better-translate/nextjs/server";
+
+import { requestConfig } from "./request";
+
+export const { getTranslations } = createServerHelpers(requestConfig);
+```
+
+## 5. إضافة تنقل مدرك للغة
+
+أنشئ `src/lib/i18n/navigation.ts`:
+
+```tsx
+"use client";
+
+import Link from "next/link";
+import { useParams, usePathname, useRouter } from "next/navigation";
+
+import { createNavigationFunctions } from "@better-translate/nextjs/navigation";
+
+import { routing } from "./routing";
 
 export const {
-  getLocale,
-  getMessages,
-  getTranslations,
-  getTranslator,
-} = createServerHelpers(requestConfig)
-
-export { setRequestLocale }
+  Link: I18nLink,
+  usePathname: useI18nPathname,
+  useRouter: useI18nRouter,
+} = createNavigationFunctions({
+  Link,
+  routing,
+  useParams,
+  usePathname,
+  useRouter,
+});
 ```
 
-## layout.tsx
+## 6. إضافة الوكيل
 
-```tsx showLineNumbers
-import { hasLocale } from "@better-translate/nextjs"
-import { setRequestLocale } from "@better-translate/nextjs/server"
-import { notFound } from "next/navigation"
-import { routing } from "./routing"
+أنشئ `src/proxy.ts`:
 
-export default async function Layout({ children, params }) {
-  const { lang } = await params
+```ts
+import { createProxy, getProxyMatcher } from "@better-translate/nextjs/proxy";
 
-  if (!hasLocale(routing.locales, lang)) {
-    notFound()
-  }
+import { routing } from "./lib/i18n/routing";
 
-  setRequestLocale(lang)
+export const proxy = createProxy(routing);
 
-  return children
+export const config = {
+  matcher: getProxyMatcher(routing),
+};
+```
+
+## 7. عرض صفحة مترجمة
+
+أنشئ `src/app/[lang]/page.tsx`:
+
+```tsx
+import { setRequestLocale } from "@better-translate/nextjs/server";
+
+import { getTranslations } from "../../lib/i18n/server";
+
+export default async function HomePage({
+  params,
+}: {
+  params: Promise<{ lang: string }>;
+}) {
+  const { lang } = await params;
+
+  setRequestLocale(lang);
+
+  const t = await getTranslations();
+
+  return <h1>{t("home.title")}</h1>;
 }
 ```
 
-## navigation.ts
+## 8. إضافة روابط تحتفظ باللغة
 
-```tsx showLineNumbers
-import { createNavigationFunctions } from "@better-translate/nextjs"
-import { routing } from "./routing"
+أنشئ `src/components/language-links.tsx`:
 
-export const {
-  I18nLink,
-  getPathname,
-  useI18nPathname,
-  useI18nRouter,
-} = createNavigationFunctions({ routing })
-```
+```tsx
+"use client";
 
-## الاستخدام في مكونات الخادم
+import { I18nLink } from "../lib/i18n/navigation";
 
-```tsx showLineNumbers
-import { getTranslations } from "@/lib/i18n/server"
-
-export default async function Page({ params }) {
-  await params
-  const t = await getTranslations()
-
-  return <h1>{t("hero.title")}</h1>
+export function LanguageLinks() {
+  return (
+    <nav>
+      <I18nLink href="/" locale="en">
+        English
+      </I18nLink>
+      {" | "}
+      <I18nLink href="/" locale="es">
+        Español
+      </I18nLink>
+    </nav>
+  );
 }
 ```
 
-## التوجيه الجذري مقابل المحدود النطاق
+## متى تضيف محول React
 
-مع `routeTemplate: "/[lang]"`،
-يعيش التطبيق بالكامل تحت `/en` و`/ar` وما إلى ذلك.
+أضف `@better-translate/react` فقط عندما تحتاج المكونات من جانب العميل إلى `useTranslations()` أو موفر.
 
-مع `routeTemplate: "/app/[lang]"`،
-فقط ذلك الفرع محلّى. المسارات مثل `/` و`/login` تبقى خارج التوطين.
+## توليد ملفات اللغة تلقائيًا
 
-## الملفات المصدرية الرئيسية
+بدلاً من كتابة كل الترجمة يدويًا، استخدم CLI لاستخراج السلاسل وتوليد ملفات اللغة: [دليل CLI](/docs/cli)
 
-- `packages/nextjs/src/shared.ts`
-- `packages/nextjs/src/server.ts`
-- `packages/nextjs/src/navigation.tsx`
-- `packages/nextjs/src/proxy.ts`
-- `apps/nextjs-example/lib/i18n/`
-- `apps/nextjs-nested-locale-example/lib/i18n/`
+## أمثلة
 
-## استكشاف الأدلة ذات الصلة
-
-<div className="mt-6 flex flex-wrap gap-3">
-  <Button asChild variant="outline" size="lg">
-    <Link href="/docs/adapters/core">ابدأ من طبقة النواة</Link>
-  </Button>
-  <Button asChild variant="outline" size="lg">
-    <Link href="/docs/adapters/react">أضف طبقة React</Link>
-  </Button>
-  <Button asChild size="lg">
-    <Link href="/docs/installation">راجع تثبيت الحزمة</Link>
-  </Button>
-</div>
+- [nextjs-example](https://github.com/jralvarenga/better-translate/tree/main/examples/nextjs-example)
+- [nextjs-nested-locale-example](https://github.com/jralvarenga/better-translate/tree/main/examples/nextjs-nested-locale-example)

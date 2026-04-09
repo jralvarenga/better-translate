@@ -1,0 +1,110 @@
+---
+title: Astro
+description: '@better-translate/astroは、@better-translate/coreの上にリクエストヘルパーとミドルウェアを追加します。'
+---
+# Astro
+
+Astroアプリでリクエストに応じた翻訳が必要な場合は、`@better-translate/astro`を使用してください。
+
+## 1. パッケージをインストールする
+
+```sh
+npm install @better-translate/core @better-translate/astro astro
+```
+
+## 2. 翻訳エンジンを作成する
+
+`src/lib/i18n.ts`を作成してください：
+
+```ts
+import { configureTranslations } from "@better-translate/core";
+
+const en = {
+  home: {
+    title: "Hello from Astro",
+  },
+} as const;
+
+const es = {
+  home: {
+    title: "Hola desde Astro",
+  },
+} as const;
+
+export const translator = await configureTranslations({
+  availableLocales: ["en", "es"] as const,
+  defaultLocale: "en",
+  fallbackLocale: "en",
+  messages: { en, es },
+});
+```
+
+## 3. リクエスト設定を公開する
+
+`src/lib/request.ts`を作成してください：
+
+```ts
+import { getRequestConfig } from "@better-translate/astro";
+
+import { translator } from "./i18n";
+
+export const requestConfig = getRequestConfig(async () => ({
+  translator,
+}));
+```
+
+## 4. ミドルウェアでリクエストのロケールを設定する
+
+`src/middleware.ts`を作成してください：
+
+```ts
+import { createBetterTranslateMiddleware } from "@better-translate/astro/middleware";
+
+import { requestConfig } from "./lib/request";
+
+export const onRequest = createBetterTranslateMiddleware(requestConfig, {
+  resolveLocale: ({ params }) => params?.lang,
+});
+```
+
+## 5. ページで翻訳を読み込む
+
+`src/lib/server.ts`を作成してください：
+
+```ts
+import { createServerHelpers } from "@better-translate/astro";
+
+import { requestConfig } from "./request";
+
+export const { getLocale, getTranslations } =
+  createServerHelpers(requestConfig);
+```
+
+`src/pages/[lang]/index.astro`を作成してください：
+
+```astro
+---
+import { getLocale, getTranslations } from "../../lib/server";
+
+const locale = await getLocale();
+const t = await getTranslations();
+---
+
+<html lang={locale}>
+  <body>
+    <h1>{t("home.title")}</h1>
+  </body>
+</html>
+```
+
+## オプションの次のステップ
+
+Astroのドキュメントやブログ投稿がローカライズされたコンテンツコレクションにある場合は、この基本的なセットアップが動作した後に、AstroコンテンツヘルパーまたはMDXアダプターを追加してください。
+
+## ロケールファイルを自動生成する
+
+すべての翻訳を手動で書く代わりに、CLIを使用して文字列を抽出し、ロケールファイルを生成できます：[CLIガイド](/docs/cli)
+
+## 例
+
+- [astro-example](https://github.com/jralvarenga/better-translate/tree/main/examples/astro-example)

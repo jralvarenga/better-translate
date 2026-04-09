@@ -1,174 +1,186 @@
 ---
 title: Next.js
-description: "@better-translate/nextjs es la capa Next.js App Router sobre el paquete core."
+description: >-
+  @better-translate/nextjs añade enrutamiento de locale, helpers de solicitud,
+  helpers de navegación y soporte de proxy para Next.js App Router.
 ---
-
 # Next.js
 
-`@better-translate/nextjs` es
-la capa Next.js App Router sobre el paquete core. Agrega configuración de enrutamiento por locale,
-helpers proxy, helpers de servidor por request y wrappers de navegación con locale.
+Usa `@better-translate/nextjs` cuando quieras URLs con prefijo de locale, traducciones del lado del servidor y navegación consciente del locale en App Router.
 
-## Cuándo usarlo
+Si también necesitas hooks del lado del cliente, añade `@better-translate/react` sobre esta configuración.
 
-Usa el adaptador Next.js cuando uses Next.js App Router, quieras rutas con prefijo de locale,
-helpers de request para server components, o links y llamadas de router con locale.
+## 1. Instala los paquetes
 
-## Patrón de cinco archivos
+```sh
+npm install @better-translate/core @better-translate/nextjs
+```
 
-Una configuración estándar de Next.js necesita cinco archivos dentro de tu carpeta `lib/i18n/`:
+## 2. Crea el traductor
 
-<Accordion type="single" collapsible className="mt-6">
-  <AccordionItem value="routing">
-    <AccordionTrigger>`routing.ts`</AccordionTrigger>
-    <AccordionContent>
-      <p>Define las reglas de enrutamiento de locales y el template de ruta.</p>
-    </AccordionContent>
-  </AccordionItem>
-  <AccordionItem value="request">
-    <AccordionTrigger>`request.ts`</AccordionTrigger>
-    <AccordionContent>
-      <p>Conecta el translator del core con el ciclo de vida del request de Next.js.</p>
-    </AccordionContent>
-  </AccordionItem>
-  <AccordionItem value="server">
-    <AccordionTrigger>`server.ts`</AccordionTrigger>
-    <AccordionContent>
-      <p>Exporta helpers por request como `getLocale()`, `getMessages()` y `getTranslations()`.</p>
-    </AccordionContent>
-  </AccordionItem>
-  <AccordionItem value="navigation">
-    <AccordionTrigger>`navigation.ts`</AccordionTrigger>
-    <AccordionContent>
-      <p>Expone navegación con locale como `I18nLink` y `useI18nRouter()`.</p>
-    </AccordionContent>
-  </AccordionItem>
-  <AccordionItem value="proxy">
-    <AccordionTrigger>`proxy.ts`</AccordionTrigger>
-    <AccordionContent>
-      <p>Te permite mantener tu propio proxy de middleware sin reemplazarlo por completo.</p>
-    </AccordionContent>
-  </AccordionItem>
-</Accordion>
+Crea `src/lib/i18n/config.ts`:
 
-## routing.ts
+```ts
+import { configureTranslations } from "@better-translate/core";
 
-```tsx showLineNumbers
-import { defineRouting } from "@better-translate/nextjs"
+const en = {
+  home: {
+    title: "Hello from Next.js",
+  },
+} as const;
+
+const es = {
+  home: {
+    title: "Hola desde Next.js",
+  },
+} as const;
+
+export const translator = await configureTranslations({
+  availableLocales: ["en", "es"] as const,
+  defaultLocale: "en",
+  fallbackLocale: "en",
+  messages: { en, es },
+});
+```
+
+## 3. Añade el archivo de enrutamiento
+
+Crea `src/lib/i18n/routing.ts`:
+
+```ts
+import { defineRouting } from "@better-translate/nextjs";
 
 export const routing = defineRouting({
-  locales: ["en", "es"] as const,
   defaultLocale: "en",
-  routeTemplate: "/[lang]", // acotado: "/app/[lang]"
-})
+  locales: ["en", "es"] as const,
+  routeTemplate: "/[lang]",
+});
 ```
 
-## request.ts
+## 4. Añade los helpers de solicitud y servidor
 
-```tsx showLineNumbers
-import { getRequestConfig } from "@better-translate/nextjs/server"
-import { configureTranslations } from "better-translate"
-import { routing } from "./routing"
-import { en } from "./messages/en"
-import { es } from "./messages/es"
+Crea `src/lib/i18n/request.ts`:
 
-export default getRequestConfig(async () => {
-  const translator = await configureTranslations({ en, es })
-  return { translator }
-})
+```ts
+import { getRequestConfig } from "@better-translate/nextjs/server";
+
+import { translator } from "./config";
+
+export const requestConfig = getRequestConfig(async () => ({
+  translator,
+}));
 ```
 
-## server.ts
+Crea `src/lib/i18n/server.ts`:
 
-```tsx showLineNumbers
-import { createServerHelpers, setRequestLocale } from "@better-translate/nextjs/server"
-import requestConfig from "./request"
+```ts
+import { createServerHelpers } from "@better-translate/nextjs/server";
+
+import { requestConfig } from "./request";
+
+export const { getTranslations } = createServerHelpers(requestConfig);
+```
+
+## 5. Añade la navegación consciente del locale
+
+Crea `src/lib/i18n/navigation.ts`:
+
+```tsx
+"use client";
+
+import Link from "next/link";
+import { useParams, usePathname, useRouter } from "next/navigation";
+
+import { createNavigationFunctions } from "@better-translate/nextjs/navigation";
+
+import { routing } from "./routing";
 
 export const {
-  getLocale,
-  getMessages,
-  getTranslations,
-  getTranslator,
-} = createServerHelpers(requestConfig)
-
-export { setRequestLocale }
+  Link: I18nLink,
+  usePathname: useI18nPathname,
+  useRouter: useI18nRouter,
+} = createNavigationFunctions({
+  Link,
+  routing,
+  useParams,
+  usePathname,
+  useRouter,
+});
 ```
 
-## layout.tsx
+## 6. Añade el proxy
 
-```tsx showLineNumbers
-import { hasLocale } from "@better-translate/nextjs"
-import { setRequestLocale } from "@better-translate/nextjs/server"
-import { notFound } from "next/navigation"
-import { routing } from "./routing"
+Crea `src/proxy.ts`:
 
-export default async function Layout({ children, params }) {
-  const { lang } = await params
+```ts
+import { createProxy, getProxyMatcher } from "@better-translate/nextjs/proxy";
 
-  if (!hasLocale(routing.locales, lang)) {
-    notFound()
-  }
+import { routing } from "./lib/i18n/routing";
 
-  setRequestLocale(lang)
+export const proxy = createProxy(routing);
 
-  return children
+export const config = {
+  matcher: getProxyMatcher(routing),
+};
+```
+
+## 7. Renderiza una página traducida
+
+Crea `src/app/[lang]/page.tsx`:
+
+```tsx
+import { setRequestLocale } from "@better-translate/nextjs/server";
+
+import { getTranslations } from "../../lib/i18n/server";
+
+export default async function HomePage({
+  params,
+}: {
+  params: Promise<{ lang: string }>;
+}) {
+  const { lang } = await params;
+
+  setRequestLocale(lang);
+
+  const t = await getTranslations();
+
+  return <h1>{t("home.title")}</h1>;
 }
 ```
 
-## navigation.ts
+## 8. Añade enlaces que conservan el locale
 
-```tsx showLineNumbers
-import { createNavigationFunctions } from "@better-translate/nextjs"
-import { routing } from "./routing"
+Crea `src/components/language-links.tsx`:
 
-export const {
-  I18nLink,
-  getPathname,
-  useI18nPathname,
-  useI18nRouter,
-} = createNavigationFunctions({ routing })
-```
+```tsx
+"use client";
 
-## Uso en server components
+import { I18nLink } from "../lib/i18n/navigation";
 
-```tsx showLineNumbers
-import { getTranslations } from "@/lib/i18n/server"
-
-export default async function Page({ params }) {
-  await params
-  const t = await getTranslations()
-
-  return <h1>{t("hero.title")}</h1>
+export function LanguageLinks() {
+  return (
+    <nav>
+      <I18nLink href="/" locale="en">
+        English
+      </I18nLink>
+      {" | "}
+      <I18nLink href="/" locale="es">
+        Español
+      </I18nLink>
+    </nav>
+  );
 }
 ```
 
-## Enrutamiento raíz vs acotado
+## Cuándo añadir el adaptador de React
 
-Con `routeTemplate: "/[lang]"`,
-toda la app vive bajo `/en`, `/es`, etc.
+Añade `@better-translate/react` solo cuando los componentes del cliente necesiten `useTranslations()` o un proveedor.
 
-Con `routeTemplate: "/app/[lang]"`,
-solo ese subárbol está localizado. Rutas como `/` y `/login` quedan fuera de la localización.
+## Genera archivos de locale automáticamente
 
-## Archivos fuente clave
+En lugar de escribir cada traducción a mano, usa el CLI para extraer cadenas y generar archivos de locale: [Guía del CLI](/docs/cli)
 
-- `packages/nextjs/src/shared.ts`
-- `packages/nextjs/src/server.ts`
-- `packages/nextjs/src/navigation.tsx`
-- `packages/nextjs/src/proxy.ts`
-- `apps/nextjs-example/lib/i18n/`
-- `apps/nextjs-nested-locale-example/lib/i18n/`
+## Ejemplos
 
-## Explora guías relacionadas
-
-<div className="mt-6 flex flex-wrap gap-3">
-  <Button asChild variant="outline" size="lg">
-    <Link href="/docs/adapters/core">Empezar desde la capa core</Link>
-  </Button>
-  <Button asChild variant="outline" size="lg">
-    <Link href="/docs/adapters/react">Agregar la capa React</Link>
-  </Button>
-  <Button asChild size="lg">
-    <Link href="/docs/installation">Revisar la instalación</Link>
-  </Button>
-</div>
+- [nextjs-example](https://github.com/jralvarenga/better-translate/tree/main/examples/nextjs-example)
+- [nextjs-nested-locale-example](https://github.com/jralvarenga/better-translate/tree/main/examples/nextjs-nested-locale-example)

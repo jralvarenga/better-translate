@@ -22,7 +22,10 @@ async function createWorkspace(): Promise<string> {
   return directory;
 }
 
-function directModelConfig(provider = "moonshotai", modelId = "kimi-k2-0905-preview"): string {
+function directModelConfig(
+  provider = "moonshotai",
+  modelId = "kimi-k2-0905-preview",
+): string {
   return `({
   specificationVersion: "v3",
   provider: ${JSON.stringify(provider)},
@@ -146,6 +149,11 @@ export default defineConfig({
   sourceLocale: "en",
   locales: ["es"],
   model: ${directModelConfig()},
+  providerOptions: {
+    ollama: {
+      think: true,
+    },
+  },
   messages: {
     entry: "./messages/en.json",
   },
@@ -165,6 +173,11 @@ export default defineConfig({
     expect("gateway" in loaded.config).toBe(false);
     expect(loaded.config.model.provider).toBe("moonshotai");
     expect(loaded.config.model.modelId).toBe("kimi-k2-0905-preview");
+    expect(loaded.config.providerOptions).toEqual({
+      ollama: {
+        think: true,
+      },
+    });
   });
 
   it("rejects target locales that include the source locale", async () => {
@@ -535,7 +548,9 @@ export function navLabel() {
     });
 
     const updatedSource = await readFile(sourcePath, "utf8");
-    expect(updatedSource).toContain('return t("sidebar.nav.home", { locale: "es" });');
+    expect(updatedSource).toContain(
+      'return t("sidebar.nav.home", { locale: "es" });',
+    );
     expect(updatedSource).not.toContain("bt: true");
   });
 
@@ -1211,11 +1226,10 @@ title: Viejo
 
         return {
           body:
-            request.targetLocale === "es"
-              ? "# Bienvenido\n"
-              : "# Bienvenue\n",
+            request.targetLocale === "es" ? "# Bienvenido\n" : "# Bienvenue\n",
           frontmatter: {
-            title: request.targetLocale === "es" ? "Introduccion" : "Introduction",
+            title:
+              request.targetLocale === "es" ? "Introduccion" : "Introduction",
           },
         };
       },
@@ -1685,11 +1699,7 @@ title: Intro
 `,
       "utf8",
     );
-    await writeFile(
-      path.join(workspace, "docs/es"),
-      "not-a-directory",
-      "utf8",
-    );
+    await writeFile(path.join(workspace, "docs/es"), "not-a-directory", "utf8");
     await writeFile(
       path.join(workspace, "better-translate.config.ts"),
       `export default {

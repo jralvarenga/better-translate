@@ -1,119 +1,187 @@
 ---
 title: TanStack Router
-description: "@better-translate/tanstack-router يوفر توجيه اللغة ومساعدات الطلب لـ TanStack Router وTanStack Start."
+description: >-
+  @better-translate/tanstack-router يضيف التوجيه والتنقل الذي يدعم اللغة لـ
+  TanStack Router و TanStack Start.
 ---
-
 # TanStack Router
 
-`@better-translate/tanstack-router` هو
-محول TanStack Router لـ Better Translate. يتبع نمط معامل اللغة الاختياري
-في TanStack Router مع `/{-$locale}` ويعمل في TanStack Start
-لأن Start يعمل فوق TanStack Router.
+استخدم `@better-translate/tanstack-router` عندما يستخدم تطبيقك TanStack Router أو TanStack Start وتريد عناوين URL التي تدعم اللغة.
 
-## ما يوفره
+في معظم التطبيقات الحقيقية، ستقوم بربطه مع:
 
-- `defineRouting(...)` للتوجيه اللغوي ذي البادئة مع معاملات اختيارية
-- `createNavigationFunctions(...)` لـ `Link` و`useNavigate` و`useRouter` و`usePathname` و`useLocale` المحلّية
-- `createServerHelpers(...)` و`setRequestLocale(...)` للترجمات ذات النطاق المحدد للطلب في TanStack Start
+- `@better-translate/core` للمترجم
+- `@better-translate/react` للخطافات داخل مكونات React
 
-## نموذج التوجيه
+## 1. تثبيت الحزم
 
-افتراضياً، يفترض المحول `/{-$locale}`:
+```sh
+npm install @better-translate/core @better-translate/react @better-translate/tanstack-router
+```
 
-- `/about` تستخدم اللغة الافتراضية
-- `/ar/about` تستخدم العربية
+## 2. إنشاء المترجم المشترك
 
-يمكنك تحديد نطاق توجيه اللغة لجزء فقط من تطبيقك:
+أنشئ `src/lib/i18n.ts`:
 
-```ts showLineNumbers
-import { defineRouting } from "@better-translate/tanstack-router"
+```ts
+import { configureTranslations } from "@better-translate/core";
+
+const en = {
+  home: {
+    title: "Hello from TanStack Router",
+  },
+} as const;
+
+const es = {
+  home: {
+    title: "Hola desde TanStack Router",
+  },
+} as const;
+
+export const translator = await configureTranslations({
+  availableLocales: ["en", "es"] as const,
+  defaultLocale: "en",
+  fallbackLocale: "en",
+  messages: { en, es },
+});
+```
+
+## 3. إضافة إعداد التوجيه للغة
+
+أنشئ `src/lib/routing.ts`:
+
+```ts
+import { defineRouting } from "@better-translate/tanstack-router";
 
 export const routing = defineRouting({
-  locales: ["en", "ar"] as const,
   defaultLocale: "en",
-  routeTemplate: "/app/{-$locale}",
-})
+  locales: ["en", "es"] as const,
+  routeTemplate: "/$lang",
+});
 ```
 
-هذا يبقي `/login` دون تغيير بينما يُحلّي `/app/dashboard` و`/app/ar/dashboard`.
+## 4. إنشاء مساعدين التنقل المحليين
 
-## مساعدات الخادم لـ TanStack Start
+أنشئ `src/lib/navigation.tsx`:
 
-أنشئ المترجم مرة واحدة، ثم كشف مساعدات ذات نطاق محدد للطلب:
-
-```ts showLineNumbers
-import { configureTranslations } from "better-translate"
-import {
-  createServerHelpers,
-  getRequestConfig,
-  setRequestLocale,
-} from "@better-translate/tanstack-router/server"
-
-const requestConfig = getRequestConfig(async () => ({
-  translator: await configureTranslations({
-    availableLocales: ["en", "ar"] as const,
-    defaultLocale: "en",
-    messages: { en, ar },
-  }),
-}))
-
-export const { getLocale, getMessages, getTranslations, getTranslator } =
-  createServerHelpers(requestConfig)
-
-export { setRequestLocale }
-```
-
-في TanStack Start، استدعِ `setRequestLocale(params.locale ?? routing.defaultLocale)`
-داخل `beforeLoad`، أو محمّل، أو نقطة دخول خادم أخرى مرتبطة بالطلب.
-
-## أغلفة التنقل
-
-أدخل primitives الـ router من تطبيقك:
-
-```tsx showLineNumbers
+```tsx
 import {
   Link,
   useLocation,
   useNavigate,
   useParams,
   useRouter,
-} from "@tanstack/react-router"
-import { createNavigationFunctions } from "@better-translate/tanstack-router/navigation"
+} from "@tanstack/react-router";
 
-import { routing } from "./routing"
+import { createNavigationFunctions } from "@better-translate/tanstack-router/navigation";
+
+import { routing } from "./routing";
 
 export const {
   Link: I18nLink,
-  getPathname,
   useLocale,
   useNavigate: useI18nNavigate,
-  usePathname,
-  useRouter: useI18nRouter,
+  usePathname: useI18nPathname,
 } = createNavigationFunctions({
   Link,
   routing,
   useLocation,
   useNavigate,
-  useParams: () =>
-    useParams({
-      strict: false,
-      select: (params) => ({
-        locale: params.locale as "en" | "ar" | undefined,
-      }),
-    }),
+  useParams,
   useRouter,
-})
+});
 ```
 
-## موقع الحزمة
+## 5. تغليف التطبيق بموفر React
 
-`packages/tanstack-router`
+أنشئ `src/app.tsx`:
 
-<div className="mt-6 flex flex-wrap gap-3">
-  <Button asChild variant="outline" size="lg">
-    <Link href="/docs/adapters/core">فهم الحزمة الأساسية</Link>
-  </Button>
-  <Button asChild size="lg">
-    <Link href="/docs/adapters/react">دمجها مع React</Link>
-  </Button>
-</div>
+```tsx
+import { RouterProvider } from "@tanstack/react-router";
+
+import { BetterTranslateProvider } from "@better-translate/react";
+
+import { router } from "./router";
+import { translator } from "./lib/i18n";
+
+export function App() {
+  return (
+    <BetterTranslateProvider translator={translator}>
+      <RouterProvider router={router} />
+    </BetterTranslateProvider>
+  );
+}
+```
+
+## 6. استخدام الروابط والترجمات التي تدعم اللغة
+
+أنشئ `src/components/header.tsx`:
+
+```tsx
+import { useTranslations } from "@better-translate/react";
+
+import { translator } from "../lib/i18n";
+import { I18nLink, useLocale } from "../lib/navigation";
+
+export function Header() {
+  const currentLocale = useLocale();
+  const { t } = useTranslations<typeof translator>();
+
+  return (
+    <header>
+      <h1>{t("home.title")}</h1>
+      <I18nLink to="/" params={{ lang: currentLocale }}>
+        Home
+      </I18nLink>
+    </header>
+  );
+}
+```
+
+## TanStack Start
+
+إذا كنت تستخدم TanStack Start، احتفظ بنفس إعداد التوجيه والتنقل. بعد ذلك، استورد `getRequestConfig` و`setRequestLocale` و`createServerHelpers` من `@better-translate/tanstack-router/server` داخل طبقة الخادم:
+
+```ts
+import { configureTranslations } from "@better-translate/core";
+import {
+  createServerHelpers,
+  getRequestConfig,
+  setRequestLocale,
+} from "@better-translate/tanstack-router/server";
+import { createServerFn } from "@tanstack/react-start";
+
+import { en } from "./messages/en";
+import { es } from "./messages/es";
+
+export const requestConfig = getRequestConfig(async () => ({
+  locale: "en",
+  translator: await configureTranslations({
+    availableLocales: ["en", "es"] as const,
+    defaultLocale: "en",
+    fallbackLocale: "en",
+    messages: { en, es },
+  }),
+}));
+
+const { getTranslations } = createServerHelpers(requestConfig);
+
+export const getHomeCopy = createServerFn({ method: "GET" }).handler(
+  async () => {
+    setRequestLocale("en");
+    const t = await getTranslations({ locale: "en" });
+
+    return { title: t("home.title") };
+  },
+);
+```
+
+استخدم `getRequestConfig` لاشتقاق إعدادات كل طلب، واستدعِ `setRequestLocale` مبكرًا داخل مسار التنفيذ الخادمي، ثم ابنِ مساعدين خادميين عبر `createServerHelpers` لاستخدامهم في loaders أو دوال الخادم.
+
+## توليد ملفات اللغة تلقائياً
+
+بدلاً من كتابة كل الترجمات يدوياً، استخدم CLI لاستخراج النصوص وتوليد ملفات اللغة: [دليل CLI](/docs/cli)
+
+## أمثلة
+
+- [tanstack-start-example](https://github.com/jralvarenga/better-translate/tree/main/examples/tanstack-start-example)

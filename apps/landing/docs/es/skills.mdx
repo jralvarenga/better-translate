@@ -1,65 +1,46 @@
 ---
 title: Skills
-description: Una guía de aprendizaje escrita en lenguaje simple que explica cómo funciona la librería.
+description: >-
+  Usa las guías de skills para elegir la combinación correcta de paquetes de
+  Better Translate para tu aplicación.
 ---
-
 # Skills
 
-La carpeta `skills/` en
-el repositorio es una guía de aprendizaje escrita en lenguaje simple. Explica cómo funciona la librería
-sin necesidad de leer el código fuente completo primero.
+La carpeta `skills/` explica cómo integrar los paquetes de la manera correcta sin leer todo el código base primero.
 
-## Orden de lectura
+Úsala cuando quieras una respuesta simple a preguntas como:
 
-Si eres nuevo, lee los archivos de skills en este orden:
+- ¿Con qué paquete empiezo?
+- ¿Necesito React también, o solo Next.js?
+- ¿Cómo encaja MDX en la configuración?
+- ¿Cuál es la combinación de paquetes más pequeña para mi aplicación?
 
-1. `skills/core/README.md` ,  El motor de traducciones: claves tipadas, parámetros, fallback, carga asíncrona y helpers globales.
-2. `skills/react/README.md` ,  El adaptador React: BetterTranslateProvider y useTranslations().
-3. `skills/expo/README.md` ,  Expo y React Native usando el adaptador React existente.
-4. `skills/nextjs/README.md` ,  El adaptador Next.js: enrutamiento de locales, helpers de servidor y wrappers de navegación.
-5. `skills/combined/README.md` ,  Cómo core, React y Next.js trabajan juntos en una app real.
-6. `skills/examples/README.md` ,  Un mapa de las apps de ejemplo ,  copia la que se adapte a tu arquitectura.
-7. `skills/workspace/README.md` ,  Cómo está organizado el monorepo: paquetes vs apps, scripts de compilación y archivos de config.
+## Mejor orden de lectura
 
-## Modelo mental simple
+1. `skills/README.md` para el mapa de paquetes
+2. `skills/core/README.md` para iniciar el traductor correctamente
+3. `skills/cli/README.md` si quieres que la CLI genere archivos de locale o extraiga cadenas marcadas con `bt`
+4. `skills/react/README.md` si la UI es React o Expo
+5. `skills/nextjs/README.md` si la aplicación es Next.js App Router
+6. `skills/md/README.md` si el contenido está en `.md` o `.mdx`
+7. `skills/combined/README.md` si la aplicación mezcla enrutamiento, renderizado en servidor y hooks de cliente
 
-Better Translate tiene una idea principal: **configurar las traducciones una vez, usar helpers tipados en todas partes.**
+## Selector rápido de paquetes
 
-El paquete core gestiona la lógica de traducción.
+- TypeScript plano, Node.js, APIs o bibliotecas compartidas: `@better-translate/core`
+- Web React o Expo: `@better-translate/core` + `@better-translate/react`
+- Next.js App Router: `@better-translate/core` + `@better-translate/nextjs`
+- Next.js con hooks de lado del cliente: agrega `@better-translate/react`
+- TanStack Router: `@better-translate/core` + `@better-translate/tanstack-router`, y usualmente `@better-translate/react`
+- Astro: `@better-translate/core` + `@better-translate/astro`
+- Markdown localizado o MDX: agrega `@better-translate/md`
+- Archivos de locale generados por IA o cadenas extraídas automáticamente: agrega `@better-translate/cli`
 
-El paquete React hace que esa lógica sea fácil de usar en componentes cliente.
-Expo y React Native usan ese mismo paquete React en lugar de un adaptador nativo separado.
+## Empieza aquí
 
-El paquete Next.js hace que esa lógica sea fácil de usar con enrutamiento, helpers de servidor y navegación con locale.
-
-## ¿Qué guía debería leer?
-
-- → ¿Solo necesitas traducciones en TypeScript o en un servidor? Lee `skills/core/README.md`
-- → ¿Construyendo una app React? Lee `skills/react/README.md`
-- → ¿Construyendo con Expo o React Native? Lee `skills/expo/README.md`
-- → ¿Construyendo una app Next.js App Router? Lee `skills/nextjs/README.md`
-- → ¿La app tiene partes de servidor y cliente? Lee `skills/combined/README.md`
-- → ¿Aprendes mejor copiando proyectos funcionales? Lee `skills/examples/README.md`
-
-<div className="mt-6 flex flex-wrap gap-3">
-  <Button asChild variant="outline" size="lg">
-    <Link href="/docs/adapters/core">Conceptos de core</Link>
-  </Button>
-  <Button asChild variant="outline" size="lg">
-    <Link href="/docs/adapters/react">Conceptos de React</Link>
-  </Button>
-  <Button asChild size="lg">
-    <Link href="/docs/adapters/nextjs">Conceptos de Next.js</Link>
-  </Button>
-</div>
-
-## Archivos clave de paquetes
-
-- `packages/better-translate`
-- `packages/react`
-- `packages/nextjs`
-- `apps/react-vite-example`
-- `apps/nextjs-example`
-- `apps/nextjs-nested-locale-example`
-- `apps/core-elysia-example`
-- `apps/landing`
+- <Link href="/docs/adapters/core">Guía de Core</Link>
+- <Link href="/docs/adapters/react">Guía de React</Link>
+- <Link href="/docs/adapters/nextjs">Guía de Next.js</Link>
+- <Link href="/docs/adapters/md">Guía de MD y MDX</Link>
+- <Link href="/docs/cli">Guía de CLI</Link>
+- [Ejemplos en GitHub](https://github.com/jralvarenga/better-translate/tree/main/examples)

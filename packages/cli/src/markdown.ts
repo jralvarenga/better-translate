@@ -6,7 +6,7 @@ import matter from "gray-matter";
 import type { TranslationMessages } from "@better-translate/core";
 
 import type { MarkdownExtension } from "./types.js";
-import { assert, isRecord } from "./validation.js";
+import { assert, assertExactMessageShape, isRecord } from "./validation.js";
 
 export interface LoadedMarkdownDocument {
   body: string;
@@ -16,6 +16,11 @@ export interface LoadedMarkdownDocument {
   schema: object;
   sourceText: string;
   sourcePath: string;
+}
+
+export interface ValidatedMarkdownTranslation {
+  body: string;
+  frontmatter: TranslationMessages;
 }
 
 async function walkDirectory(directory: string): Promise<string[]> {
@@ -97,6 +102,165 @@ export function createMarkdownOutputSchema(
     },
     required: ["body", "frontmatter"],
     type: "object",
+  };
+}
+
+function getFirstStringProperty(
+  value: Record<string, unknown>,
+  keys: readonly string[],
+): string | undefined {
+  for (const key of keys) {
+    const candidate = value[key];
+
+    if (typeof candidate === "string") {
+      return candidate;
+    }
+  }
+
+  return undefined;
+}
+
+function getFirstRecordProperty(
+  value: Record<string, unknown>,
+  keys: readonly string[],
+): Record<string, unknown> | undefined {
+  for (const key of keys) {
+    const candidate = value[key];
+
+    if (isRecord(candidate)) {
+      return candidate;
+    }
+  }
+
+  return undefined;
+}
+
+function pickTranslationShape(
+  reference: TranslationMessages,
+  candidate: Record<string, unknown>,
+): TranslationMessages | undefined {
+  const result: Record<string, unknown> = {};
+
+  for (const [key, referenceValue] of Object.entries(reference)) {
+    if (!(key in candidate)) {
+      return undefined;
+    }
+
+    const candidateValue = candidate[key];
+
+    if (typeof referenceValue === "string") {
+      if (typeof candidateValue !== "string") {
+        return undefined;
+      }
+
+      result[key] = candidateValue;
+      continue;
+    }
+
+    if (!isRecord(candidateValue)) {
+      return undefined;
+    }
+
+    const nested = pickTranslationShape(
+      referenceValue as TranslationMessages,
+      candidateValue,
+    );
+
+    if (!nested) {
+      return undefined;
+    }
+
+    result[key] = nested;
+  }
+
+  return result as TranslationMessages;
+}
+
+function unwrapMarkdownCandidate(
+  value: unknown,
+): Record<string, unknown> | undefined {
+  let candidate = value;
+
+  for (let depth = 0; depth < 5; depth += 1) {
+    if (!isRecord(candidate)) {
+      return undefined;
+    }
+
+    if (
+      typeof candidate.body === "string" ||
+      typeof candidate.markdown === "string" ||
+      typeof candidate.content === "string" ||
+      typeof candidate.mdx === "string" ||
+      typeof candidate.document === "string" ||
+      isRecord(candidate.frontmatter) ||
+      isRecord(candidate.frontMatter)
+    ) {
+      return candidate;
+    }
+
+    const nextCandidate = getFirstRecordProperty(candidate, [
+      "result",
+      "translation",
+      "output",
+      "data",
+      "document",
+    ]);
+
+    if (!nextCandidate) {
+      return undefined;
+    }
+
+    candidate = nextCandidate;
+  }
+
+  return undefined;
+}
+
+export function validateMarkdownTranslation(
+  frontmatterStrings: TranslationMessages,
+  value: unknown,
+): ValidatedMarkdownTranslation {
+  const candidate = unwrapMarkdownCandidate(value);
+
+  assert(
+    candidate,
+    "Generated markdown output must be an object with body and frontmatter.",
+  );
+
+  const body = getFirstStringProperty(candidate, [
+    "body",
+    "markdown",
+    "content",
+    "mdx",
+    "document",
+  ]);
+
+  assert(
+    typeof body === "string",
+    "Generated markdown output must include a string body.",
+  );
+
+  const frontmatter =
+    getFirstRecordProperty(candidate, [
+      "frontmatter",
+      "frontMatter",
+      "metadata",
+      "meta",
+    ]) ??
+    (Object.keys(frontmatterStrings).length === 0
+      ? {}
+      : pickTranslationShape(frontmatterStrings, candidate));
+
+  assert(
+    isRecord(frontmatter),
+    "Generated markdown output must include a frontmatter object.",
+  );
+
+  assertExactMessageShape(frontmatterStrings, frontmatter);
+
+  return {
+    body,
+    frontmatter: frontmatter as TranslationMessages,
   };
 }
 

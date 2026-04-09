@@ -12,7 +12,7 @@ Each package is published separately on npm, so you can install only the pieces 
 - `@better-translate/astro` for request helpers, middleware, and localized Astro content collections.
 - `@better-translate/tanstack-router` for locale-aware routing and navigation in TanStack Router and TanStack Start apps.
 - `@better-translate/md` for localized Markdown and MDX loading on top of an existing translator.
-- `@better-translate/cli` for generating translated message files and markdown from a source locale.
+- `@better-translate/cli` for generating translated message files and markdown from a source locale with any AI SDK provider, including local Ollama models.
 
 ## Docs
 
@@ -28,6 +28,10 @@ Each package is published separately on npm, so you can install only the pieces 
 ## Workspace
 
 The repository uses Bun and Turborepo. Public packages live in `packages/`, the landing site lives in `apps/landing`, and runnable integration examples live in `examples/`.
+
+## CLI Providers
+
+`@better-translate/cli` uses a bring-your-own-provider model. You can pass any AI SDK language model directly in `better-translate.config.ts`, including hosted providers and local Ollama models via `ollama-ai-provider-v2`.
 
 ## Lockfile
 

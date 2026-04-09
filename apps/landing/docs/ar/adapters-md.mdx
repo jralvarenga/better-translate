@@ -1,0 +1,108 @@
+---
+title: MD & MDX
+description: >-
+  @better-translate/md تحمل ملفات Markdown و MDX المُعَرَّفة حسب اللغة فوق
+  @better-translate/core.
+---
+# MD & MDX
+
+استخدم `@better-translate/md` عندما تكون مستنداتك أو منشورات مدونتك أو صفحات محتواك في ملفات `.md` أو `.mdx` مُعَرَّفة حسب اللغة.
+
+هذه الحزمة لا تستبدل المترجم الأساسي. إنها تقرأ قواعد اللغة من المترجم الذي أنشأته مسبقًا.
+
+## 1. تثبيت الحزم
+
+```sh
+npm install @better-translate/core @better-translate/md
+```
+
+## 2. إنشاء المترجم
+
+أنشئ `src/i18n.ts`:
+
+```ts
+import { configureTranslations } from "@better-translate/core";
+
+const en = {
+  docs: {
+    title: "Docs",
+  },
+} as const;
+
+const es = {
+  docs: {
+    title: "Documentacion",
+  },
+} as const;
+
+export const translator = await configureTranslations({
+  availableLocales: ["en", "es"] as const,
+  defaultLocale: "en",
+  fallbackLocale: "en",
+  messages: { en, es },
+});
+```
+
+## 3. إنشاء مجلدات المحتوى
+
+ضع مجلدًا واحدًا لكل لغة تحت نفس الجذر:
+
+```txt
+content/docs/
+  en/
+    getting-started.mdx
+  es/
+    getting-started.mdx
+```
+
+## 4. إنشاء مساعدات Markdown
+
+أنشئ `src/docs.ts`:
+
+```ts
+import { createMarkdownHelpers } from "@better-translate/md";
+
+import { translator } from "./i18n";
+
+export const docs = createMarkdownHelpers(translator, {
+  rootDir: "./content/docs",
+});
+```
+
+## 5. قراءة مستند واحد
+
+```ts
+import { docs } from "./docs";
+
+const englishDoc = await docs.getDocument("getting-started", {
+  locale: "en",
+});
+
+const spanishDoc = await docs.getDocument("getting-started", {
+  locale: "es",
+});
+```
+
+## 6. تجميعه عندما تحتاج إلى المخرجات
+
+```ts
+const compiled = await docs.compileDocument("getting-started", {
+  locale: "en",
+});
+
+compiled.kind; // "md" أو "mdx"
+compiled.path;
+compiled.usedFallback;
+```
+
+## متى تستخدم مساعدات الخادم
+
+إذا كان تطبيقك يحل لغة الطلب بالفعل على الخادم، استخدم `@better-translate/md/server` بحيث يتبع تحميل Markdown نفس لغة الطلب تلقائيًا.
+
+## إنشاء Markdown مُعَرَّف حسب اللغة تلقائيًا
+
+استخدم خيار `markdown.rootDir` في واجهة سطر الأوامر لجعل المولد يترجم ملفات Markdown الخاصة بك: [دليل واجهة سطر الأوامر](/docs/cli)
+
+## أمثلة
+
+- [md-nextjs-example](https://github.com/jralvarenga/better-translate/tree/main/examples/md-nextjs-example)

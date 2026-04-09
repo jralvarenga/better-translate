@@ -1,0 +1,186 @@
+---
+title: Next.js
+description: >-
+  @better-translate/nextjs は、Next.js App Router
+  向けにロケールルーティング、リクエストヘルパー、ナビゲーションヘルパー、およびプロキシサポートを追加します。
+---
+# Next.js
+
+App Routerでロケール接頭辞付きURL、サーバーサイド翻訳、ロケール対応ナビゲーションが必要な場合は、`@better-translate/nextjs`を使用してください。
+
+クライアントサイドのフックも必要な場合は、このセットアップに加えて`@better-translate/react`を追加してください。
+
+## 1. パッケージをインストールする
+
+```sh
+npm install @better-translate/core @better-translate/nextjs
+```
+
+## 2. 翻訳機を作成する
+
+`src/lib/i18n/config.ts`を作成します：
+
+```ts
+import { configureTranslations } from "@better-translate/core";
+
+const en = {
+  home: {
+    title: "Hello from Next.js",
+  },
+} as const;
+
+const es = {
+  home: {
+    title: "Hola desde Next.js",
+  },
+} as const;
+
+export const translator = await configureTranslations({
+  availableLocales: ["en", "es"] as const,
+  defaultLocale: "en",
+  fallbackLocale: "en",
+  messages: { en, es },
+});
+```
+
+## 3. ルーティングファイルを追加する
+
+`src/lib/i18n/routing.ts`を作成します：
+
+```ts
+import { defineRouting } from "@better-translate/nextjs";
+
+export const routing = defineRouting({
+  defaultLocale: "en",
+  locales: ["en", "es"] as const,
+  routeTemplate: "/[lang]",
+});
+```
+
+## 4. リクエストとサーバーヘルパーを追加する
+
+`src/lib/i18n/request.ts`を作成します：
+
+```ts
+import { getRequestConfig } from "@better-translate/nextjs/server";
+
+import { translator } from "./config";
+
+export const requestConfig = getRequestConfig(async () => ({
+  translator,
+}));
+```
+
+`src/lib/i18n/server.ts`を作成します：
+
+```ts
+import { createServerHelpers } from "@better-translate/nextjs/server";
+
+import { requestConfig } from "./request";
+
+export const { getTranslations } = createServerHelpers(requestConfig);
+```
+
+## 5. ロケール対応ナビゲーションを追加する
+
+`src/lib/i18n/navigation.ts`を作成します：
+
+```tsx
+"use client";
+
+import Link from "next/link";
+import { useParams, usePathname, useRouter } from "next/navigation";
+
+import { createNavigationFunctions } from "@better-translate/nextjs/navigation";
+
+import { routing } from "./routing";
+
+export const {
+  Link: I18nLink,
+  usePathname: useI18nPathname,
+  useRouter: useI18nRouter,
+} = createNavigationFunctions({
+  Link,
+  routing,
+  useParams,
+  usePathname,
+  useRouter,
+});
+```
+
+## 6. プロキシを追加する
+
+`src/proxy.ts`を作成します：
+
+```ts
+import { createProxy, getProxyMatcher } from "@better-translate/nextjs/proxy";
+
+import { routing } from "./lib/i18n/routing";
+
+export const proxy = createProxy(routing);
+
+export const config = {
+  matcher: getProxyMatcher(routing),
+};
+```
+
+## 7. 翻訳付きページをレンダリングする
+
+`src/app/[lang]/page.tsx`を作成します：
+
+```tsx
+import { setRequestLocale } from "@better-translate/nextjs/server";
+
+import { getTranslations } from "../../lib/i18n/server";
+
+export default async function HomePage({
+  params,
+}: {
+  params: Promise<{ lang: string }>;
+}) {
+  const { lang } = await params;
+
+  setRequestLocale(lang);
+
+  const t = await getTranslations();
+
+  return <h1>{t("home.title")}</h1>;
+}
+```
+
+## 8. ロケールを保持するリンクを追加する
+
+`src/components/language-links.tsx`を作成します：
+
+```tsx
+"use client";
+
+import { I18nLink } from "../lib/i18n/navigation";
+
+export function LanguageLinks() {
+  return (
+    <nav>
+      <I18nLink href="/" locale="en">
+        English
+      </I18nLink>
+      {" | "}
+      <I18nLink href="/" locale="es">
+        Espanol
+      </I18nLink>
+    </nav>
+  );
+}
+```
+
+## Reactアダプターを追加するタイミング
+
+クライアントコンポーネントが`useTranslations()`またはプロバイダーを必要とする場合のみ、`@better-translate/react`を追加してください。
+
+## ロケールファイルを自動生成する
+
+すべての翻訳を手作業で書く代わりに、CLIを使用して文字列を抽出しロケールファイルを生成できます：[CLIガイド](/docs/cli)
+
+## 例
+
+- [nextjs-example](https://github.com/jralvarenga/better-translate/tree/main/examples/nextjs-example)
+- [nextjs-nested-locale-example](https://github.com/jralvarenga/better-translate/tree/main/examples/nextjs-nested-locale-example)

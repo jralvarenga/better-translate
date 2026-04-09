@@ -1,0 +1,151 @@
+---
+title: TanStack Router
+description: >-
+  @better-translate/tanstack-router は、TanStack Router および TanStack Start
+  向けにロケール対応のルーティングとナビゲーションを追加します。
+---
+# TanStack Router
+
+アプリで TanStack Router または TanStack Start を使用していて、ロケール対応の URL が必要な場合は、`@better-translate/tanstack-router` を使用します。
+
+ほとんどの実際のアプリでは、以下と組み合わせて使用します：
+
+- `@better-translate/core` — 翻訳機能用
+- `@better-translate/react` — React コンポーネント内のフック用
+
+## 1. パッケージをインストールする
+
+```sh
+npm install @better-translate/core @better-translate/react @better-translate/tanstack-router
+```
+
+## 2. 共有翻訳機能を作成する
+
+`src/lib/i18n.ts` を作成します：
+
+```ts
+import { configureTranslations } from "@better-translate/core";
+
+const en = {
+  home: {
+    title: "Hello from TanStack Router",
+  },
+} as const;
+
+const es = {
+  home: {
+    title: "Hola desde TanStack Router",
+  },
+} as const;
+
+export const translator = await configureTranslations({
+  availableLocales: ["en", "es"] as const,
+  defaultLocale: "en",
+  fallbackLocale: "en",
+  messages: { en, es },
+});
+```
+
+## 3. ロケールルーティング設定を追加する
+
+`src/lib/routing.ts` を作成します：
+
+```ts
+import { defineRouting } from "@better-translate/tanstack-router";
+
+export const routing = defineRouting({
+  defaultLocale: "en",
+  locales: ["en", "es"] as const,
+  routeTemplate: "/$lang",
+});
+```
+
+## 4. ローカライズされたナビゲーションヘルパーを作成する
+
+`src/lib/navigation.tsx` を作成します：
+
+```tsx
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useParams,
+  useRouter,
+} from "@tanstack/react-router";
+
+import { createNavigationFunctions } from "@better-translate/tanstack-router/navigation";
+
+import { routing } from "./routing";
+
+export const {
+  Link: I18nLink,
+  useLocale,
+  useNavigate: useI18nNavigate,
+  usePathname: useI18nPathname,
+} = createNavigationFunctions({
+  Link,
+  routing,
+  useLocation,
+  useNavigate,
+  useParams,
+  useRouter,
+});
+```
+
+## 5. React プロバイダーでアプリをラップする
+
+`src/app.tsx` を作成します：
+
+```tsx
+import { RouterProvider } from "@tanstack/react-router";
+
+import { BetterTranslateProvider } from "@better-translate/react";
+
+import { router } from "./router";
+import { translator } from "./lib/i18n";
+
+export function App() {
+  return (
+    <BetterTranslateProvider translator={translator}>
+      <RouterProvider router={router} />
+    </BetterTranslateProvider>
+  );
+}
+```
+
+## 6. ロケール対応のリンクと翻訳を使用する
+
+`src/components/header.tsx` を作成します：
+
+```tsx
+import { useTranslations } from "@better-translate/react";
+
+import { translator } from "../lib/i18n";
+import { I18nLink, useLocale } from "../lib/navigation";
+
+export function Header() {
+  const currentLocale = useLocale();
+  const { t } = useTranslations<typeof translator>();
+
+  return (
+    <header>
+      <h1>{t("home.title")}</h1>
+      <I18nLink to="/" params={{ lang: currentLocale }}>
+        Home
+      </I18nLink>
+    </header>
+  );
+}
+```
+
+## TanStack Start
+
+TanStack Start を使用している場合は、同じルーティングとナビゲーションの設定を維持してください。次に、`@better-translate/tanstack-router/server` からサーバーヘルパーを追加します。これは Next.js でリクエストヘルパーを追加するのと同じ方法です。
+
+## ロケールファイルを自動生成する
+
+すべての翻訳を手作業で書く代わりに、CLI を使用して文字列を抽出し、ロケールファイルを生成できます：[CLI ガイド](/docs/cli)
+
+## サンプル
+
+- [tanstack-start-example](https://github.com/jralvarenga/better-translate/tree/main/examples/tanstack-start-example)

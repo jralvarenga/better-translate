@@ -10,6 +10,7 @@ import {
   deriveTargetMarkdownPath,
   listMarkdownSourceFiles,
   loadMarkdownDocument,
+  validateMarkdownTranslation,
 } from "./markdown.js";
 import {
   deriveTargetMessagesPath,
@@ -27,7 +28,7 @@ import type {
   ResolvedBetterTranslateCliConfig,
   StructuredGenerator,
 } from "./types.js";
-import { assert, assertExactMessageShape, isRecord } from "./validation.js";
+import { assert, assertExactMessageShape } from "./validation.js";
 
 function createConsoleLogger(): CliLogger {
   return {
@@ -163,34 +164,6 @@ async function resolveRuntimeModel(
   };
 }
 
-function validateMarkdownTranslation(
-  frontmatterStrings: TranslationMessages,
-  value: unknown,
-): {
-  body: string;
-  frontmatter: TranslationMessages;
-} {
-  assert(
-    isRecord(value),
-    "Generated markdown output must be an object with body and frontmatter.",
-  );
-  assert(
-    typeof value.body === "string",
-    "Generated markdown output must include a string body.",
-  );
-  assert(
-    isRecord(value.frontmatter),
-    "Generated markdown output must include a frontmatter object.",
-  );
-
-  assertExactMessageShape(frontmatterStrings, value.frontmatter);
-
-  return {
-    body: value.body,
-    frontmatter: value.frontmatter as TranslationMessages,
-  };
-}
-
 export async function generateProject(
   options: GenerateProjectOptions = {},
 ): Promise<GenerateProjectResult> {
@@ -275,6 +248,7 @@ export async function generateProject(
     const translatedMessages = await generator<TranslationMessages>({
       kind: "messages",
       prompt: messagePrompt.prompt,
+      providerOptions: config.providerOptions,
       schema: sourceMessages.schema,
       sourcePath: sourceMessages.sourcePath,
       system: messagePrompt.system,
@@ -333,6 +307,7 @@ export async function generateProject(
       }>({
         kind: "markdown",
         prompt: markdownPrompt.prompt,
+        providerOptions: config.providerOptions,
         schema: document.schema,
         sourcePath: document.sourcePath,
         system: markdownPrompt.system,
