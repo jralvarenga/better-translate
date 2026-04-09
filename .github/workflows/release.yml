@@ -12,7 +12,28 @@ concurrency:
 jobs:
   # This workflow expects the repository Actions setting to allow
   # "Read and write permissions" so GITHUB_TOKEN can push tags.
+  release_candidates:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      should_release: ${{ steps.detect.outputs.should_release }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Detect unreleased package versions
+        id: detect
+        run: node ./scripts/detect-pending-release.mjs
+
   packages:
+    needs:
+      - release_candidates
+    if: >
+      needs.release_candidates.outputs.should_release == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -47,10 +68,12 @@ jobs:
 
   main_publish:
     needs:
+      - release_candidates
       - packages
     if: >
       github.event_name == 'push' &&
-      github.ref == 'refs/heads/main'
+      github.ref == 'refs/heads/main' &&
+      needs.release_candidates.outputs.should_release == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -106,4 +129,4 @@ jobs:
       - name: Push newly created release tags
         env:
           GIT_REMOTE: origin
-        run: node ./scripts/push-release-tags.mjs --before-file "$RUNNER_TEMP/release-tags-before.txt"
+        run: node ./scripts/push-release-tags.mjs --before-file "$RUNNER_TEMP/release-tags-before.txt" --require-new-tags

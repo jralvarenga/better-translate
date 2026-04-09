@@ -1,14 +1,14 @@
 # @better-translate/md
 
-## 2.1.1
+## 1.1.1
 
 ### Patch Changes
 
 - package homepage updated
 - Updated dependencies
-  - @better-translate/core@2.2.1
+  - @better-translate/core@1.1.1
 
-## 2.1.0
+## 1.1.0
 
 ### Minor Changes
 
@@ -18,9 +18,9 @@
 ### Patch Changes
 
 - Updated dependencies
-  - @better-translate/core@2.2.0
+  - @better-translate/core@1.1.0
 
-## 2.0.0
+## 1.0.0
 
 ### Major Changes
 
@@ -29,7 +29,7 @@
 ### Patch Changes
 
 - Updated dependencies
-  - @better-translate/core@2.1.0
+  - @better-translate/core@1.1.0
 
 ## 1.0.2
 
@@ -37,4 +37,4 @@
 
 - Updated dependencies
 - Updated dependencies [7241cf6]
-  - @better-translate/core@2.0.0
+  - @better-translate/core@1.0.0

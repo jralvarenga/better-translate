@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 
 const args = process.argv.slice(2);
 const dryRun = args.includes("--dry-run");
+const requireNewTags = args.includes("--require-new-tags");
 const beforeFileIndex = args.indexOf("--before-file");
 const beforeFilePath =
   beforeFileIndex >= 0 ? args[beforeFileIndex + 1] : undefined;
@@ -40,7 +41,13 @@ const newTags = [...afterTags]
   .sort((left, right) => left.localeCompare(right));
 
 if (newTags.length === 0) {
-  console.log("No new release tags were created.");
+  const message = "No new release tags were created.";
+  if (requireNewTags) {
+    console.error(message);
+    process.exit(1);
+  }
+
+  console.log(message);
   process.exit(0);
 }
 

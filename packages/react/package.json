@@ -1,6 +1,6 @@
 {
   "name": "@better-translate/react",
-  "version": "2.1.1",
+  "version": "1.1.1",
   "description": "React context and hooks for Better Translate in web and native React apps.",
   "license": "MIT",
   "type": "module",
@@ -39,7 +39,7 @@
     "url": "https://github.com/jralvarenga/better-translate/issues"
   },
   "dependencies": {
-    "@better-translate/core": "^2.2.1"
+    "@better-translate/core": "^1.2.1"
   },
   "peerDependencies": {
     "react": "^19.0.0"

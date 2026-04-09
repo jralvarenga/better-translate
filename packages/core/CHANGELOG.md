@@ -1,25 +1,25 @@
 # @better-translate/core
 
-## 2.2.1
+## 1.1.1
 
 ### Patch Changes
 
 - package homepage updated
 
-## 2.2.0
+## 1.1.0
 
 ### Minor Changes
 
 - README files fixed
 - Refresh landing page references, documentation copy, and release metadata
 
-## 2.1.0
+## 1.1.0
 
 ### Minor Changes
 
 - Addin confirmation message when running cli
 
-## 2.0.0
+## 1.0.0
 
 ### Major Changes
 
