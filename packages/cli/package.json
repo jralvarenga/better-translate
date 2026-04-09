@@ -1,6 +1,6 @@
 {
   "name": "@better-translate/cli",
-  "version": "3.1.1",
+  "version": "3.1.2",
   "description": "AI-powered translation generation CLI for Better Translate.",
   "license": "MIT",
   "type": "module",

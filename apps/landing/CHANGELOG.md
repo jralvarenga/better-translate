@@ -1,5 +1,13 @@
 # landing
 
+## 2.0.2
+
+### Patch Changes
+
+- 4261148: Update the landing app and CLI package for the latest release automation changes.
+- Updated dependencies [4261148]
+  - @better-translate/cli@3.1.2
+
 ## 2.0.1
 
 ### Patch Changes
