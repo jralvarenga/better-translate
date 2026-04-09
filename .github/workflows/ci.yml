@@ -17,6 +17,30 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  changesets:
+    if: >
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.base.ref == 'dev'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Fetch dev base branch
+        run: git fetch --no-tags origin "+refs/heads/${{ github.event.pull_request.base.ref }}:refs/remotes/origin/${{ github.event.pull_request.base.ref }}"
+
+      - name: Require changeset for publishable package changes
+        env:
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: node ./scripts/check-dev-changeset.mjs
+
   packages:
     runs-on: ubuntu-latest
     permissions:

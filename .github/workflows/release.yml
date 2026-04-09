@@ -3,6 +3,7 @@ name: Release
 on:
   push:
     branches:
+      - dev
       - main
 
 concurrency:
@@ -10,10 +11,9 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # This workflow expects the repository Actions setting to allow
+  # "Read and write permissions" so GITHUB_TOKEN can open release PRs and push tags.
   packages:
-    if: >
-      github.event_name == 'push' &&
-      github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -46,68 +46,46 @@ jobs:
       - name: Verify publish tarballs
         run: bun run release:pack
 
-  # TODO: Restore release-relevant change detection once the desired release
-  # policy is finalized. For now, release should run on every push to main
-  # after the package checks pass.
-  #
-  # release_changes:
-  #   if: >
-  #     github.event_name == 'push' &&
-  #     github.ref == 'refs/heads/main'
-  #   runs-on: ubuntu-latest
-  #   permissions:
-  #     contents: read
-  #   outputs:
-  #     should_release: ${{ steps.detect.outputs.should_release }}
-  #
-  #   steps:
-  #     - name: Checkout repository
-  #       uses: actions/checkout@v5
-  #       with:
-  #         fetch-depth: 0
-  #
-  #     - name: Detect release-relevant changes
-  #       id: detect
-  #       env:
-  #         BEFORE_SHA: ${{ github.event.before }}
-  #         CURRENT_SHA: ${{ github.sha }}
-  #       run: |
-  #         set -euo pipefail
-  #
-  #         if [ "$BEFORE_SHA" = "0000000000000000000000000000000000000000" ]; then
-  #           mapfile -t changed_files < <(git diff-tree --no-commit-id --name-only -r "$CURRENT_SHA")
-  #         else
-  #           mapfile -t changed_files < <(git diff --name-only "$BEFORE_SHA" "$CURRENT_SHA")
-  #         fi
-  #
-  #         printf 'Changed files:\n'
-  #         printf '%s\n' "${changed_files[@]}"
-  #
-  #         should_release=false
-  #
-  #         for file in "${changed_files[@]}"; do
-  #           case "$file" in
-  #             .changeset/*.md|packages/*/CHANGELOG.md)
-  #               should_release=true
-  #               break
-  #               ;;
-  #             packages/*/package.json)
-  #               if [ "$BEFORE_SHA" = "0000000000000000000000000000000000000000" ]; then
-  #                 if grep -q '"version"' "$file"; then
-  #                   should_release=true
-  #                   break
-  #                 fi
-  #               elif git diff "$BEFORE_SHA" "$CURRENT_SHA" -- "$file" | grep -Eq '^[+-]\s*"version"\s*:'; then
-  #                 should_release=true
-  #                 break
-  #               fi
-  #               ;;
-  #           esac
-  #         done
-  #
-  #         echo "should_release=$should_release" >> "$GITHUB_OUTPUT"
+  dev_release_pr:
+    needs:
+      - packages
+    if: >
+      github.event_name == 'push' &&
+      github.ref == 'refs/heads/dev'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
 
-  release:
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.2.23
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Create or update dev release pull request
+        uses: changesets/action@v1
+        with:
+          version: bun run changeset:version && bun install
+          title: Release packages
+          commit: Release packages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  main_publish:
     needs:
       - packages
     if: >
@@ -117,7 +95,6 @@ jobs:
     permissions:
       contents: write
       id-token: write
-      pull-requests: write
     env:
       NPM_CONFIG_PROVENANCE: true
 
@@ -136,7 +113,7 @@ jobs:
         uses: actions/setup-node@v5
         with:
           node-version: 22
-          registry-url: 'https://registry.npmjs.org'
+          registry-url: https://registry.npmjs.org
 
       - name: Install dependencies
         run: bun install --frozen-lockfile
@@ -157,14 +134,16 @@ jobs:
           npm ping
           npm whoami
 
-      - name: Create release pull request or publish
-        uses: changesets/action@v1
-        with:
-          version: bun run changeset:version && bun install
-          publish: bun run release:publish
-          title: Release packages
-          commit: Release packages
+      - name: Capture current release tags
+        run: git tag --list '@better-translate/*@*' | sort > "$RUNNER_TEMP/release-tags-before.txt"
+
+      - name: Publish packages from main
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: bun run release:publish
+
+      - name: Push newly created release tags
+        env:
+          GIT_REMOTE: origin
+        run: node ./scripts/push-release-tags.mjs --before-file "$RUNNER_TEMP/release-tags-before.txt"
