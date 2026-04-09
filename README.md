@@ -16,14 +16,14 @@ Each package is published separately on npm, so you can install only the pieces 
 
 ## Docs
 
-- Installation: [better-translate-placeholder.com/en/docs/installation](https://better-translate-placeholder.com/en/docs/installation)
-- Core: [better-translate-placeholder.com/en/docs/adapters/core](https://better-translate-placeholder.com/en/docs/adapters/core)
-- React: [better-translate-placeholder.com/en/docs/adapters/react](https://better-translate-placeholder.com/en/docs/adapters/react)
-- Next.js: [better-translate-placeholder.com/en/docs/adapters/nextjs](https://better-translate-placeholder.com/en/docs/adapters/nextjs)
-- Astro: [better-translate-placeholder.com/en/docs/adapters/astro](https://better-translate-placeholder.com/en/docs/adapters/astro)
-- TanStack Router: [better-translate-placeholder.com/en/docs/adapters/tanstack-router](https://better-translate-placeholder.com/en/docs/adapters/tanstack-router)
-- MD & MDX: [better-translate-placeholder.com/en/docs/adapters/md](https://better-translate-placeholder.com/en/docs/adapters/md)
-- CLI: [better-translate-placeholder.com/en/docs/cli](https://better-translate-placeholder.com/en/docs/cli)
+- Installation: [better-translate.com/en/docs/installation](https://better-translate.com/en/docs/installation)
+- Core: [better-translate.com/en/docs/adapters/core](https://better-translate.com/en/docs/adapters/core)
+- React: [better-translate.com/en/docs/adapters/react](https://better-translate.com/en/docs/adapters/react)
+- Next.js: [better-translate.com/en/docs/adapters/nextjs](https://better-translate.com/en/docs/adapters/nextjs)
+- Astro: [better-translate.com/en/docs/adapters/astro](https://better-translate.com/en/docs/adapters/astro)
+- TanStack Router: [better-translate.com/en/docs/adapters/tanstack-router](https://better-translate.com/en/docs/adapters/tanstack-router)
+- MD & MDX: [better-translate.com/en/docs/adapters/md](https://better-translate.com/en/docs/adapters/md)
+- CLI: [better-translate.com/en/docs/cli](https://better-translate.com/en/docs/cli)
 
 ## Workspace
 
