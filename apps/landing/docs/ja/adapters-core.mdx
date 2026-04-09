@@ -1,0 +1,129 @@
+---
+title: Core
+description: >-
+  @better-translate/core はあらゆる TypeScript
+  プロジェクトで動作します。フレームワークやランタイムに関わらず、同じ設定、同じ API です。
+---
+# Core
+
+`@better-translate/core` はあらゆる TypeScript プロジェクトで動作します。フレームワークの依存も、ランタイムの要件もありません。Next.js、Astro、React、Bun、Node.js、スクリプト、またはその他の TypeScript 環境であっても、同じ設定と同じ API を使用できます。
+
+**アダプター**は、フレームワーク固有のヘルパー（ロケール対応ルーティング、React コンテキスト、リクエストごとのヘルパーなど）を追加するコアの拡張機能です。ただし、すべては同じコアの上に構築されています。
+
+## コアを直接使用する場合
+
+フレームワーク固有のヘルパーが不要な場合は、アダプターなしでコアを使用します。これには、サーバー、API、スクリプト、共有ライブラリ、またはセットアップにアダプターが存在しない TypeScript 環境が含まれます。
+
+## 1. パッケージをインストールする
+
+```sh
+npm install @better-translate/core
+```
+
+## 2. 翻訳ファイルを1つ作成する
+
+`src/i18n.ts` を作成します：
+
+```ts
+import { configureTranslations } from "@better-translate/core";
+
+const en = {
+  home: {
+    title: "Hello",
+    description: "This is the English version.",
+  },
+} as const;
+
+const es = {
+  home: {
+    title: "Hola",
+    description: "Esta es la version en espanol.",
+  },
+} as const;
+
+export const translator = await configureTranslations({
+  availableLocales: ["en", "es"] as const,
+  defaultLocale: "en",
+  fallbackLocale: "en",
+  messages: { en, es },
+});
+```
+
+トップレベル await をサポートしない TypeScript 環境（たとえば CommonJS）では、この初期化を async な起動関数の中に移動して、解決済みの translator をそこから公開してください。
+
+## 3. どこでも翻訳機能を使用する
+
+```ts
+import { translator } from "./i18n";
+
+translator.t("home.title"); // "Hello"
+translator.t("home.title", { locale: "es" }); // "Hola"
+translator.t("home.description", { locale: "es" });
+```
+
+## 4. 後で別のロケールを追加する
+
+```ts
+const fr = {
+  home: {
+    title: "Bonjour",
+    description: "Ceci est la version francaise.",
+  },
+} as const;
+
+export const translator = await configureTranslations({
+  availableLocales: ["en", "es", "fr"] as const,
+  defaultLocale: "en",
+  fallbackLocale: "en",
+  messages: { en, es, fr },
+});
+```
+
+## フォールバック動作
+
+アクティブなロケールにキーが存在しない場合、better-translate はフォールバックロケールを試します。
+フォールバックにも存在しない場合、キー文字列そのものを返します。
+
+- → ロケール値が見つからない → フォールバックロケール値
+- → フォールバック値も見つからない → キー文字列
+
+## 非同期ローダー
+
+プリロードしたくない言語のロケールローダーを登録します。ロードされたロケールは、最初の成功した読み込み後にキャッシュされます。
+
+```ts
+const translator = await configureTranslations({
+  availableLocales: ["en", "fr"] as const,
+  defaultLocale: "en",
+  messages: { en },
+  loaders: {
+    fr: async () => import("./messages/fr").then((m) => m.default),
+  },
+});
+
+// 必要に応じて fr をロードし、キャッシュする
+await translator.loadLocale("fr");
+```
+
+## 5. CLI で文字列を自動抽出する
+
+手動でキーを命名する代わりに、`{ bt: true }` で文字列をマークし、CLI に自動的に抽出・キー化させます：
+
+```ts
+import { t } from "@better-translate/core";
+
+// ソース文字列を直接記述 — CLI が適切なキーに変換します
+t("Hello world", { bt: true });
+```
+
+`npx bt extract` を実行して、文字列をソースロケールファイルに同期し、呼び出しを適切なキーに書き換えます。完全なセットアップについては [CLI ドキュメント](/docs/cli) を参照してください。
+
+## 次のステップ
+
+- <Link href="/docs/adapters/react">React プロバイダーとフック</Link>
+- <Link href="/docs/adapters/nextjs">Next.js App Router セットアップ</Link>
+- <Link href="/docs/adapters/astro">Astro リクエストヘルパー</Link>
+
+## 例
+
+- [core-elysia-example](https://github.com/jralvarenga/better-translate/tree/main/examples/core-elysia-example) — シンプルな TypeScript/Node.js セットアップ

@@ -1,0 +1,104 @@
+---
+title: Expo
+description: >-
+  Expo utiliza @better-translate/react sobre @better-translate/core. No hay un
+  paquete nativo separado.
+---
+# Expo
+
+Expo utiliza el mismo adaptador de React que React web.
+
+No existe un paquete separado `@better-translate/react-native`.
+
+## 1. Instala los paquetes
+
+```sh
+npm install @better-translate/core @better-translate/react
+```
+
+## 2. Crea el traductor
+
+Crea `lib/i18n.ts`:
+
+```ts
+import { configureTranslations } from "@better-translate/core";
+
+const en = {
+  home: {
+    title: "Hello from Expo",
+  },
+} as const;
+
+const es = {
+  home: {
+    title: "Hola desde Expo",
+  },
+} as const;
+
+export const translator = await configureTranslations({
+  availableLocales: ["en", "es"] as const,
+  defaultLocale: "en",
+  fallbackLocale: "en",
+  messages: { en, es },
+});
+```
+
+## 3. Envuelve la app
+
+Crea o actualiza `App.tsx`:
+
+```tsx
+import { BetterTranslateProvider } from "@better-translate/react";
+
+import { HomeScreen } from "./components/home-screen";
+import { translator } from "./lib/i18n";
+
+export default function App() {
+  return (
+    <BetterTranslateProvider translator={translator}>
+      <HomeScreen />
+    </BetterTranslateProvider>
+  );
+}
+```
+
+## 4. Usa las traducciones en una pantalla
+
+Crea `components/home-screen.tsx`:
+
+```tsx
+import { Button, Text, View } from "react-native";
+
+import { useTranslations } from "@better-translate/react";
+
+import { translator } from "../lib/i18n";
+
+export function HomeScreen() {
+  const { locale, setLocale, t } = useTranslations<typeof translator>();
+
+  return (
+    <View style={{ gap: 12, padding: 24 }}>
+      <Text>{t("home.title")}</Text>
+      <Button
+        title={locale === "en" ? "Spanish" : "English"}
+        onPress={() => setLocale(locale === "en" ? "es" : "en")}
+      />
+    </View>
+  );
+}
+```
+
+## Modelo mental
+
+- `@better-translate/core` es el propietario de los datos de traducción
+- `@better-translate/react` proporciona a Expo el proveedor y el hook
+
+Esa es la configuración completa para la mayoría de las apps de Expo.
+
+## Genera archivos de locale automáticamente
+
+En lugar de escribir cada traducción a mano, usa el CLI para extraer cadenas y generar archivos de locale: [Guía del CLI](/docs/cli)
+
+## Ejemplos
+
+- [expo-example](https://github.com/jralvarenga/better-translate/tree/main/examples/expo-example)

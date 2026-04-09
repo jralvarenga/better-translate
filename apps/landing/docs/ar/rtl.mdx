@@ -1,26 +1,27 @@
 ---
 title: RTL
-description: يحتوي better-translate على دعم مدمج لـ RTL. أعلن الاتجاهات لكل لغة، واستعلم عنها في وقت التشغيل، وتجاوزها لكل استدعاء.
+description: >-
+  يحتوي @better-translate/core على دعم مدمج للغات من اليمين لليسار. أعلن
+  الاتجاهات لكل لغة، استعلم عنها في وقت التشغيل، واجتزها لكل استدعاء.
 ---
-
 # RTL
 
-يحتوي `better-translate` على دعم مدمج لـ RTL.
-تُعلن أي اللغات تُكتب من اليمين إلى اليسار في الإعداد، ثم تستعلم عن الاتجاه في وقت التشغيل
+يحتوي `@better-translate/core` على دعم مدمج للغات من اليمين لليسار.
+تُعلن في الإعدادات عن اللغات التي تُكتب من اليمين لليسار، ثم تستعلم عن الاتجاه في وقت التشغيل
 باستخدام `getDirection` أو `isRtl`.
 
 ## متى تستخدمه
 
-استخدم دعم RTL عندما يحتاج تطبيقك إلى دعم لغات مثل العربية والعبرية والفارسية والأردية.
-تمنحك مساعدات الاتجاه طريقة مكتوبة النوع لتعيين سمة `dir` على عناصر HTML
-بدون إدارة جدول بحث منفصل.
+استخدم دعم الاتجاه من اليمين لليسار عندما يحتاج تطبيقك إلى دعم لغات مثل العربية، العبرية، الفارسية، أو الأردوية.
+توفر لك دوال الاتجاه طريقة مكتوبة لتعيين سمة `dir` على عناصر HTML
+من دون إدارة جدول بحث منفصل.
 
 ## إعلان الاتجاهات
 
-أضف مفتاح `directions` إلى استدعاء `configureTranslations`. أي لغة تحذفها تكون افتراضياً `"ltr"`.
+أضف مفتاح `directions` إلى استدعاء `configureTranslations`. أي لغة تُحذف تُعين افتراضيًا إلى `"ltr"`.
 
 ```tsx showLineNumbers
-import { configureTranslations } from "better-translate"
+import { configureTranslations } from "@better-translate/core";
 
 const translator = await configureTranslations({
   availableLocales: ["en", "ar"] as const,
@@ -29,7 +30,7 @@ const translator = await configureTranslations({
   directions: {
     ar: "rtl",
   },
-})
+});
 ```
 
 ## الاستعلام عن الاتجاه
@@ -38,30 +39,30 @@ const translator = await configureTranslations({
 استدعِ `isRtl` للحصول على اختصار منطقي.
 
 ```tsx showLineNumbers
-translator.getDirection({ locale: "ar" }) // "rtl"
-translator.getDirection({ locale: "en" }) // "ltr"
+translator.getDirection({ locale: "ar" }); // "rtl"
+translator.getDirection({ locale: "en" }); // "ltr"
 
-translator.isRtl({ locale: "ar" }) // true
-translator.isRtl({ locale: "en" }) // false
+translator.isRtl({ locale: "ar" }); // true
+translator.isRtl({ locale: "en" }); // false
 ```
 
-## تجاوز لكل استدعاء
+## التجاوز لكل استدعاء
 
-مرّر `config.rtl` لتجاوز الاتجاه المُعدَّ لاستدعاء واحد.
-هذا لا يؤثر على بحث الرسائل ,  يغير فقط الاتجاه الذي يتم حله.
+مرر `config.rtl` لتجاوز الاتجاه المُعين لاستدعاء واحد.
+هذا لا يؤثر على البحث عن الرسالة، بل يغير فقط الاتجاه الذي يُحل.
 
 ```tsx showLineNumbers
-// فرض LTR حتى للغة RTL
+// إجبار LTR حتى للغة RTL
 translator.t("greeting", {
   locale: "ar",
   config: { rtl: false },
-})
+});
 
-// فرض RTL حتى للغة LTR
+// إجبار RTL حتى للغة LTR
 translator.t("greeting", {
   locale: "en",
   config: { rtl: true },
-})
+});
 ```
 
 ## التطبيق على HTML
@@ -72,67 +73,25 @@ translator.t("greeting", {
 // على عنصر html (مثلاً في تخطيط Next.js)
 <html lang={locale} dir={translator.getDirection({ locale })}>
 
-// على حاوية معينة
+// على حاوية محددة
 <div dir={translator.getDirection({ locale })}>
   {t("greeting")}
 </div>
 ```
 
-## إعداد RTL في Next.js مع Radix UI
+## ملفات المصدر الرئيسية
 
-لتطبيقات Next.js التي تستخدم Radix UI، اتبع نمط shadcn RTL:
+- `packages/core/src/types.ts`
+- `packages/core/src/create-configured-translator.ts`
+- `packages/core/src/normalize-config.ts`
 
-```tsx showLineNumbers
-// components/ui/direction.tsx
-"use client"
-
-import { Direction } from "radix-ui"
-
-export function DirectionProvider({
-  direction,
-  children,
-}: {
-  direction: "ltr" | "rtl"
-  children: React.ReactNode
-}) {
-  return (
-    <Direction.DirectionProvider dir={direction}>
-      {children}
-    </Direction.DirectionProvider>
-  )
-}
-```
-
-```tsx showLineNumbers
-// app/[lang]/layout.tsx
-import { createLandingTranslator } from "@/lib/i18n/config"
-import { DirectionProvider } from "@/components/ui/direction"
-
-const translator = await createLandingTranslator()
-const dir = translator.getDirection({ locale: lang })
-
-return (
-  <div lang={lang} dir={dir}>
-    <DirectionProvider direction={dir}>
-      {children}
-    </DirectionProvider>
-  </div>
-)
-```
-
-## الملفات المصدرية الرئيسية
-
-- `packages/better-translate/src/types.ts`
-- `packages/better-translate/src/create-configured-translator.ts`
-- `packages/better-translate/src/normalize-config.ts`
-
-## تابع مع
+## المتابعة مع
 
 <div className="mt-6 flex flex-wrap gap-3">
   <Button asChild variant="outline" size="lg">
-    <Link href="/docs/adapters/core">راجع محول النواة</Link>
+    <Link href="/docs/adapters/core">اطلع على محول Core</Link>
   </Button>
   <Button asChild size="lg">
-    <Link href="/docs/adapters/nextjs">راجع محول Next.js</Link>
+    <Link href="/docs/adapters/nextjs">اطلع على محول Next.js</Link>
   </Button>
 </div>

@@ -1,119 +1,196 @@
 ---
 title: TanStack Router
-description: "@better-translate/tanstack-router ofrece ruteo localizado y helpers de request para TanStack Router y TanStack Start."
+description: >-
+  @better-translate/tanstack-router agrega enrutamiento y navegación consciente
+  de la localización para TanStack Router y TanStack Start.
 ---
-
 # TanStack Router
 
-`@better-translate/tanstack-router` es
-el adaptador de TanStack Router para Better Translate. Sigue el patrón de
-param opcional `/{-$locale}` de TanStack Router y funciona en TanStack Start
-porque Start corre sobre TanStack Router.
+Use `@better-translate/tanstack-router` cuando tu aplicación usa TanStack Router o TanStack Start y quieres URLs consciente de la localización.
 
-## Qué incluye
+En la mayoría de las aplicaciones reales lo combinarás con:
 
-- `defineRouting(...)` para ruteo localizado con params opcionales
-- `createNavigationFunctions(...)` para `Link`, `useNavigate`, `useRouter`, `usePathname` y `useLocale`
-- `createServerHelpers(...)` y `setRequestLocale(...)` para traducciones por request en TanStack Start
+- `@better-translate/core` para el traductor
+- `@better-translate/react` para los hooks dentro de los componentes React
 
-## Modelo de ruteo
+## 1. Instala los paquetes
 
-Por defecto, el adaptador asume `/{-$locale}`:
+```sh
+npm install @better-translate/core @better-translate/react @better-translate/tanstack-router
+```
 
-- `/about` usa el locale por defecto
-- `/es/about` usa español
+## 2. Crea el traductor compartido
 
-También puedes limitar el ruteo localizado a una parte de tu app:
+Crea `src/lib/i18n.ts`:
 
-```ts showLineNumbers
-import { defineRouting } from "@better-translate/tanstack-router"
+```ts
+import { configureTranslations } from "@better-translate/core";
+
+const en = {
+  home: {
+    title: "Hello from TanStack Router",
+  },
+} as const;
+
+const es = {
+  home: {
+    title: "Hola desde TanStack Router",
+  },
+} as const;
+
+export const translator = await configureTranslations({
+  availableLocales: ["en", "es"] as const,
+  defaultLocale: "en",
+  fallbackLocale: "en",
+  messages: { en, es },
+});
+```
+
+## 3. Agrega la configuración de enrutamiento de localización
+
+Crea `src/lib/routing.ts`:
+
+```ts
+import { defineRouting } from "@better-translate/tanstack-router";
 
 export const routing = defineRouting({
-  locales: ["en", "es"] as const,
   defaultLocale: "en",
-  routeTemplate: "/app/{-$locale}",
-})
+  locales: ["en", "es"] as const,
+  routeTemplate: "/{$lang}",
+});
 ```
 
-Eso deja `/login` intacto mientras localiza `/app/dashboard` y `/app/es/dashboard`.
+## 4. Crea helpers de navegación localizados
 
-## Helpers de server para TanStack Start
+Crea `src/lib/navigation.tsx`:
 
-Crea el traductor una sola vez y luego expón helpers por request:
-
-```ts showLineNumbers
-import { configureTranslations } from "better-translate"
-import {
-  createServerHelpers,
-  getRequestConfig,
-  setRequestLocale,
-} from "@better-translate/tanstack-router/server"
-
-const requestConfig = getRequestConfig(async () => ({
-  translator: await configureTranslations({
-    availableLocales: ["en", "es"] as const,
-    defaultLocale: "en",
-    messages: { en, es },
-  }),
-}))
-
-export const { getLocale, getMessages, getTranslations, getTranslator } =
-  createServerHelpers(requestConfig)
-
-export { setRequestLocale }
-```
-
-En TanStack Start, llama `setRequestLocale(params.locale ?? routing.defaultLocale)`
-dentro de `beforeLoad`, un loader u otro punto server ligado al request.
-
-## Wrappers de navegación
-
-Inyecta las primitivas del router desde tu app:
-
-```tsx showLineNumbers
+```tsx
 import {
   Link,
   useLocation,
   useNavigate,
   useParams,
   useRouter,
-} from "@tanstack/react-router"
-import { createNavigationFunctions } from "@better-translate/tanstack-router/navigation"
+} from "@tanstack/react-router";
 
-import { routing } from "./routing"
+import { createNavigationFunctions } from "@better-translate/tanstack-router/navigation";
+
+import { routing } from "./routing";
 
 export const {
   Link: I18nLink,
-  getPathname,
   useLocale,
   useNavigate: useI18nNavigate,
-  usePathname,
-  useRouter: useI18nRouter,
+  usePathname: useI18nPathname,
 } = createNavigationFunctions({
   Link,
   routing,
   useLocation,
   useNavigate,
-  useParams: () =>
-    useParams({
-      strict: false,
-      select: (params) => ({
-        locale: params.locale as "en" | "es" | undefined,
-      }),
-    }),
+  useParams,
   useRouter,
-})
+});
 ```
 
-## Ubicación del paquete
+## 5. Envuelve la aplicación con el proveedor de React
 
-`packages/tanstack-router`
+Crea `src/app.tsx`:
 
-<div className="mt-6 flex flex-wrap gap-3">
-  <Button asChild variant="outline" size="lg">
-    <Link href="/docs/adapters/core">Entender el paquete core</Link>
-  </Button>
-  <Button asChild size="lg">
-    <Link href="/docs/adapters/react">Combinarlo con React</Link>
-  </Button>
-</div>
+```tsx
+import { RouterProvider } from "@tanstack/react-router";
+
+import { BetterTranslateProvider } from "@better-translate/react";
+
+import { router } from "./router";
+import { translator } from "./lib/i18n";
+
+export function App() {
+  return (
+    <BetterTranslateProvider translator={translator}>
+      <RouterProvider router={router} />
+    </BetterTranslateProvider>
+  );
+}
+```
+
+## 6. Usa links y traducciones consciente de la localización
+
+Crea `src/components/header.tsx`:
+
+```tsx
+import { useTranslations } from "@better-translate/react";
+
+import { translator } from "../lib/i18n";
+import { I18nLink, useLocale } from "../lib/navigation";
+
+export function Header() {
+  const currentLocale = useLocale();
+  const { t } = useTranslations<typeof translator>();
+
+  return (
+    <header>
+      <h1>{t("home.title")}</h1>
+      <I18nLink to="/" params={{ lang: currentLocale }}>
+        Home
+      </I18nLink>
+    </header>
+  );
+}
+```
+
+## TanStack Start
+
+Si estás usando TanStack Start, mantén la misma configuración de enrutamiento y navegación. Luego agrega los helpers del servidor de `@better-translate/tanstack-router/server` para derivar la configuración por solicitud, fijar el locale activo al inicio y leer traducciones dentro de loaders o funciones del servidor.
+
+```ts
+import { configureTranslations } from "@better-translate/core";
+import {
+  createServerHelpers,
+  getRequestConfig,
+  setRequestLocale,
+} from "@better-translate/tanstack-router/server";
+import { createServerFn } from "@tanstack/react-start";
+import { getRequest } from "@tanstack/react-start/server";
+
+import { en } from "./messages/en";
+import { es } from "./messages/es";
+import { routing, type AppLocale } from "./routing";
+
+export const requestConfig = getRequestConfig(async () => {
+  const request = getRequest();
+  const pathname = new URL(request.url).pathname;
+  const locale = pathname.startsWith("/es") ? "es" : routing.defaultLocale;
+
+  return {
+    locale,
+    translator: await configureTranslations({
+      availableLocales: routing.locales,
+      defaultLocale: routing.defaultLocale,
+      fallbackLocale: routing.defaultLocale,
+      messages: { en, es },
+    }),
+  };
+});
+
+const { getTranslations } = createServerHelpers(requestConfig);
+
+export const getHomeCopy = createServerFn({ method: "GET" })
+  .handler(async () => {
+    const locale = (await requestConfig()).locale as AppLocale;
+
+    setRequestLocale(locale);
+    const t = await getTranslations({ locale });
+
+    return {
+      title: t("home.title"),
+    };
+  });
+```
+
+## Genera archivos de localización automáticamente
+
+En lugar de escribir cada traducción a mano, usa la CLI para extraer cadenas y generar archivos de localización: [Guía de CLI](/docs/cli)
+
+## Ejemplos
+
+- [tanstack-start-example](https://github.com/jralvarenga/better-translate/tree/main/examples/tanstack-start-example)

@@ -1,0 +1,97 @@
+---
+title: RTL
+description: >-
+  @better-translate/coreにはRTLサポートが組み込まれています。ロケールごとに方向を宣言し、実行時にクエリし、呼び出しごとに上書きできます。
+---
+# RTL
+
+`@better-translate/core`にはRTLサポートが組み込まれています。
+configで右から左に書くロケールを宣言し、`getDirection`または`isRtl`を使用して
+実行時に方向をクエリします。
+
+## 使用するタイミング
+
+アプリがアラビア語、ヘブライ語、ペルシア語、ウルドゥー語などの言語をサポートする必要がある場合にRTLサポートを使用します。
+directionヘルパーを使用すると、別のルックアップテーブルを管理せずに、
+HTML要素の`dir`属性を型安全に設定できます。
+
+## 方向の宣言
+
+`configureTranslations`の呼び出しに`directions`キーを追加します。
+省略したロケールはデフォルトで`"ltr"`になります。
+
+```tsx showLineNumbers
+import { configureTranslations } from "@better-translate/core";
+
+const translator = await configureTranslations({
+  availableLocales: ["en", "ar"] as const,
+  defaultLocale: "en",
+  messages: { en, ar },
+  directions: {
+    ar: "rtl",
+  },
+});
+```
+
+## 方向のクエリ
+
+`getDirection`を呼び出すと、任意のロケールに対して`"ltr"`または`"rtl"`が取得できます。
+`isRtl`を呼び出すと、真偽値の省略形が取得できます。
+
+```tsx showLineNumbers
+translator.getDirection({ locale: "ar" }); // "rtl"
+translator.getDirection({ locale: "en" }); // "ltr"
+
+translator.isRtl({ locale: "ar" }); // true
+translator.isRtl({ locale: "en" }); // false
+```
+
+## 呼び出しごとの上書き
+
+`config.rtl`を渡すと、設定された方向を単一の呼び出しで上書きできます。
+これはメッセージの検索には影響せず、解決される方向のみ変更されます。
+
+```tsx showLineNumbers
+// RTLロケールでもLTRを強制
+translator.t("greeting", {
+  locale: "ar",
+  config: { rtl: false },
+});
+
+// LTRロケールでもRTLを強制
+translator.t("greeting", {
+  locale: "en",
+  config: { rtl: true },
+});
+```
+
+## HTMLへの適用
+
+ルート要素の`dir`属性をレンダリングする際に`getDirection`を使用します。
+
+```tsx showLineNumbers
+// html要素で（例：Next.jsのレイアウト内）
+<html lang={locale} dir={translator.getDirection({ locale })}>
+
+// 特定のコンテナで
+<div dir={translator.getDirection({ locale })}>
+  {t("greeting")}
+</div>
+```
+
+## 主要なソースファイル
+
+- `packages/core/src/types.ts`
+- `packages/core/src/create-configured-translator.ts`
+- `packages/core/src/normalize-config.ts`
+
+## 続きはこちら
+
+<div className="mt-6 flex flex-wrap gap-3">
+  <Button asChild variant="outline" size="lg">
+    <Link href="/docs/adapters/core">Coreアダプターを見る</Link>
+  </Button>
+  <Button asChild size="lg">
+    <Link href="/docs/adapters/nextjs">Next.jsアダプターを見る</Link>
+  </Button>
+</div>

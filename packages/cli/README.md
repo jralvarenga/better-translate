@@ -7,10 +7,10 @@ You do not need the CLI to use the runtime packages. It is optional.
 ## 1. Install the package
 
 ```sh
-npm install -D @better-translate/cli @ai-sdk/openai
-# or: npm install -D @better-translate/cli @ai-sdk/anthropic
-# or: npm install -D @better-translate/cli @ai-sdk/moonshotai
+npm install -D @better-translate/cli
 ```
+
+The CLI is provider-agnostic. You bring any AI SDK language model and pass it through `model`.
 
 ## 2. Create a source locale file
 
@@ -32,19 +32,33 @@ You can also start with an empty `{}` and let `bt extract` populate it.
 Create `better-translate.config.ts`:
 
 ```ts
-import { openai } from "@ai-sdk/openai";
+import { createOllama } from "ollama-ai-provider-v2";
 import { defineConfig } from "@better-translate/cli/config";
 
-// Works the same with @ai-sdk/anthropic or @ai-sdk/moonshotai — just swap the import and model name.
+const ollama = createOllama({
+  baseURL: process.env.OLLAMA_BASE_URL ?? "http://localhost:11434/api",
+});
+
 export default defineConfig({
   sourceLocale: "en",
   locales: ["es", "fr"],
-  model: openai("gpt-4o"),
+  model: ollama("qwen3:4b"),
+  providerOptions: {
+    ollama: {
+      think: true,
+    },
+  },
   messages: {
     entry: "./src/messages/en.json",
   },
 });
 ```
+
+If you use Ollama, install `ollama-ai-provider-v2`. If you use a hosted provider, install that provider package instead, such as `@ai-sdk/openai`, `@ai-sdk/anthropic`, or `@ai-sdk/moonshotai`.
+
+The default Ollama API URL is local: `http://localhost:11434/api`.
+
+This works the same with hosted providers such as OpenAI, Anthropic, or Moonshot AI. Your app installs and configures the AI SDK provider package directly.
 
 ## 4. Mark strings in your code
 
@@ -109,13 +123,17 @@ After the files exist, import them into your `@better-translate/core` config jus
 If you also want localized markdown generation, add the `markdown.rootDir` option:
 
 ```ts
-import { openai } from "@ai-sdk/openai";
+import { createOllama } from "ollama-ai-provider-v2";
 import { defineConfig } from "@better-translate/cli/config";
+
+const ollama = createOllama({
+  baseURL: process.env.OLLAMA_BASE_URL ?? "http://localhost:11434/api",
+});
 
 export default defineConfig({
   sourceLocale: "en",
   locales: ["es", "fr"],
-  model: openai("gpt-4o"),
+  model: ollama("qwen3:4b"),
   messages: {
     entry: "./src/messages/en.json",
   },

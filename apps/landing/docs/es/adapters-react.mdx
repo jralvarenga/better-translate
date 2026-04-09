@@ -1,152 +1,156 @@
 ---
 title: React
-description: "@better-translate/react es la capa React sobre el paquete core."
+description: >-
+  @better-translate/react añade un proveedor y hooks sobre
+  @better-translate/core.
 ---
-
 # React
 
-`@better-translate/react` es
-la capa React sobre el paquete core. Provee
-`BetterTranslateProvider` y
-`useTranslations()` para
-cambio de locale en el cliente y acceso a traducciones basado en context
-en apps web React y Expo/React Native.
+Usa `@better-translate/react` cuando los componentes de React necesiten traducciones y cambio de idioma.
 
-## Cuándo usarlo
+## 1. Instala los paquetes
 
-Usa el adaptador React cuando tu app tenga componentes cliente, quieras cambiar el locale
-en tiempo de ejecución, o prefieras React context en lugar de llamar directamente a los helpers globales.
-
-## Expo y React Native
-
-Expo usa este mismo paquete. No existe un adaptador nativo separado.
-Si vas a integrar Better Translate en una app Expo, conserva este modelo de provider
-y sigue la guía dedicada:
-
-<div className="mt-6 flex flex-wrap gap-3">
-  <Button asChild variant="outline" size="lg">
-    <Link href="/docs/adapters/expo">Abrir la guía de Expo</Link>
-  </Button>
-</div>
-
-## Configuración
-
-Crea primero un translator del core, luego pásalo a `BetterTranslateProvider`.
-
-```tsx showLineNumbers
-// i18n.ts
-import { configureTranslations } from "better-translate"
-
-export async function createTranslator() {
-  return configureTranslations({
-    availableLocales: ["en", "es"] as const,
-    defaultLocale: "en",
-    directions: {
-      es: "rtl",
-    },
-    messages: { en, es },
-  })
-}
+```sh
+npm install @better-translate/core @better-translate/react
 ```
 
-```tsx showLineNumbers
-// main.tsx
-import { BetterTranslateProvider } from "@better-translate/react"
-import { createTranslator } from "./i18n"
+## 2. Crea el traductor compartido
 
-const translator = await createTranslator()
+Crea `src/i18n.ts`:
 
-root.render(
-  <BetterTranslateProvider translator={translator}>
-    <App />
-  </BetterTranslateProvider>
-)
+```ts
+import { configureTranslations } from "@better-translate/core";
+
+const en = {
+  home: {
+    title: "Hello",
+  },
+} as const;
+
+const es = {
+  home: {
+    title: "Hola",
+  },
+} as const;
+
+export const translator = await configureTranslations({
+  availableLocales: ["en", "es"] as const,
+  defaultLocale: "en",
+  fallbackLocale: "en",
+  messages: { en, es },
+});
 ```
 
-## useTranslations()
+## 3. Envuelve tu aplicación
 
-Dentro del provider, `useTranslations()` te da
-todo lo que necesitas:
+Crea o actualiza `src/main.tsx`:
 
-```tsx showLineNumbers
-import { useTranslations } from "@better-translate/react"
+```tsx
+import React from "react";
+import ReactDOM from "react-dom/client";
 
-function MiComponente() {
-  const {
-    t,
-    locale,
-    direction,
-    rtl,
-    setLocale,
-    loadLocale,
-    messages,
-    supportedLocales,
-    defaultLocale,
-    fallbackLocale,
-    isLoadingLocale,
-    loadingLocale,
-    localeError,
-    translator,
-  } = useTranslations()
+import { BetterTranslateProvider } from "@better-translate/react";
+
+import { App } from "./app";
+import { translator } from "./i18n";
+
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <React.StrictMode>
+    <BetterTranslateProvider translator={translator}>
+      <App />
+    </BetterTranslateProvider>
+  </React.StrictMode>,
+);
+```
+
+## 4. Lee las traducciones dentro de un componente
+
+Crea `src/header.tsx`:
+
+```tsx
+import { useTranslations } from "@better-translate/react";
+
+import { translator } from "./i18n";
+
+export function Header() {
+  const { locale, setLocale, t } = useTranslations<typeof translator>();
 
   return (
-    <div>
-      <p>{t("greeting", { params: { name: "Mundo" } })}</p>
-      <p>{direction}</p>
-      <p>{String(rtl)}</p>
-      <button type="button" onClick={() => setLocale("en")}>
-        Cambiar a inglés
+    <header>
+      <h1>{t("home.title")}</h1>
+      <button onClick={() => setLocale("en")} disabled={locale === "en"}>
+        English
       </button>
-    </div>
-  )
+      <button onClick={() => setLocale("es")} disabled={locale === "es"}>
+        Espanol
+      </button>
+    </header>
+  );
 }
 ```
 
-## Cambio de locale
+## Opcional: tipa `useTranslations()` una vez para toda la aplicación
 
-`setLocale()` cambia
-el locale activo para ese árbol de provider. Si el locale no está en caché, lo carga primero.
-Si la carga falla, el locale anterior permanece activo y `localeError` se establece.
+Si quieres que `useTranslations()` autocomplete las claves de traducción sin
+repetir `<typeof translator>` en cada componente, añade un archivo de declaración:
 
-`loadLocale()` calienta
-el caché sin cambiar el locale activo. Úsalo para precargar el próximo locale antes de que
-el usuario cambie, para que el cambio sea instantáneo.
+Crea `src/better-translate.d.ts`:
 
-```tsx showLineNumbers
-// calentar el caché antes de que el usuario cambie
-await loadLocale("fr")
+```ts
+import { translator } from "./i18n";
 
-// cambiar instantáneamente ya que está en caché
-setLocale("fr")
+declare module "@better-translate/react" {
+  interface BetterTranslateReactTypes {
+    translator: typeof translator;
+  }
+}
 ```
 
-Usa `translator.getDirection()` o `translator.isRtl()` cuando necesites
-metadatos de dirección por llamada o quieras sobrescribirlos con `config.rtl`.
+Entonces tus componentes pueden llamar al hook sin un genérico:
 
-## Alcance del provider
+```tsx
+import { useTranslations } from "@better-translate/react";
 
-Cada provider tiene su propio estado de locale activo. Puedes anidar múltiples providers para dar
-a diferentes partes de la UI estados de locale independientes ,  útil para probar el comportamiento
-de error de locale en aislamiento.
+export function Header() {
+  const { locale, setLocale, t } = useTranslations();
 
-## Archivos fuente clave
+  return (
+    <header>
+      <h1>{t("home.title")}</h1>
+      <button onClick={() => setLocale("en")} disabled={locale === "en"}>
+        English
+      </button>
+      <button onClick={() => setLocale("es")} disabled={locale === "es"}>
+        Espanol
+      </button>
+    </header>
+  );
+}
+```
 
-- `packages/react/src/provider.tsx`
-- `packages/react/src/use-translations.ts`
-- `packages/react/src/types.ts`
-- `apps/react-vite-example/src/i18n.ts`
-- `apps/react-vite-example/src/main.tsx`
+Los genéricos explícitos siguen funcionando, así que puedes seguir usando `useTranslations<typeof translator>()`
+donde eso se ajuste mejor a tu código.
+
+## Cuándo usar solo React
+
+Usa solo `@better-translate/core` + `@better-translate/react` cuando:
+
+- tu aplicación es una SPA de React
+- tu aplicación es una aplicación de Expo
+- los cambios de idioma ocurren en componentes de cliente
+
+Si estás en Next.js App Router, conserva este paquete para los hooks de cliente y añade el adaptador de Next.js para el enrutamiento y helpers del servidor.
+
+## Genera archivos de idioma automáticamente
+
+En lugar de escribir cada traducción a mano, usa la CLI para extraer cadenas y generar archivos de idioma: [Guía de CLI](/docs/cli)
 
 ## Continúa con
 
-<div className="mt-6 flex flex-wrap gap-3">
-  <Button asChild variant="outline" size="lg">
-    <Link href="/docs/adapters/core">Entender la configuración core</Link>
-  </Button>
-  <Button asChild variant="outline" size="lg">
-    <Link href="/docs/adapters/expo">Integrarlo con Expo</Link>
-  </Button>
-  <Button asChild size="lg">
-    <Link href="/docs/adapters/nextjs">Combinarlo con Next.js</Link>
-  </Button>
-</div>
+- <Link href="/docs/adapters/expo">Configuración de Expo</Link>
+- <Link href="/docs/adapters/nextjs">Configuración de Next.js</Link>
+
+## Ejemplos
+
+- [react-vite-example](https://github.com/jralvarenga/better-translate/tree/main/examples/react-vite-example)
+- [expo-example](https://github.com/jralvarenga/better-translate/tree/main/examples/expo-example)

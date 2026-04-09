@@ -1,0 +1,108 @@
+---
+title: MD & MDX
+description: >-
+  @better-translate/md は @better-translate/core の上にローカライズされた Markdown および MDX
+  ファイルを読み込みます。
+---
+# MD & MDX
+
+ドキュメント、ブログ記事、コンテンツページがローカライズされた `.md` または `.mdx` ファイルにある場合は、`@better-translate/md` を使用します。
+
+このパッケージはコア翻訳機能を置き換えるものではありません。すでに作成した翻訳機能からロケールルールを読み取ります。
+
+## 1. パッケージをインストールする
+
+```sh
+npm install @better-translate/core @better-translate/md
+```
+
+## 2. 翻訳機能を作成する
+
+`src/i18n.ts` を作成します：
+
+```ts
+import { configureTranslations } from "@better-translate/core";
+
+const en = {
+  docs: {
+    title: "Docs",
+  },
+} as const;
+
+const es = {
+  docs: {
+    title: "Documentacion",
+  },
+} as const;
+
+export const translator = await configureTranslations({
+  availableLocales: ["en", "es"] as const,
+  defaultLocale: "en",
+  fallbackLocale: "en",
+  messages: { en, es },
+});
+```
+
+## 3. コンテンツフォルダを作成する
+
+同じルート配下にロケールごとに1つのフォルダを配置します：
+
+```txt
+content/docs/
+  en/
+    getting-started.mdx
+  es/
+    getting-started.mdx
+```
+
+## 4. Markdownヘルパーを作成する
+
+`src/docs.ts` を作成します：
+
+```ts
+import { createMarkdownHelpers } from "@better-translate/md";
+
+import { translator } from "./i18n";
+
+export const docs = createMarkdownHelpers(translator, {
+  rootDir: "./content/docs",
+});
+```
+
+## 5. ドキュメントを読み込む
+
+```ts
+import { docs } from "./docs";
+
+const englishDoc = await docs.getDocument("getting-started", {
+  locale: "en",
+});
+
+const spanishDoc = await docs.getDocument("getting-started", {
+  locale: "es",
+});
+```
+
+## 6. 出力が必要なときにコンパイルする
+
+```ts
+const compiled = await docs.compileDocument("getting-started", {
+  locale: "en",
+});
+
+compiled.kind; // "md" または "mdx"
+compiled.path;
+compiled.usedFallback;
+```
+
+## サーバーヘルパーを使用するタイミング
+
+アプリですでにサーバー上でリクエストロケールを解決している場合は、`@better-translate/md/server` を使用して、Markdownの読み込みが同じリクエストロケールに自動的に従うようにします。
+
+## ローカライズされたMarkdownを自動生成する
+
+CLIの `markdown.rootDir` オプションを使用して、ジェネレーターでMarkdownファイルを翻訳します：[CLIガイド](/docs/cli)
+
+## 例
+
+- [md-nextjs-example](https://github.com/jralvarenga/better-translate/tree/main/examples/md-nextjs-example)

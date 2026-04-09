@@ -1,29 +1,26 @@
 ---
 title: Instalación
-description: El paquete core funciona en cualquier proyecto TypeScript. Los adaptadores son opcionales y añaden helpers específicos del framework.
+description: >-
+  El paquete core funciona en cualquier proyecto TypeScript. Los adaptadores son
+  extensiones opcionales para frameworks específicos.
 ---
-
 # Instalación
 
-El paquete core funciona en cualquier proyecto TypeScript, sin importar el framework o entorno de ejecución. Si usas un framework como Next.js, React o Astro, puedes añadir el adaptador correspondiente encima del core.
+El paquete core funciona en cualquier proyecto TypeScript, sin importar el framework o el entorno de ejecución. Si utilizas un framework como Next.js, React o Astro, puedes añadir el adaptador correspondiente sobre core.
 
 ## Core
 
-```tsx showLineNumbers
-bun add better-translate
+```sh
+npm install @better-translate/core
 ```
 
-```tsx showLineNumbers
-npm install better-translate
-```
-
-Esto es todo lo que necesitas para la mayoría de los casos. Funciona en Next.js, Astro, React, Bun, Node.js, scripts, APIs o cualquier entorno TypeScript.
+Eso es todo lo que necesitas en la mayoría de los casos. Funciona en Next.js, Astro, React, Bun, Node.js, scripts, APIs o cualquier entorno TypeScript.
 
 ## Adaptadores
 
-Los adaptadores son extensiones del core que añaden helpers específicos del framework: rutas con locale, context de React, helpers por request, etc. No reemplazan el core, lo extienden.
+Los adaptadores son extensiones de core que añaden ayudantes específicos del framework: enrutamiento consciente de la configuración regional, contexto y hooks de React, ayudantes por petición, etc. No reemplazan core, lo extienden.
 
-Puedes ver los adaptadores disponibles aquí:
+Puedes consultar los adaptadores disponibles aquí:
 
 <div className="mt-4 flex flex-wrap gap-3">
   <Button asChild variant="outline" size="lg">
@@ -33,7 +30,33 @@ Puedes ver los adaptadores disponibles aquí:
     <Link href="/docs/adapters/nextjs">Next.js</Link>
   </Button>
   <Button asChild variant="outline" size="lg">
+    <Link href="/docs/adapters/astro">Astro</Link>
+  </Button>
+  <Button asChild variant="outline" size="lg">
     <Link href="/docs/adapters/tanstack-router">TanStack Router</Link>
+  </Button>
+</div>
+
+## CLI
+
+La CLI es una herramienta de desarrollo opcional que elimina el trabajo manual de gestionar los archivos de configuración regional.
+
+Hace dos cosas:
+
+- **Extract** — escanea tu código en busca de cadenas marcadas con `{ bt: true }`, las añade a tu archivo de configuración regional fuente con claves generadas automáticamente y reescribe las llamadas en su lugar
+- **Generate** — lee tu archivo de configuración regional fuente y utiliza un modelo de IA para producir versiones traducidas para cada otra configuración regional
+
+```sh
+npm install -D @better-translate/cli
+```
+
+Para configuraciones basadas en gateway, `@better-translate/cli` es suficiente. Si tu `better-translate.config.ts` importa un proveedor de modelo directo como Ollama, instala también ese paquete, por ejemplo `npm install -D ollama-ai-provider-v2`.
+
+Antes de ejecutar `npx bt extract` o `npx bt generate`, crea `better-translate.config.ts`. Después de eso, la CLI funciona con cualquier modelo de proveedor de AI SDK, incluyendo modelos locales de Ollama.
+
+<div className="mt-4 flex flex-wrap gap-3">
+  <Button asChild variant="outline" size="lg">
+    <Link href="/docs/cli">Guía de la CLI</Link>
   </Button>
 </div>
 
@@ -42,12 +65,10 @@ Puedes ver los adaptadores disponibles aquí:
 - Node.js 18+ o Bun 1.0+
 - TypeScript 5.x recomendado
 
-## Próximos pasos
-
-- → Una vez instalado, configura tus traducciones. Ve **Adaptadores → Core** para el formulario de opciones.
+## Siguiente paso
 
 <div className="mt-6 flex flex-wrap gap-3">
   <Button asChild size="lg">
-    <Link href="/docs/adapters/core">Configurar el paquete core</Link>
+    <Link href="/docs/adapters/core">Configurar el traductor core</Link>
   </Button>
 </div>

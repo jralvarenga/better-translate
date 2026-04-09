@@ -1,94 +1,96 @@
 ---
 title: Core
-description: El paquete core funciona en cualquier proyecto TypeScript. No importa el framework o el entorno de ejecución, la misma configuración aplica siempre.
+description: >-
+  @better-translate/core funciona en cualquier proyecto TypeScript. Misma
+  configuración, misma API, independientemente del framework o tiempo de
+  ejecución.
 ---
-
 # Core
 
-`better-translate` funciona en cualquier proyecto TypeScript. No hay dependencias de framework ni de entorno de ejecución. La misma configuración y la misma API aplican ya sea que estés en Next.js, Astro, React, Bun, Node.js, un script o cualquier otro entorno TypeScript.
+`@better-translate/core` funciona en cualquier proyecto TypeScript. Sin dependencias de framework, sin requisitos de tiempo de ejecución. La misma configuración y la misma API se aplican tanto si estás en Next.js, Astro, React, Bun, Node.js, un script, o cualquier otro entorno TypeScript.
 
-Los **adaptadores** son extensiones del core que añaden helpers específicos del framework: rutas con locale, context de React, helpers por request, etc. Pero todo se apoya en el mismo core.
+**Adapters** son extensiones del core que añaden helpers específicos del framework: enrutamiento consciente de locale, contexto de React, helpers por solicitud, etc. Pero todo se construye sobre el mismo core.
 
-## Cuándo usarlo directamente
+## Cuándo usar el core directamente
 
-Usa el paquete core sin adaptadores cuando no necesites helpers de framework. Esto incluye servidores, APIs, scripts, librerías compartidas o cualquier entorno TypeScript donde no uses un framework con adaptador propio.
+Usa el core sin un adapter cuando no necesites helpers específicos del framework. Esto incluye servidores, APIs, scripts, bibliotecas compartidas, o cualquier entorno TypeScript donde no exista un adapter para tu configuración.
 
-## Configuración en forma corta
+## 1. Instala el paquete
 
-Pasa un mapa de locales directamente. El primer locale se convierte en el predeterminado y fallback.
-
-```tsx showLineNumbers
-import { configureTranslations } from "better-translate"
-
-const en = { greeting: "Hello, {name}!" }
-const es = { greeting: "¡Hola, {name}!" }
-
-const translator = await configureTranslations({ en, es })
-
-const t = translator.getTranslator("es")
-t("greeting", { params: { name: "Mundo" } }) // "¡Hola, Mundo!"
+```sh
+npm install @better-translate/core
 ```
 
-## Configuración en forma de opciones
+## 2. Crea un archivo de traductor
 
-Define el contrato de locales por adelantado. Esto soporta loaders asíncronos y es la configuración
-recomendada para apps en producción.
+Crea `src/i18n.ts`:
 
-```tsx showLineNumbers
-import { configureTranslations } from "better-translate"
+```ts
+import { configureTranslations } from "@better-translate/core";
 
-const translator = await configureTranslations({
+const en = {
+  home: {
+    title: "Hello",
+    description: "This is the English version.",
+  },
+} as const;
+
+const es = {
+  home: {
+    title: "Hola",
+    description: "Esta es la version en espanol.",
+  },
+} as const;
+
+export const translator = await configureTranslations({
+  availableLocales: ["en", "es"] as const,
+  defaultLocale: "en",
+  fallbackLocale: "en",
+  messages: { en, es },
+});
+```
+
+## 3. Usa el traductor en cualquier lugar
+
+```ts
+import { translator } from "./i18n";
+
+translator.t("home.title"); // "Hello"
+translator.t("home.title", { locale: "es" }); // "Hola"
+translator.t("home.description", { locale: "es" });
+```
+
+## 4. Añade otro locale más tarde
+
+```ts
+const fr = {
+  home: {
+    title: "Bonjour",
+    description: "Ceci est la version francaise.",
+  },
+} as const;
+
+export const translator = await configureTranslations({
   availableLocales: ["en", "es", "fr"] as const,
   defaultLocale: "en",
   fallbackLocale: "en",
-  directions: {
-    es: "rtl",
-  },
-  messages: { en, es },
-  loaders: {
-    fr: async () => ({
-      greeting: "Bonjour, {name}!",
-    }),
-  },
-})
-```
-
-`directions` es opcional. Cualquier locale omitido usa `"ltr"` por defecto.
-
-## Helpers globales
-
-Después de configurar una vez, puedes llamar estos helpers globales desde cualquier lugar:
-
-```tsx showLineNumbers
-import { t, loadLocale, getSupportedLocales, getMessages } from "better-translate"
-
-// traducir con el locale activo
-t("greeting", { params: { name: "Mundo" } })
-
-// cargar un locale en caché sin cambiar el activo
-await loadLocale("fr")
-
-// obtener todos los códigos de locale soportados
-getSupportedLocales() // ["en", "es", "fr"]
-
-// obtener un snapshot congelado de los mensajes cargados
-getMessages()
+  messages: { en, es, fr },
+});
 ```
 
 ## Comportamiento de fallback
 
-Si el locale activo no tiene una clave, Better Translate intenta con el locale fallback.
-Si el fallback tampoco tiene la clave, devuelve el string de la clave misma.
+Si el locale activo no tiene una clave, better-translate intenta con el locale de fallback.
+Si el fallback tampoco la tiene, devuelve la cadena de la clave misma.
 
-- → Valor de locale faltante → valor del locale fallback
-- → Valor de fallback faltante → string de la clave
+- → Valor de locale faltante → valor de locale de fallback
+- → Valor de fallback faltante → cadena de la clave
 
 ## Loaders asíncronos
 
-Registra loaders de locale para idiomas que no quieras precargar. Los locales cargados se
-almacenan en caché después de la primera carga exitosa.
+Registra loaders de locale para idiomas que no quieras precargar. Los locales cargados se almacenan en caché después de la primera carga exitosa.
 
-```tsx showLineNumbers
+```ts
 const translator = await configureTranslations({
   availableLocales: ["en", "fr"] as const,
   defaultLocale: "en",
@@ -96,50 +98,31 @@ const translator = await configureTranslations({
   loaders: {
     fr: async () => import("./messages/fr").then((m) => m.default),
   },
-})
+});
 
 // carga fr bajo demanda y lo almacena en caché
-await translator.loadLocale("fr")
+await translator.loadLocale("fr");
 ```
 
-## Metadatos de dirección
+## 5. Extrae cadenas automáticamente con el CLI
 
-Usa el translator configurado cuando necesites metadatos de dirección por locale:
+En lugar de nombrar las claves manualmente, marca las cadenas con `{ bt: true }` y deja que el CLI las extraiga y genere las claves automáticamente:
 
-```tsx showLineNumbers
-translator.getDirection({ locale: "es" }) // "rtl"
-translator.isRtl({ locale: "es" }) // true
+```ts
+import { t } from "@better-translate/core";
 
-// Los overrides rtl por llamada no cambian la búsqueda del mensaje.
-translator.t("greeting", {
-  locale: "es",
-  config: {
-    rtl: false,
-  },
-})
+// Escribe la cadena fuente directamente — el CLI la convierte en una clave apropiada
+t("Hello world", { bt: true });
 ```
 
-## Generación de esquema JSON
-
-Construye un JSON Schema desde tu locale fuente para ayudar a los editores a validar archivos de locale hermanos.
-
-```tsx showLineNumbers
-import { createTranslationJsonSchema } from "better-translate"
-
-const schema = createTranslationJsonSchema(en)
-// escribir el esquema en disco para habilitar validación del editor
-```
+Ejecuta `npx bt extract` para sincronizar las cadenas en tu archivo de locale fuente y reescribir las llamadas a claves apropiadas. Consulta la [documentación del CLI](/docs/cli) para la configuración completa.
 
 ## Continúa con
 
-<div className="mt-6 flex flex-wrap gap-3">
-  <Button asChild variant="outline" size="lg">
-    <Link href="/docs/installation">Revisar la instalación</Link>
-  </Button>
-  <Button asChild variant="outline" size="lg">
-    <Link href="/docs/adapters/react">Ver la capa React</Link>
-  </Button>
-  <Button asChild size="lg">
-    <Link href="/docs/adapters/nextjs">Ver la capa Next.js</Link>
-  </Button>
-</div>
+- <Link href="/docs/adapters/react">Proveedor de React y hooks</Link>
+- <Link href="/docs/adapters/nextjs">Configuración de Next.js App Router</Link>
+- <Link href="/docs/adapters/astro">Helpers de solicitud de Astro</Link>
+
+## Ejemplos
+
+- [core-elysia-example](https://github.com/jralvarenga/better-translate/tree/main/examples/core-elysia-example) — configuración simple de TypeScript/Node.js

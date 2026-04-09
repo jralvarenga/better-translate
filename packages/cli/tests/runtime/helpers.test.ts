@@ -17,6 +17,7 @@ import {
   deriveTargetMarkdownRoot,
   listMarkdownSourceFiles,
   loadMarkdownDocument,
+  validateMarkdownTranslation,
 } from "../../src/markdown.js";
 import { importModule } from "../../src/module-loader.js";
 import {
@@ -543,16 +544,115 @@ count: 1
       'Translate the source locale file into "es".',
     );
     expect(messagesPrompt.prompt).toContain("- home.title");
+    expect(messagesPrompt.prompt).toContain("Do not output reasoning");
+    expect(messagesPrompt.system).toContain("Never include reasoning");
+    expect(messagesPrompt.system).toContain("<think> tags");
     expect(markdownPrompt.prompt).toContain(
       'Translate this markdown document into "es".',
     );
     expect(markdownPrompt.prompt).toContain('"title": "Intro"');
+    expect(markdownPrompt.prompt).toContain("Do not output reasoning");
+    expect(markdownPrompt.prompt).toContain("Required JSON response shape:");
+    expect(markdownPrompt.prompt).toContain(
+      '"body": "<translated markdown or mdx body as one string>"',
+    );
+    expect(markdownPrompt.prompt).toContain(
+      "Do not move frontmatter fields to the top level.",
+    );
+    expect(markdownPrompt.prompt).toContain(
+      "preserve markdown/code fences plus existing HTML/JSX/MDX tags and do not add any text before or after the requested data.",
+    );
+    expect(markdownPrompt.system).toContain("never include reasoning");
   });
 
-  it("does not export the removed openai config helper", async () => {
+  it("normalizes common markdown output aliases", () => {
+    expect(
+      validateMarkdownTranslation(
+        {
+          title: "Intro",
+        },
+        {
+          content: "# Hola\n",
+          frontMatter: {
+            title: "Introduccion",
+          },
+        },
+      ),
+    ).toEqual({
+      body: "# Hola\n",
+      frontmatter: {
+        title: "Introduccion",
+      },
+    });
+
+    expect(
+      validateMarkdownTranslation(
+        {
+          title: "Intro",
+        },
+        {
+          body: "# Hola\n",
+          title: "Introduccion",
+        },
+      ),
+    ).toEqual({
+      body: "# Hola\n",
+      frontmatter: {
+        title: "Introduccion",
+      },
+    });
+
+    expect(
+      validateMarkdownTranslation(
+        {
+          title: "Intro",
+        },
+        {
+          document: "# Hola\n",
+          metadata: {
+            title: "Introduccion",
+          },
+        },
+      ),
+    ).toEqual({
+      body: "# Hola\n",
+      frontmatter: {
+        title: "Introduccion",
+      },
+    });
+
+    expect(
+      validateMarkdownTranslation(
+        {
+          title: "Intro",
+        },
+        {
+          result: {
+            output: {
+              data: {
+                document: "# Hola\n",
+                meta: {
+                  title: "Introduccion",
+                },
+              },
+            },
+          },
+        },
+      ),
+    ).toEqual({
+      body: "# Hola\n",
+      frontmatter: {
+        title: "Introduccion",
+      },
+    });
+  });
+
+  it("does not export provider helpers from the config module", async () => {
     const configModule = await import("../../src/config.js");
 
     expect("openai" in configModule).toBe(false);
+    expect("ollama" in configModule).toBe(false);
+    expect("createOllama" in configModule).toBe(false);
   });
 
   it("maps AI SDK generation requests and logger output", async () => {
@@ -587,6 +687,11 @@ count: 1
       {
         kind: "messages",
         prompt: "prompt",
+        providerOptions: {
+          ollama: {
+            think: true,
+          },
+        },
         schema: {
           type: "object",
         },
@@ -613,6 +718,11 @@ count: 1
         id: "model",
       },
       prompt: "prompt",
+      providerOptions: {
+        ollama: {
+          think: true,
+        },
+      },
       system: "system",
       temperature: 0,
     });
@@ -672,6 +782,11 @@ count: 1
       {
         kind: "messages",
         prompt: "prompt",
+        providerOptions: {
+          ollama: {
+            think: true,
+          },
+        },
         schema: {
           type: "object",
         },
@@ -696,10 +811,25 @@ count: 1
     expect(generateTextInputs).toHaveLength(2);
     expect(generateTextInputs[0]).toHaveProperty("experimental_output");
     expect(generateTextInputs[1]).not.toHaveProperty("experimental_output");
+    expect(generateTextInputs[0]?.providerOptions).toEqual({
+      ollama: {
+        think: true,
+      },
+    });
+    expect(generateTextInputs[1]?.providerOptions).toEqual({
+      ollama: {
+        think: true,
+      },
+    });
     expect(generateTextInputs[1]?.system).toContain("Return only valid JSON.");
+    expect(generateTextInputs[1]?.system).toContain("Never include reasoning");
     expect(generateTextInputs[1]?.prompt).toContain(
       "Do not wrap the JSON in markdown fences.",
     );
+    expect(generateTextInputs[1]?.prompt).toContain(
+      "Start with { and end with }.",
+    );
+    expect(generateTextInputs[1]?.prompt).toContain("Do not include reasoning");
   });
 
   it("parses fenced JSON from the plain-text fallback", async () => {
@@ -756,6 +886,237 @@ count: 1
     expect(generated).toEqual({
       greeting: "Hola",
     });
+  });
+
+  it("falls back to plain JSON when structured output cannot be parsed", async () => {
+    const generateTextInputs: Record<string, unknown>[] = [];
+
+    mock.module("ai", () => ({
+      Output: {
+        object(value: unknown) {
+          return value;
+        },
+      },
+      async generateText(input: Record<string, unknown>) {
+        generateTextInputs.push(input);
+
+        if ("experimental_output" in input) {
+          throw new Error("No object generated: could not parse the response.");
+        }
+
+        return {
+          text: '<think>Need to reason first</think>\n{"greeting":"Hola"}',
+        };
+      },
+      jsonSchema(schema: unknown, options: Record<string, unknown>) {
+        return {
+          options,
+          schema,
+        };
+      },
+    }));
+
+    const generated = await generateWithAiSdk(
+      {
+        id: "model",
+      },
+      {
+        kind: "messages",
+        prompt: "prompt",
+        schema: {
+          type: "object",
+        },
+        sourcePath: "/messages/en.json",
+        system: "system",
+        targetLocale: "es",
+        validate(value: unknown) {
+          assert(
+            isRecord(value) && value.greeting === "Hola",
+            "invalid generated value",
+          );
+          return value as {
+            greeting: string;
+          };
+        },
+      },
+    );
+
+    expect(generated).toEqual({
+      greeting: "Hola",
+    });
+    expect(generateTextInputs).toHaveLength(2);
+    expect(generateTextInputs[1]).not.toHaveProperty("experimental_output");
+  });
+
+  it("preserves <think> tags inside JSON string fields", async () => {
+    mock.module("ai", () => ({
+      Output: {
+        object(value: unknown) {
+          return value;
+        },
+      },
+      async generateText(input: Record<string, unknown>) {
+        if ("experimental_output" in input) {
+          throw new Error("No object generated: could not parse the response.");
+        }
+
+        return {
+          text: '<think>Reason first</think>\n{"greeting":"Use <think>literal</think> tags"}',
+        };
+      },
+      jsonSchema(schema: unknown, options: Record<string, unknown>) {
+        return {
+          options,
+          schema,
+        };
+      },
+    }));
+
+    const generated = await generateWithAiSdk(
+      {
+        id: "model",
+      },
+      {
+        kind: "messages",
+        prompt: "prompt",
+        schema: {
+          type: "object",
+        },
+        sourcePath: "/messages/en.json",
+        system: "system",
+        targetLocale: "es",
+        validate(value: unknown) {
+          assert(
+            isRecord(value) &&
+              value.greeting === "Use <think>literal</think> tags",
+            "invalid generated value",
+          );
+          return value as {
+            greeting: string;
+          };
+        },
+      },
+    );
+
+    expect(generated).toEqual({
+      greeting: "Use <think>literal</think> tags",
+    });
+  });
+
+  it("parses Ollama plain JSON without a validator when the response is valid JSON", async () => {
+    mock.module("ai", () => ({
+      Output: {
+        object(value: unknown) {
+          return value;
+        },
+      },
+      async generateText() {
+        return {
+          text: '{"greeting":"Hola"}',
+        };
+      },
+      jsonSchema(schema: unknown, options: Record<string, unknown>) {
+        return {
+          options,
+          schema,
+        };
+      },
+    }));
+
+    const generated = await generateWithAiSdk(
+      {
+        modelId: "qwen3:4b",
+        provider: "ollama.responses",
+      },
+      {
+        kind: "messages",
+        prompt: "prompt",
+        schema: {
+          type: "object",
+        },
+        sourcePath: "/messages/en.json",
+        system: "system",
+        targetLocale: "es",
+      },
+    );
+
+    expect(generated).toEqual({
+      greeting: "Hola",
+    });
+  });
+
+  it("prefers plain JSON for Ollama provider models", async () => {
+    const generateTextInputs: Record<string, unknown>[] = [];
+
+    mock.module("ai", () => ({
+      Output: {
+        object(value: unknown) {
+          return value;
+        },
+      },
+      async generateText(input: Record<string, unknown>) {
+        generateTextInputs.push(input);
+
+        return {
+          text: '<think>Translate carefully</think>\n{"content":"# Hola\\n","frontMatter":{"title":"Introduccion"}}',
+        };
+      },
+      jsonSchema(schema: unknown, options: Record<string, unknown>) {
+        return {
+          options,
+          schema,
+        };
+      },
+    }));
+
+    const generated = await generateWithAiSdk(
+      {
+        modelId: "qwen3:4b",
+        provider: "ollama.responses",
+      },
+      {
+        kind: "markdown",
+        prompt: "prompt",
+        schema: {
+          type: "object",
+        },
+        sourcePath: "/docs/en/intro.mdx",
+        system: "system",
+        targetLocale: "es",
+        validate(value: unknown) {
+          return validateMarkdownTranslation(
+            {
+              title: "Intro",
+            },
+            value,
+          );
+        },
+      },
+    );
+
+    expect(generated).toEqual({
+      body: "# Hola\n",
+      frontmatter: {
+        title: "Introduccion",
+      },
+    });
+    expect(generateTextInputs).toHaveLength(1);
+    expect(generateTextInputs[0]).not.toHaveProperty("experimental_output");
+    expect(generateTextInputs[0]?.system).toContain("Return only valid JSON.");
+    expect(generateTextInputs[0]?.system).toContain("Never include reasoning");
+    expect(generateTextInputs[0]?.prompt).toContain(
+      "Do not wrap the JSON in markdown fences.",
+    );
+    expect(generateTextInputs[0]?.prompt).toContain(
+      "Start with { and end with }.",
+    );
+    expect(generateTextInputs[0]?.prompt).toContain("Do not include reasoning");
+    expect(generateTextInputs[0]?.prompt).toContain(
+      'For markdown, return exactly an object with "body" and "frontmatter" keys.',
+    );
+    expect(generateTextInputs[0]?.prompt).toContain(
+      "Do not rename body to content, markdown, mdx, or document.",
+    );
   });
 
   it("handles CLI help and argument errors", async () => {

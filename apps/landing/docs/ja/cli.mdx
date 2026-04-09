@@ -1,0 +1,156 @@
+---
+title: CLI
+description: '@better-translate/cli はマークされた文字列をソースロケールファイルに抽出し、翻訳ファイルを生成します。'
+---
+# CLI
+
+Better Translate にロケールファイルの構築と更新を任せたい場合は、`@better-translate/cli` を使用してください。
+
+CLI はランタイムパッケージを使用するために必要ありません。任意です。
+
+## 1. パッケージをインストールする
+
+```sh
+npm install -D @better-translate/cli
+```
+
+CLI はプロバイダー非依存です。アプリは AI SDK のプロバイダーパッケージを直接インストールして設定します。
+
+## 2. ソースロケールファイルを作成する
+
+`src/messages/en.json` を作成します：
+
+```json
+{
+  "home": {
+    "title": "Hello",
+    "description": "Welcome to the app"
+  }
+}
+```
+
+空の `{}` から始めて、`bt extract` に入力してもらうこともできます。
+
+## 3. CLI 設定を作成する
+
+`better-translate.config.ts` を作成します：
+
+```ts
+import { createOllama } from "ollama-ai-provider-v2";
+import { defineConfig } from "@better-translate/cli/config";
+
+const ollama = createOllama({
+  baseURL: process.env.OLLAMA_BASE_URL ?? "http://localhost:11434/api",
+});
+
+export default defineConfig({
+  sourceLocale: "en",
+  locales: ["es", "fr"],
+  model: ollama("qwen3:4b"),
+  providerOptions: {
+    ollama: {
+      think: true,
+    },
+  },
+  messages: {
+    entry: "./src/messages/en.json",
+  },
+});
+```
+
+Ollama を使用する場合は、`ollama-ai-provider-v2` をインストールしてください。ホスト型プロバイダーを使用する場合は、代わりに `@ai-sdk/openai`、`@ai-sdk/anthropic`、または `@ai-sdk/moonshotai` などのプロバイダーパッケージをインストールしてください。
+
+デフォルトの Ollama API URL はローカルです：`http://localhost:11434/api`。
+
+これは OpenAI、Anthropic、Moonshot AI などのホスト型プロバイダーでも同じように動作します。CLI はプロバイダーヘルパーをバンドルしなくなりました。
+
+## 4. コード内の文字列にマークを付ける
+
+翻訳キーを手動で命名する代わりに、ソーステキストを直接記述して `{ bt: true }` を追加します：
+
+```ts
+import { t } from "@better-translate/core";
+
+export function navLabel() {
+  return t("Home", { bt: true });
+}
+```
+
+実行時、`{ bt: true }` は文字列を変更せずに返します。CLI は次の抽出時にこれらの呼び出しを適切なキーに置き換えます。
+
+`params` などの他のオプションも渡すことができます — これらは抽出後も保持されます：
+
+```ts
+// 記述するコード:
+t("Hello world", { bt: true })
+t("Hello {name}", { bt: true, params: { name: "" } })
+
+// bt extract がファイルを書き換えた後:
+t("components.nav.helloWorld")
+t("components.nav.helloName", { params: { name: "" } })
+```
+
+キーの名前空間はソースファイルのパスから取得されます（`components/nav.tsx` → `components.nav`）。`bt: true` は書き換え時に常に削除されます。
+
+## 5. ソースキーを抽出する
+
+```sh
+npx bt extract
+```
+
+これにより `t(..., { bt: true })` 呼び出しがスキャンされ、不足しているキーがソースロケールファイルに追加され、呼び出しがプレーンな厳密なキーに書き換えられます。
+
+CLI はプロジェクトルートの `better-translate.config.ts` を自動的に検索します。`--config` フラグは、設定ファイルが別の場所にある場合にのみ必要です。
+
+## 6. ジェネレーターを実行する
+
+```sh
+npx bt generate
+```
+
+これにより、ソースファイルの隣にターゲットロケールファイルが作成されます。
+
+`markdown.rootDir` が有効になっており、実行によって翻訳された `.md` または `.mdx` ファイルが作成または上書きされる場合、CLI は変更を加える前に確認を求めます。プロンプトをスキップするには `--yes` または `-y` を使用してください：
+
+```sh
+npx bt generate --yes
+```
+
+翻訳されたマークダウンファイルを書き込む必要がある非対話型の実行では、`--yes` を渡す必要があります。
+
+## 7. アプリで生成されたファイルを使用する
+
+ファイルが存在した後、手書きのロケールファイルと同じように `@better-translate/core` の設定にインポートしてください。
+
+## Markdown
+
+ローカライズされたマークダウンの生成も必要な場合は、`markdown.rootDir` オプションを追加してください：
+
+```ts
+import { createOllama } from "ollama-ai-provider-v2";
+import { defineConfig } from "@better-translate/cli/config";
+
+const ollama = createOllama({
+  baseURL: process.env.OLLAMA_BASE_URL ?? "http://localhost:11434/api",
+});
+
+export default defineConfig({
+  sourceLocale: "en",
+  locales: ["es", "fr"],
+  model: ollama("qwen3:4b"),
+  messages: {
+    entry: "./src/messages/en.json",
+  },
+  markdown: {
+    rootDir: "./content/docs",
+  },
+});
+```
+
+## Examples
+
+完全な動作例は [GitHub リポジトリ](https://github.com/jralvarenga/better-translate/tree/main/examples)にあります：
+
+- [nextjs-example](https://github.com/jralvarenga/better-translate/tree/main/examples/nextjs-example)
+- [react-vite-example](https://github.com/jralvarenga/better-translate/tree/main/examples/react-vite-example)
+- [core-elysia-example](https://github.com/jralvarenga/better-translate/tree/main/examples/core-elysia-example)

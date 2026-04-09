@@ -55,8 +55,45 @@ function isSchemaTooLargeError(error: unknown): boolean {
   );
 }
 
+function shouldRetryWithPlainJson(error: unknown): boolean {
+  if (isSchemaTooLargeError(error)) {
+    return true;
+  }
+
+  const message = error instanceof Error ? error.message : String(error);
+  const normalizedMessage = message.toLowerCase();
+
+  return (
+    normalizedMessage.includes("no object generated") ||
+    normalizedMessage.includes("could not parse the response") ||
+    normalizedMessage.includes("could not parse response") ||
+    normalizedMessage.includes("failed to parse") ||
+    normalizedMessage.includes("invalid json") ||
+    normalizedMessage.includes("response did not match schema") ||
+    normalizedMessage.includes("type validation failed")
+  );
+}
+
+function getModelProviderName(model: unknown): string | undefined {
+  if (!model || typeof model !== "object") {
+    return undefined;
+  }
+
+  const provider = (model as { provider?: unknown }).provider;
+
+  return typeof provider === "string" ? provider.toLowerCase() : undefined;
+}
+
+function shouldPreferPlainJson(model: unknown): boolean {
+  const providerName = getModelProviderName(model);
+
+  return providerName?.includes("ollama") ?? false;
+}
+
 function extractJsonPayload(text: string): string {
-  const trimmed = text.trim();
+  const trimmed = text
+    .replace(/^(?:\s*<think>[\s\S]*?<\/think>\s*)+/i, "")
+    .trim();
   const fencedMatch = trimmed.match(/^```(?:json)?\s*([\s\S]*?)\s*```$/i);
 
   if (fencedMatch?.[1]) {
@@ -73,26 +110,71 @@ function extractJsonPayload(text: string): string {
   return trimmed;
 }
 
+function createJsonOnlyPrompt<TOutput>(
+  request: StructuredGenerationRequest<TOutput>,
+): string {
+  const instructions = [
+    request.prompt,
+    "",
+    "Return only a valid JSON object that matches the required shape exactly.",
+    "Start with { and end with }.",
+    "Do not wrap the JSON in markdown fences.",
+    "Do not include reasoning, analysis, <think> tags, XML tags, comments, or any text before or after the JSON object.",
+  ];
+
+  if (request.kind === "markdown") {
+    instructions.push(
+      'For markdown, return exactly an object with "body" and "frontmatter" keys.',
+      'Put the translated markdown or mdx content in the "body" string.',
+      'Put translated frontmatter string values inside the "frontmatter" object only.',
+      "Do not rename body to content, markdown, mdx, or document.",
+      "Do not move frontmatter fields to the top level.",
+    );
+  }
+
+  return instructions.join("\n");
+}
+
+function createJsonOnlySystem(system: string): string {
+  return `${system} Return only valid JSON. Never include reasoning, analysis, <think> tags, XML tags, markdown fences, or extra text outside the JSON object.`;
+}
+
 function parseJsonText<TOutput>(
   text: string,
   request: StructuredGenerationRequest<TOutput>,
 ): TOutput {
-  if (!request.validate) {
-    throw new Error(
-      `Fallback JSON parsing failed for "${request.sourcePath}": no validator provided`,
-    );
-  }
-
   const payload = extractJsonPayload(text);
 
   try {
-    return validateGeneratedValue(JSON.parse(payload), request);
+    const parsed = JSON.parse(payload);
+
+    return request.validate ? validateGeneratedValue(parsed, request) : parsed;
   } catch (error) {
     const reason = error instanceof Error ? error.message : String(error);
     throw new Error(
       `Fallback JSON parsing failed for "${request.sourcePath}": ${reason}`,
     );
   }
+}
+
+async function generateWithPlainJson<TOutput>(
+  generateText: (...args: any[]) => Promise<{ text: string }>,
+  baseInput: {
+    model: never;
+    prompt: string;
+    providerOptions: StructuredGenerationRequest<TOutput>["providerOptions"];
+    system: string;
+    temperature: 0;
+  },
+  request: StructuredGenerationRequest<TOutput>,
+): Promise<TOutput> {
+  const fallbackResult = await generateText({
+    ...baseInput,
+    prompt: createJsonOnlyPrompt(request),
+    system: createJsonOnlySystem(request.system),
+  });
+
+  return parseJsonText(fallbackResult.text, request);
 }
 
 export async function generateWithAiSdk<TOutput>(
@@ -103,9 +185,14 @@ export async function generateWithAiSdk<TOutput>(
   const baseInput = {
     model: model as never,
     prompt: request.prompt,
+    providerOptions: request.providerOptions,
     system: request.system,
     temperature: 0,
   } as const;
+
+  if (shouldPreferPlainJson(model)) {
+    return generateWithPlainJson(generateText, baseInput, request);
+  }
 
   try {
     const result = await generateText({
@@ -117,21 +204,10 @@ export async function generateWithAiSdk<TOutput>(
 
     return result.experimental_output as TOutput;
   } catch (error) {
-    if (!isSchemaTooLargeError(error)) {
+    if (!shouldRetryWithPlainJson(error)) {
       throw error;
     }
   }
 
-  const fallbackResult = await generateText({
-    ...baseInput,
-    prompt: [
-      request.prompt,
-      "",
-      "Return only a valid JSON object that matches the required shape exactly.",
-      "Do not wrap the JSON in markdown fences.",
-    ].join("\n"),
-    system: `${request.system} Return only valid JSON.`,
-  });
-
-  return parseJsonText(fallbackResult.text, request);
+  return generateWithPlainJson(generateText, baseInput, request);
 }

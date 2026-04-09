@@ -13,7 +13,7 @@ Then add only the adapter your app needs:
 - Astro request helpers and middleware: `@better-translate/astro`
 - TanStack Router locale-aware routing: `@better-translate/tanstack-router`
 - Localized Markdown or MDX: `@better-translate/md`
-- Auto-extract strings and generate locale files: `@better-translate/cli`
+- Auto-extract strings and generate locale files with hosted or local models: `@better-translate/cli`
 
 ## Fast package chooser
 

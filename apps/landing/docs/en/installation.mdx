@@ -46,10 +46,12 @@ It does two things:
 - **Generate** — reads your source locale file and uses an AI model to produce translated versions for every other locale
 
 ```sh
-npm install -D @better-translate/cli @ai-sdk/openai
+npm install -D @better-translate/cli
 ```
 
-Once installed, running `npx bt extract` and `npx bt generate` is all it takes to go from writing source strings to having a fully translated app.
+For gateway-based setups, `@better-translate/cli` is enough. If your `better-translate.config.ts` imports a direct-model provider such as Ollama, also install that provider package, for example `npm install -D ollama-ai-provider-v2`.
+
+Before running `npx bt extract` or `npx bt generate`, create `better-translate.config.ts`. After that, the CLI works with any AI SDK provider model, including local Ollama models.
 
 <div className="mt-4 flex flex-wrap gap-3">
   <Button asChild variant="outline" size="lg">

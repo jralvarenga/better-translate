@@ -6,6 +6,7 @@ import type {
   LoadedBetterTranslateCliConfig,
   ResolvedBetterTranslateCliConfig,
 } from "./types.js";
+import type { SharedV3ProviderOptions } from "@ai-sdk/provider";
 import { loadEnvFilesFromDirectories } from "./env.js";
 import { importModule } from "./module-loader.js";
 import { assert, isRecord, normalizeMarkdownExtensions } from "./validation.js";
@@ -39,6 +40,28 @@ function resolveCliLanguageModel(model: unknown): CliLanguageModel {
   );
 
   return model as CliLanguageModel;
+}
+
+function resolveProviderOptions(
+  value: unknown,
+): SharedV3ProviderOptions | undefined {
+  if (value === undefined) {
+    return undefined;
+  }
+
+  assert(
+    isRecord(value),
+    "Config providerOptions must be an object when provided.",
+  );
+
+  for (const [providerName, providerOptions] of Object.entries(value)) {
+    assert(
+      isRecord(providerOptions),
+      `Config providerOptions.${providerName} must be an object.`,
+    );
+  }
+
+  return value as SharedV3ProviderOptions;
 }
 
 function resolveConfig(
@@ -91,6 +114,7 @@ function resolveConfig(
   const markdown = rawConfig.markdown;
   const model = rawConfig.model;
   const gateway = rawConfig.gateway;
+  const providerOptions = rawConfig.providerOptions;
 
   const resolvedBase = {
     locales: normalizedLocales,
@@ -116,6 +140,7 @@ function resolveConfig(
     messages: {
       entry: path.resolve(configDirectory, messages.entry),
     },
+    providerOptions: resolveProviderOptions(providerOptions),
     sourceLocale,
   } as const;
 
