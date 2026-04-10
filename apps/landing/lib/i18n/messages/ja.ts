@@ -82,7 +82,7 @@ export const ja = {
       localeSwitching: "ページリロードなしのロケール切り替え",
       generateLocales: "AIまたはローカルOllamaでロケールを生成",
     },
-    description: "同じ設定。同じAPI。Next.js、Astro、React、TanStack Router、プレーンなNodeで、AI GatewayまたはローカルのOllamaモデルを使用。書き換え不要。",
+    description: "一度設定すれば、どこでも翻訳できる。Next.js、Astro、React、TanStack Router、あらゆるTypeScript環境に対応した型安全なi18n。",
     primaryCta: "ドキュメントを見る",
     secondaryCta: "GitHubで見る",
     sponsorCta: "プロジェクトをスポンサーする",

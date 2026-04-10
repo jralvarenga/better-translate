@@ -82,7 +82,7 @@ export const ar = {
       localeSwitching: "تبديل اللغة بدون إعادة تحميل الصفحة",
       generateLocales: "أنشئ لغات باستخدام AI أو Ollama المحلي",
     },
-    description: "نفس الإعداد. نفس API. استخدم AI Gateway أو نماذج Ollama المحلية عبر Next.js وAstro وReact وTanStack Router وNode العادي. بدون إعادة كتابة.",
+    description: "اضبط مرة واحدة. ترجم في كل مكان. i18n آمن من حيث الأنواع لـ Next.js وAstro وReact وTanStack Router وأي بيئة TypeScript.",
     primaryCta: "عرض التوثيق",
     secondaryCta: "عرض على GitHub",
     sponsorCta: "رعاية المشروع",

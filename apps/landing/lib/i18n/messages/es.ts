@@ -82,7 +82,7 @@ export const es = {
       localeSwitching: "Cambio de idioma sin recargar la página",
       generateLocales: "Genera locales con IA o Ollama local",
     },
-    description: "Misma config. Misma API. Usa AI Gateway o modelos locales de Ollama en Next.js, Astro, React, TanStack Router y Node puro. Sin reescribir.",
+    description: "Configura una vez. Traduce en todas partes. i18n con tipos seguros para Next.js, Astro, React, TanStack Router y cualquier entorno TypeScript.",
     primaryCta: "Ver docs",
     secondaryCta: "Ver en GitHub",
     sponsorCta: "Sponsorizar el proyecto",

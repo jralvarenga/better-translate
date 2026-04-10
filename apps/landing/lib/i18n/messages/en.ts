@@ -95,7 +95,7 @@ export const en = {
       generateLocales: "Generate locales with AI or local Ollama",
     },
     description:
-      "Same config. Same API. Use AI Gateway or local Ollama models across Next.js, Astro, React, TanStack Router, and plain Node. No rewrites.",
+      "Configure once. Translate everywhere. Type-safe i18n for Next.js, Astro, React, TanStack Router and any TypeScript environment.",
     primaryCta: "View docs",
     secondaryCta: "View on GitHub",
     sponsorCta: "Sponsor the project",
