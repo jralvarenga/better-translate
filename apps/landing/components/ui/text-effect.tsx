@@ -128,17 +128,12 @@ const AnimationComponent: React.FC<{
         {segment}
       </motion.span>
     ) : (
-      <motion.span className="inline-block whitespace-pre">
-        {segment.split("").map((char, charIndex) => (
-          <motion.span
-            key={`char-${charIndex}`}
-            aria-hidden="true"
-            variants={variants}
-            className="inline-block whitespace-pre"
-          >
-            {char}
-          </motion.span>
-        ))}
+      <motion.span
+        aria-hidden="true"
+        variants={variants}
+        className="inline-block whitespace-pre"
+      >
+        {segment}
       </motion.span>
     );
 
@@ -159,6 +154,7 @@ AnimationComponent.displayName = "AnimationComponent";
 
 const splitText = (text: string, per: PerType) => {
   if (per === "line") return text.split("\n");
+  if (per === "char") return Array.from(text);
   return text.split(/(\s+)/);
 };
 

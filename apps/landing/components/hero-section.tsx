@@ -1,6 +1,5 @@
 import Link from "next/link";
 import {
-  RiArrowRightLine,
   RiBook2Line,
   RiGithubLine,
   RiHeart3Line,
@@ -13,6 +12,7 @@ import { CodeBlock } from "@/components/ui/code-highlight";
 import { getCatalogItems } from "@/lib/catalog";
 import type { LandingLocale, LandingTranslator } from "@/lib/i18n/config";
 import { siteLinks } from "@/lib/site";
+import { HeroBadge } from "./hero-badge";
 
 const transitionVariants = {
   item: {
@@ -40,6 +40,11 @@ interface HeroSectionProps {
 export default function HeroSection({ locale, t }: HeroSectionProps) {
   const frameworks = getCatalogItems("framework");
   const docsHref = `/${locale}#docs`;
+  const titlePer = locale === "ja" ? "char" : "word";
+  const titleClassName =
+    locale === "ja"
+      ? "mx-auto max-w-[12ch] text-balance text-3xl leading-tight font-semibold md:mx-0 md:text-4xl lg:text-5xl nr"
+      : "text-balance text-3xl font-semibold md:text-4xl lg:text-5xl nr";
 
   return (
     <>
@@ -77,10 +82,16 @@ export default function HeroSection({ locale, t }: HeroSectionProps) {
               {/* Badge ,  centered on all sizes */}
               <div className="flex justify-center">
                 <AnimatedGroup variants={transitionVariants}>
-                  <div className="flex w-fit items-center gap-3 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-sm text-white/70">
-                    <RiArrowRightLine className="size-3.5" />
-                    <span>{t("hero.badge")}</span>
-                  </div>
+                  <HeroBadge
+                    messages={[
+                      t("hero.badges.sameConfig"),
+                      t("hero.badges.typeSafe"),
+                      t("hero.badges.oneSetup"),
+                      t("hero.badges.autocomplete"),
+                      t("hero.badges.localeSwitching"),
+                      t("hero.badges.generateLocales"),
+                    ]}
+                  />
                 </AnimatedGroup>
               </div>
 
@@ -89,10 +100,11 @@ export default function HeroSection({ locale, t }: HeroSectionProps) {
                 {/* Left: title + subtitle + CTAs */}
                 <div className="flex-1 text-center md:text-left">
                   <TextEffect
+                    per={titlePer}
                     preset="slide"
                     speedSegment={0.3}
                     as="h1"
-                    className="text-balance text-3xl font-semibold md:text-4xl lg:text-5xl"
+                    className={titleClassName}
                   >
                     {t("hero.title")}
                   </TextEffect>

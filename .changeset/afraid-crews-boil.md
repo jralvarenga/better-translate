@@ -1,0 +1,5 @@
+---
+"landing": patch
+---
+
+SEO implementation
