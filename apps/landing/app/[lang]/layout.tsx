@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { hasLocale } from "@better-translate/nextjs";
@@ -9,9 +10,20 @@ import { LandingTranslationsProvider } from "@/components/landing-translations-p
 import type { LandingLocale } from "@/lib/i18n/config";
 import { createLandingTranslator } from "@/lib/i18n/config";
 import { routing } from "@/lib/i18n/routing";
+import { createHomeMetadata, resolveLandingLocale } from "@/lib/seo";
 
 export function generateStaticParams() {
   return routing.locales.map((lang) => ({ lang }));
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ lang: string }>;
+}): Promise<Metadata> {
+  const { lang } = await params;
+
+  return createHomeMetadata(resolveLandingLocale(lang));
 }
 
 export default async function LocalizedLayout({

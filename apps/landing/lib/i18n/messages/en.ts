@@ -86,7 +86,14 @@ export const en = {
     sponsor: "Sponsor",
   },
   hero: {
-    badge: "Same config. Hosted or local models",
+    badges: {
+      sameConfig: "Same config. Hosted or local models",
+      typeSafe: "Type-safe translations by default",
+      oneSetup: "One setup for Next.js, Astro, React, and more",
+      autocomplete: "Autocomplete on every translation key",
+      localeSwitching: "Locale switching without a page reload",
+      generateLocales: "Generate locales with AI or local Ollama",
+    },
     description:
       "Same config. Same API. Use AI Gateway or local Ollama models across Next.js, Astro, React, TanStack Router, and plain Node. No rewrites.",
     primaryCta: "View docs",

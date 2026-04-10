@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { hasLocale } from "@better-translate/nextjs";
@@ -7,7 +8,21 @@ import { ThanksForSupportSection } from "@/components/thanks-for-support-section
 import { ResponsiveParticles } from "@/components/ui/responsive-particles";
 import type { LandingLocale } from "@/lib/i18n/config";
 import { routing } from "@/lib/i18n/routing";
+import {
+  createThanksForSupportMetadata,
+  resolveLandingLocale,
+} from "@/lib/seo";
 import { getTranslations } from "@/lib/i18n/server";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ lang: string }>;
+}): Promise<Metadata> {
+  const { lang } = await params;
+
+  return createThanksForSupportMetadata(resolveLandingLocale(lang));
+}
 
 export default async function ThanksForSupportPage({
   params,

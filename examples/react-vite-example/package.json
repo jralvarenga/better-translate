@@ -11,8 +11,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@better-translate/react": "^2.0.0",
-    "@better-translate/core": "^2.0.0",
+    "@better-translate/react": "^1.0.0",
+    "@better-translate/core": "^1.0.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4"
   },

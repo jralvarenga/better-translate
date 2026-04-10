@@ -74,7 +74,14 @@ export const ja = {
     sponsor: "スポンサー",
   },
   hero: {
-    badge: "同じ設定。ホスト型またはローカルモデル",
+    badges: {
+      sameConfig: "同じ設定。ホスト型またはローカルモデル",
+      typeSafe: "デフォルトで型安全な翻訳",
+      oneSetup: "Next.js、Astro、Reactなど向けの1つの設定",
+      autocomplete: "すべての翻訳キーでオートコンプリート",
+      localeSwitching: "ページリロードなしのロケール切り替え",
+      generateLocales: "AIまたはローカルOllamaでロケールを生成",
+    },
     description: "同じ設定。同じAPI。Next.js、Astro、React、TanStack Router、プレーンなNodeで、AI GatewayまたはローカルのOllamaモデルを使用。書き換え不要。",
     primaryCta: "ドキュメントを見る",
     secondaryCta: "GitHubで見る",
