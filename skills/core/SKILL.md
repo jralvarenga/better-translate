@@ -1,3 +1,8 @@
+---
+name: core
+description: Smallest Better Translate setup for plain TypeScript, Node.js, Bun, APIs, and shared libraries.
+---
+
 # Core Skill
 
 Use this guide when you want the smallest possible Better Translate setup.
@@ -39,12 +44,22 @@ export const translator = await configureTranslations({
 });
 ```
 
-Then use that same exported translator everywhere:
+## Keep TypeScript autocomplete available
+
+TypeScript key autocomplete depends on the shared exported `translator`.
+
+- Keep each messages object `as const`
+- Export one shared `translator`
+- Call `translator.t(...)` from code that needs typed keys
 
 ```ts
+import { translator } from "./i18n";
+
 translator.t("home.title");
 translator.t("home.title", { locale: "es" });
 ```
+
+That keeps locale values and translation keys inferred from the messages you configured.
 
 ## When to add another package
 
@@ -58,10 +73,10 @@ translator.t("home.title", { locale: "es" });
 Use `{ bt: true }` in any `t()` call to write source text directly instead of inventing a key:
 
 ```ts
-t("Hello world", { bt: true })
+t("Hello world", { bt: true });
 ```
 
-Then run `npx bt extract` to generate keys automatically and rewrite the calls. See `skills/cli/README.md` for the full setup.
+Then run `npx bt extract` to generate keys automatically and rewrite the calls. See `skills/cli/SKILL.md` for the full setup.
 
 ## Main idea
 

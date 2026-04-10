@@ -17,13 +17,13 @@ La carpeta `skills/` explica cómo integrar los paquetes de la manera correcta s
 
 ## Mejor orden de lectura
 
-1. `skills/README.md` para el mapa de paquetes
-2. `skills/core/README.md` para iniciar el traductor correctamente
-3. `skills/cli/README.md` si quieres que la CLI genere archivos de locale o extraiga cadenas marcadas con `bt`
-4. `skills/react/README.md` si la UI es React o Expo
-5. `skills/nextjs/README.md` si la aplicación es Next.js App Router
-6. `skills/md/README.md` si el contenido está en `.md` o `.mdx`
-7. `skills/combined/README.md` si la aplicación mezcla enrutamiento, renderizado en servidor y hooks de cliente
+1. `skills/SKILL.md` para el mapa de paquetes
+2. `skills/core/SKILL.md` para iniciar el traductor correctamente
+3. `skills/cli/SKILL.md` si quieres que la CLI genere archivos de locale o extraiga cadenas marcadas con `bt`
+4. `skills/react/SKILL.md` si la UI es React o Expo
+5. `skills/nextjs/SKILL.md` si la aplicación es Next.js App Router
+6. `skills/md/SKILL.md` si el contenido está en `.md` o `.mdx`
+7. `skills/combined/SKILL.md` si la aplicación mezcla enrutamiento, renderizado en servidor y hooks de cliente
 
 ## Selector rápido de paquetes
 
@@ -35,6 +35,25 @@ La carpeta `skills/` explica cómo integrar los paquetes de la manera correcta s
 - Astro: `@better-translate/core` + `@better-translate/astro`
 - Markdown localizado o MDX: agrega `@better-translate/md`
 - Archivos de locale generados por IA o cadenas extraídas automáticamente: agrega `@better-translate/cli`
+
+## Instala los skills
+
+Puedes instalar los skills alojados en el repositorio directamente con `npx skills add`:
+
+```sh
+npx skills add https://github.com/jralvarenga/better-translate
+npx skills add https://github.com/jralvarenga/better-translate --skill core
+npx skills add https://github.com/jralvarenga/better-translate --skill react
+npx skills add https://github.com/jralvarenga/better-translate --skill expo
+npx skills add https://github.com/jralvarenga/better-translate --skill nextjs
+npx skills add https://github.com/jralvarenga/better-translate --skill md
+npx skills add https://github.com/jralvarenga/better-translate --skill cli
+npx skills add https://github.com/jralvarenga/better-translate --skill combined
+npx skills add https://github.com/jralvarenga/better-translate --skill rtl
+npx skills add https://github.com/jralvarenga/better-translate --skill examples
+npx skills add https://github.com/jralvarenga/better-translate --skill status
+npx skills add https://github.com/jralvarenga/better-translate --skill workspace
+```
 
 ## Empieza aquí
 

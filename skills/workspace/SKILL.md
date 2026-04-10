@@ -1,3 +1,8 @@
+---
+name: workspace
+description: Repository map for finding Better Translate packages, docs, and examples.
+---
+
 # Workspace Skill
 
 Use this guide when you need a quick map of the repository.

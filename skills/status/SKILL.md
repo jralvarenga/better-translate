@@ -1,3 +1,8 @@
+---
+name: status
+description: Snapshot of the current public Better Translate package and adapter surface.
+---
+
 # Status Skill
 
 Use this guide when you need a quick snapshot of what exists in the repo right now.

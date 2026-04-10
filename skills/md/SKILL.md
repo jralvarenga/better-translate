@@ -1,3 +1,8 @@
+---
+name: md
+description: Localized Markdown and MDX content guide for Better Translate projects.
+---
+
 # MD Skill
 
 Use this guide when localized content lives in `.md` or `.mdx` files.
@@ -42,6 +47,10 @@ const document = await docs.getDocument("getting-started", {
   locale: "es",
 });
 ```
+
+## Keep TypeScript autocomplete available
+
+Keep markdown helpers connected to the shared exported `translator` so locale inference stays aligned with the rest of the app.
 
 ## When to use the server entry
 

@@ -2,6 +2,9 @@
   "name": "better-translate-workspace",
   "private": true,
   "version": "1.0.1",
+  "keywords": [
+    "agent-skill"
+  ],
   "scripts": {
     "build": "turbo run build",
     "build:landing": "turbo run build --filter=landing --only",

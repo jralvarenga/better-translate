@@ -1,3 +1,8 @@
+---
+name: react
+description: React and Expo integration guide for Better Translate providers, hooks, and typed translation access.
+---
+
 # React Skill
 
 Use this guide when React components need translations and locale switching.
@@ -27,6 +32,12 @@ export function Root() {
 }
 ```
 
+## Keep TypeScript autocomplete available
+
+Both of these patterns are supported.
+
+### Pattern 1: explicit generic
+
 ```tsx
 import { useTranslations } from "@better-translate/react";
 
@@ -43,6 +54,32 @@ export function Header() {
       </button>
     </>
   );
+}
+```
+
+### Pattern 2: module augmentation for zero-arg `useTranslations()`
+
+Create `src/better-translate.d.ts`:
+
+```ts
+import { translator } from "./i18n";
+
+declare module "@better-translate/react" {
+  interface BetterTranslateReactTypes {
+    translator: typeof translator;
+  }
+}
+```
+
+Then components can use the hook without a generic and still keep autocomplete:
+
+```tsx
+import { useTranslations } from "@better-translate/react";
+
+export function Header() {
+  const { t } = useTranslations();
+
+  return <h1>{t("home.title")}</h1>;
 }
 ```
 

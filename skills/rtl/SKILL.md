@@ -1,3 +1,8 @@
+---
+name: rtl
+description: Right-to-left locale configuration guide for Better Translate.
+---
+
 # RTL Skill
 
 Use this guide when some locales should render right-to-left.
@@ -30,6 +35,10 @@ Then read it from the translator or server helpers:
 translator.getDirection({ locale: "ar" }); // "rtl"
 translator.isRtl({ locale: "ar" }); // true
 ```
+
+## Keep TypeScript autocomplete available
+
+Keep direction rules in the same shared exported translator so locale inference stays consistent anywhere you consume `translator`, server helpers, or React hooks.
 
 ## Rule
 

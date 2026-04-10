@@ -1,11 +1,16 @@
+---
+name: cli
+description: Extract source strings and generate locale files for Better Translate projects.
+---
+
 # CLI Skill
 
 Use this guide when you want the CLI to manage locale files for you, or when you want to write source strings directly in code without naming keys by hand.
 
 ## What this package does
 
-- `bt extract` — scans your source files for `t("...", { bt: true })` calls, adds keys to your source locale JSON, and rewrites those calls to plain key strings
-- `bt generate` — reads your source locale file and calls an AI model to create translated versions for every other locale
+- `bt extract` - scans your source files for `t("...", { bt: true })` calls, adds keys to your source locale JSON, and rewrites those calls to plain key strings
+- `bt generate` - reads your source locale file and calls an AI model to create translated versions for every other locale
 
 ## Minimum setup
 
@@ -61,8 +66,8 @@ The CLI stays provider-agnostic. Swap `ollama(...)` for any other AI SDK provide
 In any TypeScript or TSX file, write source text directly using `{ bt: true }`:
 
 ```ts
-t("Hello world", { bt: true })
-t("Hello {name}", { bt: true, params: { name: "" } })
+t("Hello world", { bt: true });
+t("Hello {name}", { bt: true, params: { name: "" } });
 ```
 
 ### 5. Extract
@@ -77,10 +82,10 @@ After this runs, the source locale file gains new keys and the original `t()` ca
 
 ```ts
 // before
-t("Hello world", { bt: true })
+t("Hello world", { bt: true });
 
 // after
-t("components.header.helloWorld")
+t("components.header.helloWorld");
 ```
 
 The namespace prefix (`components.header`) comes from the source file path. `bt: true` is removed. Other options like `params` are preserved.
@@ -97,6 +102,14 @@ This creates one translated JSON file per locale next to the source file.
 
 Always run `bt extract` before `bt generate`. Extract populates the source file; generate reads it.
 
+## Keep TypeScript autocomplete available
+
+The CLI only manages files. Autocomplete at runtime still comes from the shared exported translator you create in `@better-translate/core`.
+
+- Keep one exported `translator`
+- Point your runtime packages and helpers back to that translator
+- Let extracted keys flow into the same typed messages source
+
 ## When to also add framework adapters
 
 The CLI only manages files. You still need a runtime package to use them.
@@ -107,6 +120,6 @@ The CLI only manages files. You still need a runtime package to use them.
 
 ## Examples
 
-- `examples/nextjs-example` — Next.js App Router with generated locale files
-- `examples/react-vite-example` — React SPA with generated locale files
-- `examples/core-elysia-example` — plain TypeScript/Node.js setup
+- `examples/nextjs-example` - Next.js App Router with generated locale files
+- `examples/react-vite-example` - React SPA with generated locale files
+- `examples/core-elysia-example` - plain TypeScript/Node.js setup

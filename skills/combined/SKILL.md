@@ -1,3 +1,8 @@
+---
+name: combined
+description: Guide for combining Better Translate packages without duplicating translation ownership.
+---
+
 # Combined Skill
 
 Use this guide when the app needs more than one Better Translate package.
@@ -36,11 +41,15 @@ Use this guide when the app needs more than one Better Translate package.
 
 Add `@better-translate/cli` to any combination above when you want the CLI to manage locale file creation.
 
-Example — Next.js app with generated translations:
+Example - Next.js app with generated translations:
 
 - `@better-translate/core`
 - `@better-translate/nextjs`
 - `@better-translate/cli`
+
+## Keep TypeScript autocomplete available
+
+Every combination still works best when one shared exported `translator` stays the source of truth. Let adapters, hooks, and helpers read from that same typed translator instead of recreating locale rules in multiple places.
 
 ## Rule to keep the setup clean
 

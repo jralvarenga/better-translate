@@ -15,13 +15,13 @@ description: アプリに適したBetter Translateのパッケージ組み合わ
 
 ## 推奨の読み順
 
-1. `skills/README.md` — パッケージマップ
-2. `skills/core/README.md` — 翻訳機能を正しく起動する
-3. `skills/cli/README.md` — CLIでロケールファイルを生成したり、`bt`でマークされた文字列を抽出したい場合
-4. `skills/react/README.md` — UIがReactまたはExpoの場合
-5. `skills/nextjs/README.md` — アプリがNext.js App Routerの場合
-6. `skills/md/README.md` — コンテンツが `.md` または `.mdx` にある場合
-7. `skills/combined/README.md` — アプリがルーティング、サーバーレンダリング、クライアントフックを混在させている場合
+1. `skills/SKILL.md` - パッケージマップ
+2. `skills/core/SKILL.md` - 翻訳機能を正しく起動する
+3. `skills/cli/SKILL.md` - CLIでロケールファイルを生成したり、`bt`でマークされた文字列を抽出したい場合
+4. `skills/react/SKILL.md` - UIがReactまたはExpoの場合
+5. `skills/nextjs/SKILL.md` - アプリがNext.js App Routerの場合
+6. `skills/md/SKILL.md` - コンテンツが `.md` または `.mdx` にある場合
+7. `skills/combined/SKILL.md` - アプリがルーティング、サーバーレンダリング、クライアントフックを混在させている場合
 
 ## パッケージの簡易選択
 
@@ -33,6 +33,25 @@ description: アプリに適したBetter Translateのパッケージ組み合わ
 - Astro: `@better-translate/core` + `@better-translate/astro`
 - ローカライズされたMarkdownまたはMDX: `@better-translate/md` を追加
 - AI生成のロケールファイルまたは自動抽出された文字列: `@better-translate/cli` を追加
+
+## Skills のインストール
+
+リポジトリで公開している skills は `npx skills add` で直接インストールできます：
+
+```sh
+npx skills add https://github.com/jralvarenga/better-translate
+npx skills add https://github.com/jralvarenga/better-translate --skill core
+npx skills add https://github.com/jralvarenga/better-translate --skill react
+npx skills add https://github.com/jralvarenga/better-translate --skill expo
+npx skills add https://github.com/jralvarenga/better-translate --skill nextjs
+npx skills add https://github.com/jralvarenga/better-translate --skill md
+npx skills add https://github.com/jralvarenga/better-translate --skill cli
+npx skills add https://github.com/jralvarenga/better-translate --skill combined
+npx skills add https://github.com/jralvarenga/better-translate --skill rtl
+npx skills add https://github.com/jralvarenga/better-translate --skill examples
+npx skills add https://github.com/jralvarenga/better-translate --skill status
+npx skills add https://github.com/jralvarenga/better-translate --skill workspace
+```
 
 ## ここから始める
 

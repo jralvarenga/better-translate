@@ -1,3 +1,8 @@
+---
+name: examples
+description: Map of Better Translate example apps to copy from when starting a new integration.
+---
+
 # Examples Skill
 
 Use this guide when you want to copy a working project instead of assembling the setup from scratch.
