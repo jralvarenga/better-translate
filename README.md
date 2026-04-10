@@ -2,7 +2,7 @@
 
 One i18n setup for any TypeScript project.
 
-Same config. Same API. Use AI Gateway or local Ollama models across Next.js, Astro, React, TanStack Router, and plain Node. No rewrites.
+Configure once. Translate everywhere. Type-safe i18n for Next.js, Astro, React, TanStack Router and any TypeScript environment.
 
 ## Features
 
