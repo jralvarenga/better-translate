@@ -13,7 +13,7 @@
     },
     "apps/landing": {
       "name": "landing",
-      "version": "2.0.2",
+      "version": "2.0.3",
       "dependencies": {
         "@ai-sdk/anthropic": "^3.0.64",
         "@ai-sdk/moonshotai": "^2.0.12",
