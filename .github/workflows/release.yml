@@ -126,6 +126,9 @@ jobs:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: bun run release:publish
 
+      - name: Create release tags from package versions
+        run: bun run release:tags
+
       - name: Push newly created release tags
         env:
           GIT_REMOTE: origin

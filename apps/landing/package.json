@@ -1,6 +1,6 @@
 {
   "name": "landing",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -40,6 +40,12 @@
     "tailwindcss": "^4",
     "typescript": "^5"
   },
-  "ignoreScripts": ["sharp", "unrs-resolver"],
-  "trustedDependencies": ["sharp", "unrs-resolver"]
+  "ignoreScripts": [
+    "sharp",
+    "unrs-resolver"
+  ],
+  "trustedDependencies": [
+    "sharp",
+    "unrs-resolver"
+  ]
 }
