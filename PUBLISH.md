@@ -66,7 +66,15 @@ bunx changeset publish
 
 Only packages whose local version is not yet on npm will be published. Everything else is skipped.
 
-**5. Push git tags**
+**5. Create release tags from versioned packages**
+
+```sh
+bun run release:tags
+```
+
+This creates missing `@better-translate/*@version` tags from the package versions produced by Changesets.
+
+**6. Push git tags**
 
 ```sh
 git push --tags

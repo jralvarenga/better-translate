@@ -20,6 +20,7 @@
     "release:pack": "node ./scripts/release-pack-check.mjs",
     "release:verify": "bun run build:packages && bun run test:packages && bun run release:pack",
     "release:publish": "bun run build:packages && changeset publish",
+    "release:tags": "node ./scripts/create-release-tags.mjs",
     "test": "bun run test:packages",
     "test:packages": "bun run test:packages:runtime",
     "test:packages:runtime": "bun run --filter='@better-translate/core' --filter='@better-translate/*' --if-present test",

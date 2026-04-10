@@ -1,5 +1,11 @@
 # landing
 
+## 2.0.3
+
+### Patch Changes
+
+- 3f0d762: SEO implementation
+
 ## 2.0.2
 
 ### Patch Changes

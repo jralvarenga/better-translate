@@ -1,6 +1,19 @@
+import type { Metadata } from "next";
 import { setRequestLocale } from "@better-translate/nextjs/server";
 
+import type { LandingLocale } from "@/lib/i18n/config";
+import { createDocPageMetadata, resolveLandingLocale } from "@/lib/seo";
 import { renderDocPage } from "../_components/render-doc-page";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ lang: string }>;
+}): Promise<Metadata> {
+  const { lang } = await params;
+
+  return createDocPageMetadata(resolveLandingLocale(lang), "cli", "/docs/cli");
+}
 
 export default async function DocsCliPage({
   params,
@@ -8,6 +21,8 @@ export default async function DocsCliPage({
   params: Promise<{ lang: string }>;
 }) {
   const { lang } = await params;
-  setRequestLocale(lang);
-  return renderDocPage("cli");
+  const locale = lang as LandingLocale;
+
+  setRequestLocale(locale);
+  return renderDocPage("cli", locale);
 }

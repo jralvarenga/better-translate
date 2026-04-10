@@ -74,7 +74,14 @@ export const ar = {
     sponsor: "الرعاية",
   },
   hero: {
-    badge: "نفس الإعداد. نماذج مستضافة أو محلية",
+    badges: {
+      sameConfig: "نفس الإعداد. نماذج مستضافة أو محلية",
+      typeSafe: "ترجمات آمنة النوع افتراضياً",
+      oneSetup: "إعداد واحد لـ Next.js وAstro وReact والمزيد",
+      autocomplete: "إكمال تلقائي لكل مفتاح ترجمة",
+      localeSwitching: "تبديل اللغة بدون إعادة تحميل الصفحة",
+      generateLocales: "أنشئ لغات باستخدام AI أو Ollama المحلي",
+    },
     description: "نفس الإعداد. نفس API. استخدم AI Gateway أو نماذج Ollama المحلية عبر Next.js وAstro وReact وTanStack Router وNode العادي. بدون إعادة كتابة.",
     primaryCta: "عرض التوثيق",
     secondaryCta: "عرض على GitHub",

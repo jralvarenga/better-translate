@@ -11,13 +11,13 @@
     "lint": "biome lint ."
   },
   "dependencies": {
-    "@better-translate/react": "^2.0.0",
+    "@better-translate/react": "^1.0.0",
     "@expo/vector-icons": "^15.0.3",
     "@react-native-async-storage/async-storage": "^3.0.1",
     "@react-navigation/bottom-tabs": "^7.4.0",
     "@react-navigation/elements": "^2.6.3",
     "@react-navigation/native": "^7.1.8",
-    "@better-translate/core": "^2.0.0",
+    "@better-translate/core": "^1.0.0",
     "expo": "~54.0.33",
     "expo-constants": "~18.0.13",
     "expo-font": "~14.0.11",
