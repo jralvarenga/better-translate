@@ -50,4 +50,20 @@ CI uses Bun `1.2.23` together with `bun install --frozen-lockfile`, so lockfile 
 Floating specs such as `latest` tags and nightly tags in workspace examples can cause Bun to re-resolve dependencies and report lockfile changes even when no local files changed.
 When intentionally changing dependencies, rerun `bun install` and commit the updated `bun.lock`.
 
-The release workflow's post-`changeset:version` `bun install` is intentional because version bumps change workspace manifests and require a lockfile refresh.
+The release workflow's post-`ci:version` `bun install` is intentional because version bumps change workspace manifests and require a lockfile refresh.
+
+## Release branches
+
+- `main` is the stable branch for website work and stable releases
+- `next` is the optional prerelease branch that can later be merged back into `main`
+
+Normal contributors only need to run `bun changeset` when a package bump is needed. GitHub Actions handles the release PR, npm publish, and package tag push later.
+
+## Release flow
+
+1. If your PR changes a publishable package in `packages/`, run `bun changeset` and commit the generated file.
+2. If your PR is docs-only, app-only, example-only, CI-only, or other non-publishable work, you usually do not need a changeset.
+3. Merge the PR into `main` or `next`.
+4. GitHub Actions opens or updates `chore: release packages`.
+5. Merge that release PR.
+6. GitHub Actions publishes packages, pushes new package tags, and creates GitHub Releases.

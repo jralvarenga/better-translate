@@ -4,13 +4,17 @@ on:
   push:
     branches:
       - main
-      - dev
+      - next
+  merge_group:
   pull_request:
     types:
       - opened
       - synchronize
       - reopened
       - ready_for_review
+
+permissions:
+  contents: read
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -20,10 +24,10 @@ jobs:
   changesets:
     if: >
       github.event_name == 'pull_request' &&
-      github.event.pull_request.base.ref == 'dev'
+      !github.event.pull_request.draft &&
+      !startsWith(github.head_ref, 'changeset-release/') &&
+      contains(fromJSON('["main","next"]'), github.event.pull_request.base.ref)
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
 
     steps:
       - name: Checkout repository
@@ -31,7 +35,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Fetch dev base branch
+      - name: Fetch base branch
         run: git fetch --no-tags origin "+refs/heads/${{ github.event.pull_request.base.ref }}:refs/remotes/origin/${{ github.event.pull_request.base.ref }}"
 
       - name: Require changeset for publishable package changes
@@ -39,12 +43,10 @@ jobs:
           BASE_REF: ${{ github.event.pull_request.base.ref }}
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-        run: node ./scripts/check-dev-changeset.mjs
+        run: node ./scripts/check-changeset.mjs
 
-  packages:
+  quality:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
 
     steps:
       - name: Checkout repository
@@ -67,6 +69,33 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
+      - name: Lint repository
+        run: bun run lint
+
+      - name: Check types
+        run: bun run check-types
+
+  packages:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.2.23
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
       - name: Build publishable packages
         run: bun run build:packages
 
@@ -75,3 +104,39 @@ jobs:
 
       - name: Verify publish tarballs
         run: bun run release:pack
+
+  ci_ok:
+    if: ${{ always() }}
+    needs:
+      - changesets
+      - quality
+      - packages
+    runs-on: ubuntu-latest
+    permissions: {}
+
+    steps:
+      - name: Check required job results
+        env:
+          CHANGESETS_RESULT: ${{ needs.changesets.result }}
+          QUALITY_RESULT: ${{ needs.quality.result }}
+          PACKAGES_RESULT: ${{ needs.packages.result }}
+        run: |
+          set -euo pipefail
+          echo "changesets: ${CHANGESETS_RESULT}"
+          echo "quality: ${QUALITY_RESULT}"
+          echo "packages: ${PACKAGES_RESULT}"
+
+          if [ "${QUALITY_RESULT}" != "success" ]; then
+            echo "Quality job must succeed."
+            exit 1
+          fi
+
+          if [ "${PACKAGES_RESULT}" != "success" ]; then
+            echo "Packages job must succeed."
+            exit 1
+          fi
+
+          if [ "${CHANGESETS_RESULT}" != "success" ] && [ "${CHANGESETS_RESULT}" != "skipped" ]; then
+            echo "Changesets job must succeed or be skipped."
+            exit 1
+          fi

@@ -1,5 +1,25 @@
 # Publishing
 
+## Branch model
+
+- `main`: stable releases and website work
+- `next`: optional prerelease branch that can later be merged into `main`
+
+Both `main` and `next` can accept package changesets. The difference is release behavior:
+
+- `main` publishes stable releases with the npm `latest` tag
+- `next` publishes prereleases with the npm `next` tag, but only when `.changeset/pre.json` exists on `next`
+
+## Do I run changeset and deploy myself?
+
+Usually, no.
+
+- Contributors should run `bun changeset` when a package version bump is needed
+- Contributors should not normally run `changeset version` or `changeset publish`
+- Maintainers publish by merging the repository-managed `chore: release packages` PR that GitHub Actions opens on `main` or `next`
+
+The normal flow is: create a changeset in your feature PR, merge the work, then merge the release PR that automation opens later.
+
 ## Packages
 
 | Package | npm |
@@ -14,9 +34,9 @@
 
 ---
 
-## Local publish
+## Manual publish
 
-Use this when you want to publish manually without going through CI.
+Use this only for recovery or emergency releases when the GitHub Actions flow is unavailable.
 
 ### Prerequisites
 
@@ -49,7 +69,7 @@ Select the affected packages and choose a bump type (`patch` / `minor` / `major`
 **2. Apply version bumps**
 
 ```sh
-bun run changeset:version
+bunx changeset version
 ```
 
 **3. Build all packages**
@@ -61,7 +81,7 @@ bun run build:packages
 **4. Publish to npm**
 
 ```sh
-bunx changeset publish
+bun run release:publish
 ```
 
 Only packages whose local version is not yet on npm will be published. Everything else is skipped.
@@ -97,84 +117,72 @@ This is the recommended flow for team releases.
 3. Make sure the `better-translate` npm org has **Granular Access Tokens** enabled
    (npmjs.com → Organization settings → Security)
 4. Make sure the account behind `NPM_TOKEN` is allowed to publish the `@better-translate` scope and any new packages under it
+5. Make sure GitHub Actions has permission to create releases with `GITHUB_TOKEN`
+   (Repository Settings → Actions → General → Workflow permissions → Read and write permissions)
 
 ### Workflow
 
-Create `.github/workflows/release.yml`:
-
-```yaml
-name: Release
-
-on:
-  push:
-    branches:
-      - main
-
-concurrency: ${{ github.workflow }}-${{ github.ref }}
-
-jobs:
-  release:
-    name: Release
-    runs-on: ubuntu-latest
-    env:
-      NPM_CONFIG_PROVENANCE: true
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: oven-sh/setup-bun@v2
-
-      - uses: actions/setup-node@v5
-        with:
-          node-version: 22
-          registry-url: https://registry.npmjs.org
-
-      - name: Install dependencies
-        run: bun install
-
-      - name: Verify npm auth
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: |
-          npm config get registry
-          npm whoami
-
-      - name: Create release pull request or publish
-        uses: changesets/action@v1
-        with:
-          version: bun run changeset:version && bun install
-          publish: bun run release:publish
-          title: Release packages
-          commit: Release packages
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-```
+The repository already includes `.github/workflows/release.yml`.
 
 ### How it works
 
 1. Make your changes to one or more packages
 2. Run `bun changeset` — select affected packages and choose a bump type
 3. Commit the generated `.changeset/*.md` file and open your pull request
-4. CI validates changes on PRs and pushes to `dev` / `main`, but those runs never publish
-5. Merge to `main`
-6. The release workflow opens or updates the **"Release packages"** pull request
-7. Merge that release PR — CI publishes only the changed packages to npm automatically
+4. CI validates pull requests, merge queue entries, and pushes to `main` / `next`, but those runs never publish directly
+5. Merge the work into `main` for stable releases or into `next` for prereleases
+6. If `next` should publish prereleases, put it into pre mode once with `bun run changeset:enter-next` and commit `.changeset/pre.json` on `next`
+7. The release workflow opens or updates the `chore: release packages` pull request on the branch you merged into
+8. Merge that release PR
+9. GitHub Actions publishes packages to npm, creates any missing `@better-translate/*@version` git tags locally, and pushes only the new tags back to `origin`
+10. GitHub Actions creates or reuses matching GitHub Release entries for those new package tags with auto-generated release notes
 
 `NPM_CONFIG_PROVENANCE=true` attaches signed provenance attestations to published packages via GitHub Actions OIDC.
+
+## Tags and releases
+
+### How tags are pushed
+
+After a successful publish, the workflow runs:
+
+1. `bun run release:tags`
+2. `node ./scripts/push-release-tags.mjs --before-file ... --require-new-tags`
+
+That means the workflow does not use a blanket `git push --tags`. It creates only the missing package tags and then pushes only those newly created tags.
+
+### What a "release" means here
+
+Right now, a release means:
+
+- packages are published to npm
+- matching package git tags are pushed
+- matching GitHub Release entries are created for the new tags
+
+GitHub Release notes are currently generated by GitHub's built-in `--generate-notes` behavior.
+
+## What you need to add
+
+- The `next` branch itself
+- `.changeset/pre.json` committed on `next` after running `bun run changeset:enter-next`
+- GitHub Actions workflow permissions set to `Read and write permissions`
+- A valid `NPM_TOKEN`
+
+You do not need a separate token for GitHub Releases. The workflow uses the built-in `GITHUB_TOKEN`.
 
 ## Debugging Failed Publishes
 
 If publishing still fails, check these in order:
 
-1. Confirm the workflow is running on `main`, not on `dev` or a pull request
+1. Confirm the workflow is running on `main` or `next`, not on a feature branch or a pull request
 2. Confirm the release job prints `https://registry.npmjs.org/` from `npm config get registry`
 3. Confirm `npm whoami` succeeds in the release job
-4. Confirm the `NPM_TOKEN` belongs to an npm user with publish rights for the `@better-translate` scope
-5. Confirm the `@better-translate` scope exists in npm and is owned by the expected user or organization
-6. Confirm the granular token has:
+4. Confirm the publish happened from the merged `chore: release packages` PR, not from a feature PR
+5. If the branch is `next`, confirm `.changeset/pre.json` exists on that branch
+6. Confirm the `NPM_TOKEN` belongs to an npm user with publish rights for the `@better-translate` scope
+7. Confirm the `@better-translate` scope exists in npm and is owned by the expected user or organization
+8. Confirm the granular token has:
    - organization read/write access
    - package and scope read/write access
    - bypass 2FA enabled for automation
-7. If the failing package has never been published before, verify the token owner can create new packages under `@better-translate`
-8. If npm still returns `E404` for every `@better-translate/*` package, treat it as a scope ownership or permission problem before changing the release script again
+9. If the failing package has never been published before, verify the token owner can create new packages under `@better-translate`
+10. If npm still returns `E404` for every `@better-translate/*` package, treat it as a scope ownership or permission problem before changing the release script again

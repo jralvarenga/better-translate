@@ -116,7 +116,9 @@ if (hasChangeset) {
   process.exit(0);
 }
 
-console.error("Publishable package changes require a changeset file on PRs to dev.");
+console.error(
+  `Publishable package changes require a changeset file on PRs targeting ${baseRef}.`,
+);
 console.error("Release-relevant files:");
 for (const file of releaseRelevantFiles) {
   console.error(`- ${file}`);

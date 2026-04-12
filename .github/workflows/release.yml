@@ -4,82 +4,26 @@ on:
   push:
     branches:
       - main
+      - next
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 concurrency:
   group: release-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
-  # This workflow expects the repository Actions setting to allow
-  # "Read and write permissions" so GITHUB_TOKEN can push tags.
-  release_candidates:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    outputs:
-      should_release: ${{ steps.detect.outputs.should_release }}
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v5
-        with:
-          fetch-depth: 0
-
-      - name: Detect unreleased package versions
-        id: detect
-        run: node ./scripts/detect-pending-release.mjs
-
-  packages:
-    needs:
-      - release_candidates
-    if: >
-      needs.release_candidates.outputs.should_release == 'true'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v5
-        with:
-          fetch-depth: 0
-
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: 1.2.23
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v5
-        with:
-          node-version: 22
-
-      - name: Install dependencies
-        run: bun install --frozen-lockfile
-
-      - name: Build publishable packages
-        run: bun run build:packages
-
-      - name: Test publishable packages
-        run: bun run test:packages
-
-      - name: Verify publish tarballs
-        run: bun run release:pack
-
-  main_publish:
-    needs:
-      - release_candidates
-      - packages
-    if: >
-      github.event_name == 'push' &&
-      github.ref == 'refs/heads/main' &&
-      needs.release_candidates.outputs.should_release == 'true'
+  release:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      pull-requests: write
       id-token: write
     env:
       NPM_CONFIG_PROVENANCE: true
+      NPM_CONFIG_TAG: ${{ github.ref_name == 'next' && 'next' || 'latest' }}
 
     steps:
       - name: Checkout repository
@@ -101,35 +45,48 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      - name: Verify npm registry and authentication
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Check whether this branch can release
+        id: release_policy
         run: |
-          set -euo pipefail
-          registry="$(npm config get registry)"
-          echo "npm registry: $registry"
-
-          if [ "$registry" != "https://registry.npmjs.org/" ]; then
-            echo "Expected npm registry to be https://registry.npmjs.org/ but got: $registry"
-            exit 1
+          if [ "${GITHUB_REF_NAME}" = "next" ] && [ ! -f .changeset/pre.json ]; then
+            echo "release_enabled=false" >> "$GITHUB_OUTPUT"
+            echo "next is not in Changesets pre mode. Skipping release."
+            exit 0
           fi
 
-          npm ping
-          npm whoami
+          echo "release_enabled=true" >> "$GITHUB_OUTPUT"
 
       - name: Capture current release tags
+        if: steps.release_policy.outputs.release_enabled == 'true'
         run: git tag --list '@better-translate/*@*' | sort > "$RUNNER_TEMP/release-tags-before.txt"
 
-      - name: Publish packages from main
+      - name: Create release pull request or publish packages
+        if: steps.release_policy.outputs.release_enabled == 'true'
+        id: changesets
+        uses: changesets/action@v1
+        with:
+          version: bun run ci:version
+          publish: bun run ci:release
+          title: chore: release packages
+          commit: chore: release packages
+          createGithubReleases: false
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: bun run release:publish
 
       - name: Create release tags from package versions
+        if: steps.release_policy.outputs.release_enabled == 'true' && steps.changesets.outputs.published == 'true'
         run: bun run release:tags
 
       - name: Push newly created release tags
+        if: steps.release_policy.outputs.release_enabled == 'true' && steps.changesets.outputs.published == 'true'
         env:
           GIT_REMOTE: origin
         run: node ./scripts/push-release-tags.mjs --before-file "$RUNNER_TEMP/release-tags-before.txt" --require-new-tags
+
+      - name: Create GitHub Releases for new package tags
+        if: steps.release_policy.outputs.release_enabled == 'true' && steps.changesets.outputs.published == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bun run release:github --before-file "$RUNNER_TEMP/release-tags-before.txt"

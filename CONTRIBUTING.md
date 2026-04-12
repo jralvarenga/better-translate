@@ -68,11 +68,12 @@ You usually do not need a changeset for:
 - changes limited to `apps/landing` or `examples/`
 - internal-only workspace updates that do not affect published packages
 
-The repository uses the Changesets GitHub Action to open release pull requests from pending changesets on `main`.
+The repository uses the Changesets GitHub Action to open release pull requests from pending changesets on `main` and `next`.
 
 ## Pull Requests
 
-- Branch from `main`
+- Use `main` for stable work and website work
+- Use `next` for work you want to batch up before merging back into `main`
 - Keep pull requests focused and easy to review
 - Link the related issue or explain the motivation clearly
 - Run the relevant root commands before opening your PR
@@ -80,9 +81,9 @@ The repository uses the Changesets GitHub Action to open release pull requests f
 - Add or update docs when the change affects public usage
 - Commit any required lockfile updates when dependencies change
 
-For publishable package changes, make sure the PR includes a changeset file unless the version bump is intentionally handled elsewhere.
+For publishable package changes, make sure the PR includes a changeset file unless the version bump is intentionally handled elsewhere. Repository-generated `changeset-release/*` PRs are the exception.
 
-CI runs on pull requests plus pushes to `main` and `dev`. These runs are verification-only and do not publish packages.
+CI runs on pull requests, merge groups, and pushes to `main` and `next`. These runs are verification-only and do not publish packages.
 
 ## Release Notes Workflow
 
@@ -92,4 +93,24 @@ When your PR changes a publishable package:
 2. Run `bun changeset`.
 3. Commit the generated `.changeset/*.md` file with your PR.
 
-After merge to `main`, the release workflow will prepare the versioning pull request and publish through the existing GitHub Actions release process. Pushes to `dev` and pull request builds never publish to npm.
+You should normally run only `bun changeset` for package work.
+
+- When changesets land on `main`, the release workflow opens or updates a stable release PR. Merging that release PR publishes packages to npm with the `latest` dist-tag and pushes the matching `@better-translate/*@version` git tags.
+- When that publish succeeds, the workflow also creates matching GitHub Release entries for the new package tags.
+- When changesets land on `next`, the release workflow does the same for prereleases, but only while `next` is in Changesets pre mode.
+
+To put `next` into prerelease mode after you create it:
+
+1. Check out `next`.
+2. Run `bun run changeset:enter-next`.
+3. Commit the generated `.changeset/pre.json` on `next`.
+
+When you are ready to fold `next` back into `main`:
+
+1. Check out `next`.
+2. Run `bun run changeset:exit-next`.
+3. Commit the updated Changesets files on `next`.
+4. Merge `next` into `main`.
+5. Merge the release PR that opens on `main`.
+
+Pushes to `main`, `next`, and normal pull request builds never publish directly unless they are the repository-managed release workflow run for that branch.

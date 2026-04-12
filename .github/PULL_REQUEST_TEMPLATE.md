@@ -18,6 +18,12 @@ Describe the change and why it is needed.
 
 - [ ] This PR includes a changeset for publishable package changes
 - [ ] No changeset is needed because this change is docs-only, example-only, app-only, CI-only, or internal-only
+- [ ] This PR targets the intended branch (`main` for stable/website work or `next` when batching prerelease work)
+
+## Release Flow
+
+- [ ] I understand that normal package releases happen by merging the later `chore: release packages` PR
+- [ ] I understand that tags and GitHub Releases are created by GitHub Actions, not pushed manually from my machine
 
 ## Checklist
 
