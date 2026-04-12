@@ -28,6 +28,7 @@ jobs:
         uses: actions/checkout@v5
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
@@ -57,6 +58,29 @@ jobs:
       - name: Capture current release tags
         if: steps.release_policy.outputs.release_enabled == 'true'
         run: git tag --list '@better-translate/*@*' | sort > "$RUNNER_TEMP/release-tags-before.txt"
+
+      - name: Configure deploy key for git pushes
+        if: steps.release_policy.outputs.release_enabled == 'true'
+        env:
+          RELEASE_DEPLOY_KEY: ${{ secrets.RELEASE_DEPLOY_KEY }}
+        run: |
+          if [ -z "${RELEASE_DEPLOY_KEY}" ]; then
+            echo "Missing required secret: RELEASE_DEPLOY_KEY"
+            exit 1
+          fi
+
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "${RELEASE_DEPLOY_KEY}" > ~/.ssh/release_deploy_key
+          chmod 600 ~/.ssh/release_deploy_key
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
+          cat >> ~/.ssh/config <<'EOF'
+          Host github.com
+            IdentityFile ~/.ssh/release_deploy_key
+            IdentitiesOnly yes
+            StrictHostKeyChecking yes
+          EOF
+          git remote set-url origin "git@github.com:${GITHUB_REPOSITORY}.git"
 
       - name: Detect pending changesets
         if: steps.release_policy.outputs.release_enabled == 'true'
