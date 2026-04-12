@@ -1,5 +1,13 @@
 # @better-translate/astro
 
+## 1.1.3
+
+### Patch Changes
+
+- 9f9b20c: Updating changeset and release workflow
+- Updated dependencies [9f9b20c]
+  - @better-translate/core@1.2.2
+
 ## 1.1.2
 
 ### Patch Changes
