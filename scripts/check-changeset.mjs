@@ -116,10 +116,14 @@ if (hasChangeset) {
   process.exit(0);
 }
 
-console.error("Publishable package changes require a changeset file on PRs to dev.");
+console.error(
+  `Publishable package changes require a changeset file on PRs targeting ${baseRef}.`,
+);
 console.error("Release-relevant files:");
 for (const file of releaseRelevantFiles) {
   console.error(`- ${file}`);
 }
-console.error("Add a .changeset/*.md file or keep the change docs-only/internal-only.");
+console.error(
+  "Add a .changeset/*.md file or keep the change docs-only/internal-only.",
+);
 process.exit(1);

@@ -2,16 +2,7 @@ import { mkdtemp, readFile, rm } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { spawn } from "node:child_process";
-
-const packages = [
-  "packages/core",
-  "packages/astro",
-  "packages/cli",
-  "packages/md",
-  "packages/nextjs",
-  "packages/react",
-  "packages/tanstack-router",
-];
+import { publishablePackageDirs } from "./release-packages.mjs";
 
 const requiredFiles = new Set(["package.json", "README.md", "LICENSE"]);
 
@@ -57,7 +48,7 @@ async function main() {
   );
 
   try {
-    for (const pkgDir of packages) {
+    for (const pkgDir of publishablePackageDirs) {
       console.log(`\n==> Checking ${pkgDir}`);
 
       const { stdout } = await run("npm", ["pack", "--dry-run", "--json"], {

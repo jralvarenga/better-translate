@@ -172,7 +172,11 @@ describe("@better-translate/md collection helpers", () => {
     await mkdir(join(rootDir, "en", "docs"), {
       recursive: true,
     });
-    await writeFile(join(rootDir, "en", "docs", "intro.md"), "# Intro\n", "utf8");
+    await writeFile(
+      join(rootDir, "en", "docs", "intro.md"),
+      "# Intro\n",
+      "utf8",
+    );
     await writeFile(join(rootDir, "es"), "not-a-directory", "utf8");
     const translator = await configureTranslations({
       availableLocales: ["en", "es"] as const,

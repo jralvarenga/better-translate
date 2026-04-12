@@ -1,19 +1,8 @@
 import { execFileSync } from "node:child_process";
-import { readFileSync } from "node:fs";
-import path from "node:path";
+import { getPublishablePackages } from "./release-packages.mjs";
 
 const args = process.argv.slice(2);
 const dryRun = args.includes("--dry-run");
-
-const publishablePackages = [
-  "packages/core",
-  "packages/astro",
-  "packages/cli",
-  "packages/md",
-  "packages/nextjs",
-  "packages/react",
-  "packages/tanstack-router",
-];
 
 function git(args) {
   return execFileSync("git", args, { encoding: "utf8" }).trim();
@@ -23,12 +12,6 @@ function gitInherit(args) {
   execFileSync("git", args, { stdio: "inherit" });
 }
 
-function readPackageJson(packageDirectory) {
-  return JSON.parse(
-    readFileSync(path.join(packageDirectory, "package.json"), "utf8"),
-  );
-}
-
 const existingTags = new Set(
   git(["tag", "--list", "@better-translate/*@*"])
     .split("\n")
@@ -36,8 +19,8 @@ const existingTags = new Set(
     .filter(Boolean),
 );
 
+const publishablePackages = getPublishablePackages();
 const missingTags = publishablePackages
-  .map((packageDirectory) => readPackageJson(packageDirectory))
   .map((pkg) => `${pkg.name}@${pkg.version}`)
   .filter((tag) => !existingTags.has(tag))
   .sort((left, right) => left.localeCompare(right));

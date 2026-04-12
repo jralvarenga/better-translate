@@ -168,7 +168,10 @@ function setMessageValue(
   }
 
   const finalSegment = segments[segments.length - 1]!;
-  const finalExisting = Object.prototype.hasOwnProperty.call(current, finalSegment)
+  const finalExisting = Object.prototype.hasOwnProperty.call(
+    current,
+    finalSegment,
+  )
     ? current[finalSegment]
     : undefined;
 
@@ -279,11 +282,7 @@ function buildPreservedOptionsText(
     remainingProperties,
   );
 
-  return printer.printNode(
-    ts.EmitHint.Unspecified,
-    objectLiteral,
-    sourceFile,
-  );
+  return printer.printNode(ts.EmitHint.Unspecified, objectLiteral, sourceFile);
 }
 
 function createWarning(
@@ -419,7 +418,10 @@ function analyzeFile(options: {
     literalCandidates.push({
       callExpression: node,
       fullKey,
-      rewrittenOptionsText: buildPreservedOptionsText(sourceFile, node.arguments[1]),
+      rewrittenOptionsText: buildPreservedOptionsText(
+        sourceFile,
+        node.arguments[1],
+      ),
       sourceValue: literalValue,
     });
 

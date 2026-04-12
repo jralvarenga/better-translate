@@ -12,7 +12,11 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { lang } = await params;
 
-  return createDocPageMetadata(resolveLandingLocale(lang), "adapters-nextjs", "/docs/adapters/nextjs");
+  return createDocPageMetadata(
+    resolveLandingLocale(lang),
+    "adapters-nextjs",
+    "/docs/adapters/nextjs",
+  );
 }
 
 export default async function DocsAdapterNextjsPage({

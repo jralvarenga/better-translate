@@ -9,12 +9,15 @@ const beforeFilePath =
   beforeFileIndex >= 0 ? args[beforeFileIndex + 1] : undefined;
 
 if (!beforeFilePath) {
-  console.error("Usage: node ./scripts/push-release-tags.mjs --before-file <path> [--dry-run]");
+  console.error(
+    "Usage: node ./scripts/push-release-tags.mjs --before-file <path> [--dry-run]",
+  );
   process.exit(1);
 }
 
 const remote = process.env.GIT_REMOTE || "origin";
-const tagPattern = /^@better-translate\/[0-9A-Za-z._-]+@\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$/;
+const tagPattern =
+  /^@better-translate\/[0-9A-Za-z._-]+@\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$/;
 
 function git(args) {
   return execFileSync("git", args, { encoding: "utf8" }).trim();
@@ -73,7 +76,13 @@ for (const tag of newTags) {
 }
 
 for (const tag of newTags) {
-  const remoteRef = git(["ls-remote", "--tags", "--refs", remote, `refs/tags/${tag}`]);
+  const remoteRef = git([
+    "ls-remote",
+    "--tags",
+    "--refs",
+    remote,
+    `refs/tags/${tag}`,
+  ]);
   if (!remoteRef) {
     console.error(`Failed to verify pushed tag on ${remote}: ${tag}`);
     process.exit(1);

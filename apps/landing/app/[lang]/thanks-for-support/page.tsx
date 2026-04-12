@@ -54,7 +54,11 @@ export default async function ThanksForSupportPage({
         ease={50}
       />
       <div className="relative z-10">
-        <ThanksForSupportSection locale={locale} t={t} checkoutId={checkoutId} />
+        <ThanksForSupportSection
+          locale={locale}
+          t={t}
+          checkoutId={checkoutId}
+        />
       </div>
     </div>
   );

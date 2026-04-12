@@ -1,9 +1,5 @@
 import Link from "next/link";
-import {
-  RiBook2Line,
-  RiGithubLine,
-  RiHeart3Line,
-} from "@remixicon/react";
+import { RiBook2Line, RiGithubLine, RiHeart3Line } from "@remixicon/react";
 import { Button } from "@/components/ui/button";
 import { TextEffect } from "@/components/ui/text-effect";
 import { AnimatedGroup } from "@/components/ui/animated-group";

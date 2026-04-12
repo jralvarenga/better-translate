@@ -12,7 +12,11 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { lang } = await params;
 
-  return createDocPageMetadata(resolveLandingLocale(lang), "adapters-md", "/docs/adapters/md");
+  return createDocPageMetadata(
+    resolveLandingLocale(lang),
+    "adapters-md",
+    "/docs/adapters/md",
+  );
 }
 
 export default async function DocsAdapterMdPage({

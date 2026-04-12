@@ -26,7 +26,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
       },
       changeFrequency: route.changeFrequency,
       priority: route.priority,
-      url: new URL(getLocalizedRoutePath(route.routePath, locale), siteUrl).toString(),
+      url: new URL(
+        getLocalizedRoutePath(route.routePath, locale),
+        siteUrl,
+      ).toString(),
     })),
   );
 }

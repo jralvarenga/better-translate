@@ -128,9 +128,7 @@ function formatTsPropertyKey(key: string): string {
   if (key === "__proto__") {
     return JSON.stringify(key);
   }
-  return /^[A-Za-z_$][A-Za-z0-9_$]*$/u.test(key)
-    ? key
-    : JSON.stringify(key);
+  return /^[A-Za-z_$][A-Za-z0-9_$]*$/u.test(key) ? key : JSON.stringify(key);
 }
 
 function serializeTsObject(
