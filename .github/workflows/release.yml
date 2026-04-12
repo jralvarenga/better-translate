@@ -82,6 +82,16 @@ jobs:
           EOF
           git remote set-url origin "git@github.com:${GITHUB_REPOSITORY}.git"
 
+      - name: Verify deploy key authentication
+        if: steps.release_policy.outputs.release_enabled == 'true'
+        run: |
+          ssh-keygen -y -f ~/.ssh/release_deploy_key > /dev/null
+          ssh -o BatchMode=yes -T git@github.com || status=$?
+          if [ "${status:-0}" -ne 1 ]; then
+            echo "Deploy key authentication failed."
+            exit "${status:-1}"
+          fi
+
       - name: Detect pending changesets
         if: steps.release_policy.outputs.release_enabled == 'true'
         id: pending_changesets
