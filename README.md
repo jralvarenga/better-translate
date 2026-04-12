@@ -57,13 +57,11 @@ The release workflow's post-`ci:version` `bun install` is intentional because ve
 - `main` is the production branch for website work and package releases
 - `next` is an optional staging branch that can later be merged into `main`
 
-Normal contributors only need to run `bun changeset` when a package bump is needed. GitHub Actions handles the release PR, npm publish, and package tag push later.
+Normal contributors only need to run `bun changeset` when a package bump is needed. GitHub Actions handles versioning, npm publish, package tags, and GitHub Releases later on `main`.
 
 ## Release flow
 
 1. If your PR changes a publishable package in `packages/`, run `bun changeset` and commit the generated file.
 2. If your PR is docs-only, app-only, example-only, CI-only, or other non-publishable work, you usually do not need a changeset.
 3. Merge the PR into `main` if it should ship, or into `next` if you are still batching changes before a later merge to `main`.
-4. When changesets reach `main`, GitHub Actions opens or updates `chore: release packages`.
-5. Merge that release PR.
-6. GitHub Actions publishes packages, pushes new package tags, and creates GitHub Releases.
+4. When changesets reach `main`, GitHub Actions updates package versions, publishes packages, pushes new package tags, and creates GitHub Releases.

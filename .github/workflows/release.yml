@@ -18,7 +18,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      pull-requests: write
       id-token: write
     env:
       NPM_CONFIG_PROVENANCE: true
@@ -59,33 +58,58 @@ jobs:
         if: steps.release_policy.outputs.release_enabled == 'true'
         run: git tag --list '@better-translate/*@*' | sort > "$RUNNER_TEMP/release-tags-before.txt"
 
-      - name: Create release pull request or publish packages
+      - name: Detect pending changesets
         if: steps.release_policy.outputs.release_enabled == 'true'
-        id: changesets
-        uses: changesets/action@v1
-        with:
-          version: bun run ci:version
-          publish: bun run ci:release
-          title: "chore: release packages"
-          commit: "chore: release packages"
-          createGithubReleases: false
+        id: pending_changesets
+        run: |
+          if find .changeset -maxdepth 1 -name '*.md' -print -quit | grep -q .; then
+            echo "has_changesets=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_changesets=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Apply changeset version bumps
+        if: steps.release_policy.outputs.release_enabled == 'true' && steps.pending_changesets.outputs.has_changesets == 'true'
+        run: bun run ci:version
+
+      - name: Commit version updates
+        if: steps.release_policy.outputs.release_enabled == 'true' && steps.pending_changesets.outputs.has_changesets == 'true'
+        id: version_commit
+        run: |
+          if git diff --quiet; then
+            echo "created=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "chore: release packages"
+          echo "created=true" >> "$GITHUB_OUTPUT"
+
+      - name: Push version updates to main
+        if: steps.release_policy.outputs.release_enabled == 'true' && steps.version_commit.outputs.created == 'true'
+        run: git push origin HEAD:${GITHUB_REF_NAME}
+
+      - name: Publish packages from current main state
+        if: steps.release_policy.outputs.release_enabled == 'true'
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: bun run ci:release
 
       - name: Create release tags from package versions
-        if: steps.release_policy.outputs.release_enabled == 'true' && steps.changesets.outputs.published == 'true'
+        if: steps.release_policy.outputs.release_enabled == 'true'
         run: bun run release:tags
 
       - name: Push newly created release tags
-        if: steps.release_policy.outputs.release_enabled == 'true' && steps.changesets.outputs.published == 'true'
+        if: steps.release_policy.outputs.release_enabled == 'true'
         env:
           GIT_REMOTE: origin
-        run: node ./scripts/push-release-tags.mjs --before-file "$RUNNER_TEMP/release-tags-before.txt" --require-new-tags
+        run: node ./scripts/push-release-tags.mjs --before-file "$RUNNER_TEMP/release-tags-before.txt"
 
       - name: Create GitHub Releases for new package tags
-        if: steps.release_policy.outputs.release_enabled == 'true' && steps.changesets.outputs.published == 'true'
+        if: steps.release_policy.outputs.release_enabled == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: bun run release:github --before-file "$RUNNER_TEMP/release-tags-before.txt"

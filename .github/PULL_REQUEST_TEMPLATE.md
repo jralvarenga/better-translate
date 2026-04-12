@@ -22,7 +22,7 @@ Describe the change and why it is needed.
 
 ## Release Flow
 
-- [ ] I understand that normal package releases happen by merging the later `chore: release packages` PR
+- [ ] I understand that package releases happen automatically after changesets reach `main`
 - [ ] I understand that tags and GitHub Releases are created by GitHub Actions, not pushed manually from my machine
 
 ## Checklist

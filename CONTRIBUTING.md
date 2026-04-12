@@ -68,7 +68,7 @@ You usually do not need a changeset for:
 - changes limited to `apps/landing` or `examples/`
 - internal-only workspace updates that do not affect published packages
 
-The repository uses the Changesets GitHub Action to open release pull requests from pending changesets on `main`.
+The repository uses Changesets in GitHub Actions to version and publish packages from `main`.
 
 ## Pull Requests
 
@@ -81,7 +81,7 @@ The repository uses the Changesets GitHub Action to open release pull requests f
 - Add or update docs when the change affects public usage
 - Commit any required lockfile updates when dependencies change
 
-For publishable package changes, make sure the PR includes a changeset file unless the version bump is intentionally handled elsewhere. Repository-generated `changeset-release/*` PRs are the exception.
+For publishable package changes, make sure the PR includes a changeset file unless the version bump is intentionally handled elsewhere.
 
 CI runs on pull requests, merge groups, and pushes to `main` and `next`. These runs are verification-only and do not publish packages.
 
@@ -95,8 +95,8 @@ When your PR changes a publishable package:
 
 You should normally run only `bun changeset` for package work.
 
-- When changesets land on `main`, the release workflow opens or updates a stable release PR. Merging that release PR publishes packages to npm with the `latest` dist-tag and pushes the matching `@better-translate/*@version` git tags.
+- When changesets land on `main`, the release workflow applies the version bumps, commits them back to `main`, publishes packages to npm with the `latest` dist-tag, and pushes the matching `@better-translate/*@version` git tags.
 - When that publish succeeds, the workflow also creates matching GitHub Release entries for the new package tags.
 - Pushes to `next` never publish directly. Merge `next` into `main` when you want staged package changes to become releasable.
 
-Pushes to `main`, `next`, and normal pull request builds never publish directly unless they are the repository-managed release workflow run on `main` after the release PR is merged.
+Pushes to `main`, `next`, and normal pull request builds never publish directly unless they are the repository-managed release workflow run on `main`.
