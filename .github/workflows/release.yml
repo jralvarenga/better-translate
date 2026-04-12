@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - next
   workflow_dispatch:
 
 permissions:
@@ -73,8 +72,8 @@ jobs:
         with:
           version: bun run ci:version
           publish: bun run ci:release
-          title: chore: release packages
-          commit: chore: release packages
+          title: "chore: release packages"
+          commit: "chore: release packages"
           createGithubReleases: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
