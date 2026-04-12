@@ -1,6 +1,6 @@
 {
   "name": "@better-translate/nextjs",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Next.js integration package for Better Translate.",
   "license": "MIT",
   "type": "module",
@@ -31,7 +31,11 @@
     },
     "./package.json": "./package.json"
   },
-  "files": ["dist", "LICENSE", "README.md"],
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
   "scripts": {
     "build": "tsup src/index.ts src/server.ts src/navigation.tsx src/proxy.ts --format esm,cjs --dts --clean",
     "check-types": "tsc --noEmit",
@@ -52,7 +56,7 @@
   },
   "dependencies": {
     "@formatjs/intl-localematcher": "^0.6.2",
-    "@better-translate/core": "^1.2.1",
+    "@better-translate/core": "^1.2.2",
     "negotiator": "^1.0.0"
   },
   "peerDependencies": {
@@ -63,5 +67,11 @@
   "devDependencies": {
     "@repo/typescript-config": "*"
   },
-  "keywords": ["i18n", "l10n", "nextjs", "translations", "typescript"]
+  "keywords": [
+    "i18n",
+    "l10n",
+    "nextjs",
+    "translations",
+    "typescript"
+  ]
 }
