@@ -44,7 +44,7 @@ const TypeScriptIcon = ({ className }: { className?: string }) =>
     {
       className: `font-mono font-bold text-blue-500 ${className ?? ""}`,
     },
-    "TS"
+    "TS",
   );
 
 const catalog = [
@@ -113,9 +113,9 @@ const catalog = [
 ] as const satisfies readonly AnyCatalogItem[];
 
 export function getCatalogItems<TKind extends CatalogKind>(
-  kind: TKind
+  kind: TKind,
 ): readonly CatalogItem<TKind>[] {
   return catalog.filter(
-    (item) => item.kind === kind
+    (item) => item.kind === kind,
   ) as unknown as readonly CatalogItem<TKind>[];
 }

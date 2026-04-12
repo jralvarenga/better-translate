@@ -155,7 +155,11 @@ export const mdxComponents = {
       {...props}
     />
   ),
-  img: ({ className, alt, ...props }: React.ComponentPropsWithoutRef<"img">) => (
+  img: ({
+    className,
+    alt,
+    ...props
+  }: React.ComponentPropsWithoutRef<"img">) => (
     <img className={cn("rounded-md", className)} alt={alt} {...props} />
   ),
   hr: (props: React.ComponentPropsWithoutRef<"hr">) => (
@@ -219,7 +223,8 @@ export const mdxComponents = {
       );
     }
 
-    const isSh = language === "sh" || language === "bash" || language === "shell";
+    const isSh =
+      language === "sh" || language === "bash" || language === "shell";
     const hasNpmCommand = /^(npm |npx )/m.test(code);
 
     if (isSh && hasNpmCommand) {

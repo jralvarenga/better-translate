@@ -31,7 +31,9 @@ export type RouteSeoSpec = {
 };
 
 export type IndexableRoute = {
-  changeFrequency: NonNullable<MetadataRoute.Sitemap[number]["changeFrequency"]>;
+  changeFrequency: NonNullable<
+    MetadataRoute.Sitemap[number]["changeFrequency"]
+  >;
   priority: number;
   routePath: string;
 };
@@ -161,7 +163,10 @@ export function createRouteSeoSpec(
   };
 }
 
-export function getLocalizedRoutePath(routePath: string, locale: LandingLocale) {
+export function getLocalizedRoutePath(
+  routePath: string,
+  locale: LandingLocale,
+) {
   if (routePath === "/") {
     return `/${locale}`;
   }

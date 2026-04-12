@@ -19,7 +19,7 @@ export const Logo = ({
           <span
             className={cn(
               "font-mono text-sm font-semibold tracking-tight text-foreground",
-              className
+              className,
             )}
           >
             better-translate

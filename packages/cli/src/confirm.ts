@@ -13,7 +13,9 @@ function formatSummary(request: MarkdownWriteConfirmationRequest): string {
   const parts: string[] = [];
 
   if (request.createCount > 0) {
-    parts.push(`create ${pluralize(request.createCount, "new file", "new files")}`);
+    parts.push(
+      `create ${pluralize(request.createCount, "new file", "new files")}`,
+    );
   }
 
   if (request.overwriteCount > 0) {
@@ -60,7 +62,9 @@ export async function confirmMarkdownWrites(
     );
   }
 
-  const locales = Array.from(new Set(request.writes.map((write) => write.locale)))
+  const locales = Array.from(
+    new Set(request.writes.map((write) => write.locale)),
+  )
     .sort()
     .join(", ");
   const projectCwd = request.projectCwd ?? process.cwd();

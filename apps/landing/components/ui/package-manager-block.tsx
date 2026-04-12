@@ -62,7 +62,12 @@ function transformForPm(code: string, pm: PM): string {
 function getStoredPm(): PM {
   if (typeof window === "undefined") return "npm";
   const stored = localStorage.getItem("preferred-pm");
-  if (stored === "npm" || stored === "pnpm" || stored === "yarn" || stored === "bun") {
+  if (
+    stored === "npm" ||
+    stored === "pnpm" ||
+    stored === "yarn" ||
+    stored === "bun"
+  ) {
     return stored;
   }
   return "npm";
@@ -85,7 +90,9 @@ export function PackageManagerBlock({ code }: { code: string }) {
 
   function handleSelect(next: PM) {
     localStorage.setItem("preferred-pm", next);
-    window.dispatchEvent(new CustomEvent<PM>(PM_CHANGE_EVENT, { detail: next }));
+    window.dispatchEvent(
+      new CustomEvent<PM>(PM_CHANGE_EVENT, { detail: next }),
+    );
     setPm(next);
   }
 
