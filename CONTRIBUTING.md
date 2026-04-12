@@ -68,11 +68,11 @@ You usually do not need a changeset for:
 - changes limited to `apps/landing` or `examples/`
 - internal-only workspace updates that do not affect published packages
 
-The repository uses the Changesets GitHub Action to open release pull requests from pending changesets on `main` and `next`.
+The repository uses the Changesets GitHub Action to open release pull requests from pending changesets on `main`.
 
 ## Pull Requests
 
-- Use `main` for stable work and website work
+- Use `main` for releasable work and website work
 - Use `next` for work you want to batch up before merging back into `main`
 - Keep pull requests focused and easy to review
 - Link the related issue or explain the motivation clearly
@@ -97,20 +97,6 @@ You should normally run only `bun changeset` for package work.
 
 - When changesets land on `main`, the release workflow opens or updates a stable release PR. Merging that release PR publishes packages to npm with the `latest` dist-tag and pushes the matching `@better-translate/*@version` git tags.
 - When that publish succeeds, the workflow also creates matching GitHub Release entries for the new package tags.
-- When changesets land on `next`, the release workflow does the same for prereleases, but only while `next` is in Changesets pre mode.
+- Pushes to `next` never publish directly. Merge `next` into `main` when you want staged package changes to become releasable.
 
-To put `next` into prerelease mode after you create it:
-
-1. Check out `next`.
-2. Run `bun run changeset:enter-next`.
-3. Commit the generated `.changeset/pre.json` on `next`.
-
-When you are ready to fold `next` back into `main`:
-
-1. Check out `next`.
-2. Run `bun run changeset:exit-next`.
-3. Commit the updated Changesets files on `next`.
-4. Merge `next` into `main`.
-5. Merge the release PR that opens on `main`.
-
-Pushes to `main`, `next`, and normal pull request builds never publish directly unless they are the repository-managed release workflow run for that branch.
+Pushes to `main`, `next`, and normal pull request builds never publish directly unless they are the repository-managed release workflow run on `main` after the release PR is merged.

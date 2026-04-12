@@ -18,7 +18,7 @@ Describe the change and why it is needed.
 
 - [ ] This PR includes a changeset for publishable package changes
 - [ ] No changeset is needed because this change is docs-only, example-only, app-only, CI-only, or internal-only
-- [ ] This PR targets the intended branch (`main` for stable/website work or `next` when batching prerelease work)
+- [ ] This PR targets the intended branch (`main` for releasable/website work or `next` when batching changes before a later merge to `main`)
 
 ## Release Flow
 

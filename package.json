@@ -13,8 +13,6 @@
     "format": "biome format --write .",
     "check": "biome check --write .",
     "check:lockfile": "bun install --frozen-lockfile --dry-run",
-    "changeset:enter-next": "changeset pre enter next",
-    "changeset:exit-next": "changeset pre exit",
     "ci:version": "changeset version && bun install --no-frozen-lockfile",
     "ci:release": "node ./scripts/verify-npm-auth.mjs && bun run release:verify && bun run release:publish",
     "check-types": "NODE_OPTIONS=--max-old-space-size=8192 turbo run check-types",

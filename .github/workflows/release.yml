@@ -22,7 +22,7 @@ jobs:
       id-token: write
     env:
       NPM_CONFIG_PROVENANCE: true
-      NPM_CONFIG_TAG: ${{ github.ref_name == 'next' && 'next' || 'latest' }}
+      NPM_CONFIG_TAG: latest
 
     steps:
       - name: Checkout repository
@@ -47,16 +47,10 @@ jobs:
       - name: Check whether this branch can release
         id: release_policy
         run: |
-          if [ "${GITHUB_REF_NAME}" != "main" ] && [ "${GITHUB_REF_NAME}" != "next" ]; then
+          if [ "${GITHUB_REF_NAME}" != "main" ]; then
             echo "Unsupported release branch: ${GITHUB_REF_NAME}."
-            echo "Releases can only run from main or next."
+            echo "Releases can only run from main."
             exit 1
-          fi
-
-          if [ "${GITHUB_REF_NAME}" = "next" ] && [ ! -f .changeset/pre.json ]; then
-            echo "release_enabled=false" >> "$GITHUB_OUTPUT"
-            echo "next is not in Changesets pre mode. Skipping release."
-            exit 0
           fi
 
           echo "release_enabled=true" >> "$GITHUB_OUTPUT"
