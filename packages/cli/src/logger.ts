@@ -133,7 +133,10 @@ export function createSpinnerLogger(): CliLogger {
       // Extract: rewrote file
       const rewriteMatch = message.match(/^rewrote (.+)/);
       if (rewriteMatch) {
-        const shortPath = (rewriteMatch[1] ?? "").split("/").slice(-3).join("/");
+        const shortPath = (rewriteMatch[1] ?? "")
+          .split("/")
+          .slice(-3)
+          .join("/");
         spinner.succeed(`${pc.green("✓")} ${shortPath}`);
         return;
       }
@@ -141,14 +144,20 @@ export function createSpinnerLogger(): CliLogger {
       // Extract: updated messages file
       const updatedMsgMatch = message.match(/^updated messages (.+)/);
       if (updatedMsgMatch) {
-        const shortPath = (updatedMsgMatch[1] ?? "").split("/").slice(-3).join("/");
+        const shortPath = (updatedMsgMatch[1] ?? "")
+          .split("/")
+          .slice(-3)
+          .join("/");
         spinner.stopAndPersist({ symbol: pc.blue("◆"), text: shortPath });
         return;
       }
 
       // Extract: warning
       if (message.startsWith("warn ")) {
-        spinner.stopAndPersist({ symbol: pc.yellow("⚠"), text: pc.yellow(message.slice(5)) });
+        spinner.stopAndPersist({
+          symbol: pc.yellow("⚠"),
+          text: pc.yellow(message.slice(5)),
+        });
         return;
       }
 
@@ -159,7 +168,11 @@ export function createSpinnerLogger(): CliLogger {
       if (extractSummaryMatch) {
         spinner.stop();
         console.log(
-          pc.bold(pc.green(`\n✓ ${message.charAt(0).toUpperCase()}${message.slice(1)}`)),
+          pc.bold(
+            pc.green(
+              `\n✓ ${message.charAt(0).toUpperCase()}${message.slice(1)}`,
+            ),
+          ),
         );
         return;
       }

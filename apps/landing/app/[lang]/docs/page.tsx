@@ -12,7 +12,11 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { lang } = await params;
 
-  return createDocPageMetadata(resolveLandingLocale(lang), "introduction", "/docs");
+  return createDocPageMetadata(
+    resolveLandingLocale(lang),
+    "introduction",
+    "/docs",
+  );
 }
 
 export default async function DocsIntroductionPage({

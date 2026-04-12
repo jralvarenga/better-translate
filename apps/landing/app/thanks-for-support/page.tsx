@@ -21,9 +21,9 @@ export default async function ThanksForSupportRedirect({
   const basePath = localizePathname(
     "/thanks-for-support",
     routing.defaultLocale,
-    routing
+    routing,
   );
   redirect(
-    checkoutId ? `${basePath}?id=${encodeURIComponent(checkoutId)}` : basePath
+    checkoutId ? `${basePath}?id=${encodeURIComponent(checkoutId)}` : basePath,
   );
 }

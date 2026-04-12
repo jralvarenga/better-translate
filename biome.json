@@ -7,7 +7,20 @@
   },
   "files": {
     "ignoreUnknown": true,
-    "ignore": ["**/.expo", "**/.astro"]
+    "ignore": [
+      ".agents/**",
+      "**/.expo",
+      "**/.astro",
+      "**/.next/**",
+      "**/.output/**",
+      "**/.turbo/**",
+      "**/.vercel",
+      "**/.netlify",
+      "**/dist/**",
+      "**/build/**",
+      "**/node_modules/**",
+      "**/coverage/**"
+    ]
   },
   "formatter": {
     "enabled": true,

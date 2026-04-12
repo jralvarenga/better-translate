@@ -123,5 +123,7 @@ console.error("Release-relevant files:");
 for (const file of releaseRelevantFiles) {
   console.error(`- ${file}`);
 }
-console.error("Add a .changeset/*.md file or keep the change docs-only/internal-only.");
+console.error(
+  "Add a .changeset/*.md file or keep the change docs-only/internal-only.",
+);
 process.exit(1);
