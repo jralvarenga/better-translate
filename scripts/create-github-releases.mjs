@@ -26,6 +26,25 @@ function ghInherit(args) {
   execFileSync("gh", args, { stdio: "inherit" });
 }
 
+function isReleaseNotFoundError(error) {
+  const parts = [];
+
+  if (error && typeof error === "object") {
+    if ("stderr" in error && error.stderr) {
+      parts.push(String(error.stderr));
+    }
+    if ("stdout" in error && error.stdout) {
+      parts.push(String(error.stdout));
+    }
+    if ("message" in error && error.message) {
+      parts.push(String(error.message));
+    }
+  }
+
+  const text = parts.join("\n").toLowerCase();
+  return text.includes("release not found") || text.includes("http 404");
+}
+
 function parseTags(contents) {
   return new Set(
     contents
@@ -71,8 +90,10 @@ for (const tag of newTags) {
     gh(["release", "view", tag]);
     console.log(`GitHub Release already exists for ${tag}. Skipping.`);
     continue;
-  } catch {
-    // Create below.
+  } catch (error) {
+    if (!isReleaseNotFoundError(error)) {
+      throw error;
+    }
   }
 
   const version = parseVersionFromTag(tag);
