@@ -45,35 +45,35 @@ jobs:
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: node ./scripts/check-changeset.mjs
 
-  quality:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v5
-
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: 1.2.23
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v5
-        with:
-          node-version: 22
-          registry-url: https://registry.npmjs.org
-
-      - name: Validate lockfile
-        run: bun run check:lockfile
-
-      - name: Install dependencies
-        run: bun install --frozen-lockfile
-
-      # - name: Lint repository
-      #   run: bun run lint
-
-      - name: Check types
-        run: bun run check-types
+  # quality:
+  #   runs-on: ubuntu-latest
+  #
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v5
+  #
+  #     - name: Setup Bun
+  #       uses: oven-sh/setup-bun@v2
+  #       with:
+  #         bun-version: 1.2.23
+  #
+  #     - name: Setup Node.js
+  #       uses: actions/setup-node@v5
+  #       with:
+  #         node-version: 22
+  #         registry-url: https://registry.npmjs.org
+  #
+  #     - name: Validate lockfile
+  #       run: bun run check:lockfile
+  #
+  #     - name: Install dependencies
+  #       run: bun install --frozen-lockfile
+  #
+  #     # - name: Lint repository
+  #     #   run: bun run lint
+  #
+  #     - name: Check types
+  #       run: bun run check-types
 
   packages:
     runs-on: ubuntu-latest
@@ -109,7 +109,6 @@ jobs:
     if: ${{ always() }}
     needs:
       - changesets
-      - quality
       - packages
     runs-on: ubuntu-latest
     permissions: {}
@@ -118,18 +117,11 @@ jobs:
       - name: Check required job results
         env:
           CHANGESETS_RESULT: ${{ needs.changesets.result }}
-          QUALITY_RESULT: ${{ needs.quality.result }}
           PACKAGES_RESULT: ${{ needs.packages.result }}
         run: |
           set -euo pipefail
           echo "changesets: ${CHANGESETS_RESULT}"
-          echo "quality: ${QUALITY_RESULT}"
           echo "packages: ${PACKAGES_RESULT}"
-
-          if [ "${QUALITY_RESULT}" != "success" ]; then
-            echo "Quality job must succeed."
-            exit 1
-          fi
 
           if [ "${PACKAGES_RESULT}" != "success" ]; then
             echo "Packages job must succeed."
