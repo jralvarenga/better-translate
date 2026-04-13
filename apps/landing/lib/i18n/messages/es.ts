@@ -38,6 +38,7 @@ export const es = {
     legal: "MIT License · construido con TypeScript",
     npm: "npm",
     sponsor: "Sponsor",
+    twitter: "Seguir para actualizaciones",
   },
   frameworks: {
     description:

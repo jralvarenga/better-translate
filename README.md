@@ -1,67 +1,134 @@
-# Better Translate
+<p align="center">
+  <img src="./better-translate-logo.png" alt="Better Translate" width="80" />
+  <h2 align="center">Better Translate</h2>
+  <p align="center">
+    The type-safe i18n toolkit for TypeScript
+    <br />
+    <a href="https://better-translate.com"><strong>better-translate.com »</strong></a>
+    <br />
+    <br />
+    <a href="https://better-translate.com/en/docs">Docs</a>
+    ·
+    <a href="https://better-translate.com/en/docs/installation">Quick Start</a>
+    ·
+    <a href="https://github.com/jralvarenga/better-translate/issues">Issues</a>
+  </p>
 
-One i18n setup for any TypeScript project.
+[![npm version](https://img.shields.io/npm/v/@better-translate/core.svg?style=flat&colorA=000000&colorB=000000)](https://www.npmjs.com/package/@better-translate/core)
+[![npm downloads](https://img.shields.io/npm/dm/@better-translate/core?style=flat&colorA=000000&colorB=000000)](https://www.npmjs.com/package/@better-translate/core)
+[![License](https://img.shields.io/github/license/jralvarenga/better-translate?style=flat&colorA=000000&colorB=000000)](./LICENSE)
+[![CI](https://img.shields.io/github/actions/workflow/status/jralvarenga/better-translate/ci.yml?branch=main&style=flat&colorA=000000&colorB=000000&label=CI)](https://github.com/jralvarenga/better-translate/actions)
 
-Configure once. Translate everywhere. Type-safe i18n for Next.js, Astro, React, TanStack Router and any TypeScript environment.
+</p>
 
-## Features
+## About
 
-- **Type-Safe by Default** — Full TypeScript inference on translation keys and interpolation variables. Typos and missing keys become compile errors.
-- **Autocomplete Everywhere** — Your editor knows every key in your messages object. `t("home.` starts completing instantly.
-- **Same Config, Every Environment** — Write your translation config once. It works identically in Next.js, Astro, React, TanStack Router, and plain Node.
-- **Locale Switching** — Switch locales at runtime without a page reload. Per-call overrides let you render any locale on demand.
+Better Translate is a type-safe i18n toolkit for TypeScript. Write your translation config once and it works across Next.js, Astro, React, TanStack Router, Node, Bun, and Expo — same API, same types, same experience everywhere. A built-in CLI generates translated locale files using any AI provider or local Ollama models, so you ship multilingual apps without manual work.
 
-## Packages
+### Why Better Translate
 
-- `@better-translate/core` — Framework-agnostic core for TypeScript, Node.js, APIs, and shared libraries.
-- `@better-translate/react` — Context, hooks, and locale-aware client rendering for React and Expo apps.
-- `@better-translate/nextjs` — Server components, App Router, and route-aware locale helpers.
-- `@better-translate/astro` — Request-scoped helpers and localized Astro content collections for .md and .mdx.
-- `@better-translate/tanstack-router` — Type-safe routing support for TanStack Router projects, including TanStack Start apps.
-- `@better-translate/md` — Localized Markdown and MDX loading on top of an existing translator.
-- `@better-translate/cli` — Generate translated message files and markdown from a source locale using any AI SDK provider, including local Ollama models.
+i18n in TypeScript projects is usually an afterthought. You wire up a library, scatter translation keys across your codebase, and cross your fingers that nothing drifts out of sync. Better Translate treats translations as first-class TypeScript: keys are inferred, interpolations are typed, and the CLI handles generation so you never write a locale file by hand again.
 
-## CLI
+## Quick Start
 
-Hosted or local. Same CLI.
+```bash
+# Install the CLI globally
+npm install -g @better-translate/cli
 
-Generate locale files with the same CLI whether you're using AI Gateway or local Ollama models. Pass any AI SDK language model directly in `better-translate.config.ts`, including hosted providers and local Ollama models via `ollama-ai-provider-v2`.
+# Install the core package (or a framework adapter)
+npm install @better-translate/core
+```
 
-## Docs
+Create a `better-translate.config.ts` at the root of your project:
 
-- Installation: [better-translate.com/en/docs/installation](https://better-translate.com/en/docs/installation)
-- Core: [better-translate.com/en/docs/adapters/core](https://better-translate.com/en/docs/adapters/core)
-- React: [better-translate.com/en/docs/adapters/react](https://better-translate.com/en/docs/adapters/react)
-- Next.js: [better-translate.com/en/docs/adapters/nextjs](https://better-translate.com/en/docs/adapters/nextjs)
-- Astro: [better-translate.com/en/docs/adapters/astro](https://better-translate.com/en/docs/adapters/astro)
-- TanStack Router: [better-translate.com/en/docs/adapters/tanstack-router](https://better-translate.com/en/docs/adapters/tanstack-router)
-- MD & MDX: [better-translate.com/en/docs/adapters/md](https://better-translate.com/en/docs/adapters/md)
-- CLI: [better-translate.com/en/docs/cli](https://better-translate.com/en/docs/cli)
+```ts
+import { createGoogleGenerativeAI } from "@ai-sdk/google";
+import { defineConfig } from "@better-translate/cli";
 
-## Workspace
+const google = createGoogleGenerativeAI({ apiKey: process.env.GOOGLE_API_KEY });
 
-The repository uses Bun and Turborepo. Public packages live in `packages/`, the landing site lives in `apps/landing`, and runnable integration examples live in `examples/`.
+export default defineConfig({
+  model: google("gemini-2.0-flash"),
+  defaultLocale: "en",
+  targetLocales: ["es", "fr", "ja"],
+  messagesDir: "./messages",
+});
+```
 
-## Lockfile
+Extract source strings and generate all locale files:
 
-`bun.lock` is committed and must stay in sync with the workspace manifests.
-CI uses Bun `1.2.23` together with `bun install --frozen-lockfile`, so lockfile drift will fail builds.
+```bash
+bt extract   # scans source files and updates messages/en.json
+bt generate  # translates into every target locale
+```
 
-Floating specs such as `latest` tags and nightly tags in workspace examples can cause Bun to re-resolve dependencies and report lockfile changes even when no local files changed.
-When intentionally changing dependencies, rerun `bun install` and commit the updated `bun.lock`.
+Use translations in your app:
 
-The release workflow's post-`ci:version` `bun install` is intentional because version bumps change workspace manifests and require a lockfile refresh.
+```ts
+import { configureTranslations, createTranslationHelpers } from "@better-translate/core";
+import en from "./messages/en.json";
+import es from "./messages/es.json";
 
-## Release branches
+const translator = await configureTranslations({
+  availableLocales: ["en", "es"] as const,
+  defaultLocale: "en",
+  messages: { en, es },
+});
 
-- `main` is the production branch for website work and package releases
-- `next` is an optional staging branch that can later be merged into `main`
+const { t } = createTranslationHelpers(translator);
 
-Normal contributors only need to run `bun changeset` when a package bump is needed. GitHub Actions handles versioning, npm publish, package tags, and GitHub Releases later on `main`.
+t("hero.title")                        // fully typed, autocomplete works
+t("hero.greeting", { params: { name } }) // interpolation is type-checked
+t("hero.title", { locale: "es" })      // per-call locale override
+```
 
-## Release flow
+## Framework Support
 
-1. If your PR changes a publishable package in `packages/`, run `bun changeset` and commit the generated file.
-2. If your PR is docs-only, app-only, example-only, CI-only, or other non-publishable work, you usually do not need a changeset.
-3. Merge the PR into `main` if it should ship, or into `next` if you are still batching changes before a later merge to `main`.
-4. When changesets reach `main`, GitHub Actions updates package versions, publishes packages, pushes new package tags, and creates GitHub Releases.
+| Framework / Runtime | Package |
+|---|---|
+| Next.js (App Router) | `@better-translate/nextjs` |
+| Astro | `@better-translate/astro` |
+| React | `@better-translate/react` |
+| TanStack Router / Start | `@better-translate/tanstack-router` |
+| Expo (React Native) | `@better-translate/react` |
+| Node.js | `@better-translate/core` |
+| Bun | `@better-translate/core` |
+| Markdown / MDX | `@better-translate/md` |
+
+## Key Features
+
+- **Type-safe by default** — Full TypeScript inference on translation keys and interpolation variables. Typos and missing keys are compile errors.
+- **Autocomplete everywhere** — Your editor knows every key in your messages object from the moment you type `t("`.
+- **Same config, every environment** — Write once, run anywhere. Next.js, Astro, React, Node — identical API.
+- **CLI toolchain** — `bt extract` pulls source strings out of your code. `bt generate` calls your AI model and writes every locale file.
+- **Bring your own model** — Pass any AI SDK language model to the config: OpenAI, Gemini, Claude, or a local Ollama model.
+- **Locale switching** — Switch locales at runtime without a page reload. Per-call overrides render any locale on demand.
+- **RTL support** — Built-in right-to-left layout utilities for Arabic, Hebrew, and other RTL languages.
+
+## Documentation
+
+- [Installation](https://better-translate.com/en/docs/installation)
+- [Core](https://better-translate.com/en/docs/adapters/core)
+- [CLI](https://better-translate.com/en/docs/cli)
+- [Next.js](https://better-translate.com/en/docs/adapters/nextjs)
+- [React](https://better-translate.com/en/docs/adapters/react)
+- [Astro](https://better-translate.com/en/docs/adapters/astro)
+- [TanStack Router](https://better-translate.com/en/docs/adapters/tanstack-router)
+- [Expo](https://better-translate.com/en/docs/adapters/expo)
+- [MD & MDX](https://better-translate.com/en/docs/adapters/md)
+
+## Contributing
+
+Better Translate is free and open source under the [MIT License](./LICENSE). Contributions are welcome.
+
+- [Contributing guide](./CONTRIBUTING.md)
+- [Report an issue](https://github.com/jralvarenga/better-translate/issues)
+- [Sponsor the project](https://buy.polar.sh/polar_cl_kTi5esQphv7mygLZoq74PHArxF34gCvILfhMc3sx1gq)
+
+## Security
+
+If you discover a security vulnerability, please see [SECURITY.md](./SECURITY.md) for responsible disclosure instructions.
+
+## License
+
+[MIT](./LICENSE)
