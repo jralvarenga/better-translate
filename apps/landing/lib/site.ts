@@ -10,4 +10,5 @@ export const siteLinks = {
   github: githubUrl,
   npm: "https://www.npmjs.com/package/@better-translate/core",
   sponsor: sponsorUrl,
+  twitter: "https://x.com/rigo_alvarenga1",
 } as const;

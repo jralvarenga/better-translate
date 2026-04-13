@@ -137,19 +137,13 @@ export const HeroHeader = ({
                 </ul>
               </div>
               <div className="flex w-full flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:gap-3 md:w-fit">
-                <Button
-                  asChild
-                  variant="ghost"
-                  size="sm"
-                  className="w-full sm:w-auto"
-                >
+                <Button asChild variant="ghost" size="icon">
                   <Link
                     href={siteLinks.github}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
                     <RiGithubLine className="size-4" />
-                    <span>{githubLabel}</span>
                   </Link>
                 </Button>
                 <HeaderLanguageSwitcher

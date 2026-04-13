@@ -38,6 +38,7 @@ export const ja = {
     legal: "MITライセンス · TypeScriptで構築",
     npm: "npm",
     sponsor: "スポンサー",
+    twitter: "更新情報をフォロー",
   },
   frameworks: {
     description:

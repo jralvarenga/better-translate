@@ -38,6 +38,7 @@ export const ar = {
     legal: "ترخيص MIT · مبني بـ TypeScript",
     npm: "npm",
     sponsor: "الرعاية",
+    twitter: "تابع للتحديثات",
   },
   frameworks: {
     description:
