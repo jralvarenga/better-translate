@@ -85,7 +85,6 @@ export const ja = {
     language: "言語",
     languageSwitcher: "言語を切り替え",
     openMenu: "メニューを開く",
-    sponsor: "スポンサー",
   },
   hero: {
     badges: {

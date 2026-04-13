@@ -1,12 +1,14 @@
 import { mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
+import { PassThrough, Writable } from "node:stream";
 
 import { afterEach, beforeEach, describe, expect, it, mock } from "bun:test";
 import type { LanguageModelV3 } from "@ai-sdk/provider";
 
 import { generateWithAiSdk } from "../../src/ai-sdk-generator.js";
 import { runCli } from "../../src/cli.js";
+import { confirmMarkdownWrites, confirmPurgeKey } from "../../src/confirm.js";
 import { defineConfig } from "../../src/define-config.js";
 import { loadEnvFiles, loadEnvFilesFromDirectories } from "../../src/env.js";
 import { createSpinnerLogger } from "../../src/logger.js";
@@ -57,6 +59,59 @@ const testLanguageModel = {
     throw new Error("not implemented");
   },
 } satisfies LanguageModelV3;
+
+class FakeTtyInput extends PassThrough {
+  isRaw = false;
+  isTTY = true;
+  paused = true;
+
+  setRawMode(value: boolean) {
+    this.isRaw = value;
+    return this;
+  }
+
+  isPaused() {
+    return this.paused;
+  }
+
+  pause() {
+    this.paused = true;
+    return super.pause();
+  }
+
+  resume() {
+    this.paused = false;
+    return super.resume();
+  }
+}
+
+class FakeTtyOutput extends Writable {
+  isTTY = true;
+  chunks: string[] = [];
+
+  _write(
+    chunk: string | Buffer,
+    _encoding: BufferEncoding,
+    callback: (error?: Error | null) => void,
+  ) {
+    this.chunks.push(String(chunk));
+    callback();
+  }
+
+  toString() {
+    return this.chunks.join("");
+  }
+}
+
+function emitKey(input: FakeTtyInput, value: string, name: string): void {
+  input.emit("keypress", value, {
+    ctrl: false,
+    meta: false,
+    name,
+    sequence: value,
+    shift: false,
+  });
+}
 
 mock.module("ora", () => ({
   default() {
@@ -1135,6 +1190,7 @@ count: 1
     ).toBe(1);
     expect(stdout[0]).toContain("Usage:");
     expect(stdout[0]).toContain("[--yes|-y]");
+    expect(stdout[0]).toContain("bt purge");
 
     expect(
       await runCli(["--help"], {
@@ -1169,6 +1225,13 @@ count: 1
       }),
     ).toBe(1);
     expect(
+      await runCli(["purge", "--config"], {
+        stderr(message) {
+          stderr.push(message);
+        },
+      }),
+    ).toBe(1);
+    expect(
       stderr.some((message) => message.includes('Unknown command "unknown".')),
     ).toBe(true);
     expect(
@@ -1185,10 +1248,18 @@ count: 1
         ),
       ),
     ).toBe(true);
+    expect(
+      stderr.some((message) =>
+        message.includes(
+          "Better Translate purge failed: --config requires a file path.",
+        ),
+      ),
+    ).toBe(true);
   });
 
-  it("passes --yes through generate", async () => {
+  it("passes --yes through generate and purge", async () => {
     const generateCalls: Array<Record<string, unknown>> = [];
+    const purgeCalls: Array<Record<string, unknown>> = [];
 
     expect(
       await runCli(["generate", "--yes"], {
@@ -1220,8 +1291,301 @@ count: 1
       }),
     ).toBe(0);
 
+    expect(
+      await runCli(["purge", "--yes"], {
+        async purgeProjectImpl(options) {
+          purgeCalls.push(options as Record<string, unknown>);
+          return {
+            dryRun: false,
+            keptKeys: [],
+            loadedConfig: null as never,
+            localeChanges: [],
+            localeFiles: [],
+            protectedKeys: [],
+            purgedKeys: [],
+            unsafeKeys: [],
+            unusedKeys: [],
+            warnings: [],
+          };
+        },
+        stderr() {},
+        stdout() {},
+      }),
+    ).toBe(0);
+
+    expect(
+      await runCli(["purge", "-y"], {
+        async purgeProjectImpl(options) {
+          purgeCalls.push(options as Record<string, unknown>);
+          return {
+            dryRun: false,
+            keptKeys: [],
+            loadedConfig: null as never,
+            localeChanges: [],
+            localeFiles: [],
+            protectedKeys: [],
+            purgedKeys: [],
+            unsafeKeys: [],
+            unusedKeys: [],
+            warnings: [],
+          };
+        },
+        stderr() {},
+        stdout() {},
+      }),
+    ).toBe(0);
+
     expect(generateCalls).toHaveLength(2);
+    expect(purgeCalls).toHaveLength(2);
     expect(generateCalls[0]?.yes).toBe(true);
     expect(generateCalls[1]?.yes).toBe(true);
+    expect(purgeCalls[0]?.yes).toBe(true);
+    expect(purgeCalls[1]?.yes).toBe(true);
+  });
+
+  it("confirms prompts on single keypress without requiring enter", async () => {
+    const purgeInput = new FakeTtyInput();
+    const purgeOutput = new FakeTtyOutput();
+    const purgePromise = confirmPurgeKey(
+      {
+        key: "sidebar.nav.legacy",
+      },
+      {
+        input: purgeInput as never,
+        output: purgeOutput as never,
+      },
+    );
+
+    emitKey(purgeInput, "y", "y");
+
+    await expect(purgePromise).resolves.toBe(true);
+    expect(purgeOutput.toString()).toContain(
+      '? Purge unused key "sidebar.nav.legacy"? (y/N) y',
+    );
+    expect(purgeInput.paused).toBe(true);
+
+    const markdownInput = new FakeTtyInput();
+    const markdownOutput = new FakeTtyOutput();
+    const markdownPromise = confirmMarkdownWrites(
+      {
+        createCount: 1,
+        overwriteCount: 0,
+        projectCwd: "/tmp/project",
+        writes: [
+          {
+            action: "create",
+            locale: "es",
+            sourcePath: "/tmp/project/docs/en/intro.mdx",
+            targetPath: "/tmp/project/docs/es/intro.mdx",
+          },
+        ],
+      },
+      {
+        input: markdownInput as never,
+        output: markdownOutput as never,
+      },
+    );
+
+    emitKey(markdownInput, "n", "n");
+
+    await expect(markdownPromise).resolves.toBe(false);
+    expect(markdownOutput.toString()).toContain("Continue? [y/N] n");
+    expect(markdownInput.paused).toBe(true);
+  });
+
+  it("still treats enter as the default no response", async () => {
+    const input = new FakeTtyInput();
+    const output = new FakeTtyOutput();
+    const confirmation = confirmPurgeKey(
+      {
+        key: "home.old",
+      },
+      {
+        input: input as never,
+        output: output as never,
+      },
+    );
+
+    emitKey(input, "\r", "return");
+
+    await expect(confirmation).resolves.toBe(false);
+    expect(output.toString()).toContain(
+      '? Purge unused key "home.old"? (y/N) ',
+    );
+  });
+
+  it("ignores non-character keypresses without crashing the prompt", async () => {
+    const input = new FakeTtyInput();
+    const output = new FakeTtyOutput();
+    const confirmation = confirmPurgeKey(
+      {
+        key: "home.old",
+      },
+      {
+        input: input as never,
+        output: output as never,
+      },
+    );
+
+    input.emit("keypress", undefined, {
+      ctrl: false,
+      meta: false,
+      name: "left",
+      sequence: "",
+      shift: false,
+    });
+
+    const pendingState = await Promise.race([
+      confirmation.then(() => "resolved"),
+      new Promise<string>((resolve) => {
+        setTimeout(() => resolve("pending"), 20);
+      }),
+    ]);
+
+    expect(pendingState).toBe("pending");
+
+    emitKey(input, "n", "n");
+    await expect(confirmation).resolves.toBe(false);
+  });
+
+  it("ignores repeated confirmation keys inside the debounce window", async () => {
+    const input = new FakeTtyInput();
+    const output = new FakeTtyOutput();
+    const firstConfirmation = confirmPurgeKey(
+      {
+        key: "unusedA",
+      },
+      {
+        input: input as never,
+        output: output as never,
+      },
+    );
+
+    emitKey(input, "y", "y");
+    await expect(firstConfirmation).resolves.toBe(true);
+
+    const secondConfirmation = confirmPurgeKey(
+      {
+        key: "unusedB",
+      },
+      {
+        input: input as never,
+        output: output as never,
+      },
+    );
+
+    const pendingState = await Promise.race([
+      secondConfirmation.then(() => "resolved"),
+      new Promise<string>((resolve) => {
+        setTimeout(() => resolve("pending"), 20);
+      }),
+    ]);
+
+    expect(pendingState).toBe("pending");
+
+    emitKey(input, "y", "y");
+
+    const stillPendingState = await Promise.race([
+      secondConfirmation.then(() => "resolved"),
+      new Promise<string>((resolve) => {
+        setTimeout(() => resolve("pending"), 20);
+      }),
+    ]);
+
+    expect(stillPendingState).toBe("pending");
+
+    emitKey(input, "n", "n");
+
+    await expect(secondConfirmation).resolves.toBe(false);
+  });
+
+  it("accepts the same confirmation key again after the debounce window", async () => {
+    const input = new FakeTtyInput();
+    const output = new FakeTtyOutput();
+    const firstConfirmation = confirmPurgeKey(
+      {
+        key: "unusedA",
+      },
+      {
+        input: input as never,
+        output: output as never,
+      },
+    );
+
+    emitKey(input, "y", "y");
+    await expect(firstConfirmation).resolves.toBe(true);
+
+    const secondConfirmation = confirmPurgeKey(
+      {
+        key: "unusedB",
+      },
+      {
+        input: input as never,
+        output: output as never,
+      },
+    );
+
+    await new Promise((resolve) => {
+      setTimeout(resolve, 800);
+    });
+
+    emitKey(input, "y", "y");
+
+    await expect(secondConfirmation).resolves.toBe(true);
+  });
+
+  it("extends the debounce window while repeated identical key events continue", async () => {
+    const originalDateNow = Date.now;
+    let now = 0;
+    Date.now = () => now;
+
+    try {
+      const input = new FakeTtyInput();
+      const output = new FakeTtyOutput();
+      const firstConfirmation = confirmPurgeKey(
+        {
+          key: "unusedA",
+        },
+        {
+          input: input as never,
+          output: output as never,
+        },
+      );
+
+      emitKey(input, "y", "y");
+      await expect(firstConfirmation).resolves.toBe(true);
+
+      const secondConfirmation = confirmPurgeKey(
+        {
+          key: "unusedB",
+        },
+        {
+          input: input as never,
+          output: output as never,
+        },
+      );
+
+      now = 700;
+      emitKey(input, "y", "y");
+
+      now = 1400;
+      emitKey(input, "y", "y");
+
+      const pendingState = await Promise.race([
+        secondConfirmation.then(() => "resolved"),
+        new Promise<string>((resolve) => {
+          setTimeout(() => resolve("pending"), 20);
+        }),
+      ]);
+
+      expect(pendingState).toBe("pending");
+
+      now = 2200;
+      emitKey(input, "y", "y");
+
+      await expect(secondConfirmation).resolves.toBe(true);
+    } finally {
+      Date.now = originalDateNow;
+    }
   });
 });

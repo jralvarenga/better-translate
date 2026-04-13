@@ -43,11 +43,6 @@ export default defineConfig({
   sourceLocale: "en",
   locales: ["es", "fr"],
   model: ollama("qwen3:4b"),
-  providerOptions: {
-    ollama: {
-      think: true,
-    },
-  },
   messages: {
     entry: "./src/messages/en.json",
   },
@@ -114,7 +109,36 @@ npx bt generate --yes
 
 Non-interactive runs that need to write translated markdown files must pass `--yes`.
 
-## 7. Use the generated files in your app
+## 7. Remove unused keys
+
+```sh
+npx bt purge
+```
+
+This scans your codebase for translation keys that are no longer used in any `t("...")` call and removes them from all locale files. It prompts you to confirm each key before removing it:
+
+```
+? Purge unused key "home.oldTitle"? (y/N) y
+? Purge unused key "sidebar.legacy"? (y/N) n
+```
+
+Type `y` to remove a key from all locale files, or `n` (or just Enter) to keep it.
+
+To remove all unused keys at once without prompting, use `--yes` or `-y`:
+
+```sh
+npx bt purge --yes
+```
+
+To preview what would be removed without making any changes, use `--dry-run`:
+
+```sh
+npx bt purge --dry-run
+```
+
+**Dynamic keys:** If your code uses dynamic key strings like `t(\`section.${id}\`)`, the CLI cannot statically analyze those. It will warn you and protect any keys that share the detected prefix, or flag the key as unsafe and skip it rather than silently deleting something that might be in use.
+
+## 8. Use the generated files in your app
 
 After the files exist, import them into your `@better-translate/core` config just like any hand-written locale file.
 
@@ -142,6 +166,23 @@ export default defineConfig({
   },
 });
 ```
+
+## Command reference
+
+| Command | Flag | Description |
+|---|---|---|
+| `bt extract` | | Scan source files for `bt: true` calls, add keys to source locale, rewrite calls |
+| | `--config <path>` | Path to config file (default: auto-detected) |
+| | `--dry-run` | Preview changes without writing |
+| | `--max-length <n>` | Max key segment length for generated keys |
+| `bt generate` | | Translate source locale into all target locale files |
+| | `--config <path>` | Path to config file |
+| | `--dry-run` | Preview changes without writing |
+| | `--yes`, `-y` | Skip confirmation for markdown file writes |
+| `bt purge` | | Remove unused translation keys from all locale files |
+| | `--config <path>` | Path to config file |
+| | `--dry-run` | Preview which keys would be removed without writing |
+| | `--yes`, `-y` | Remove all unused keys without prompting |
 
 ## Examples
 

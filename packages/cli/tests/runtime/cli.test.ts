@@ -8,6 +8,7 @@ import { afterEach, describe, expect, it } from "bun:test";
 import { loadCliConfig } from "../../src/config-loader.js";
 import { extractProject } from "../../src/extract.js";
 import { generateProject } from "../../src/generate.js";
+import { purgeProject } from "../../src/purge.js";
 
 const tempDirectories: string[] = [];
 const configModuleUrl = pathToFileURL(
@@ -940,6 +941,901 @@ export default en;
     expect(updatedMessages).toContain("sidebar: {");
     expect(updatedMessages).toContain('home: "Home"');
     expect(updatedMessages).toContain("export default en;");
+  });
+});
+
+describe("purgeProject", () => {
+  it("prompts for each unused key and removes confirmed keys from every locale file", async () => {
+    const workspace = await createWorkspace();
+    const sourcePath = path.join(workspace, "src/app/login.ts");
+    const enPath = path.join(workspace, "messages/en.json");
+    const esPath = path.join(workspace, "messages/es.json");
+    const prompts: string[] = [];
+    const messages: string[] = [];
+
+    await mkdir(path.dirname(sourcePath), {
+      recursive: true,
+    });
+    await mkdir(path.dirname(enPath), {
+      recursive: true,
+    });
+    await writeFile(
+      enPath,
+      JSON.stringify(
+        {
+          auth: {
+            login: {
+              deprecatedHint: "Use your new workspace password",
+              title: "Welcome back",
+            },
+          },
+          onboarding: {
+            step2: {
+              currentCta: "Continue",
+              oldCta: "Start now",
+            },
+          },
+          sidebar: {
+            nav: {
+              home: "Home",
+              legacy: "Legacy",
+            },
+          },
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+    await writeFile(
+      esPath,
+      JSON.stringify(
+        {
+          auth: {
+            login: {
+              deprecatedHint: "Usa tu nueva contrasena del espacio de trabajo",
+              title: "Bienvenido de nuevo",
+            },
+          },
+          marketing: {
+            extraCopy: "Texto antiguo",
+          },
+          onboarding: {
+            step2: {
+              currentCta: "Continuar",
+              oldCta: "Empieza ahora",
+            },
+          },
+          sidebar: {
+            nav: {
+              home: "Inicio",
+              legacy: "Legado",
+            },
+          },
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+    await writeFile(
+      sourcePath,
+      `export function screen(t: (key: string) => string) {
+  return [
+    t("auth.login.title"),
+    t("onboarding.step2.currentCta"),
+    t("sidebar.nav.home"),
+  ];
+}
+`,
+      "utf8",
+    );
+    await writeFile(
+      path.join(workspace, "better-translate.config.ts"),
+      `export default {
+  gateway: {
+    apiKey: "test-gateway-key",
+  },
+  sourceLocale: "en",
+  locales: ["es"],
+  model: "anthropic/claude-sonnet-4.5",
+  messages: {
+    entry: "./messages/en.json",
+  },
+};`,
+      "utf8",
+    );
+
+    const result = await purgeProject({
+      confirmPurgeKey: async ({ key }) => {
+        prompts.push(key);
+        return (
+          key === "auth.login.deprecatedHint" ||
+          key === "marketing.extraCopy" ||
+          key === "sidebar.nav.legacy"
+        );
+      },
+      cwd: workspace,
+      logger: {
+        error() {},
+        info(message) {
+          messages.push(message);
+        },
+      },
+    });
+
+    expect(prompts).toEqual([
+      "auth.login.deprecatedHint",
+      "marketing.extraCopy",
+      "onboarding.step2.oldCta",
+      "sidebar.nav.legacy",
+    ]);
+    expect(result.unusedKeys).toEqual(prompts);
+    expect(result.purgedKeys).toEqual([
+      "auth.login.deprecatedHint",
+      "marketing.extraCopy",
+      "sidebar.nav.legacy",
+    ]);
+    expect(result.unsafeKeys).toEqual([]);
+    expect(result.keptKeys).toEqual(["onboarding.step2.oldCta"]);
+    expect(result.localeChanges).toEqual([
+      {
+        locale: "en",
+        removedKeys: ["auth.login.deprecatedHint", "sidebar.nav.legacy"],
+        targetPath: enPath,
+      },
+      {
+        locale: "es",
+        removedKeys: [
+          "auth.login.deprecatedHint",
+          "marketing.extraCopy",
+          "sidebar.nav.legacy",
+        ],
+        targetPath: esPath,
+      },
+    ]);
+    expect(JSON.parse(await readFile(enPath, "utf8"))).toEqual({
+      auth: {
+        login: {
+          title: "Welcome back",
+        },
+      },
+      onboarding: {
+        step2: {
+          currentCta: "Continue",
+          oldCta: "Start now",
+        },
+      },
+      sidebar: {
+        nav: {
+          home: "Home",
+        },
+      },
+    });
+    expect(JSON.parse(await readFile(esPath, "utf8"))).toEqual({
+      auth: {
+        login: {
+          title: "Bienvenido de nuevo",
+        },
+      },
+      onboarding: {
+        step2: {
+          currentCta: "Continuar",
+          oldCta: "Empieza ahora",
+        },
+      },
+      sidebar: {
+        nav: {
+          home: "Inicio",
+        },
+      },
+    });
+    expect(
+      messages.some((message) =>
+        message.includes(`updated locale en ${enPath} (-2 keys)`),
+      ),
+    ).toBe(true);
+    expect(
+      messages.some((message) =>
+        message.includes(`updated locale es ${esPath} (-3 keys)`),
+      ),
+    ).toBe(true);
+    expect(messages).toContain("Kept onboarding.step2.oldCta");
+    expect(messages).toContain("Done. 3 keys purged, 1 kept, 0 unsafe.");
+  });
+
+  it("warns on dynamic keys and protects matching prefixes from purge candidates", async () => {
+    const workspace = await createWorkspace();
+    const sourcePath = path.join(workspace, "src/app/nav.ts");
+    const enPath = path.join(workspace, "messages/en.json");
+    const esPath = path.join(workspace, "messages/es.json");
+    const messages: string[] = [];
+
+    await mkdir(path.dirname(sourcePath), {
+      recursive: true,
+    });
+    await mkdir(path.dirname(enPath), {
+      recursive: true,
+    });
+    await writeFile(
+      enPath,
+      JSON.stringify(
+        {
+          auth: {
+            login: {
+              title: "Welcome back",
+            },
+          },
+          sidebar: {
+            nav: {
+              home: "Home",
+              legacy: "Legacy",
+            },
+          },
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+    await writeFile(
+      esPath,
+      JSON.stringify(
+        {
+          auth: {
+            login: {
+              title: "Bienvenido de nuevo",
+            },
+          },
+          sidebar: {
+            nav: {
+              home: "Inicio",
+              legacy: "Legado",
+            },
+          },
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+    await writeFile(
+      sourcePath,
+      `export function nav(
+  t: (key: string) => string,
+  page: string,
+) {
+  return [t("auth.login.title"), t(\`sidebar.nav.\${page}\`)];
+}
+`,
+      "utf8",
+    );
+    await writeFile(
+      path.join(workspace, "better-translate.config.ts"),
+      `export default {
+  gateway: {
+    apiKey: "test-gateway-key",
+  },
+  sourceLocale: "en",
+  locales: ["es"],
+  model: "anthropic/claude-sonnet-4.5",
+  messages: {
+    entry: "./messages/en.json",
+  },
+};`,
+      "utf8",
+    );
+
+    const result = await purgeProject({
+      confirmPurgeKey: async () => {
+        throw new Error(
+          "should not prompt when every key is used or protected",
+        );
+      },
+      cwd: workspace,
+      logger: {
+        error() {},
+        info(message) {
+          messages.push(message);
+        },
+      },
+    });
+
+    expect(result.unusedKeys).toEqual([]);
+    expect(result.protectedKeys).toEqual([
+      "sidebar.nav.home",
+      "sidebar.nav.legacy",
+    ]);
+    expect(result.unsafeKeys).toEqual([]);
+    expect(
+      result.warnings.some((warning) =>
+        warning.includes(
+          'dynamic t() key cannot be statically analyzed; protecting locale keys that start with "sidebar.nav.".',
+        ),
+      ),
+    ).toBe(true);
+    expect(messages).toContain("No unused translation keys found.");
+    expect(messages).toContain("Done. 0 keys purged, 0 kept, 0 unsafe.");
+  });
+
+  it("supports --yes for generated TypeScript locale files", async () => {
+    const workspace = await createWorkspace();
+    const sourcePath = path.join(workspace, "src/app/home.ts");
+    const enPath = path.join(workspace, "messages/en.ts");
+    const esPath = path.join(workspace, "messages/es.ts");
+
+    await mkdir(path.dirname(sourcePath), {
+      recursive: true,
+    });
+    await mkdir(path.dirname(enPath), {
+      recursive: true,
+    });
+    await writeFile(
+      enPath,
+      `// generated by @better-translate/cli
+export const en = {
+  home: {
+    old: "Old copy",
+    title: "Home",
+  },
+} as const;
+
+export default en;
+`,
+      "utf8",
+    );
+    await writeFile(
+      esPath,
+      `// generated by @better-translate/cli
+export const es = {
+  home: {
+    old: "Texto viejo",
+    title: "Inicio",
+  },
+} as const;
+
+export default es;
+`,
+      "utf8",
+    );
+    await writeFile(
+      sourcePath,
+      `export const homeTitle = (t: (key: string) => string) => t("home.title");
+`,
+      "utf8",
+    );
+    await writeFile(
+      path.join(workspace, "better-translate.config.ts"),
+      `export default {
+  gateway: {
+    apiKey: "test-gateway-key",
+  },
+  sourceLocale: "en",
+  locales: ["es"],
+  model: "anthropic/claude-sonnet-4.5",
+  messages: {
+    entry: "./messages/en.ts",
+  },
+};`,
+      "utf8",
+    );
+
+    const result = await purgeProject({
+      cwd: workspace,
+      logger: {
+        error() {},
+        info() {},
+      },
+      yes: true,
+    });
+
+    expect(result.purgedKeys).toEqual(["home.old"]);
+    expect(result.unsafeKeys).toEqual([]);
+    const enText = await readFile(enPath, "utf8");
+    const esText = await readFile(esPath, "utf8");
+    expect(enText).toContain('title: "Home"');
+    expect(enText).not.toContain('old: "Old copy"');
+    expect(esText).toContain('title: "Inicio"');
+    expect(esText).not.toContain('old: "Texto viejo"');
+  });
+
+  it("fails fast when the configured source locale file is missing", async () => {
+    const workspace = await createWorkspace();
+    const sourcePath = path.join(workspace, "src/app/home.ts");
+    const esPath = path.join(workspace, "messages/es.json");
+
+    await mkdir(path.dirname(sourcePath), {
+      recursive: true,
+    });
+    await mkdir(path.dirname(esPath), {
+      recursive: true,
+    });
+    await writeFile(
+      esPath,
+      JSON.stringify(
+        {
+          home: {
+            title: "Inicio",
+          },
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+    await writeFile(
+      sourcePath,
+      `export const homeTitle = (t: (key: string) => string) => t("home.title");
+`,
+      "utf8",
+    );
+    await writeFile(
+      path.join(workspace, "better-translate.config.ts"),
+      `export default {
+  gateway: {
+    apiKey: "test-gateway-key",
+  },
+  sourceLocale: "en",
+  locales: ["es"],
+  model: "anthropic/claude-sonnet-4.5",
+  messages: {
+    entry: "./messages/en.json",
+  },
+};`,
+      "utf8",
+    );
+
+    await expect(
+      purgeProject({
+        cwd: workspace,
+        logger: {
+          error() {},
+          info() {},
+        },
+      }),
+    ).rejects.toThrow(
+      `Configured source locale file "en" was not found at ${path.join(workspace, "messages/en.json")}.`,
+    );
+  });
+
+  it("refuses --yes when dynamic t() usages are present and there are unused keys", async () => {
+    const workspace = await createWorkspace();
+    const sourcePath = path.join(workspace, "src/app/nav.ts");
+    const enPath = path.join(workspace, "messages/en.json");
+    const esPath = path.join(workspace, "messages/es.json");
+
+    await mkdir(path.dirname(sourcePath), {
+      recursive: true,
+    });
+    await mkdir(path.dirname(enPath), {
+      recursive: true,
+    });
+    await writeFile(
+      enPath,
+      JSON.stringify(
+        {
+          auth: {
+            login: {
+              title: "Welcome back",
+            },
+          },
+          footer: {
+            legacy: "Old footer",
+          },
+          sidebar: {
+            nav: {
+              home: "Home",
+              legacy: "Legacy",
+            },
+          },
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+    await writeFile(
+      esPath,
+      JSON.stringify(
+        {
+          auth: {
+            login: {
+              title: "Bienvenido de nuevo",
+            },
+          },
+          footer: {
+            legacy: "Pie antiguo",
+          },
+          sidebar: {
+            nav: {
+              home: "Inicio",
+              legacy: "Legado",
+            },
+          },
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+    await writeFile(
+      sourcePath,
+      `export function nav(
+  t: (key: string) => string,
+  page: string,
+) {
+  return [t("auth.login.title"), t(\`sidebar.nav.\${page}\`)];
+}
+`,
+      "utf8",
+    );
+    await writeFile(
+      path.join(workspace, "better-translate.config.ts"),
+      `export default {
+  gateway: {
+    apiKey: "test-gateway-key",
+  },
+  sourceLocale: "en",
+  locales: ["es"],
+  model: "anthropic/claude-sonnet-4.5",
+  messages: {
+    entry: "./messages/en.json",
+  },
+};`,
+      "utf8",
+    );
+
+    await expect(
+      purgeProject({
+        cwd: workspace,
+        logger: {
+          error() {},
+          info() {},
+        },
+        yes: true,
+      }),
+    ).rejects.toThrow(
+      'Cannot run "bt purge --yes" when dynamic t() usages were found. Rerun without --yes and review each unused key interactively.',
+    );
+  });
+
+  it("marks exact string references outside t() as unsafe and skips them", async () => {
+    const workspace = await createWorkspace();
+    const sourcePath = path.join(workspace, "src/app/home.ts");
+    const catalogPath = path.join(workspace, "src/lib/catalog.ts");
+    const enPath = path.join(workspace, "messages/en.json");
+    const esPath = path.join(workspace, "messages/es.json");
+    const prompts: string[] = [];
+    const messages: string[] = [];
+
+    await mkdir(path.dirname(sourcePath), {
+      recursive: true,
+    });
+    await mkdir(path.dirname(catalogPath), {
+      recursive: true,
+    });
+    await mkdir(path.dirname(enPath), {
+      recursive: true,
+    });
+    await writeFile(
+      enPath,
+      JSON.stringify(
+        {
+          frameworks: {
+            items: {
+              astro: {
+                description: "Astro description",
+              },
+              bun: {
+                description: "Bun description",
+              },
+            },
+          },
+          home: {
+            title: "Home",
+          },
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+    await writeFile(
+      esPath,
+      JSON.stringify(
+        {
+          frameworks: {
+            items: {
+              astro: {
+                description: "Descripcion Astro",
+              },
+              bun: {
+                description: "Descripcion Bun",
+              },
+            },
+          },
+          home: {
+            title: "Inicio",
+          },
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+    await writeFile(
+      sourcePath,
+      `export const homeTitle = (t: (key: string) => string) => t("home.title");
+`,
+      "utf8",
+    );
+    await writeFile(
+      catalogPath,
+      `export const catalog = [
+  {
+    descriptionKey: "frameworks.items.astro.description",
+  },
+];
+`,
+      "utf8",
+    );
+    await writeFile(
+      path.join(workspace, "better-translate.config.ts"),
+      `export default {
+  gateway: {
+    apiKey: "test-gateway-key",
+  },
+  sourceLocale: "en",
+  locales: ["es"],
+  model: "anthropic/claude-sonnet-4.5",
+  messages: {
+    entry: "./messages/en.json",
+  },
+};`,
+      "utf8",
+    );
+
+    const result = await purgeProject({
+      confirmPurgeKey: async ({ key }) => {
+        prompts.push(key);
+        return true;
+      },
+      cwd: workspace,
+      logger: {
+        error() {},
+        info(message) {
+          messages.push(message);
+        },
+      },
+    });
+
+    expect(prompts).toEqual(["frameworks.items.bun.description"]);
+    expect(result.unsafeKeys).toEqual(["frameworks.items.astro.description"]);
+    expect(result.unusedKeys).toEqual(["frameworks.items.bun.description"]);
+    expect(result.purgedKeys).toEqual(["frameworks.items.bun.description"]);
+    expect(
+      result.warnings.some((warning) =>
+        warning.includes(
+          `key "frameworks.items.astro.description" appears outside a static t("...") call in ${catalogPath}; marking it as unsafe and skipping purge.`,
+        ),
+      ),
+    ).toBe(true);
+    expect(messages).toContain(
+      `warn key "frameworks.items.astro.description" appears outside a static t("...") call in ${catalogPath}; marking it as unsafe and skipping purge.`,
+    );
+    expect(JSON.parse(await readFile(enPath, "utf8"))).toEqual({
+      frameworks: {
+        items: {
+          astro: {
+            description: "Astro description",
+          },
+        },
+      },
+      home: {
+        title: "Home",
+      },
+    });
+    expect(JSON.parse(await readFile(esPath, "utf8"))).toEqual({
+      frameworks: {
+        items: {
+          astro: {
+            description: "Descripcion Astro",
+          },
+        },
+      },
+      home: {
+        title: "Inicio",
+      },
+    });
+    expect(messages).toContain("Done. 1 key purged, 0 kept, 1 unsafe.");
+  });
+
+  it("does not treat substring matches as unsafe references", async () => {
+    const workspace = await createWorkspace();
+    const sourcePath = path.join(workspace, "src/app/home.ts");
+    const helperPath = path.join(workspace, "src/lib/keys.ts");
+    const enPath = path.join(workspace, "messages/en.json");
+    const esPath = path.join(workspace, "messages/es.json");
+    const prompts: string[] = [];
+
+    await mkdir(path.dirname(sourcePath), {
+      recursive: true,
+    });
+    await mkdir(path.dirname(helperPath), {
+      recursive: true,
+    });
+    await mkdir(path.dirname(enPath), {
+      recursive: true,
+    });
+    await writeFile(
+      enPath,
+      JSON.stringify(
+        {
+          home: {
+            title: "Home",
+          },
+          marketing: {
+            hero: "Hero",
+          },
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+    await writeFile(
+      esPath,
+      JSON.stringify(
+        {
+          home: {
+            title: "Inicio",
+          },
+          marketing: {
+            hero: "Hero es",
+          },
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+    await writeFile(
+      sourcePath,
+      `export const homeTitle = (t: (key: string) => string) => t("home.title");
+`,
+      "utf8",
+    );
+    await writeFile(
+      helperPath,
+      `export const nestedKey = "marketing.hero.banner";
+`,
+      "utf8",
+    );
+    await writeFile(
+      path.join(workspace, "better-translate.config.ts"),
+      `export default {
+  gateway: {
+    apiKey: "test-gateway-key",
+  },
+  sourceLocale: "en",
+  locales: ["es"],
+  model: "anthropic/claude-sonnet-4.5",
+  messages: {
+    entry: "./messages/en.json",
+  },
+};`,
+      "utf8",
+    );
+
+    const result = await purgeProject({
+      confirmPurgeKey: async ({ key }) => {
+        prompts.push(key);
+        return true;
+      },
+      cwd: workspace,
+      logger: {
+        error() {},
+        info() {},
+      },
+    });
+
+    expect(prompts).toEqual(["marketing.hero"]);
+    expect(result.unsafeKeys).toEqual([]);
+    expect(result.purgedKeys).toEqual(["marketing.hero"]);
+  });
+
+  it("ignores .d.ts files when searching for translation usage", async () => {
+    const workspace = await createWorkspace();
+    const sourcePath = path.join(workspace, "src/app/home.ts");
+    const declarationPath = path.join(workspace, "src/types/messages.d.ts");
+    const enPath = path.join(workspace, "messages/en.json");
+    const esPath = path.join(workspace, "messages/es.json");
+    const prompts: string[] = [];
+
+    await mkdir(path.dirname(sourcePath), {
+      recursive: true,
+    });
+    await mkdir(path.dirname(declarationPath), {
+      recursive: true,
+    });
+    await mkdir(path.dirname(enPath), {
+      recursive: true,
+    });
+    await writeFile(
+      enPath,
+      JSON.stringify(
+        {
+          home: {
+            title: "Home",
+          },
+          marketing: {
+            hero: "Hero",
+          },
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+    await writeFile(
+      esPath,
+      JSON.stringify(
+        {
+          home: {
+            title: "Inicio",
+          },
+          marketing: {
+            hero: "Hero es",
+          },
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+    await writeFile(
+      sourcePath,
+      `export const homeTitle = (t: (key: string) => string) => t("home.title");
+`,
+      "utf8",
+    );
+    await writeFile(
+      declarationPath,
+      `export type KnownKey = "marketing.hero";
+`,
+      "utf8",
+    );
+    await writeFile(
+      path.join(workspace, "better-translate.config.ts"),
+      `export default {
+  gateway: {
+    apiKey: "test-gateway-key",
+  },
+  sourceLocale: "en",
+  locales: ["es"],
+  model: "anthropic/claude-sonnet-4.5",
+  messages: {
+    entry: "./messages/en.json",
+  },
+};`,
+      "utf8",
+    );
+
+    const result = await purgeProject({
+      confirmPurgeKey: async ({ key }) => {
+        prompts.push(key);
+        return true;
+      },
+      cwd: workspace,
+      logger: {
+        error() {},
+        info() {},
+      },
+    });
+
+    expect(prompts).toEqual(["marketing.hero"]);
+    expect(result.unsafeKeys).toEqual([]);
+    expect(result.purgedKeys).toEqual(["marketing.hero"]);
   });
 });
 
