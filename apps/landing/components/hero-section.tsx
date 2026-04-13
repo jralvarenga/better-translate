@@ -161,10 +161,10 @@ export default function HeroSection({ locale, t }: HeroSectionProps) {
                       asChild
                       size="lg"
                       variant="ghost"
-                      className="rounded-xl px-5 transition-colors hover:text-pink-400"
+                      className="group rounded-xl px-5 transition-colors hover:text-pink-400"
                     >
                       <Link
-                        href={siteLinks.github}
+                        href={siteLinks.sponsor}
                         target="_blank"
                         rel="noopener noreferrer"
                       >

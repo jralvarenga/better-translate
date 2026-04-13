@@ -1,4 +1,4 @@
-<p align="center">
+<div align="center">
   <img src="./better-translate-logo.png" alt="Better Translate" width="80" />
   <h2 align="center">Better Translate</h2>
   <p align="center">
@@ -19,7 +19,7 @@
 [![License](https://img.shields.io/github/license/jralvarenga/better-translate?style=flat&colorA=000000&colorB=000000)](./LICENSE)
 [![CI](https://img.shields.io/github/actions/workflow/status/jralvarenga/better-translate/ci.yml?branch=main&style=flat&colorA=000000&colorB=000000&label=CI)](https://github.com/jralvarenga/better-translate/actions)
 
-</p>
+</div>
 
 ## About
 
