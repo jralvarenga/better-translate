@@ -2,6 +2,7 @@ export { loadCliConfig } from "./config-loader.js";
 export { defineConfig } from "./define-config.js";
 export { extractProject } from "./extract.js";
 export { generateProject } from "./generate.js";
+export { purgeProject } from "./purge.js";
 
 export type {
   BetterTranslateCliConfig,
@@ -18,6 +19,11 @@ export type {
   MarkdownWriteConfirmationEntry,
   MarkdownWriteConfirmationRequest,
   MarkdownExtension,
+  PurgeKeyConfirmationRequest,
+  PurgeLocaleChange,
+  PurgeLocaleFile,
+  PurgeProjectOptions,
+  PurgeProjectResult,
   ResolvedBetterTranslateCliConfig,
   ResolvedBetterTranslateCliDirectModelConfig,
   ResolvedBetterTranslateCliGatewayConfig,

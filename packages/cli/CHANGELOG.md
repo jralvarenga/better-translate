@@ -4,7 +4,7 @@
 
 ### Patch Changes
 
-- 9f9b20c: Updating changeset and release workflow
+- Add `bt purge` to find unused translation keys, warn on dynamic usages, and remove confirmed keys across locale files.
 - Updated dependencies [9f9b20c]
   - @better-translate/core@1.2.2
 

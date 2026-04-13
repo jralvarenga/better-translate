@@ -2,7 +2,7 @@
 title: CLI
 description: >-
   @better-translate/cli extrae las cadenas marcadas a tu archivo de idioma
-  fuente y genera archivos traducidos.
+  fuente, genera archivos traducidos y elimina claves sin uso.
 ---
 # CLI
 
@@ -49,11 +49,6 @@ export default defineConfig({
   sourceLocale: "en",
   locales: ["es", "fr"],
   model: ollama("qwen3:4b"),
-  providerOptions: {
-    ollama: {
-      think: true,
-    },
-  },
   messages: {
     entry: "./src/messages/en.json",
   },
@@ -120,7 +115,36 @@ npx bt generate --yes
 
 Las ejecuciones no interactivas que necesiten escribir archivos markdown traducidos deben pasar `--yes`.
 
-## 7. Usa los archivos generados en tu aplicación
+## 7. Elimina claves sin uso
+
+```sh
+npx bt purge
+```
+
+Esto analiza tu código en busca de claves de traducción que ya no aparecen en ninguna llamada `t("...")` y las elimina de todos los archivos de idioma. El CLI te pide confirmación para cada clave de forma individual antes de eliminarla:
+
+```
+? Purge unused key "home.oldTitle"? (y/N) y
+? Purge unused key "sidebar.legacy"? (y/N) n
+```
+
+Escribe `y` + Enter para eliminar una clave de todos los archivos de idioma, o `n` + Enter (o simplemente Enter) para conservarla.
+
+Para eliminar todas las claves sin uso de una vez sin confirmación:
+
+```sh
+npx bt purge --yes
+```
+
+Para previsualizar qué se eliminaría sin realizar ningún cambio:
+
+```sh
+npx bt purge --dry-run
+```
+
+**Claves dinámicas:** Si tu código usa una clave dinámica como `` t(`section.${id}`) ``, el CLI no puede resolverla estáticamente. Te avisará, protegerá las claves que compartan el prefijo detectado o marcará la clave como insegura y la omitirá en lugar de eliminarla silenciosamente si aún puede estar en uso.
+
+## 8. Usa los archivos generados en tu aplicación
 
 Después de que los archivos existen, impórtalos en tu configuración de `@better-translate/core` igual que cualquier archivo de idioma escrito a mano.
 
@@ -148,6 +172,23 @@ export default defineConfig({
   },
 });
 ```
+
+## Referencia de comandos
+
+| Comando | Bandera | Descripción |
+|---|---|---|
+| `bt extract` | | Busca llamadas `bt: true`, sincroniza el idioma fuente, reescribe las llamadas |
+| | `--config <ruta>` | Ruta al archivo de configuración (detectado automáticamente por defecto) |
+| | `--dry-run` | Previsualiza los cambios sin escribir |
+| | `--max-length <n>` | Longitud máxima de segmento para nombres de claves generados |
+| `bt generate` | | Traduce el idioma fuente a todos los archivos de idioma de destino |
+| | `--config <ruta>` | Ruta al archivo de configuración |
+| | `--dry-run` | Previsualiza los cambios sin escribir |
+| | `--yes`, `-y` | Omite la confirmación para escrituras de archivos markdown |
+| `bt purge` | | Elimina las claves de traducción sin uso de todos los archivos de idioma |
+| | `--config <ruta>` | Ruta al archivo de configuración |
+| | `--dry-run` | Previsualiza qué claves se eliminarían sin escribir |
+| | `--yes`, `-y` | Elimina todas las claves sin uso sin confirmación |
 
 ## Ejemplos
 

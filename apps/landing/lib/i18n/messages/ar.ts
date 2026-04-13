@@ -82,7 +82,6 @@ export const ar = {
     language: "اللغة",
     languageSwitcher: "تبديل اللغة",
     openMenu: "فتح القائمة",
-    sponsor: "الرعاية",
   },
   hero: {
     badges: {

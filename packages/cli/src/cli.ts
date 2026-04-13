@@ -3,12 +3,14 @@ import pc from "picocolors";
 import { extractProject } from "./extract.js";
 import { generateProject } from "./generate.js";
 import { createSpinnerLogger } from "./logger.js";
+import { purgeProject } from "./purge.js";
 
 function usage(): string {
   return [
     "Usage:",
     "  bt extract [--config ./better-translate.config.ts] [--dry-run] [--max-length 40]",
     "  bt generate [--config ./better-translate.config.ts] [--dry-run] [--yes|-y]",
+    "  bt purge [--config ./better-translate.config.ts] [--dry-run] [--yes|-y]",
   ].join("\n");
 }
 
@@ -87,6 +89,7 @@ export async function runCli(
     cwd?: string;
     extractProjectImpl?: typeof extractProject;
     generateProjectImpl?: typeof generateProject;
+    purgeProjectImpl?: typeof purgeProject;
     stderr?: (message: string) => void;
     stdout?: (message: string) => void;
   } = {},
@@ -95,6 +98,7 @@ export async function runCli(
   const stdout = options.stdout ?? console.log;
   const extractProjectImpl = options.extractProjectImpl ?? extractProject;
   const generateProjectImpl = options.generateProjectImpl ?? generateProject;
+  const purgeProjectImpl = options.purgeProjectImpl ?? purgeProject;
   const [command, ...args] = argv;
 
   if (!command || command === "--help" || command === "-h") {
@@ -102,7 +106,7 @@ export async function runCli(
     return command ? 0 : 1;
   }
 
-  if (command !== "extract" && command !== "generate") {
+  if (command !== "extract" && command !== "generate" && command !== "purge") {
     stderr(`Unknown command "${command}".\n${usage()}`);
     return 1;
   }
@@ -110,8 +114,8 @@ export async function runCli(
   try {
     const parsed = parseCommonArgs(args);
 
-    if (command === "generate" && parsed.maxLength !== undefined) {
-      stderr(`--max-length is not valid for "generate".\n${usage()}`);
+    if (command !== "extract" && parsed.maxLength !== undefined) {
+      stderr(`--max-length is not valid for "${command}".\n${usage()}`);
       return 1;
     }
 
@@ -131,13 +135,23 @@ export async function runCli(
         maxLength: parsed.maxLength,
       });
     } else {
-      await generateProjectImpl({
-        configPath: parsed.configPath,
-        cwd: options.cwd,
-        dryRun: parsed.dryRun,
-        logger: createSpinnerLogger(),
-        yes: parsed.yes,
-      });
+      if (command === "generate") {
+        await generateProjectImpl({
+          configPath: parsed.configPath,
+          cwd: options.cwd,
+          dryRun: parsed.dryRun,
+          logger: createSpinnerLogger(),
+          yes: parsed.yes,
+        });
+      } else {
+        await purgeProjectImpl({
+          configPath: parsed.configPath,
+          cwd: options.cwd,
+          dryRun: parsed.dryRun,
+          logger: createSpinnerLogger(),
+          yes: parsed.yes,
+        });
+      }
     }
 
     return 0;

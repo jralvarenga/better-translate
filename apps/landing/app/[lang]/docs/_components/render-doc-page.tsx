@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 import type { ReactNode } from "react";
 import { evaluate } from "@mdx-js/mdx";
 import * as runtime from "react/jsx-runtime";
+import remarkGfm from "remark-gfm";
 import { CopyButton } from "@/components/copy-button";
 import { docsComponents } from "@/components/docs-components";
 import type { LandingLocale } from "@/lib/i18n/config";
@@ -15,6 +16,7 @@ export async function renderDocPage(documentId: string, locale: LandingLocale) {
   const [{ default: MdxContent }, markdownSource] = await Promise.all([
     evaluate(doc.source, {
       ...(runtime as Parameters<typeof evaluate>[1]),
+      remarkPlugins: [remarkGfm],
     }),
     readFile(doc.path, "utf8"),
   ]);
