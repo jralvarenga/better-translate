@@ -85,7 +85,6 @@ export const es = {
     language: "Idioma",
     languageSwitcher: "Cambiar idioma",
     openMenu: "Abrir menú",
-    sponsor: "Sponsor",
   },
   hero: {
     badges: {

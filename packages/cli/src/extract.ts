@@ -1,9 +1,16 @@
-import { readdir, readFile, writeFile } from "node:fs/promises";
+import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import type { TranslationMessages } from "@better-translate/core";
 import ts from "typescript";
 
+import {
+  collectSourceFiles,
+  createScriptKind,
+  createWarning,
+  getStaticStringValue,
+  isTranslationCall,
+} from "./codebase.js";
 import { loadCliConfig } from "./config-loader.js";
 import { loadSourceMessages, serializeMessages } from "./messages.js";
 import type {
@@ -14,25 +21,6 @@ import type {
 import { assert, isRecord } from "./validation.js";
 
 const DEFAULT_MAX_LENGTH = 40;
-const SOURCE_EXTENSIONS = new Set([
-  ".cjs",
-  ".cts",
-  ".js",
-  ".jsx",
-  ".mjs",
-  ".mts",
-  ".ts",
-  ".tsx",
-]);
-const IGNORED_DIRECTORIES = new Set([
-  ".git",
-  ".next",
-  ".turbo",
-  "build",
-  "coverage",
-  "dist",
-  "node_modules",
-]);
 const NAMESPACE_ROOTS = new Set([
   "app",
   "components",
@@ -186,35 +174,6 @@ function setMessageValue(
   return true;
 }
 
-function createScriptKind(sourcePath: string): ts.ScriptKind {
-  const extension = path.extname(sourcePath);
-
-  switch (extension) {
-    case ".js":
-    case ".cjs":
-    case ".mjs":
-      return ts.ScriptKind.JS;
-    case ".jsx":
-      return ts.ScriptKind.JSX;
-    case ".tsx":
-      return ts.ScriptKind.TSX;
-    default:
-      return ts.ScriptKind.TS;
-  }
-}
-
-function getLiteralArgument(node: ts.Expression): string | null {
-  if (ts.isStringLiteral(node)) {
-    return node.text;
-  }
-
-  if (ts.isNoSubstitutionTemplateLiteral(node)) {
-    return node.text;
-  }
-
-  return null;
-}
-
 function getObjectPropertyName(node: ts.PropertyName): string | null {
   if (ts.isIdentifier(node) || ts.isStringLiteral(node)) {
     return node.text;
@@ -285,15 +244,6 @@ function buildPreservedOptionsText(
   return printer.printNode(ts.EmitHint.Unspecified, objectLiteral, sourceFile);
 }
 
-function createWarning(
-  sourceFile: ts.SourceFile,
-  node: ts.Node,
-  message: string,
-): string {
-  const position = sourceFile.getLineAndCharacterOfPosition(node.getStart());
-  return `${sourceFile.fileName}:${position.line + 1}: ${message}`;
-}
-
 function analyzeFile(options: {
   configDirectory: string;
   maxLength: number;
@@ -334,12 +284,7 @@ function analyzeFile(options: {
       return;
     }
 
-    const callee = node.expression;
-    const isIdentifierCall = ts.isIdentifier(callee) && callee.text === "t";
-    const isPropertyCall =
-      ts.isPropertyAccessExpression(callee) && callee.name.text === "t";
-
-    if (!isIdentifierCall && !isPropertyCall) {
+    if (!isTranslationCall(node)) {
       ts.forEachChild(node, visit);
       return;
     }
@@ -377,7 +322,7 @@ function analyzeFile(options: {
       return;
     }
 
-    const literalValue = getLiteralArgument(firstArgument);
+    const literalValue = getStaticStringValue(firstArgument);
 
     if (literalValue === null) {
       logWarning(
@@ -537,41 +482,6 @@ function analyzeFile(options: {
     updatedSource: updatedSource === sourceText ? null : updatedSource,
     warnings,
   };
-}
-
-async function collectSourceFiles(
-  directory: string,
-  ignoredPaths: ReadonlySet<string>,
-): Promise<string[]> {
-  const entries = (
-    await readdir(directory, {
-      withFileTypes: true,
-    })
-  ).sort((a, b) => a.name.localeCompare(b.name));
-  const files: string[] = [];
-
-  for (const entry of entries) {
-    const entryPath = path.join(directory, entry.name);
-
-    if (ignoredPaths.has(entryPath)) {
-      continue;
-    }
-
-    if (entry.isDirectory()) {
-      if (IGNORED_DIRECTORIES.has(entry.name)) {
-        continue;
-      }
-
-      files.push(...(await collectSourceFiles(entryPath, ignoredPaths)));
-      continue;
-    }
-
-    if (SOURCE_EXTENSIONS.has(path.extname(entry.name))) {
-      files.push(entryPath);
-    }
-  }
-
-  return files;
 }
 
 export async function extractProject(

@@ -36,7 +36,7 @@ export const HeroHeader = ({
   const languages = getLandingLanguages();
   const menuItems = [
     { href: "/docs", label: docsLabel, localized: true },
-    { href: siteLinks.npm, label: cliLabel, localized: false },
+    { href: "/docs/cli", label: cliLabel, localized: true },
     { href: siteLinks.changelog, label: changelogLabel, localized: false },
   ] as const;
 

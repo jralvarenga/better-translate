@@ -72,11 +72,6 @@ const ollamaConfig = defineConfig({
     entry: "./messages/en.json",
   },
   model: ollamaProvider(ollamaModelId),
-  providerOptions: {
-    ollama: {
-      think: true,
-    },
-  },
   sourceLocale: "en",
 });
 
