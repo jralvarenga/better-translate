@@ -13,15 +13,15 @@
     },
     "apps/landing": {
       "name": "landing",
-      "version": "2.0.3",
+      "version": "2.1.0",
       "dependencies": {
         "@ai-sdk/anthropic": "^3.0.64",
         "@ai-sdk/moonshotai": "^2.0.12",
-        "@better-translate/cli": "^1.1.2",
-        "@better-translate/core": "^1.2.1",
-        "@better-translate/md": "^1.1.1",
-        "@better-translate/nextjs": "^1.1.1",
-        "@better-translate/react": "^1.1.1",
+        "@better-translate/cli": "^1.2.0",
+        "@better-translate/core": "^1.3.0",
+        "@better-translate/md": "^1.2.0",
+        "@better-translate/nextjs": "^1.2.0",
+        "@better-translate/react": "^1.2.0",
         "@mdx-js/mdx": "^3.1.1",
         "@remixicon/react": "^4.9.0",
         "class-variance-authority": "^0.7.1",
@@ -192,8 +192,8 @@
     "examples/tanstack-start-example": {
       "name": "tanstack-start-example",
       "dependencies": {
-        "@better-translate/core": "^1.2.2",
-        "@better-translate/tanstack-router": "^1.1.2",
+        "@better-translate/core": "^1.3.0",
+        "@better-translate/tanstack-router": "^1.2.0",
         "@tailwindcss/vite": "^4.1.18",
         "@tanstack/react-router": "^1.168.7",
         "@tanstack/react-start": "^1.167.12",
@@ -221,9 +221,9 @@
     },
     "packages/astro": {
       "name": "@better-translate/astro",
-      "version": "1.1.3",
+      "version": "1.2.0",
       "dependencies": {
-        "@better-translate/core": "^1.2.2",
+        "@better-translate/core": "^1.3.0",
       },
       "devDependencies": {
         "@repo/typescript-config": "*",
@@ -234,13 +234,13 @@
     },
     "packages/cli": {
       "name": "@better-translate/cli",
-      "version": "1.1.3",
+      "version": "1.2.0",
       "bin": {
         "bt": "./dist/bin.js",
       },
       "dependencies": {
         "@ai-sdk/provider": "^3.0.8",
-        "@better-translate/core": "^1.2.2",
+        "@better-translate/core": "^1.3.0",
         "ai": "^6.0.116",
         "dotenv": "^17.2.3",
         "gray-matter": "^4.0.3",
@@ -256,16 +256,16 @@
     },
     "packages/core": {
       "name": "@better-translate/core",
-      "version": "1.2.2",
+      "version": "1.3.0",
       "devDependencies": {
         "@repo/typescript-config": "*",
       },
     },
     "packages/md": {
       "name": "@better-translate/md",
-      "version": "1.1.2",
+      "version": "1.2.0",
       "dependencies": {
-        "@better-translate/core": "^1.2.2",
+        "@better-translate/core": "^1.3.0",
         "@mdx-js/mdx": "^3.1.1",
         "gray-matter": "^4.0.3",
         "rehype-stringify": "^10.0.1",
@@ -285,9 +285,9 @@
     },
     "packages/nextjs": {
       "name": "@better-translate/nextjs",
-      "version": "1.1.2",
+      "version": "1.2.0",
       "dependencies": {
-        "@better-translate/core": "^1.2.2",
+        "@better-translate/core": "^1.3.0",
         "@formatjs/intl-localematcher": "^0.6.2",
         "negotiator": "^1.0.0",
       },
@@ -302,9 +302,9 @@
     },
     "packages/react": {
       "name": "@better-translate/react",
-      "version": "1.1.2",
+      "version": "1.2.0",
       "dependencies": {
-        "@better-translate/core": "^1.2.2",
+        "@better-translate/core": "^1.3.0",
       },
       "devDependencies": {
         "@repo/typescript-config": "*",
@@ -316,9 +316,9 @@
     },
     "packages/tanstack-router": {
       "name": "@better-translate/tanstack-router",
-      "version": "1.1.2",
+      "version": "1.2.0",
       "dependencies": {
-        "@better-translate/core": "^1.2.2",
+        "@better-translate/core": "^1.3.0",
       },
       "devDependencies": {
         "@repo/typescript-config": "*",
