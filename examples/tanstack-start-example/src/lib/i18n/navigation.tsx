@@ -5,7 +5,6 @@ import {
   Link,
   useLocation,
   useNavigate,
-  useParams,
   useRouter,
 } from "@tanstack/react-router";
 
@@ -21,10 +20,5 @@ export const {
   routing,
   useLocation,
   useNavigate,
-  useParams: () =>
-    useParams({
-      strict: false,
-      select: (params) => ({ lang: params.lang as string | undefined }),
-    }),
   useRouter,
 });

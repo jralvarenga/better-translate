@@ -68,6 +68,8 @@ export const onRequest = createBetterTranslateMiddleware(requestConfig, {
 });
 ```
 
+If you want the shared bracket-form list, import `SUPPORTED_ASTRO_LOCALE_ROUTE_SYNTAXES` from `@better-translate/astro`. It includes `[locale]`, `[lang]`, `[language]`, `[intl]`, `[i18n]`, `[l10n]`, and `[localization]`.
+
 ## 5. Read translations in a page
 
 Create `src/lib/server.ts`:

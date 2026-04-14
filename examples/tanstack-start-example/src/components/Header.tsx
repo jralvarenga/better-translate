@@ -40,21 +40,21 @@ export default function Header({
         <nav className="flex flex-wrap gap-3 text-sm font-medium">
           <I18nLink
             className="rounded-full border border-black/10 px-4 py-2 transition-colors hover:bg-black/[0.03]"
-            to="/$lang"
+            to="/{$lang}"
             params={currentParams}
           >
             {homeLabel}
           </I18nLink>
           <I18nLink
             className="rounded-full border border-black/10 px-4 py-2 transition-colors hover:bg-black/[0.03]"
-            to="/$lang/guide"
+            to="/{$lang}/guide"
             params={currentParams}
           >
             {guideLabel}
           </I18nLink>
           <I18nLink
             className="rounded-full border border-black/10 px-4 py-2 transition-colors hover:bg-black/[0.03]"
-            to="/$lang/login"
+            to="/{$lang}/login"
             params={currentParams}
           >
             {loginLabel}

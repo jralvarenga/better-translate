@@ -12,6 +12,7 @@ import {
   setRequestLocale,
 } from "../../src/server.js";
 import { snapshotMessages } from "../../src/snapshot-messages.js";
+import { SUPPORTED_LOCALE_ROUTE_SYNTAXES } from "../../src/core.js";
 import {
   isTranslationConfigOptions,
   isTranslationMessages,
@@ -25,6 +26,18 @@ const en = {
 } as const;
 
 describe("better-translate internals", () => {
+  it("exports the supported locale route param names in a stable order", () => {
+    expect(SUPPORTED_LOCALE_ROUTE_SYNTAXES).toEqual([
+      "locale",
+      "lang",
+      "language",
+      "intl",
+      "i18n",
+      "l10n",
+      "localization",
+    ]);
+  });
+
   it("detects the options config form and validates translation objects", () => {
     expect(
       isTranslationConfigOptions({

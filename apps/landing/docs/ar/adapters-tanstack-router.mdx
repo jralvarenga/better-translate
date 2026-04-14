@@ -69,7 +69,6 @@ import {
   Link,
   useLocation,
   useNavigate,
-  useParams,
   useRouter,
 } from "@tanstack/react-router";
 
@@ -87,10 +86,11 @@ export const {
   routing,
   useLocation,
   useNavigate,
-  useParams,
   useRouter,
 });
 ```
+
+استخدم `routeTemplate: "/$lang"` أو `routeTemplate: "/{$lang}"` للمسارات التي تتطلب locale دائماً. استخدم `"/{-$lang}"` عندما يجب إخفاء locale الافتراضي من الرابط.
 
 ## 5. تغليف التطبيق بموفر React
 

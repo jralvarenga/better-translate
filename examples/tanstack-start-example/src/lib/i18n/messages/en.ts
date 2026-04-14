@@ -9,14 +9,14 @@ export const en = {
       "The app injects TanStack Router primitives into createNavigationFunctions(), so locale-aware links and router calls stay compatible with the installed router version.",
     navigationTitle: "Injected navigation",
     routeTreeDescription:
-      "Every user-facing page now lives under the optional locale segment, so home, guide, and login all share the same locale-aware routing model.",
-    routeTreeTitle: "Optional locale route tree",
+      "Every user-facing page now lives under the required locale segment, so home, guide, and login all share the same locale-aware routing model.",
+    routeTreeTitle: "Required locale route tree",
     title: "One route tree, two languages, and a localized app from the root.",
   },
   home: {
     badge: "Root-level localized experience",
     description:
-      "This page keeps the same calm starter-card feel, but now the full route tree is localized from the root with TanStack Router optional path params.",
+      "This page keeps the same calm starter-card feel, but now the full route tree is localized from the root with a required TanStack Router locale param.",
     primaryCta: "See localized guide",
     secondaryCta: "Open localized login",
     supportingCopy:
@@ -27,7 +27,7 @@ export const en = {
   login: {
     badge: "Localized login route",
     description:
-      "Login now belongs to the same optional-locale tree as the rest of the example, so the route, header navigation, and switcher all stay consistent.",
+      "Login now belongs to the same required-locale tree as the rest of the example, so the route, header navigation, and switcher all stay consistent.",
     primaryCta: "Back to home",
     secondaryCta: "Open guide",
     title: "A localized login page without leaving the app shell.",

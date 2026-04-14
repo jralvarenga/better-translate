@@ -69,7 +69,6 @@ import {
   Link,
   useLocation,
   useNavigate,
-  useParams,
   useRouter,
 } from "@tanstack/react-router";
 
@@ -87,10 +86,11 @@ export const {
   routing,
   useLocation,
   useNavigate,
-  useParams,
   useRouter,
 });
 ```
+
+必須ロケール区間には `routeTemplate: "/$lang"` または `routeTemplate: "/{$lang}"` を使います。デフォルトロケールの区間を省略したい場合は `"/{-$lang}"` を使います。
 
 ## 5. React プロバイダーでアプリをラップする
 

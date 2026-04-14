@@ -11,6 +11,7 @@ import type {
 } from "@tanstack/react-router";
 
 import {
+  getPathnameLocale,
   isAbsoluteHref,
   isPathnameInScope,
   localizePathname,
@@ -90,7 +91,11 @@ export interface NavigationFunctionsConfig<
     pathname: string;
   };
   useNavigate: () => UseNavigateResult<TDefaultFrom>;
-  useParams: () => TParams;
+  /**
+   * @deprecated Locale resolution now comes from `useLocation().pathname`.
+   * This hook is ignored at runtime and only remains for backward compatibility.
+   */
+  useParams?: () => TParams;
   useRouter: () => TRouter;
 }
 
@@ -104,7 +109,6 @@ export function createNavigationFunctions<
   routing,
   useLocation: useInjectedLocation,
   useNavigate: useInjectedNavigate,
-  useParams: useInjectedParams,
   useRouter: useInjectedRouter,
 }: NavigationFunctionsConfig<TLocale, TDefaultFrom, TRouter, TParams>) {
   const parsedTemplate = parseRouteTemplate(routing.routeTemplate);
@@ -117,14 +121,11 @@ export function createNavigationFunctions<
   }
 
   const Link = ((rawProps) => {
+    const currentPathname = useInjectedLocation().pathname;
     const localizedOptions = getLocalizedOptions(
       rawProps,
-      useInjectedLocation().pathname,
-      resolveActiveLocale(
-        useInjectedParams(),
-        routing,
-        parsedTemplate.localeParamName,
-      ),
+      currentPathname,
+      resolveActiveLocale(currentPathname, routing),
       routing,
       parsedTemplate.localeParamName,
       parsedTemplate.localeSegment,
@@ -142,11 +143,7 @@ export function createNavigationFunctions<
   }
 
   function useLocale(): TLocale {
-    return resolveActiveLocale(
-      useInjectedParams(),
-      routing,
-      parsedTemplate.localeParamName,
-    );
+    return resolveActiveLocale(useInjectedLocation().pathname, routing);
   }
 
   function useNavigate(): LocalizedUseNavigateResult<TLocale, TDefaultFrom> {
@@ -404,18 +401,8 @@ function stripLocalePlaceholder(
 }
 
 function resolveActiveLocale<TLocale extends string>(
-  params: ParamsLike,
+  pathname: string,
   routing: RoutingConfig<TLocale>,
-  localeParamName: string,
 ): TLocale {
-  const localeParam = params[localeParamName];
-
-  if (
-    typeof localeParam === "string" &&
-    routing.locales.includes(localeParam as TLocale)
-  ) {
-    return localeParam as TLocale;
-  }
-
-  return routing.defaultLocale;
+  return getPathnameLocale(pathname, routing) ?? routing.defaultLocale;
 }

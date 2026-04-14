@@ -1,3 +1,5 @@
+import { SUPPORTED_LOCALE_ROUTE_SYNTAXES } from "@better-translate/core";
+
 export interface RoutingDomain<TLocale extends string> {
   domain: string;
   defaultLocale: TLocale;
@@ -37,6 +39,13 @@ interface ParsedRouteTemplate {
 }
 
 const DEFAULT_ROUTE_TEMPLATE = "/[lang]";
+const NEXTJS_LOCALE_SEGMENT_EXAMPLE = '"[lang]"';
+const SUPPORTED_LOCALE_PARAM_NAMES = SUPPORTED_LOCALE_ROUTE_SYNTAXES.map(
+  (name) => `"${name}"`,
+).join(", ");
+
+type SupportedLocaleParamName =
+  (typeof SUPPORTED_LOCALE_ROUTE_SYNTAXES)[number];
 
 export function hasLocale<TLocale extends string>(
   locales: readonly TLocale[],
@@ -329,7 +338,13 @@ export function parseRouteTemplate(
 
     if (localeSegmentIndex !== -1) {
       throw new Error(
-        `Route template "${normalizedRouteTemplate}" must contain exactly one dynamic locale segment.`,
+        `Route template "${normalizedRouteTemplate}" must contain exactly one supported dynamic locale segment like ${NEXTJS_LOCALE_SEGMENT_EXAMPLE}. Supported locale param names are ${SUPPORTED_LOCALE_PARAM_NAMES}.`,
+      );
+    }
+
+    if (!isSupportedLocaleParamName(dynamicMatch[1]!)) {
+      throw new Error(
+        `Route template "${normalizedRouteTemplate}" uses unsupported locale param "${dynamicMatch[1]}". Next.js locale segments must look like ${NEXTJS_LOCALE_SEGMENT_EXAMPLE}. Supported locale param names are ${SUPPORTED_LOCALE_PARAM_NAMES}.`,
       );
     }
 
@@ -339,7 +354,7 @@ export function parseRouteTemplate(
 
   if (localeSegmentIndex === -1) {
     throw new Error(
-      `Route template "${normalizedRouteTemplate}" must contain one dynamic locale segment like "[lang]".`,
+      `Route template "${normalizedRouteTemplate}" must contain one supported dynamic locale segment like ${NEXTJS_LOCALE_SEGMENT_EXAMPLE}. Supported locale param names are ${SUPPORTED_LOCALE_PARAM_NAMES}.`,
     );
   }
 
@@ -463,4 +478,12 @@ function getDomainLocales<TLocale extends string>(
   }
 
   return domain.locales;
+}
+
+function isSupportedLocaleParamName(
+  value: string,
+): value is SupportedLocaleParamName {
+  return SUPPORTED_LOCALE_ROUTE_SYNTAXES.includes(
+    value as SupportedLocaleParamName,
+  );
 }

@@ -1,3 +1,5 @@
+import { SUPPORTED_LOCALE_ROUTE_SYNTAXES } from "@better-translate/core";
+
 export interface RoutingConfig<TLocale extends string> {
   locales: readonly TLocale[];
   defaultLocale: TLocale;
@@ -30,6 +32,13 @@ interface AnalyzedPathname<TLocale extends string> {
 }
 
 const DEFAULT_ROUTE_TEMPLATE = "/{-$locale}";
+const LOCALE_SEGMENT_EXAMPLES = '"$locale", "{-$locale}", or "{$locale}"';
+const SUPPORTED_LOCALE_PARAM_NAMES = SUPPORTED_LOCALE_ROUTE_SYNTAXES.map(
+  (name) => `"${name}"`,
+).join(", ");
+
+type SupportedLocaleParamName =
+  (typeof SUPPORTED_LOCALE_ROUTE_SYNTAXES)[number];
 
 export function hasLocale<TLocale extends string>(
   locales: readonly TLocale[],
@@ -169,31 +178,46 @@ export function parseRouteTemplate(
 
   for (let index = 0; index < localizedSegments.length; index += 1) {
     const segment = localizedSegments[index]!;
-    const localeMatch = /^\{(-?)\$([a-zA-Z_$][a-zA-Z0-9_$]*)\}$/.exec(segment);
+    const optionalOrRequiredLocaleMatch =
+      /^\{(-?)\$([a-zA-Z_$][a-zA-Z0-9_$]*)\}$/.exec(segment);
+    const requiredLocaleAliasMatch = /^\$([a-zA-Z_$][a-zA-Z0-9_$]*)$/.exec(
+      segment,
+    );
 
-    if (localeMatch) {
+    if (optionalOrRequiredLocaleMatch || requiredLocaleAliasMatch) {
       if (localeSegmentIndex !== -1) {
         throw new Error(
-          `Route template "${normalizedRouteTemplate}" must contain exactly one locale segment.`,
+          `Route template "${normalizedRouteTemplate}" must contain exactly one supported locale segment like ${LOCALE_SEGMENT_EXAMPLES}. Supported locale param names are ${SUPPORTED_LOCALE_PARAM_NAMES}.`,
+        );
+      }
+
+      const nextLocaleParamName =
+        optionalOrRequiredLocaleMatch?.[2] ?? requiredLocaleAliasMatch?.[1]!;
+
+      if (!isSupportedLocaleParamName(nextLocaleParamName)) {
+        throw new Error(
+          `Route template "${normalizedRouteTemplate}" uses unsupported locale param "${nextLocaleParamName}". TanStack locale segments must look like ${LOCALE_SEGMENT_EXAMPLES}. Supported locale param names are ${SUPPORTED_LOCALE_PARAM_NAMES}.`,
         );
       }
 
       localeSegmentIndex = index;
-      localeParamName = localeMatch[2]!;
-      isRequired = localeMatch[1] !== "-";
+      localeParamName = nextLocaleParamName;
+      isRequired = requiredLocaleAliasMatch
+        ? true
+        : optionalOrRequiredLocaleMatch?.[1] !== "-";
       continue;
     }
 
     if (looksDynamic(segment)) {
       throw new Error(
-        `Route template "${normalizedRouteTemplate}" can only contain one locale segment like "{-$locale}" or "{$locale}" plus static path segments.`,
+        `Route template "${normalizedRouteTemplate}" can only contain one supported locale segment like ${LOCALE_SEGMENT_EXAMPLES} plus static path segments. Supported locale param names are ${SUPPORTED_LOCALE_PARAM_NAMES}.`,
       );
     }
   }
 
   if (localeSegmentIndex === -1) {
     throw new Error(
-      `Route template "${normalizedRouteTemplate}" must contain one locale segment like "{-$locale}" or "{$locale}".`,
+      `Route template "${normalizedRouteTemplate}" must contain one supported locale segment like ${LOCALE_SEGMENT_EXAMPLES}. Supported locale param names are ${SUPPORTED_LOCALE_PARAM_NAMES}.`,
     );
   }
 
@@ -303,6 +327,14 @@ function looksDynamic(segment: string): boolean {
     segment.startsWith("$") ||
     segment.includes("{") ||
     segment.includes("}")
+  );
+}
+
+function isSupportedLocaleParamName(
+  value: string,
+): value is SupportedLocaleParamName {
+  return SUPPORTED_LOCALE_ROUTE_SYNTAXES.includes(
+    value as SupportedLocaleParamName,
   );
 }
 
