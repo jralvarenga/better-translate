@@ -45,13 +45,18 @@ export const translator = await configureTranslations({
 Create `src/lib/routing.ts`:
 
 ```ts
-import { defineRouting } from "@better-translate/tanstack-router";
+import {
+  defineRouting,
+  SUPPORTED_TANSTACK_LOCALE_ROUTE_SYNTAXES,
+} from "@better-translate/tanstack-router";
 
 export const routing = defineRouting({
   defaultLocale: "en",
   locales: ["en", "es"] as const,
   routeTemplate: "/$lang",
 });
+
+console.log(SUPPORTED_TANSTACK_LOCALE_ROUTE_SYNTAXES);
 ```
 
 ## 4. Create localized navigation helpers
@@ -63,7 +68,6 @@ import {
   Link,
   useLocation,
   useNavigate,
-  useParams,
   useRouter,
 } from "@tanstack/react-router";
 
@@ -81,10 +85,18 @@ export const {
   routing,
   useLocation,
   useNavigate,
-  useParams,
   useRouter,
 });
 ```
+
+Use `routeTemplate: "/$lang"` or `routeTemplate: "/{$lang}"` for required locale segments. Use `"/{-$lang}"` when the default locale should omit the segment.
+
+Supported locale param names come from `@better-translate/core` and are exposed here as:
+
+- `SUPPORTED_TANSTACK_REQUIRED_LOCALE_ROUTE_SYNTAXES`
+- `SUPPORTED_TANSTACK_BRACED_REQUIRED_LOCALE_ROUTE_SYNTAXES`
+- `SUPPORTED_TANSTACK_OPTIONAL_LOCALE_ROUTE_SYNTAXES`
+- `SUPPORTED_TANSTACK_LOCALE_ROUTE_SYNTAXES`
 
 ## 5. Wrap the app with the React provider
 

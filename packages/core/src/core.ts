@@ -56,6 +56,19 @@ export type {
   TranslationMessages,
 } from "./types.js";
 
+export const SUPPORTED_LOCALE_ROUTE_SYNTAXES = [
+  "locale",
+  "lang",
+  "language",
+  "intl",
+  "i18n",
+  "l10n",
+  "localization",
+] as const;
+
+export type SupportedLocaleRouteSyntax =
+  (typeof SUPPORTED_LOCALE_ROUTE_SYNTAXES)[number];
+
 /**
  * Configures Better Translate using the short locale-map form.
  *

@@ -1,6 +1,7 @@
 import type {
   DeepStringify,
   DotKeys,
+  SupportedLocaleRouteSyntax,
   TranslationDirection,
   TranslationLanguageMetadata,
   TranslationLocaleMap,
@@ -9,6 +10,7 @@ import {
   configureTranslations,
   getAvailableLanguages,
   getMessages,
+  SUPPORTED_LOCALE_ROUTE_SYNTAXES,
 } from "@better-translate/core";
 
 const en = {
@@ -40,6 +42,11 @@ const es = {
 type Locale = "en" | "es";
 type AppMessages = typeof en;
 type TranslationKey = DotKeys<AppMessages>;
+
+const supportedLocaleRouteParamName: SupportedLocaleRouteSyntax = "lang";
+const supportedLocaleRouteSyntaxes = SUPPORTED_LOCALE_ROUTE_SYNTAXES;
+const firstSupportedLocaleRouteSyntax: "locale" =
+  supportedLocaleRouteSyntaxes[0];
 
 const translationKey: TranslationKey = "account.balance.label";
 const spanishMessages: DeepStringify<AppMessages> = es;
@@ -132,9 +139,17 @@ const configuredLanguage: TranslationLanguageMetadata<Locale | "fr"> =
   configuredLanguages[0]!;
 void configuredLanguageLocale;
 void configuredLanguage;
+void supportedLocaleRouteParamName;
+void firstSupportedLocaleRouteSyntax;
 
 // @ts-expect-error invalid translation key should fail
 translator.t("account.balance.total");
+
+// @ts-expect-error unsupported locale route param name should fail
+const invalidSupportedLocaleRouteParamName: SupportedLocaleRouteSyntax =
+  "region";
+
+void invalidSupportedLocaleRouteParamName;
 
 // @ts-expect-error placeholder params should be required when the message contains tokens
 translator.t("common.greeting");

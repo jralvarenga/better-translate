@@ -57,7 +57,7 @@ describe("@better-translate/tanstack-router", () => {
     const routing = defineRouting({
       locales: ["en", "es"] as const,
       defaultLocale: "en",
-      routeTemplate: "/app/{-$lang}",
+      routeTemplate: "/app/$lang",
     });
 
     expect(getPathnameLocale("/app/es/dashboard", routing)).toBe("es");
@@ -68,7 +68,7 @@ describe("@better-translate/tanstack-router", () => {
       "/app/es/dashboard",
     );
     expect(localizePathname("/app/es/dashboard", "en", routing)).toBe(
-      "/app/dashboard",
+      "/app/en/dashboard",
     );
     expect(isPathnameInScope("/app/dashboard", routing)).toBe(true);
     expect(isPathnameInScope("/login", routing)).toBe(false);
@@ -78,6 +78,7 @@ describe("@better-translate/tanstack-router", () => {
     const routing = defineRouting({
       locales: ["en", "es"] as const,
       defaultLocale: "en",
+      routeTemplate: "/app/$locale",
     });
     const navigateCalls: Array<Record<string, unknown>> = [];
     const buildLocationCalls: Array<Record<string, unknown>> = [];
@@ -97,18 +98,13 @@ describe("@better-translate/tanstack-router", () => {
       routing,
       useLocation() {
         return {
-          pathname: "/es/about",
+          pathname: "/app/es/about",
         };
       },
       useNavigate() {
         return (async (options: unknown) => {
           navigateCalls.push(options as Record<string, unknown>);
         }) as never;
-      },
-      useParams() {
-        return {
-          locale: "es" as const,
-        };
       },
       useRouter() {
         return {
@@ -144,7 +140,7 @@ describe("@better-translate/tanstack-router", () => {
         navigation.Link,
         {
           locale: "en",
-          to: "/pricing",
+          to: "/app/pricing",
         },
         "Pricing",
       ),
@@ -152,41 +148,41 @@ describe("@better-translate/tanstack-router", () => {
 
     await navigate({
       locale: "en",
-      to: "/about",
+      to: "/app/about",
     });
     await navigate({
       locale: "es",
-      to: "/blog/$postId",
+      to: "/app/blog/$postId",
       params: {
         postId: "hello-world",
       },
     });
     await navigate({
       locale: "es",
-      to: "/login",
+      to: "/app/login",
     });
     router.buildLocation({
       locale: "es",
-      to: "/contact",
+      to: "/app/contact",
     });
     await router.preloadRoute?.({
       locale: "en",
-      to: "/about",
+      to: "/app/about",
     });
 
     expect(navigation.useLocale()).toBe("es");
-    expect(navigation.usePathname()).toBe("/about");
+    expect(navigation.usePathname()).toBe("/app/about");
     expect(
       navigation.getPathname({
-        href: "/about",
+        href: "/app/about",
         locale: "es",
       }),
-    ).toBe("/es/about");
-    expect(link).toContain('data-to="/pricing"');
+    ).toBe("/app/es/about");
+    expect(link).toContain('data-to="/app/en/pricing"');
     expect(link).not.toContain("data-params");
 
     expect(navigateCalls[0]).toMatchObject({
-      to: "/about",
+      to: "/app/en/about",
     });
     expect(
       (
@@ -196,23 +192,137 @@ describe("@better-translate/tanstack-router", () => {
       )({
         locale: "es",
       }),
-    ).toEqual({});
+    ).toEqual({
+      locale: "en",
+    });
     expect(navigateCalls[1]).toMatchObject({
-      to: "/es/blog/$postId",
+      to: "/app/es/blog/$postId",
       params: {
         locale: "es",
         postId: "hello-world",
       },
     });
     expect(navigateCalls[2]).toMatchObject({
-      to: "/es/login",
+      to: "/app/es/login",
     });
     expect(buildLocationCalls[0]).toMatchObject({
-      to: "/es/contact",
+      to: "/app/es/contact",
     });
     expect(preloadCalls[0]).toMatchObject({
-      to: "/about",
+      to: "/app/en/about",
     });
+  });
+
+  it("resolves optional locale routes from the current pathname without useParams", () => {
+    const routing = defineRouting({
+      locales: ["en", "es"] as const,
+      defaultLocale: "en",
+    });
+
+    const navigation = createNavigationFunctions({
+      Link(props: { children?: ReactNode; params?: unknown; to?: string }) {
+        return createElement("a", props, props.children);
+      },
+      routing,
+      useLocation() {
+        return {
+          pathname: "/es/about",
+        };
+      },
+      useNavigate() {
+        return (async (_options: unknown) => {}) as never;
+      },
+      useRouter() {
+        return {
+          buildLocation() {
+            return {
+              external: false,
+              hash: "",
+              href: "/",
+              pathname: "/",
+              publicHref: "/",
+              search: {},
+              searchStr: "",
+              state: {},
+            };
+          },
+          navigate() {
+            return Promise.resolve();
+          },
+          preloadRoute() {
+            return Promise.resolve(undefined);
+          },
+        } as never;
+      },
+    });
+
+    expect(navigation.useLocale()).toBe("es");
+    expect(navigation.usePathname()).toBe("/about");
+    expect(
+      navigation.getPathname({
+        href: "/about",
+        locale: "en",
+      }),
+    ).toBe("/about");
+    expect(
+      navigation.getPathname({
+        href: "/about",
+        locale: "es",
+      }),
+    ).toBe("/es/about");
+  });
+
+  it("keeps legacy useParams injection backward-compatible", () => {
+    const routing = defineRouting({
+      locales: ["en", "es"] as const,
+      defaultLocale: "en",
+      routeTemplate: "/app/{-$locale}",
+    });
+
+    const navigation = createNavigationFunctions({
+      Link(props: { children?: ReactNode; params?: unknown; to?: string }) {
+        return createElement("a", props, props.children);
+      },
+      routing,
+      useLocation() {
+        return {
+          pathname: "/app/about",
+        };
+      },
+      useNavigate() {
+        return (async (_options: unknown) => {}) as never;
+      },
+      useParams() {
+        return {
+          locale: undefined as "en" | "es" | undefined,
+        };
+      },
+      useRouter() {
+        return {
+          buildLocation() {
+            return {
+              external: false,
+              hash: "",
+              href: "/",
+              pathname: "/",
+              publicHref: "/",
+              search: {},
+              searchStr: "",
+              state: {},
+            };
+          },
+          navigate() {
+            return Promise.resolve();
+          },
+          preloadRoute() {
+            return Promise.resolve(undefined);
+          },
+        } as never;
+      },
+    });
+
+    expect(navigation.useLocale()).toBe("en");
+    expect(navigation.usePathname()).toBe("/app/about");
   });
 
   it("binds server translations to the resolved locale", async () => {

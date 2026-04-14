@@ -54,6 +54,19 @@ export type {
   TranslationMessages,
 } from "./types.js";
 
+export declare const SUPPORTED_LOCALE_ROUTE_SYNTAXES: readonly [
+  "locale",
+  "lang",
+  "language",
+  "intl",
+  "i18n",
+  "l10n",
+  "localization",
+];
+
+export type SupportedLocaleRouteSyntax =
+  (typeof SUPPORTED_LOCALE_ROUTE_SYNTAXES)[number];
+
 export declare function configureTranslations<
   const TMessages extends Record<string, TranslationMessages>,
 >(

@@ -517,6 +517,14 @@ describe("@better-translate/nextjs", () => {
   });
 
   it("parses route templates and validates domain assignments", () => {
+    expect(parseRouteTemplate("/[lang]")).toEqual({
+      deLocalizedSegments: [],
+      localeParamName: "lang",
+      localeSegmentIndex: 0,
+      localizedSegments: ["[lang]"],
+      routeTemplate: "/[lang]",
+      scopePrefix: "/",
+    });
     expect(parseRouteTemplate("/app/[lang]")).toEqual({
       deLocalizedSegments: ["app"],
       localeParamName: "lang",
@@ -524,6 +532,14 @@ describe("@better-translate/nextjs", () => {
       localizedSegments: ["app", "[lang]"],
       routeTemplate: "/app/[lang]",
       scopePrefix: "/app",
+    });
+    expect(parseRouteTemplate("/docs/[i18n]")).toEqual({
+      deLocalizedSegments: ["docs"],
+      localeParamName: "i18n",
+      localeSegmentIndex: 1,
+      localizedSegments: ["docs", "[i18n]"],
+      routeTemplate: "/docs/[i18n]",
+      scopePrefix: "/docs",
     });
 
     expect(() =>
@@ -538,8 +554,14 @@ describe("@better-translate/nextjs", () => {
         defaultLocale: "en",
       }),
     ).toThrow('Duplicate locale "en" found in routing config.');
+    expect(() => parseRouteTemplate("/[foo]")).toThrow(
+      'Route template "/[foo]" uses unsupported locale param "foo". Next.js locale segments must look like "[lang]". Supported locale param names are "locale", "lang", "language", "intl", "i18n", "l10n", "localization".',
+    );
+    expect(() => parseRouteTemplate("/app/[custom]")).toThrow(
+      'Route template "/app/[custom]" uses unsupported locale param "custom". Next.js locale segments must look like "[lang]". Supported locale param names are "locale", "lang", "language", "intl", "i18n", "l10n", "localization".',
+    );
     expect(() => parseRouteTemplate("/app/[lang]/[region]")).toThrow(
-      'Route template "/app/[lang]/[region]" must contain exactly one dynamic locale segment.',
+      'Route template "/app/[lang]/[region]" must contain exactly one supported dynamic locale segment like "[lang]". Supported locale param names are "locale", "lang", "language", "intl", "i18n", "l10n", "localization".',
     );
     expect(() =>
       defineRouting({

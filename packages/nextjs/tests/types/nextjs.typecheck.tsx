@@ -3,7 +3,10 @@ import type { ReactNode } from "react";
 import { configureTranslations } from "@better-translate/core";
 
 import { createNavigationFunctions } from "../../dist/navigation.js";
-import { defineRouting } from "../../dist/index.js";
+import {
+  defineRouting,
+  SUPPORTED_NEXTJS_LOCALE_ROUTE_SYNTAXES,
+} from "../../dist/index.js";
 import {
   createServerHelpers,
   getRequestConfig,
@@ -28,6 +31,11 @@ const routing = defineRouting({
     },
   ],
 });
+
+const firstNextJsLocaleRouteSyntax: "[locale]" =
+  SUPPORTED_NEXTJS_LOCALE_ROUTE_SYNTAXES[0];
+const secondNextJsLocaleRouteSyntax: "[lang]" =
+  SUPPORTED_NEXTJS_LOCALE_ROUTE_SYNTAXES[1];
 
 const translator = await configureTranslations({
   availableLocales: ["en", "es"] as const,
@@ -139,6 +147,8 @@ navigation.useRouter().prefetch("/app/reports", {
 });
 
 <navigation.Link href="/app/dashboard" locale="es" />;
+void firstNextJsLocaleRouteSyntax;
+void secondNextJsLocaleRouteSyntax;
 
 // @ts-expect-error unsupported locale should fail
 await helpers.getTranslations({ locale: "pt" });

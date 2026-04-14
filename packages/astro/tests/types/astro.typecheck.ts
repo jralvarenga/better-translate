@@ -1,6 +1,7 @@
 import { configureTranslations } from "@better-translate/core";
 
 import { createContentCollectionHelpers } from "../../dist/content.js";
+import { SUPPORTED_ASTRO_LOCALE_ROUTE_SYNTAXES } from "../../dist/index.js";
 import {
   createBetterTranslateMiddleware,
   type BetterTranslateLocals,
@@ -10,6 +11,11 @@ import {
   getRequestConfig,
   setRequestLocale,
 } from "../../dist/index.js";
+
+const firstAstroLocaleRouteSyntax: "[locale]" =
+  SUPPORTED_ASTRO_LOCALE_ROUTE_SYNTAXES[0];
+const secondAstroLocaleRouteSyntax: "[lang]" =
+  SUPPORTED_ASTRO_LOCALE_ROUTE_SYNTAXES[1];
 
 const translator = await configureTranslations({
   availableLocales: ["en", "es"] as const,
@@ -106,6 +112,8 @@ await middleware(
   },
   async () => new Response("ok"),
 );
+void firstAstroLocaleRouteSyntax;
+void secondAstroLocaleRouteSyntax;
 
 // @ts-expect-error unsupported locale should fail
 await helpers.getTranslations({ locale: "pt" });
