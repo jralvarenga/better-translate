@@ -22,9 +22,35 @@ There is no separate native adapter package.
 
 ## Keep TypeScript autocomplete available
 
-Both React typing patterns work in Expo too.
+The simplest no-extra-generic setup is to bind the translator once and export an
+app-local provider + hook pair.
 
-### Pattern 1: explicit generic
+### Pattern 1: `createBetterTranslateReact(translator)`
+
+```ts
+import { createBetterTranslateReact } from "@better-translate/react";
+
+import { translator } from "./i18n";
+
+export const { BetterTranslateProvider, useTranslations } =
+  createBetterTranslateReact(translator);
+```
+
+Then screens can import your app-local hook:
+
+```tsx
+import { useTranslations } from "./i18n";
+
+export function HomeScreen() {
+  const { t } = useTranslations();
+
+  return <Text>{t("home.title")}</Text>;
+}
+```
+
+These fallback patterns still work in Expo too.
+
+### Pattern 2: explicit generic
 
 ```tsx
 import { useTranslations } from "@better-translate/react";
@@ -38,7 +64,7 @@ export function HomeScreen() {
 }
 ```
 
-### Pattern 2: module augmentation for zero-arg `useTranslations()`
+### Pattern 3: module augmentation for zero-arg `useTranslations()`
 
 Create `src/better-translate.d.ts`:
 

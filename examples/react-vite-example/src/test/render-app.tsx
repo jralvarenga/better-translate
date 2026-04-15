@@ -1,8 +1,7 @@
 import { render } from "@testing-library/react";
 
-import { BetterTranslateProvider } from "@better-translate/react";
-
 import {
+  BetterTranslateProvider,
   createFailingTranslator,
   createTranslator,
   type AppTranslator,

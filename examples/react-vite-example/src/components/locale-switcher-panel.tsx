@@ -1,7 +1,6 @@
-import { useTranslations } from "@better-translate/react";
+import { useTranslations } from "../i18n.ts";
 
 import { DemoPanel } from "./demo-panel.tsx";
-import type { AppTranslator } from "../i18n.ts";
 
 const ACTION_LABELS = {
   en: "actions.switchToEnglish",
@@ -17,7 +16,7 @@ export function LocaleSwitcherPanel() {
     setLocale,
     supportedLocales,
     t,
-  } = useTranslations<AppTranslator>();
+  } = useTranslations();
 
   return (
     <DemoPanel

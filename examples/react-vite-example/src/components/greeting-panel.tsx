@@ -1,12 +1,11 @@
 import { useState } from "react";
 
-import { useTranslations } from "@better-translate/react";
+import { useTranslations } from "../i18n.ts";
 
 import { DemoPanel } from "./demo-panel.tsx";
-import type { AppTranslator } from "../i18n.ts";
 
 export function GreetingPanel() {
-  const { t } = useTranslations<AppTranslator>();
+  const { t } = useTranslations();
   const [salute, setSalute] = useState("Dr.");
   const [name, setName] = useState("Ada");
 

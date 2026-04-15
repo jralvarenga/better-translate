@@ -57,17 +57,49 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
 );
 ```
 
-## 4. Read translations inside a component
+## 4. Create a typed provider + hook pair
+
+If you want `useTranslations()` to autocomplete keys and locales without
+repeating generics or adding a declaration file, bind your translator once:
+
+Create `src/i18n-react.ts`:
+
+```ts
+import { createBetterTranslateReact } from "@better-translate/react";
+
+import { translator } from "./i18n";
+
+export const { BetterTranslateProvider, useTranslations } =
+  createBetterTranslateReact(translator);
+```
+
+Then update `src/main.tsx` to import the app-local provider:
+
+```tsx
+import React from "react";
+import ReactDOM from "react-dom/client";
+
+import { App } from "./app";
+import { BetterTranslateProvider } from "./i18n-react";
+
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <React.StrictMode>
+    <BetterTranslateProvider>
+      <App />
+    </BetterTranslateProvider>
+  </React.StrictMode>,
+);
+```
+
+## 5. Read translations inside a component
 
 Create `src/header.tsx`:
 
 ```tsx
-import { useTranslations } from "@better-translate/react";
-
-import { translator } from "./i18n";
+import { useTranslations } from "./i18n-react";
 
 export function Header() {
-  const { locale, setLocale, t } = useTranslations<typeof translator>();
+  const { locale, setLocale, t } = useTranslations();
 
   return (
     <header>
@@ -80,6 +112,33 @@ export function Header() {
       </button>
     </header>
   );
+}
+```
+
+If you prefer, the package still supports explicit generics:
+
+```tsx
+import { useTranslations } from "@better-translate/react";
+
+import { translator } from "./i18n";
+
+export function Header() {
+  const { t } = useTranslations<typeof translator>();
+
+  return <h1>{t("home.title")}</h1>;
+}
+```
+
+You can also use module augmentation if you want to keep importing
+`useTranslations()` directly from `@better-translate/react`:
+
+```ts
+import { translator } from "./i18n";
+
+declare module "@better-translate/react" {
+  interface BetterTranslateReactTypes {
+    translator: typeof translator;
+  }
 }
 ```
 

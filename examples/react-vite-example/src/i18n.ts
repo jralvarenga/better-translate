@@ -1,4 +1,5 @@
 import { configureTranslations } from "@better-translate/core";
+import { createBetterTranslateReact } from "@better-translate/react";
 
 function wait(ms: number) {
   return new Promise((resolve) => {
@@ -144,6 +145,11 @@ export function createTranslator() {
   });
 }
 
+export const translator = await createTranslator();
+
+export const { BetterTranslateProvider, useTranslations } =
+  createBetterTranslateReact(translator);
+
 export function createFailingTranslator() {
   return configureTranslations({
     availableLocales: ["en", "fr"] as const,
@@ -159,7 +165,7 @@ export function createFailingTranslator() {
   });
 }
 
-export type AppTranslator = Awaited<ReturnType<typeof createTranslator>>;
+export type AppTranslator = typeof translator;
 export type FailureTranslator = Awaited<
   ReturnType<typeof createFailingTranslator>
 >;

@@ -47,6 +47,14 @@ export interface BetterTranslateProviderProps<
   translator: TTranslator;
 }
 
+export interface TypedBetterTranslateProviderProps<
+  TTranslator extends AnyBetterTranslateTranslator,
+> {
+  children: ReactNode;
+  initialLocale?: InferLocale<TTranslator>;
+  translator?: TTranslator;
+}
+
 export interface UseTranslationsValue<
   TTranslator extends AnyBetterTranslateTranslator,
 > {
@@ -80,3 +88,12 @@ export interface UseTranslationsValue<
 
 export type AnyUseTranslationsValue =
   UseTranslationsValue<AnyBetterTranslateTranslator>;
+
+export interface CreateBetterTranslateReactResult<
+  TTranslator extends AnyBetterTranslateTranslator,
+> {
+  BetterTranslateProvider(
+    props: TypedBetterTranslateProviderProps<TTranslator>,
+  ): ReactNode;
+  useTranslations(): UseTranslationsValue<TTranslator>;
+}
