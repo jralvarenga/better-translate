@@ -1,12 +1,10 @@
-import { useTranslations } from "@better-translate/react";
-
-import type { AppTranslator } from "../i18n.ts";
+import { useTranslations } from "../i18n.ts";
 
 const FLAG: Record<string, string> = { en: "EN", es: "ES", fr: "FR" };
 
 export function SiteHeader() {
   const { locale, setLocale, supportedLocales, isLoadingLocale } =
-    useTranslations<AppTranslator>();
+    useTranslations();
   return (
     <header className="site-header">
       <div className="site-header__inner">

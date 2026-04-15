@@ -1,10 +1,9 @@
-import { useTranslations } from "@better-translate/react";
+import { useTranslations } from "../i18n.ts";
 
 import { DemoPanel } from "./demo-panel.tsx";
-import type { AppTranslator } from "../i18n.ts";
 
 export function MessagesPanel() {
-  const { locale, messages, t } = useTranslations<AppTranslator>();
+  const { locale, messages, t } = useTranslations();
   const hasFrench = Object.prototype.hasOwnProperty.call(messages, "fr");
 
   return (

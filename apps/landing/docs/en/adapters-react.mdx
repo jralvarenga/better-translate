@@ -62,53 +62,28 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
 );
 ```
 
-## 4. Read translations inside a component
+## 4. Create a typed provider + hook pair
+
+If you want `useTranslations()` to autocomplete keys and locales without
+repeating generics or adding a declaration file, bind your translator once:
+
+```ts
+import { createBetterTranslateReact } from "@better-translate/react";
+
+import { translator } from "./i18n";
+
+export const { BetterTranslateProvider, useTranslations } =
+  createBetterTranslateReact(translator);
+```
+
+Then import the app-local provider and hook instead of the package-level ones.
+
+## 5. Read translations inside a component
 
 Create `src/header.tsx`:
 
 ```tsx
-import { useTranslations } from "@better-translate/react";
-
-import { translator } from "./i18n";
-
-export function Header() {
-  const { locale, setLocale, t } = useTranslations<typeof translator>();
-
-  return (
-    <header>
-      <h1>{t("home.title")}</h1>
-      <button onClick={() => setLocale("en")} disabled={locale === "en"}>
-        English
-      </button>
-      <button onClick={() => setLocale("es")} disabled={locale === "es"}>
-        Espanol
-      </button>
-    </header>
-  );
-}
-```
-
-## Optional: type `useTranslations()` once for the whole app
-
-If you want plain `useTranslations()` to autocomplete your translation keys without
-repeating `<typeof translator>` in every component, add one declaration file:
-
-Create `src/better-translate.d.ts`:
-
-```ts
-import { translator } from "./i18n";
-
-declare module "@better-translate/react" {
-  interface BetterTranslateReactTypes {
-    translator: typeof translator;
-  }
-}
-```
-
-Then your components can call the hook without a generic:
-
-```tsx
-import { useTranslations } from "@better-translate/react";
+import { useTranslations } from "./i18n";
 
 export function Header() {
   const { locale, setLocale, t } = useTranslations();
@@ -128,7 +103,32 @@ export function Header() {
 ```
 
 Explicit generics still work, so you can keep using `useTranslations<typeof translator>()`
-where that fits your codebase better.
+where that fits your codebase better:
+
+```tsx
+import { useTranslations } from "@better-translate/react";
+
+import { translator } from "./i18n";
+
+export function Header() {
+  const { t } = useTranslations<typeof translator>();
+
+  return <h1>{t("home.title")}</h1>;
+}
+```
+
+If you prefer to keep importing directly from `@better-translate/react`, module
+augmentation is still supported:
+
+```ts
+import { translator } from "./i18n";
+
+declare module "@better-translate/react" {
+  interface BetterTranslateReactTypes {
+    translator: typeof translator;
+  }
+}
+```
 
 ## When to use React only
 
