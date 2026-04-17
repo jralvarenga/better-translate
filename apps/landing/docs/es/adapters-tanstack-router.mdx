@@ -56,7 +56,7 @@ import { defineRouting } from "@better-translate/tanstack-router";
 export const routing = defineRouting({
   defaultLocale: "en",
   locales: ["en", "es"] as const,
-  routeTemplate: "/{$lang}",
+  routeTemplate: "/$lang",
 });
 ```
 
@@ -69,7 +69,6 @@ import {
   Link,
   useLocation,
   useNavigate,
-  useParams,
   useRouter,
 } from "@tanstack/react-router";
 
@@ -87,10 +86,11 @@ export const {
   routing,
   useLocation,
   useNavigate,
-  useParams,
   useRouter,
 });
 ```
+
+Usa `routeTemplate: "/$lang"` o `routeTemplate: "/{$lang}"` para segmentos de locale obligatorios. Usa `"/{-$lang}"` cuando el locale por defecto no debe aparecer en la URL.
 
 ## 5. Envuelve la aplicación con el proveedor de React
 

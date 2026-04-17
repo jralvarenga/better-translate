@@ -9,7 +9,13 @@ import type {
 import { configureTranslations } from "@better-translate/core";
 
 import { createNavigationFunctions } from "../../dist/navigation.js";
-import { defineRouting } from "../../dist/index.js";
+import {
+  defineRouting,
+  SUPPORTED_TANSTACK_BRACED_REQUIRED_LOCALE_ROUTE_SYNTAXES,
+  SUPPORTED_TANSTACK_LOCALE_ROUTE_SYNTAXES,
+  SUPPORTED_TANSTACK_OPTIONAL_LOCALE_ROUTE_SYNTAXES,
+  SUPPORTED_TANSTACK_REQUIRED_LOCALE_ROUTE_SYNTAXES,
+} from "../../dist/index.js";
 import {
   createServerHelpers,
   getRequestConfig,
@@ -19,8 +25,17 @@ import {
 const routing = defineRouting({
   locales: ["en", "es"] as const,
   defaultLocale: "en",
-  routeTemplate: "/app/{-$locale}",
+  routeTemplate: "/app/$locale",
 });
+
+const firstTanStackRequiredLocaleRouteSyntax: "$locale" =
+  SUPPORTED_TANSTACK_REQUIRED_LOCALE_ROUTE_SYNTAXES[0];
+const secondTanStackBracedRequiredLocaleRouteSyntax: "{$lang}" =
+  SUPPORTED_TANSTACK_BRACED_REQUIRED_LOCALE_ROUTE_SYNTAXES[1];
+const thirdTanStackOptionalLocaleRouteSyntax: "{-$language}" =
+  SUPPORTED_TANSTACK_OPTIONAL_LOCALE_ROUTE_SYNTAXES[2];
+const tanStackLocaleRouteSyntaxes: "$locale" | "{$lang}" | "{-$language}" =
+  SUPPORTED_TANSTACK_LOCALE_ROUTE_SYNTAXES[0]!;
 
 const translator = await configureTranslations({
   availableLocales: ["en", "es"] as const,
@@ -68,6 +83,41 @@ const Link = ((props: {
 }) => null) as unknown as LinkComponent<"a", "/">;
 
 const navigation = createNavigationFunctions({
+  Link,
+  routing,
+  useLocation() {
+    return {
+      pathname: "/app/es/dashboard",
+    };
+  },
+  useNavigate() {
+    return (async (_options) => {}) as UseNavigateResult<"/">;
+  },
+  useRouter() {
+    return {
+      buildLocation(_options: unknown) {
+        return {
+          external: false,
+          hash: "",
+          href: "/",
+          pathname: "/",
+          publicHref: "/",
+          search: {},
+          searchStr: "",
+          state: {},
+        };
+      },
+      navigate(_options: unknown) {
+        return Promise.resolve();
+      },
+      preloadRoute(_options: unknown) {
+        return Promise.resolve(undefined);
+      },
+    } as AnyRouter;
+  },
+});
+
+const legacyNavigation = createNavigationFunctions({
   Link,
   routing,
   useLocation() {
@@ -132,6 +182,7 @@ await helpers.getTranslations({
   locale: "es",
 });
 
+legacyNavigation.useLocale();
 navigation.getPathname({
   href: "/app/dashboard",
   locale: "es",
@@ -153,6 +204,10 @@ await navigation.useRouter().preloadRoute?.({
 });
 
 <navigation.Link locale="es" to="/app/dashboard" />;
+void firstTanStackRequiredLocaleRouteSyntax;
+void secondTanStackBracedRequiredLocaleRouteSyntax;
+void thirdTanStackOptionalLocaleRouteSyntax;
+void tanStackLocaleRouteSyntaxes;
 
 // @ts-expect-error unsupported locale should fail
 await helpers.getTranslations({ locale: "pt" });

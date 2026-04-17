@@ -47,14 +47,21 @@ export const translator = await configureTranslations({
 Create `src/lib/i18n/routing.ts`:
 
 ```ts
-import { defineRouting } from "@better-translate/nextjs";
+import {
+  defineRouting,
+  SUPPORTED_NEXTJS_LOCALE_ROUTE_SYNTAXES,
+} from "@better-translate/nextjs";
 
 export const routing = defineRouting({
   defaultLocale: "en",
   locales: ["en", "es"] as const,
   routeTemplate: "/[lang]",
 });
+
+console.log(SUPPORTED_NEXTJS_LOCALE_ROUTE_SYNTAXES);
 ```
+
+Better Translate restricts the locale param name to the shared supported list from core. Valid examples include `[locale]`, `[lang]`, `[language]`, `[intl]`, `[i18n]`, `[l10n]`, and `[localization]`.
 
 ## 4. Add the request and server helpers
 

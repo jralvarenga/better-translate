@@ -63,6 +63,8 @@ export const onRequest = createBetterTranslateMiddleware(requestConfig, {
 });
 ```
 
+If you want a shared list of supported locale param names formatted for file routes, import `SUPPORTED_ASTRO_LOCALE_ROUTE_SYNTAXES` from `@better-translate/astro`. It includes values like `[locale]`, `[lang]`, `[language]`, `[intl]`, `[i18n]`, `[l10n]`, and `[localization]`.
+
 ## 5. Read translations in a page
 
 Create `src/lib/server.ts`:

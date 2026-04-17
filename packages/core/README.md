@@ -110,6 +110,22 @@ t("Hello world", { bt: true });
 
 Run `npx bt extract` to sync the strings into your source locale file and rewrite calls to proper keys. See the [CLI docs](https://better-translate.com/en/docs/cli) for the full setup.
 
+## Locale route param names
+
+If you use a routing adapter, Better Translate exports the canonical locale param-name list from core:
+
+```ts
+import { SUPPORTED_LOCALE_ROUTE_SYNTAXES } from "@better-translate/core";
+```
+
+That list is:
+
+```ts
+["locale", "lang", "language", "intl", "i18n", "l10n", "localization"];
+```
+
+Framework adapters format those names into their own route syntax, like `"$lang"` in TanStack Router or `"[lang]"` in Next.js and Astro.
+
 ## Continue with
 
 - [React provider and hooks](https://better-translate.com/en/docs/adapters/react)
