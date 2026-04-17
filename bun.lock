@@ -21,7 +21,7 @@
         "@better-translate/core": "^1.2.1",
         "@better-translate/md": "^1.1.1",
         "@better-translate/nextjs": "^1.1.1",
-        "@better-translate/react": "^1.1.1",
+        "@better-translate/react": "1.1.2",
         "@mdx-js/mdx": "^3.1.1",
         "@remixicon/react": "^4.9.0",
         "class-variance-authority": "^0.7.1",
