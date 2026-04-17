@@ -1,5 +1,16 @@
 # react-vite-example
 
+## 1.1.0
+
+### Minor Changes
+
+- 8f81b55: feat(react): add createBetterTranslateReact typed hook factory
+
+### Patch Changes
+
+- Updated dependencies [8f81b55]
+  - @better-translate/react@1.3.0
+
 ## 1.0.1
 
 ### Patch Changes

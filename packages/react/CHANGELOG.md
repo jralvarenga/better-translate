@@ -1,5 +1,11 @@
 # @better-translate/react
 
+## 1.3.0
+
+### Minor Changes
+
+- 8f81b55: feat(react): add createBetterTranslateReact typed hook factory
+
 ## 1.2.0
 
 ### Minor Changes

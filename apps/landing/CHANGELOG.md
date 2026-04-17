@@ -1,5 +1,15 @@
 # landing
 
+## 2.1.1
+
+### Patch Changes
+
+- 8f81b55: Improving readme file and social links
+- Updated dependencies [8f81b55]
+- Updated dependencies [8f81b55]
+  - @better-translate/react@1.3.0
+  - @better-translate/cli@1.3.0
+
 ## 2.1.0
 
 ### Minor Changes
