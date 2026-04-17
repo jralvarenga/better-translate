@@ -1,6 +1,6 @@
 ---
 name: cli
-description: Extract source strings and generate locale files for Better Translate projects.
+description: Extract source strings, generate locale files, and remove unused keys for Better Translate projects.
 ---
 
 # CLI Skill
@@ -9,8 +9,9 @@ Use this guide when you want the CLI to manage locale files for you, or when you
 
 ## What this package does
 
-- `bt extract` - scans your source files for `t("...", { bt: true })` calls, adds keys to your source locale JSON, and rewrites those calls to plain key strings
-- `bt generate` - reads your source locale file and calls an AI model to create translated versions for every other locale
+- `bt extract` — scans your source files for `t("...", { bt: true })` calls, adds keys to your source locale JSON, and rewrites those calls to plain key strings
+- `bt generate` — reads your source locale file and calls an AI model to create translated versions for every other locale
+- `bt purge` — scans your codebase for translation keys that are no longer referenced in any `t("...")` call and removes them from all locale files
 
 ## Minimum setup
 
@@ -46,11 +47,6 @@ export default defineConfig({
   sourceLocale: "en",
   locales: ["es", "fr"],
   model: ollama("qwen3:4b"),
-  providerOptions: {
-    ollama: {
-      think: true,
-    },
-  },
   messages: {
     entry: "./src/messages/en.json",
   },
@@ -98,9 +94,63 @@ npx bt generate
 
 This creates one translated JSON file per locale next to the source file.
 
+If `markdown.rootDir` is configured and the run would create or overwrite translated `.md` or `.mdx` files, the CLI asks for confirmation. Pass `--yes` or `-y` to skip:
+
+```sh
+npx bt generate --yes
+```
+
+### 7. Purge unused keys
+
+```sh
+npx bt purge
+```
+
+This finds translation keys that no longer appear in any `t("...")` call and removes them from all locale files. It asks you to confirm each key before removing it:
+
+```
+? Purge unused key "home.oldTitle"? (y/N) y
+? Purge unused key "sidebar.legacy"? (y/N) n
+```
+
+Type `y` to remove a key, `n` (or just Enter) to keep it.
+
+To remove all unused keys at once without prompting:
+
+```sh
+npx bt purge --yes
+```
+
+To preview what would be removed without making changes:
+
+```sh
+npx bt purge --dry-run
+```
+
+**Dynamic keys:** If code uses a dynamic key like `` t(`section.${id}`) ``, the CLI cannot statically resolve it. It will warn you, protect keys sharing the detected prefix, or mark the key unsafe and skip it rather than silently deleting something that may still be in use.
+
+## Command reference
+
+| Command | Flag | Description |
+|---|---|---|
+| `bt extract` | | Scan for `bt: true` calls, sync source locale, rewrite calls |
+| | `--config <path>` | Path to config file (default: auto-detected) |
+| | `--dry-run` | Preview changes without writing |
+| | `--max-length <n>` | Max segment length for generated key names |
+| `bt generate` | | Translate source locale into all target locale files |
+| | `--config <path>` | Path to config file |
+| | `--dry-run` | Preview changes without writing |
+| | `--yes`, `-y` | Skip confirmation for markdown file writes |
+| `bt purge` | | Remove unused translation keys from all locale files |
+| | `--config <path>` | Path to config file |
+| | `--dry-run` | Preview which keys would be removed without writing |
+| | `--yes`, `-y` | Remove all unused keys without prompting |
+
 ## Rule
 
 Always run `bt extract` before `bt generate`. Extract populates the source file; generate reads it.
+
+After removing old features or refactoring key usage, run `bt purge` to clean up orphaned keys across all locale files.
 
 ## Keep TypeScript autocomplete available
 
@@ -120,6 +170,6 @@ The CLI only manages files. You still need a runtime package to use them.
 
 ## Examples
 
-- `examples/nextjs-example` - Next.js App Router with generated locale files
-- `examples/react-vite-example` - React SPA with generated locale files
-- `examples/core-elysia-example` - plain TypeScript/Node.js setup
+- `examples/nextjs-example` — Next.js App Router with generated locale files
+- `examples/react-vite-example` — React SPA with generated locale files
+- `examples/core-elysia-example` — plain TypeScript/Node.js setup

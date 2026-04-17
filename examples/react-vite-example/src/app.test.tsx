@@ -4,9 +4,7 @@ import { act, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
-import { useTranslations } from "@better-translate/react";
-
-import type { AppTranslator } from "./i18n.ts";
+import { useTranslations } from "./i18n.ts";
 import { renderApp } from "./test/render-app.tsx";
 
 class TestErrorBoundary extends Component<
@@ -138,7 +136,7 @@ describe("react-vite-example", () => {
     let capturedError: unknown;
 
     function Consumer() {
-      useTranslations<AppTranslator>();
+      useTranslations();
       return null;
     }
 

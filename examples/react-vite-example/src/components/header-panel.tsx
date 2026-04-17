@@ -1,9 +1,7 @@
-import { useTranslations } from "@better-translate/react";
-
-import type { AppTranslator } from "../i18n.ts";
+import { useTranslations } from "../i18n.ts";
 
 export function HeaderPanel() {
-  const { t } = useTranslations<AppTranslator>();
+  const { t } = useTranslations();
 
   return (
     <section className="hero-panel">

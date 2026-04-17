@@ -12,11 +12,6 @@ export default defineConfig({
   sourceLocale: "en",
   locales: ["es", "fr"],
   model: ollama("qwen3:4b"),
-  providerOptions: {
-    ollama: {
-      think: true,
-    },
-  },
   messages: {
     entry: "./src/messages/en.json",
   },

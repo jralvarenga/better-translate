@@ -1,7 +1,6 @@
-import { useTranslations } from "@better-translate/react";
+import { useTranslations } from "../i18n.ts";
 
 import { DemoPanel } from "./demo-panel.tsx";
-import type { AppTranslator } from "../i18n.ts";
 
 export function LocaleStatusPanel() {
   const {
@@ -13,7 +12,7 @@ export function LocaleStatusPanel() {
     localeError,
     messages,
     t,
-  } = useTranslations<AppTranslator>();
+  } = useTranslations();
 
   const cachedLocales = Object.keys(messages).join(", ");
 

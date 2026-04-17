@@ -8,6 +8,18 @@ import { defineConfig } from "vite";
 
 const config = {
   plugins: [react()],
+  resolve: {
+    alias: {
+      "@better-translate/core": path.resolve(
+        path.dirname(fileURLToPath(import.meta.url)),
+        "../../packages/core/dist/index.js",
+      ),
+      "@better-translate/react": path.resolve(
+        path.dirname(fileURLToPath(import.meta.url)),
+        "../../packages/react/dist/index.js",
+      ),
+    },
+  },
   test: {
     environment: "jsdom",
     globals: true,

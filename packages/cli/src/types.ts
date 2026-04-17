@@ -149,3 +149,42 @@ export interface ExtractProjectResult {
   updatedMessages: string[];
   warnings: string[];
 }
+
+export interface PurgeKeyConfirmationRequest {
+  key: string;
+}
+
+export interface PurgeLocaleFile {
+  format: "json" | "ts";
+  keyPaths: readonly string[];
+  locale: string;
+  sourcePath: string;
+}
+
+export interface PurgeLocaleChange {
+  locale: string;
+  removedKeys: string[];
+  targetPath: string;
+}
+
+export interface PurgeProjectOptions {
+  configPath?: string;
+  confirmPurgeKey?: (request: PurgeKeyConfirmationRequest) => Promise<boolean>;
+  cwd?: string;
+  dryRun?: boolean;
+  logger?: CliLogger;
+  yes?: boolean;
+}
+
+export interface PurgeProjectResult {
+  dryRun: boolean;
+  keptKeys: string[];
+  loadedConfig: LoadedBetterTranslateCliConfig;
+  localeChanges: PurgeLocaleChange[];
+  localeFiles: PurgeLocaleFile[];
+  protectedKeys: string[];
+  purgedKeys: string[];
+  unsafeKeys: string[];
+  unusedKeys: string[];
+  warnings: string[];
+}

@@ -157,15 +157,21 @@ export default function HeroSection({ locale, t }: HeroSectionProps) {
                   </AnimatedGroup>
 
                   <div className="mt-4 flex justify-center md:justify-start">
-                    <Link
-                      href={siteLinks.sponsor}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="group inline-flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-pink-400"
+                    <Button
+                      asChild
+                      size="lg"
+                      variant="ghost"
+                      className="group rounded-xl px-5 transition-colors hover:text-pink-400"
                     >
-                      <RiHeart3Line className="size-3.5 text-pink-500/60 transition-colors group-hover:text-pink-400" />
-                      <span>{t("hero.sponsorCta")}</span>
-                    </Link>
+                      <Link
+                        href={siteLinks.sponsor}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <RiHeart3Line className="size-3.5 text-pink-500/60 transition-colors group-hover:text-pink-400" />
+                        <span>{t("hero.sponsorCta")}</span>
+                      </Link>
+                    </Button>
                   </div>
                 </div>
 

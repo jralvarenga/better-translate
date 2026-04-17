@@ -34,9 +34,35 @@ export function Root() {
 
 ## Keep TypeScript autocomplete available
 
-Both of these patterns are supported.
+The simplest no-extra-generic setup is to bind the translator once and export an
+app-local provider + hook pair.
 
-### Pattern 1: explicit generic
+### Pattern 1: `createBetterTranslateReact(translator)`
+
+```ts
+import { createBetterTranslateReact } from "@better-translate/react";
+
+import { translator } from "./i18n";
+
+export const { BetterTranslateProvider, useTranslations } =
+  createBetterTranslateReact(translator);
+```
+
+Then import your app-local `useTranslations` instead of importing the package hook directly:
+
+```tsx
+import { useTranslations } from "./i18n";
+
+export function Header() {
+  const { t } = useTranslations();
+
+  return <h1>{t("home.title")}</h1>;
+}
+```
+
+These fallback patterns are still supported too.
+
+### Pattern 2: explicit generic
 
 ```tsx
 import { useTranslations } from "@better-translate/react";
@@ -57,7 +83,7 @@ export function Header() {
 }
 ```
 
-### Pattern 2: module augmentation for zero-arg `useTranslations()`
+### Pattern 3: module augmentation for zero-arg `useTranslations()`
 
 Create `src/better-translate.d.ts`:
 

@@ -9,23 +9,19 @@ import type { LandingTranslator } from "@/lib/i18n/config";
 const features = [
   {
     icon: RiPlugLine,
-    descriptionKey: "features.items.frameworkAgnostic.description",
-    titleKey: "features.items.frameworkAgnostic.title",
+    id: "frameworkAgnostic" as const,
   },
   {
     icon: RiShieldCheckLine,
-    descriptionKey: "features.items.typeSafe.description",
-    titleKey: "features.items.typeSafe.title",
+    id: "typeSafe" as const,
   },
   {
     icon: RiCodeSSlashLine,
-    descriptionKey: "features.items.autocomplete.description",
-    titleKey: "features.items.autocomplete.title",
+    id: "autocomplete" as const,
   },
   {
     icon: RiTranslate2,
-    descriptionKey: "features.items.localeSwitching.description",
-    titleKey: "features.items.localeSwitching.title",
+    id: "localeSwitching" as const,
   },
 ] as const;
 
@@ -34,6 +30,25 @@ interface FeaturesProps {
 }
 
 export function Features({ t }: FeaturesProps) {
+  const featureCopy = {
+    autocomplete: {
+      description: t("features.items.autocomplete.description"),
+      title: t("features.items.autocomplete.title"),
+    },
+    frameworkAgnostic: {
+      description: t("features.items.frameworkAgnostic.description"),
+      title: t("features.items.frameworkAgnostic.title"),
+    },
+    localeSwitching: {
+      description: t("features.items.localeSwitching.description"),
+      title: t("features.items.localeSwitching.title"),
+    },
+    typeSafe: {
+      description: t("features.items.typeSafe.description"),
+      title: t("features.items.typeSafe.title"),
+    },
+  };
+
   return (
     <section id="features" className="py-20 md:py-32">
       <div className="mx-auto max-w-5xl px-6">
@@ -46,20 +61,20 @@ export function Features({ t }: FeaturesProps) {
           </p>
         </div>
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-          {features.map((f) => (
+          {features.map((feature) => (
             <div
-              key={f.titleKey}
+              key={feature.id}
               className="flex gap-4 rounded-xl border border-white/10 bg-white/5 p-6 transition-all duration-200 hover:bg-white/8 hover:border-white/20"
             >
               <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg bg-white/8">
-                <f.icon className="size-4 text-white/80" />
+                <feature.icon className="size-4 text-white/80" />
               </div>
               <div>
                 <h3 className="mb-1 font-medium text-foreground">
-                  {t(f.titleKey)}
+                  {featureCopy[feature.id].title}
                 </h3>
                 <p className="text-sm text-muted-foreground">
-                  {t(f.descriptionKey)}
+                  {featureCopy[feature.id].description}
                 </p>
               </div>
             </div>

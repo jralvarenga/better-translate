@@ -4,6 +4,7 @@ import { create } from "react-test-renderer";
 
 import { configureTranslations } from "@better-translate/core";
 
+import { createBetterTranslateReact } from "../../src/create-better-translate-react.js";
 import { BetterTranslateProvider } from "../../src/provider.js";
 import { useTranslations } from "../../src/use-translations.js";
 
@@ -192,6 +193,39 @@ describe("@better-translate/react", () => {
     });
 
     expect(latestValue?.locale).toBe("en");
+    expect(latestValue?.t("common.hello")).toBe("Hello");
+  });
+
+  it("creates a typed provider and hook pair from a translator", async () => {
+    const translator = await configureTranslations({
+      availableLocales: ["en", "es"] as const,
+      defaultLocale: "en",
+      fallbackLocale: "en",
+      messages: { en, es },
+    });
+
+    const {
+      BetterTranslateProvider: TypedBetterTranslateProvider,
+      useTranslations: useTypedTranslations,
+    } = createBetterTranslateReact(translator);
+
+    let latestValue: ReturnType<typeof useTypedTranslations> | undefined;
+
+    function Consumer() {
+      latestValue = useTypedTranslations();
+      return null;
+    }
+
+    await act(async () => {
+      create(
+        <TypedBetterTranslateProvider>
+          <Consumer />
+        </TypedBetterTranslateProvider>,
+      );
+    });
+
+    expect(latestValue?.locale).toBe("en");
+    expect(latestValue?.supportedLocales).toEqual(["en", "es"]);
     expect(latestValue?.t("common.hello")).toBe("Hello");
   });
 

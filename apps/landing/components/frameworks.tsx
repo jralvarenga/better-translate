@@ -1,4 +1,4 @@
-import { getCatalogItems } from "@/lib/catalog";
+import { getCatalogItems, type FrameworkId } from "@/lib/catalog";
 import type { LandingTranslator } from "@/lib/i18n/config";
 
 interface FrameworksProps {
@@ -7,6 +7,15 @@ interface FrameworksProps {
 
 export function Frameworks({ t }: FrameworksProps) {
   const frameworks = getCatalogItems("framework");
+  const frameworkDescriptions: Record<FrameworkId, string> = {
+    astro: t("frameworks.items.astro.description"),
+    bun: t("frameworks.items.bun.description"),
+    nextjs: t("frameworks.items.nextjs.description"),
+    nodejs: t("frameworks.items.nodejs.description"),
+    react: t("frameworks.items.react.description"),
+    tanstack: t("frameworks.items.tanstack.description"),
+    typescript: t("frameworks.items.typescript.description"),
+  };
 
   return (
     <section className="py-20 md:py-32">
@@ -31,7 +40,7 @@ export function Frameworks({ t }: FrameworksProps) {
               <div>
                 <h3 className="mb-1 font-medium text-foreground">{fw.name}</h3>
                 <p className="mb-3 text-xs text-muted-foreground">
-                  {t(fw.descriptionKey)}
+                  {frameworkDescriptions[fw.id]}
                 </p>
                 <code className="block text-xs text-muted-foreground/70 break-all">
                   {fw.install}

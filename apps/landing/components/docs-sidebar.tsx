@@ -16,23 +16,26 @@ import {
 } from "@/components/ui/sidebar";
 
 const GETTING_STARTED = [
-  { nameKey: "introduction" as const, href: "/docs" },
-  { nameKey: "mission" as const, href: "/docs/mission" },
-  { nameKey: "installation" as const, href: "/docs/installation" },
-  { nameKey: "cli" as const, href: "/docs/cli" },
-  { nameKey: "skills" as const, href: "/docs/skills" },
-  { nameKey: "rtl" as const, href: "/docs/rtl" },
-  { nameKey: "changelog" as const, href: "/docs/changelog" },
+  { href: "/docs", key: "introduction" as const },
+  { href: "/docs/mission", key: "mission" as const },
+  { href: "/docs/installation", key: "installation" as const },
+  { href: "/docs/cli", key: "cli" as const },
+  { href: "/docs/skills", key: "skills" as const },
+  { href: "/docs/rtl", key: "rtl" as const },
+  { href: "/docs/changelog", key: "changelog" as const },
 ];
 
 const ADAPTERS = [
-  { nameKey: "core" as const, href: "/docs/adapters/core" },
-  { nameKey: "react" as const, href: "/docs/adapters/react" },
-  { nameKey: "expo" as const, href: "/docs/adapters/expo" },
-  { nameKey: "astro" as const, href: "/docs/adapters/astro" },
-  { nameKey: "mdAndMdx" as const, href: "/docs/adapters/md" },
-  { nameKey: "nextjs" as const, href: "/docs/adapters/nextjs" },
-  { nameKey: "tanstackStart" as const, href: "/docs/adapters/tanstack-router" },
+  { href: "/docs/adapters/core", key: "core" as const },
+  { href: "/docs/adapters/react", key: "react" as const },
+  { href: "/docs/adapters/expo", key: "expo" as const },
+  { href: "/docs/adapters/astro", key: "astro" as const },
+  { href: "/docs/adapters/md", key: "mdAndMdx" as const },
+  { href: "/docs/adapters/nextjs", key: "nextjs" as const },
+  {
+    href: "/docs/adapters/tanstack-router",
+    key: "tanstackStart" as const,
+  },
 ];
 
 export function DocsSidebar({
@@ -40,6 +43,24 @@ export function DocsSidebar({
 }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname();
   const t = useTranslations<LandingTranslator>().t;
+  const gettingStartedLabels = {
+    changelog: t("docs.sidebar.changelog"),
+    cli: t("docs.sidebar.cli"),
+    installation: t("docs.sidebar.installation"),
+    introduction: t("docs.sidebar.introduction"),
+    mission: t("docs.sidebar.mission"),
+    rtl: t("docs.sidebar.rtl"),
+    skills: t("docs.sidebar.skills"),
+  };
+  const adapterLabels = {
+    astro: t("docs.sidebar.astro"),
+    core: t("docs.sidebar.core"),
+    expo: t("docs.sidebar.expo"),
+    mdAndMdx: t("docs.sidebar.mdAndMdx"),
+    nextjs: t("docs.sidebar.nextjs"),
+    react: t("docs.sidebar.react"),
+    tanstackStart: t("docs.sidebar.tanstackStart"),
+  };
 
   function isActive(href: string) {
     if (href === "/docs") {
@@ -64,7 +85,7 @@ export function DocsSidebar({
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {GETTING_STARTED.map(({ nameKey, href }) => (
+              {GETTING_STARTED.map(({ href, key }) => (
                 <SidebarMenuItem key={href}>
                   <SidebarMenuButton
                     asChild
@@ -73,7 +94,7 @@ export function DocsSidebar({
                   >
                     <I18nLink href={href}>
                       <span className="absolute inset-0 flex w-(--sidebar-menu-width) bg-transparent" />
-                      {t(`docs.sidebar.${nameKey}`)}
+                      {gettingStartedLabels[key]}
                     </I18nLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -88,7 +109,7 @@ export function DocsSidebar({
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu className="gap-0.5">
-              {ADAPTERS.map(({ nameKey, href }) => (
+              {ADAPTERS.map(({ href, key }) => (
                 <SidebarMenuItem key={href}>
                   <SidebarMenuButton
                     asChild
@@ -97,7 +118,7 @@ export function DocsSidebar({
                   >
                     <I18nLink href={href}>
                       <span className="absolute inset-0 flex w-(--sidebar-menu-width) bg-transparent" />
-                      {t(`docs.sidebar.${nameKey}`)}
+                      {adapterLabels[key]}
                     </I18nLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
