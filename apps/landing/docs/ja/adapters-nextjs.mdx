@@ -47,18 +47,13 @@ export const translator = await configureTranslations({
 `src/lib/i18n/routing.ts` を作成します：
 
 ```ts
-import {
-  defineRouting,
-  SUPPORTED_NEXTJS_LOCALE_ROUTE_SYNTAXES,
-} from "@better-translate/nextjs";
+import { defineRouting } from "@better-translate/nextjs";
 
 export const routing = defineRouting({
   defaultLocale: "en",
   locales: ["en", "es"] as const,
   routeTemplate: "/[lang]",
 });
-
-console.log(SUPPORTED_NEXTJS_LOCALE_ROUTE_SYNTAXES);
 ```
 
 Better Translate はロケールパラメータ名を core の共有サポート一覧に制限します。有効な例には `[locale]`、`[lang]`、`[language]`、`[intl]`、`[i18n]`、`[l10n]`、`[localization]` があります。
@@ -171,7 +166,7 @@ export function LanguageLinks() {
       </I18nLink>
       {" | "}
       <I18nLink href="/" locale="es">
-        Espanol
+        Español
       </I18nLink>
     </nav>
   );

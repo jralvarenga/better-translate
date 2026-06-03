@@ -49,18 +49,13 @@ export const translator = await configureTranslations({
 أنشئ `src/lib/i18n/routing.ts`:
 
 ```ts
-import {
-  defineRouting,
-  SUPPORTED_NEXTJS_LOCALE_ROUTE_SYNTAXES,
-} from "@better-translate/nextjs";
+import { defineRouting } from "@better-translate/nextjs";
 
 export const routing = defineRouting({
   defaultLocale: "en",
   locales: ["en", "es"] as const,
   routeTemplate: "/[lang]",
 });
-
-console.log(SUPPORTED_NEXTJS_LOCALE_ROUTE_SYNTAXES);
 ```
 
 Better Translate يقيّد اسم معامل الإعداد المحلي بالقائمة المشتركة المدعومة من الأساس. أمثلة صالحة تشمل `[locale]` و`[lang]` و`[language]` و`[intl]` و`[i18n]` و`[l10n]` و`[localization]`.
@@ -173,7 +168,7 @@ export function LanguageLinks() {
       </I18nLink>
       {" | "}
       <I18nLink href="/" locale="es">
-        Espanol
+        Español
       </I18nLink>
     </nav>
   );
