@@ -26,11 +26,7 @@
     },
     "./package.json": "./package.json"
   },
-  "files": [
-    "dist",
-    "LICENSE",
-    "README.md"
-  ],
+  "files": ["dist", "LICENSE", "README.md"],
   "scripts": {
     "build": "tsup src/index.ts src/middleware.ts src/content.ts --format esm,cjs --dts --clean",
     "check-types": "tsc --noEmit",

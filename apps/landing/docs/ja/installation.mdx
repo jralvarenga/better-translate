@@ -1,10 +1,11 @@
 ---
 title: インストール
-description: コアパッケージは、どのTypeScriptプロジェクトでも動作します。アダプターは、特定のフレームワーク向けのオプションの拡張機能です。
+description: コアパッケージはあらゆる TypeScript プロジェクトで動作します。アダプターは特定のフレームワーク向けのオプション拡張です。
 ---
+
 # インストール
 
-コアパッケージは、フレームワークやランタイムを問わず、どの TypeScript プロジェクトでも動作します。Next.js、React、Astro などのフレームワークを使っている場合は、コアの上に対応するアダプターを追加できます。
+コアパッケージは、フレームワークやランタイムを問わず、あらゆる TypeScript プロジェクトで動作します。Next.js、React、Astro などのフレームワークを使う場合は、コアの上に対応するアダプターを追加できます。
 
 ## Core
 
@@ -12,45 +13,34 @@ description: コアパッケージは、どのTypeScriptプロジェクトでも
 npm install @better-translate/core
 ```
 
-ほとんどのケースではこれだけで十分です。Next.js、Astro、React、Bun、Node.js、スクリプト、API、その他あらゆる TypeScript 環境で動作します。
+ほとんどのケースではこれだけで十分です。あらゆる TypeScript 環境で動作します。詳しくはこちら：[Core ガイド](/docs/adapters/core)
 
 ## Adapters
 
-アダプターは、コアにフレームワーク固有のヘルパーを追加する拡張機能です。たとえば、ロケール対応ルーティング、React のコンテキストとフック、リクエスト単位のヘルパーなどです。コアを置き換えるのではなく、機能を拡張します。
+アダプターは、ロケール対応ルーティング、React のコンテキストとフック、リクエスト単位のヘルパーなど、フレームワーク固有のヘルパーをコアに追加する拡張です。コアを置き換えるのではなく、拡張します。
 
-利用できるアダプターはこちらです：
+そのため、多くの実装ガイドはパッケージをまたいで似た流れになります。いずれも同じコアのトランスレーターから始まり、その上に薄いフレームワーク向けの層を載せます。
 
-<div className="mt-4 flex flex-wrap gap-3">
-  <Button asChild variant="outline" size="lg">
-    <Link href="/docs/adapters/react">React</Link>
-  </Button>
-  <Button asChild variant="outline" size="lg">
-    <Link href="/docs/adapters/nextjs">Next.js</Link>
-  </Button>
-  <Button asChild variant="outline" size="lg">
-    <Link href="/docs/adapters/astro">Astro</Link>
-  </Button>
-  <Button asChild variant="outline" size="lg">
-    <Link href="/docs/adapters/tanstack-router">TanStack Router</Link>
-  </Button>
-</div>
+完全なコントロールを好む場合は、アダプターを使わず `@better-translate/core` だけでも構いません。翻訳の挙動は同じで、プロジェクトによってはコアのみの方がすっきりする場合もあります。
+
+利用可能なアダプターはこちらで確認できます：[link here]
 
 ## CLI
 
-CLI は、ロケールファイル管理の手作業を減らすための任意の開発ツールです。
+CLI は、ロケールファイル管理の手作業を減らす任意の開発ツールです。
 
-CLI には主に 2 つの役割があります：
+主に次の 2 つを行います。
 
-- **Extract** — コード内の `{ bt: true }` が付いた文字列を検出し、自動生成されたキー付きでソースロケールファイルに追加し、その場で呼び出しを書き換えます
-- **Generate** — ソースロケールファイルを読み込み、AI モデルを使って他の各ロケール向けの翻訳版を生成します
+- **Extract** — コード内の `{ bt: true }` が付いた文字列をスキャンし、自動生成されたキーでソースロケールファイルに追加し、呼び出しをその場で書き換えます
+- **Generate** — ソースロケールファイルを読み込み、AI モデルで他の各ロケール向けの翻訳版を生成します
 
 ```sh
 npm install -D @better-translate/cli
 ```
 
-gateway ベースの構成なら、`@better-translate/cli` だけで十分です。`better-translate.config.ts` で Ollama のようなダイレクトモデルプロバイダーを import する場合は、`npm install -D ollama-ai-provider-v2` のように該当するプロバイダーパッケージも追加でインストールしてください。
+gateway ベースの構成なら `@better-translate/cli` だけで十分です。`better-translate.config.ts` で Ollama のようなダイレクトモデルプロバイダーを import する場合は、`npm install -D ollama-ai-provider-v2` のように該当プロバイダーパッケージもインストールしてください。
 
-`npx bt extract` や `npx bt generate` を実行する前に、`better-translate.config.ts` を作成してください。その後は、ローカルの Ollama モデルを含む任意の AI SDK プロバイダーモデルで CLI を利用できます。
+`npx bt extract` や `npx bt generate` を実行する前に、`better-translate.config.ts` を作成してください。その後は、ローカルの Ollama モデルを含む任意の AI SDK プロバイダーモデルで CLI を使えます。
 
 <div className="mt-4 flex flex-wrap gap-3">
   <Button asChild variant="outline" size="lg">
@@ -67,6 +57,6 @@ gateway ベースの構成なら、`@better-translate/cli` だけで十分です
 
 <div className="mt-6 flex flex-wrap gap-3">
   <Button asChild size="lg">
-    <Link href="/docs/adapters/core">Core トランスレーターを設定する</Link>
+    <Link href="/docs/adapters/core">コアトランスレーターを設定する</Link>
   </Button>
 </div>

@@ -13,28 +13,17 @@ The core package works in any TypeScript project, regardless of framework or run
 npm install @better-translate/core
 ```
 
-That's all you need for most cases. Works in Next.js, Astro, React, Bun, Node.js, scripts, APIs, or any TypeScript environment.
+That's all you need for most cases. Works in any TypeScript environment. Read the docs here: [Core guide](/docs/adapters/core)
 
 ## Adapters
 
 Adapters are extensions of core that add framework-specific helpers: locale-aware routing, React context and hooks, per-request helpers, etc. They don't replace core, they extend it.
 
-You can check the available adapters here:
+That is why most implementation guides look familiar across packages: they all start from the same core translator and add a thin layer of framework ergonomics on top.
 
-<div className="mt-4 flex flex-wrap gap-3">
-  <Button asChild variant="outline" size="lg">
-    <Link href="/docs/adapters/react">React</Link>
-  </Button>
-  <Button asChild variant="outline" size="lg">
-    <Link href="/docs/adapters/nextjs">Next.js</Link>
-  </Button>
-  <Button asChild variant="outline" size="lg">
-    <Link href="/docs/adapters/astro">Astro</Link>
-  </Button>
-  <Button asChild variant="outline" size="lg">
-    <Link href="/docs/adapters/tanstack-router">TanStack Router</Link>
-  </Button>
-</div>
+If you prefer full control, you can skip adapters entirely and use `@better-translate/core` directly. You will get the same translation behavior, and in some projects the core-only path may be the cleanest fit.
+
+You can check the available adapters here: [link here]
 
 ## CLI
 

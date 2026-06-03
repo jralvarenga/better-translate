@@ -1,24 +1,23 @@
 ---
 title: CLI
-description: >-
-  @better-translate/cli extrae las cadenas marcadas a tu archivo de idioma
-  fuente, genera archivos traducidos y elimina claves sin uso.
+description: "@better-translate/cli extrae cadenas marcadas al archivo de locale fuente, genera archivos traducidos y elimina claves no usadas."
 ---
+
 # CLI
 
-Usa `@better-translate/cli` cuando quieras que Better Translate construya y actualice los archivos de idioma por ti.
+Usa `@better-translate/cli` cuando quieras que Better Translate cree y actualice archivos de locale por ti.
 
-No necesitas el CLI para usar los paquetes de tiempo de ejecución. Es opcional.
+No necesitas la CLI para usar los paquetes de runtime. Es opcional.
 
-## 1. Instala el paquete
+## 1. Instalar el paquete
 
 ```sh
 npm install -D @better-translate/cli
 ```
 
-El CLI permanece agnóstico al proveedor. Tu aplicación instala y configura el paquete de proveedor del AI SDK directamente.
+La CLI no depende de un proveedor concreto. Tu app instala y configura el paquete del proveedor del AI SDK directamente.
 
-## 2. Crea un archivo de idioma fuente
+## 2. Crear un archivo de locale fuente
 
 Crea `src/messages/en.json`:
 
@@ -31,9 +30,9 @@ Crea `src/messages/en.json`:
 }
 ```
 
-También puedes empezar con un `{}` vacío y dejar que `bt extract` lo complete.
+También puedes empezar con un `{}` vacío y dejar que `bt extract` lo rellene.
 
-## 3. Crea la configuración del CLI
+## 3. Crear la configuración de la CLI
 
 Crea `better-translate.config.ts`:
 
@@ -55,13 +54,13 @@ export default defineConfig({
 });
 ```
 
-Si usas Ollama, instala `ollama-ai-provider-v2`. Si usas un proveedor alojado, instala ese paquete de proveedor en su lugar, como `@ai-sdk/openai`, `@ai-sdk/anthropic` o `@ai-sdk/moonshotai`.
+Si usas Ollama, instala `ollama-ai-provider-v2`. Si usas un proveedor alojado, instala ese paquete en su lugar, como `@ai-sdk/openai`, `@ai-sdk/anthropic` o `@ai-sdk/moonshotai`.
 
-La URL de API predeterminada de Ollama es local: `http://localhost:11434/api`.
+La URL por defecto de la API de Ollama es local: `http://localhost:11434/api`.
 
-Esto funciona igual con proveedores alojados como OpenAI, Anthropic y Moonshot AI. El CLI ya no incluye helpers de proveedores.
+Funciona igual con proveedores alojados como OpenAI, Anthropic y Moonshot AI. La CLI ya no incluye helpers de proveedores.
 
-## 4. Marca cadenas en tu código
+## 4. Marcar cadenas en tu código
 
 En lugar de nombrar claves de traducción a mano, escribe el texto fuente directamente y añade `{ bt: true }`:
 
@@ -73,80 +72,80 @@ export function navLabel() {
 }
 ```
 
-En tiempo de ejecución, `{ bt: true }` devuelve la cadena sin cambios. El CLI reemplazará estas llamadas con claves apropiadas en la siguiente extracción.
+En runtime, `{ bt: true }` devuelve la cadena sin cambios. La CLI sustituirá esas llamadas por claves correctas en la siguiente extracción.
 
-También puedes pasar otras opciones como `params` — se conservan después de la extracción:
+También puedes pasar otras opciones como `params`; se conservan tras la extracción:
 
 ```ts
 // Escribes:
 t("Hello world", { bt: true })
 t("Hello {name}", { bt: true, params: { name: "" } })
 
-// Después de que bt extract reescriba el archivo:
+// Tras bt extract, el archivo queda reescrito:
 t("components.nav.helloWorld")
 t("components.nav.helloName", { params: { name: "" } })
 ```
 
-El espacio de nombres de la clave proviene de la ruta del archivo fuente (`components/nav.tsx` → `components.nav`). `bt: true` siempre se elimina al reescribir.
+El espacio de nombres de la clave viene de la ruta del archivo fuente (`components/nav.tsx` → `components.nav`). `bt: true` siempre se elimina al reescribir.
 
-## 5. Extrae las claves fuente
+## 5. Extraer claves fuente
 
 ```sh
 npx bt extract
 ```
 
-Esto busca llamadas a `t(..., { bt: true })`, añade las claves faltantes a tu archivo de idioma fuente y reescribe las llamadas con claves estrictas simples.
+Esto busca llamadas `t(..., { bt: true })`, añade las claves que falten al archivo de locale fuente y reescribe las llamadas a claves estrictas simples.
 
-El CLI encuentra automáticamente `better-translate.config.ts` en la raíz de tu proyecto. La bandera `--config` solo es necesaria si tu archivo de configuración está en una ubicación diferente.
+La CLI encuentra automáticamente `better-translate.config.ts` en la raíz del proyecto. El flag `--config` solo hace falta si tu archivo de configuración está en otra ubicación.
 
-## 6. Ejecuta el generador
+## 6. Ejecutar el generador
 
 ```sh
 npx bt generate
 ```
 
-Esto crea los archivos de idioma de destino junto a tu archivo fuente.
+Esto crea los archivos de locale destino junto a tu archivo fuente.
 
-Si `markdown.rootDir` está habilitado y la ejecución crearía o sobrescribiría archivos `.md` o `.mdx` traducidos, el CLI solicita confirmación antes de realizar cambios. Usa `--yes` o `-y` para omitir el mensaje:
+Si `markdown.rootDir` está activado y la ejecución crearía o sobrescribiría archivos `.md` o `.mdx` traducidos, la CLI pide confirmación antes de aplicar cambios. Usa `--yes` o `-y` para omitir el aviso:
 
 ```sh
 npx bt generate --yes
 ```
 
-Las ejecuciones no interactivas que necesiten escribir archivos markdown traducidos deben pasar `--yes`.
+Las ejecuciones no interactivas que deban escribir archivos markdown traducidos deben pasar `--yes`.
 
-## 7. Elimina claves sin uso
+## 7. Eliminar claves no usadas
 
 ```sh
 npx bt purge
 ```
 
-Esto analiza tu código en busca de claves de traducción que ya no aparecen en ninguna llamada `t("...")` y las elimina de todos los archivos de idioma. El CLI te pide confirmación para cada clave de forma individual antes de eliminarla:
+Esto escanea tu código en busca de claves de traducción que ya no aparecen en ninguna llamada `t("...")` y las elimina de todos los archivos de locale. Te pide confirmar cada clave antes de borrarla:
 
 ```
 ? Purge unused key "home.oldTitle"? (y/N) y
 ? Purge unused key "sidebar.legacy"? (y/N) n
 ```
 
-Escribe `y` + Enter para eliminar una clave de todos los archivos de idioma, o `n` + Enter (o simplemente Enter) para conservarla.
+Escribe `y` para eliminar una clave de todos los archivos de locale, o `n` (o solo Enter) para conservarla.
 
-Para eliminar todas las claves sin uso de una vez sin confirmación:
+Para eliminar todas las claves no usadas de una vez sin preguntar:
 
 ```sh
 npx bt purge --yes
 ```
 
-Para previsualizar qué se eliminaría sin realizar ningún cambio:
+Para ver qué se eliminaría sin escribir cambios:
 
 ```sh
 npx bt purge --dry-run
 ```
 
-**Claves dinámicas:** Si tu código usa una clave dinámica como `` t(`section.${id}`) ``, el CLI no puede resolverla estáticamente. Te avisará, protegerá las claves que compartan el prefijo detectado o marcará la clave como insegura y la omitirá en lugar de eliminarla silenciosamente si aún puede estar en uso.
+**Claves dinámicas:** Si tu código usa una clave dinámica como `` t(`section.${id}`) ``, la CLI no puede resolverla de forma estática. Te avisará, protegerá las claves que compartan el prefijo detectado o marcará la clave como insegura y la omitirá en lugar de borrar en silencio algo que aún podría estar en uso.
 
-## 8. Usa los archivos generados en tu aplicación
+## 8. Usar los archivos generados en tu app
 
-Después de que los archivos existen, impórtalos en tu configuración de `@better-translate/core` igual que cualquier archivo de idioma escrito a mano.
+Cuando los archivos existan, impórtalos en tu configuración de `@better-translate/core` igual que cualquier archivo de locale escrito a mano.
 
 ## Markdown
 
@@ -175,24 +174,24 @@ export default defineConfig({
 
 ## Referencia de comandos
 
-| Comando | Bandera | Descripción |
+| Comando | Flag | Descripción |
 |---|---|---|
-| `bt extract` | | Busca llamadas `bt: true`, sincroniza el idioma fuente, reescribe las llamadas |
-| | `--config <ruta>` | Ruta al archivo de configuración (detectado automáticamente por defecto) |
-| | `--dry-run` | Previsualiza los cambios sin escribir |
-| | `--max-length <n>` | Longitud máxima de segmento para nombres de claves generados |
-| `bt generate` | | Traduce el idioma fuente a todos los archivos de idioma de destino |
-| | `--config <ruta>` | Ruta al archivo de configuración |
-| | `--dry-run` | Previsualiza los cambios sin escribir |
-| | `--yes`, `-y` | Omite la confirmación para escrituras de archivos markdown |
-| `bt purge` | | Elimina las claves de traducción sin uso de todos los archivos de idioma |
-| | `--config <ruta>` | Ruta al archivo de configuración |
-| | `--dry-run` | Previsualiza qué claves se eliminarían sin escribir |
-| | `--yes`, `-y` | Elimina todas las claves sin uso sin confirmación |
+| `bt extract` | | Busca llamadas con `bt: true`, añade claves al locale fuente y reescribe las llamadas |
+| | `--config <path>` | Ruta al archivo de configuración (por defecto: detección automática) |
+| | `--dry-run` | Vista previa sin escribir |
+| | `--max-length <n>` | Longitud máxima del segmento para nombres de clave generados |
+| `bt generate` | | Traduce el locale fuente a todos los archivos de locale destino |
+| | `--config <path>` | Ruta al archivo de configuración |
+| | `--dry-run` | Vista previa sin escribir |
+| | `--yes`, `-y` | Omitir confirmación al escribir archivos markdown |
+| `bt purge` | | Elimina claves de traducción no usadas de todos los archivos de locale |
+| | `--config <path>` | Ruta al archivo de configuración |
+| | `--dry-run` | Vista previa de claves que se eliminarían sin escribir |
+| | `--yes`, `-y` | Eliminar todas las claves no usadas sin preguntar |
 
 ## Ejemplos
 
-Los ejemplos completos funcionando están en el [repositorio de GitHub](https://github.com/jralvarenga/better-translate/tree/main/examples):
+Ejemplos completos en el [repositorio de GitHub](https://github.com/jralvarenga/better-translate/tree/main/examples):
 
 - [nextjs-example](https://github.com/jralvarenga/better-translate/tree/main/examples/nextjs-example)
 - [react-vite-example](https://github.com/jralvarenga/better-translate/tree/main/examples/react-vite-example)

@@ -7,85 +7,13 @@ description: "Expo uses @better-translate/react on top of @better-translate/core
 
 Expo uses the same React adapter as web React.
 
-There is no separate `@better-translate/react-native` package.
+As of now, there is no separate `@better-translate/react-native` package. `@better-translate/react` fully supports the React Native environment and development experience.
 
-## 1. Install the packages
+## Implementation
 
-```sh
-npm install @better-translate/core @better-translate/react
-```
+Follow the React adapter implementation guide for Expo apps too: [React adapter](/docs/adapters/react).
 
-## 2. Create the translator
-
-Create `lib/i18n.ts`:
-
-```ts
-import { configureTranslations } from "@better-translate/core";
-
-const en = {
-  home: {
-    title: "Hello from Expo",
-  },
-} as const;
-
-const es = {
-  home: {
-    title: "Hola desde Expo",
-  },
-} as const;
-
-export const translator = await configureTranslations({
-  availableLocales: ["en", "es"] as const,
-  defaultLocale: "en",
-  fallbackLocale: "en",
-  messages: { en, es },
-});
-```
-
-## 3. Wrap the app
-
-Create or update `App.tsx`:
-
-```tsx
-import { BetterTranslateProvider } from "@better-translate/react";
-
-import { HomeScreen } from "./components/home-screen";
-import { translator } from "./lib/i18n";
-
-export default function App() {
-  return (
-    <BetterTranslateProvider translator={translator}>
-      <HomeScreen />
-    </BetterTranslateProvider>
-  );
-}
-```
-
-## 4. Use translations in a screen
-
-Create `components/home-screen.tsx`:
-
-```tsx
-import { Button, Text, View } from "react-native";
-
-import { useTranslations } from "@better-translate/react";
-
-import { translator } from "../lib/i18n";
-
-export function HomeScreen() {
-  const { locale, setLocale, t } = useTranslations<typeof translator>();
-
-  return (
-    <View style={{ gap: 12, padding: 24 }}>
-      <Text>{t("home.title")}</Text>
-      <Button
-        title={locale === "en" ? "Spanish" : "English"}
-        onPress={() => setLocale(locale === "en" ? "es" : "en")}
-      />
-    </View>
-  );
-}
-```
+The same install command, translator setup, provider, and `useTranslations` API apply. In Expo, use your app's Expo entry file and screen components where the React guide uses web-specific files.
 
 ## Mental model
 

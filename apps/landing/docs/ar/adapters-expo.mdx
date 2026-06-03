@@ -1,103 +1,32 @@
 ---
 title: Expo
 description: >-
-  يستخدم Expo الحزمة @better-translate/react فوق @better-translate/core. لا
-  توجد حزمة أصلية منفصلة.
+  يستخدم Expo @better-translate/react فوق @better-translate/core. لا توجد
+  حزمة أصلية منفصلة.
 ---
+
 # Expo
 
-Expo يستخدم نفس محوّل React المستخدم في الويب.
+Expo يستخدم نفس محوّل React المستخدم في React على الويب.
 
-لا يوجد حزمة منفصلة باسم `@better-translate/react-native`.
+حاليًا لا توجد حزمة منفصلة `@better-translate/react-native`. `@better-translate/react` يدعم بيئة React Native وتجربة التطوير بالكامل.
 
-## 1. تثبيت الحزم
+## التنفيذ
 
-```sh
-npm install @better-translate/core @better-translate/react
-```
+اتبع دليل تنفيذ محوّل React لتطبيقات Expo أيضًا: [محوّل React](/docs/adapters/react).
 
-## 2. إنشاء المترجم
-
-أنشئ `lib/i18n.ts`:
-
-```ts
-import { configureTranslations } from "@better-translate/core";
-
-const en = {
-  home: {
-    title: "Hello from Expo",
-  },
-} as const;
-
-const es = {
-  home: {
-    title: "Hola desde Expo",
-  },
-} as const;
-
-export const translator = await configureTranslations({
-  availableLocales: ["en", "es"] as const,
-  defaultLocale: "en",
-  fallbackLocale: "en",
-  messages: { en, es },
-});
-```
-
-## 3. تغليف التطبيق
-
-أنشئ أو حدّث `App.tsx`:
-
-```tsx
-import { BetterTranslateProvider } from "@better-translate/react";
-
-import { HomeScreen } from "./components/home-screen";
-import { translator } from "./lib/i18n";
-
-export default function App() {
-  return (
-    <BetterTranslateProvider translator={translator}>
-      <HomeScreen />
-    </BetterTranslateProvider>
-  );
-}
-```
-
-## 4. استخدام الترجمات في شاشة
-
-أنشئ `components/home-screen.tsx`:
-
-```tsx
-import { Button, Text, View } from "react-native";
-
-import { useTranslations } from "@better-translate/react";
-
-import { translator } from "../lib/i18n";
-
-export function HomeScreen() {
-  const { locale, setLocale, t } = useTranslations<typeof translator>();
-
-  return (
-    <View style={{ gap: 12, padding: 24 }}>
-      <Text>{t("home.title")}</Text>
-      <Button
-        title={locale === "en" ? "Spanish" : "English"}
-        onPress={() => setLocale(locale === "en" ? "es" : "en")}
-      />
-    </View>
-  );
-}
-```
+نفس أمر التثبيت وإعداد المترجم والمزود وواجهة `useTranslations`. في Expo، استخدم ملف دخول Expo ومكونات الشاشة حيث يستخدم دليل React ملفات خاصة بالويب.
 
 ## النموذج الذهني
 
-- `@better-translate/core` تمتلك بيانات الترجمة
-- `@better-translate/react` يمنح Expo الـ provider والـ hook
+- `@better-translate/core` يملك بيانات الترجمة
+- `@better-translate/react` يمنح Expo المزود والخطاف
 
-هذا هو الإعداد الكامل لمعظم تطبيقات Expo.
+هذا الإعداد الكامل لمعظم تطبيقات Expo.
 
-## توليد ملفات اللغة تلقائياً
+## توليد ملفات الإعداد المحلي تلقائيًا
 
-بدلاً من كتابة كل ترجمة يدوياً، استخدم CLI لاستخراج النصوص وتوليد ملفات اللغة: [دليل CLI](/docs/cli)
+بدل كتابة كل ترجمة يدويًا، استخدم واجهة سطر الأوامر لاستخراج النصوص وتوليد ملفات الإعداد المحلي: [دليل واجهة سطر الأوامر](/docs/cli)
 
 ## أمثلة
 

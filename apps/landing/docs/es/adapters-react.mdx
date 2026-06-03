@@ -1,20 +1,19 @@
 ---
 title: React
-description: >-
-  @better-translate/react añade un proveedor y hooks sobre
-  @better-translate/core.
+description: "@better-translate/react añade un provider y hooks sobre @better-translate/core."
 ---
+
 # React
 
-Usa `@better-translate/react` cuando los componentes de React necesiten traducciones y cambio de idioma.
+Usa `@better-translate/react` cuando los componentes React necesiten traducciones y cambio de locale.
 
-## 1. Instala los paquetes
+## 1. Instalar los paquetes
 
 ```sh
 npm install @better-translate/core @better-translate/react
 ```
 
-## 2. Crea el traductor compartido
+## 2. Crear el traductor compartido
 
 Crea `src/i18n.ts`:
 
@@ -41,75 +40,48 @@ export const translator = await configureTranslations({
 });
 ```
 
-## 3. Envuelve tu aplicación
+## 3. Crear un par provider + hook tipado
 
-Crea o actualiza `src/main.tsx`:
+Si quieres que `useTranslations()` autocomplete claves y locales sin
+repetir genéricos ni añadir un archivo de declaración, enlaza tu traductor una vez:
+
+Crea `src/i18n-react.ts`:
+
+```ts
+import { createBetterTranslateReact } from "@better-translate/react";
+
+import { translator } from "./i18n";
+
+export const { BetterTranslateProvider, useTranslations } =
+  createBetterTranslateReact(translator);
+```
+
+## 4. Envolver tu app
+
+Crea o actualiza `src/main.tsx` para importar el provider local de la app:
 
 ```tsx
 import React from "react";
 import ReactDOM from "react-dom/client";
 
-import { BetterTranslateProvider } from "@better-translate/react";
-
 import { App } from "./app";
-import { translator } from "./i18n";
+import { BetterTranslateProvider } from "./i18n-react";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <BetterTranslateProvider translator={translator}>
+    <BetterTranslateProvider>
       <App />
     </BetterTranslateProvider>
   </React.StrictMode>,
 );
 ```
 
-## 4. Lee las traducciones dentro de un componente
+## 5. Leer traducciones dentro de un componente
 
 Crea `src/header.tsx`:
 
 ```tsx
-import { useTranslations } from "@better-translate/react";
-
-import { translator } from "./i18n";
-
-export function Header() {
-  const { locale, setLocale, t } = useTranslations<typeof translator>();
-
-  return (
-    <header>
-      <h1>{t("home.title")}</h1>
-      <button onClick={() => setLocale("en")} disabled={locale === "en"}>
-        English
-      </button>
-      <button onClick={() => setLocale("es")} disabled={locale === "es"}>
-        Espanol
-      </button>
-    </header>
-  );
-}
-```
-
-## Opcional: tipa `useTranslations()` una vez para toda la aplicación
-
-Si quieres que `useTranslations()` autocomplete las claves de traducción sin
-repetir `<typeof translator>` en cada componente, añade un archivo de declaración:
-
-Crea `src/better-translate.d.ts`:
-
-```ts
-import { translator } from "./i18n";
-
-declare module "@better-translate/react" {
-  interface BetterTranslateReactTypes {
-    translator: typeof translator;
-  }
-}
-```
-
-Entonces tus componentes pueden llamar al hook sin un genérico:
-
-```tsx
-import { useTranslations } from "@better-translate/react";
+import { useTranslations } from "./i18n-react";
 
 export function Header() {
   const { locale, setLocale, t } = useTranslations();
@@ -128,24 +100,21 @@ export function Header() {
 }
 ```
 
-Los genéricos explícitos siguen funcionando, así que puedes seguir usando `useTranslations<typeof translator>()`
-donde eso se ajuste mejor a tu código.
-
 ## Cuándo usar solo React
 
 Usa solo `@better-translate/core` + `@better-translate/react` cuando:
 
-- tu aplicación es una SPA de React
-- tu aplicación es una aplicación de Expo
-- los cambios de idioma ocurren en componentes de cliente
+- tu app es una SPA React
+- tu app es una app Expo
+- los cambios de locale ocurren en componentes de cliente
 
-Si estás en Next.js App Router, conserva este paquete para los hooks de cliente y añade el adaptador de Next.js para el enrutamiento y helpers del servidor.
+Si usas Next.js App Router, conserva este paquete para hooks en cliente y añade el adaptador de Next.js para enrutamiento y helpers en servidor.
 
-## Genera archivos de idioma automáticamente
+## Generar archivos de locale automáticamente
 
-En lugar de escribir cada traducción a mano, usa la CLI para extraer cadenas y generar archivos de idioma: [Guía de CLI](/docs/cli)
+En lugar de escribir cada traducción a mano, usa la CLI para extraer cadenas y generar archivos de locale: [Guía de la CLI](/docs/cli)
 
-## Continúa con
+## Continuar con
 
 - <Link href="/docs/adapters/expo">Configuración de Expo</Link>
 - <Link href="/docs/adapters/nextjs">Configuración de Next.js</Link>

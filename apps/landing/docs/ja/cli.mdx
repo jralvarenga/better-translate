@@ -1,12 +1,13 @@
 ---
 title: CLI
-description: '@better-translate/cli はマークされた文字列をソースロケールファイルに抽出し、翻訳ファイルを生成し、未使用のキーを削除します。'
+description: "@better-translate/cli はマークされた文字列をソースロケールファイルに抽出し、翻訳ファイルを生成し、未使用のキーを削除します。"
 ---
+
 # CLI
 
 Better Translate にロケールファイルの構築と更新を任せたい場合は、`@better-translate/cli` を使用してください。
 
-CLI はランタイムパッケージを使用するために必要ありません。任意です。
+ランタイムパッケージの利用に CLI は必須ではありません。任意です。
 
 ## 1. パッケージをインストールする
 
@@ -14,7 +15,7 @@ CLI はランタイムパッケージを使用するために必要ありませ�
 npm install -D @better-translate/cli
 ```
 
-CLI はプロバイダー非依存です。アプリは AI SDK のプロバイダーパッケージを直接インストールして設定します。
+CLI はプロバイダー非依存です。アプリ側で AI SDK のプロバイダーパッケージを直接インストールし、設定します。
 
 ## 2. ソースロケールファイルを作成する
 
@@ -53,15 +54,15 @@ export default defineConfig({
 });
 ```
 
-Ollama を使用する場合は、`ollama-ai-provider-v2` をインストールしてください。ホスト型プロバイダーを使用する場合は、代わりに `@ai-sdk/openai`、`@ai-sdk/anthropic`、または `@ai-sdk/moonshotai` などのプロバイダーパッケージをインストールしてください。
+Ollama を使う場合は `ollama-ai-provider-v2` をインストールしてください。ホスト型プロバイダーを使う場合は、`@ai-sdk/openai`、`@ai-sdk/anthropic`、`@ai-sdk/moonshotai` など、該当パッケージをインストールします。
 
-デフォルトの Ollama API URL はローカルです：`http://localhost:11434/api`。
+デフォルトの Ollama API URL はローカルです：`http://localhost:11434/api`
 
-これは OpenAI、Anthropic、Moonshot AI などのホスト型プロバイダーでも同じように動作します。CLI はプロバイダーヘルパーをバンドルしなくなりました。
+OpenAI、Anthropic、Moonshot AI などのホスト型プロバイダーでも同様に動作します。CLI はプロバイダーヘルパーを同梱しなくなりました。
 
-## 4. コード内の文字列にマークを付ける
+## 4. コード内の文字列をマークする
 
-翻訳キーを手動で命名する代わりに、ソーステキストを直接記述して `{ bt: true }` を追加します：
+翻訳キーを手で命名する代わりに、ソース文言をそのまま書き、`{ bt: true }` を付けます：
 
 ```ts
 import { t } from "@better-translate/core";
@@ -71,12 +72,12 @@ export function navLabel() {
 }
 ```
 
-実行時、`{ bt: true }` は文字列を変更せずに返します。CLI は次の抽出時にこれらの呼び出しを適切なキーに置き換えます。
+ランタイムでは `{ bt: true }` は文字列をそのまま返します。次の extract で CLI がこれらの呼び出しを適切なキーに置き換えます。
 
-`params` などの他のオプションも渡すことができます — これらは抽出後も保持されます：
+`params` など他のオプションも渡せます。extract 後も保持されます：
 
 ```ts
-// 記述するコード:
+// あなたが書く:
 t("Hello world", { bt: true })
 t("Hello {name}", { bt: true, params: { name: "" } })
 
@@ -85,7 +86,7 @@ t("components.nav.helloWorld")
 t("components.nav.helloName", { params: { name: "" } })
 ```
 
-キーの名前空間はソースファイルのパスから取得されます（`components/nav.tsx` → `components.nav`）。`bt: true` は書き換え時に常に削除されます。
+キーの名前空間はソースファイルのパスから決まります（`components/nav.tsx` → `components.nav`）。`bt: true` は書き換え時に必ず削除されます。
 
 ## 5. ソースキーを抽出する
 
@@ -93,9 +94,9 @@ t("components.nav.helloName", { params: { name: "" } })
 npx bt extract
 ```
 
-これにより `t(..., { bt: true })` 呼び出しがスキャンされ、不足しているキーがソースロケールファイルに追加され、呼び出しがプレーンな厳密なキーに書き換えられます。
+`t(..., { bt: true })` 呼び出しをスキャンし、不足しているキーをソースロケールファイルに追加し、呼び出しをプレーンな厳密キーに書き換えます。
 
-CLI はプロジェクトルートの `better-translate.config.ts` を自動的に検索します。`--config` フラグは、設定ファイルが別の場所にある場合にのみ必要です。
+CLI はプロジェクトルートの `better-translate.config.ts` を自動で見つけます。設定ファイルが別の場所にある場合のみ `--config` フラグが必要です。
 
 ## 6. ジェネレーターを実行する
 
@@ -103,52 +104,52 @@ CLI はプロジェクトルートの `better-translate.config.ts` を自動的�
 npx bt generate
 ```
 
-これにより、ソースファイルの隣にターゲットロケールファイルが作成されます。
+ソースファイルの隣にターゲットロケールファイルを作成します。
 
-`markdown.rootDir` が有効になっており、実行によって翻訳された `.md` または `.mdx` ファイルが作成または上書きされる場合、CLI は変更を加える前に確認を求めます。プロンプトをスキップするには `--yes` または `-y` を使用してください：
+`markdown.rootDir` が有効で、翻訳済みの `.md` や `.mdx` の作成・上書きが発生する場合、CLI は変更前に確認を求めます。プロンプトをスキップするには `--yes` または `-y` を使います：
 
 ```sh
 npx bt generate --yes
 ```
 
-翻訳されたマークダウンファイルを書き込む必要がある非対話型の実行では、`--yes` を渡す必要があります。
+翻訳済み Markdown を書き込む必要がある非対話実行では `--yes` が必須です。
 
-## 7. 未使用のキーを削除する
+## 7. 未使用キーを削除する
 
 ```sh
 npx bt purge
 ```
 
-これにより、コードベースで `t("...")` 呼び出しに参照されていない翻訳キーがスキャンされ、すべてのロケールファイルから削除されます。CLI は削除する前に各キーを個別に確認するよう求めます：
+コードベース内の `t("...")` 呼び出しで参照されなくなった翻訳キーをスキャンし、すべてのロケールファイルから削除します。削除前に各キーごとに確認を求めます：
 
 ```
 ? Purge unused key "home.oldTitle"? (y/N) y
 ? Purge unused key "sidebar.legacy"? (y/N) n
 ```
 
-`y` でキーをすべてのロケールファイルから削除するか、`n`（またはそのまま Enter）で保持します。
+`y` で全ロケールから削除、`n`（または Enter）で保持します。
 
-確認なしにすべての未使用キーを一度に削除するには：
+プロンプトなしで未使用キーを一括削除するには：
 
 ```sh
 npx bt purge --yes
 ```
 
-変更を加えずに削除されるキーをプレビューするには：
+書き込みせずに削除対象をプレビューするには：
 
 ```sh
 npx bt purge --dry-run
 ```
 
-**動的キー：** コードで `` t(`section.${id}`) `` のような動的キーを使用している場合、CLI は静的に解析できません。警告を表示し、検出されたプレフィックスを共有するキーを保護するか、キーを安全でないとしてマークしてスキップします。まだ使用中かもしれないものを黙って削除することはありません。
+**動的キー:** コードで `` t(`section.${id}`) `` のような動的キーを使う場合、CLI は静的に解決できません。警告を出し、検出されたプレフィックスを共有するキーを保護するか、キーを unsafe とマークしてスキップし、まだ使われている可能性のあるものを黙って削除しません。
 
-## 8. アプリで生成されたファイルを使用する
+## 8. 生成ファイルをアプリで使う
 
-ファイルが存在した後、手書きのロケールファイルと同じように `@better-translate/core` の設定にインポートしてください。
+ファイルができたら、手書きのロケールファイルと同様に `@better-translate/core` の設定へ import します。
 
 ## Markdown
 
-ローカライズされたマークダウンの生成も必要な場合は、`markdown.rootDir` オプションを追加してください：
+ローカライズされた Markdown の生成も必要なら、`markdown.rootDir` オプションを追加します：
 
 ```ts
 import { createOllama } from "ollama-ai-provider-v2";
@@ -175,22 +176,22 @@ export default defineConfig({
 
 | コマンド | フラグ | 説明 |
 |---|---|---|
-| `bt extract` | | `bt: true` 呼び出しをスキャンし、ソースロケールを同期し、呼び出しを書き換える |
-| | `--config <パス>` | 設定ファイルへのパス（デフォルト：自動検出） |
-| | `--dry-run` | 書き込まずに変更をプレビュー |
-| | `--max-length <n>` | 生成されるキー名のセグメントの最大長 |
-| `bt generate` | | ソースロケールをすべてのターゲットロケールファイルに翻訳する |
-| | `--config <パス>` | 設定ファイルへのパス |
-| | `--dry-run` | 書き込まずに変更をプレビュー |
-| | `--yes`, `-y` | マークダウンファイル書き込みの確認をスキップ |
-| `bt purge` | | すべてのロケールファイルから未使用の翻訳キーを削除する |
-| | `--config <パス>` | 設定ファイルへのパス |
-| | `--dry-run` | 書き込まずに削除されるキーをプレビュー |
-| | `--yes`, `-y` | 確認なしにすべての未使用キーを削除 |
+| `bt extract` | | `bt: true` 呼び出しをスキャンし、ソースロケールにキーを追加し、呼び出しを書き換え |
+| | `--config <path>` | 設定ファイルのパス（デフォルト: 自動検出） |
+| | `--dry-run` | 書き込みせず変更をプレビュー |
+| | `--max-length <n>` | 生成キー名の最大セグメント長 |
+| `bt generate` | | ソースロケールをすべてのターゲットロケールファイルに翻訳 |
+| | `--config <path>` | 設定ファイルのパス |
+| | `--dry-run` | 書き込みせず変更をプレビュー |
+| | `--yes`, `-y` | Markdown ファイル書き込みの確認をスキップ |
+| `bt purge` | | すべてのロケールファイルから未使用の翻訳キーを削除 |
+| | `--config <path>` | 設定ファイルのパス |
+| | `--dry-run` | 書き込みせず削除対象キーをプレビュー |
+| | `--yes`, `-y` | プロンプトなしで未使用キーをすべて削除 |
 
-## Examples
+## 例
 
-完全な動作例は [GitHub リポジトリ](https://github.com/jralvarenga/better-translate/tree/main/examples)にあります：
+動作する完全な例は [GitHub リポジトリ](https://github.com/jralvarenga/better-translate/tree/main/examples) にあります：
 
 - [nextjs-example](https://github.com/jralvarenga/better-translate/tree/main/examples/nextjs-example)
 - [react-vite-example](https://github.com/jralvarenga/better-translate/tree/main/examples/react-vite-example)

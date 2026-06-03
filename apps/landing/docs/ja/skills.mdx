@@ -1,42 +1,43 @@
 ---
 title: Skills
-description: アプリに適したBetter Translateのパッケージ組み合わせを選ぶために、skillsガイドを使用してください。
+description: skills ガイドで、アプリに合った Better Translate パッケージの組み合わせを選べます。
 ---
+
 # Skills
 
-`skills/` フォルダは、コードベース全体を読む前にパッケージを正しく統合する方法を説明します。
+`skills/` フォルダは、コードベース全体を読まなくても、パッケージを正しく統合する方法を説明します。
 
-以下のような質問に対してシンプルな答えが欲しい時に使用してください：
+次のような質問に素早く答えたいときに使います。
 
-- どのパッケージから始めればいいですか？
-- Reactも必要ですか、それともNext.jsだけでいいですか？
-- MDXはセットアップにどう組み込まれますか？
-- アプリに最適な最小限のパッケージの組み合わせは何ですか？
+- どのパッケージから始める？
+- React も必要？ Next.js だけで足りる？
+- MDX はセットアップにどう組み込む？
+- 自分のアプリに必要な最小のパッケージ構成は？
 
-## 推奨の読み順
+## おすすめの読む順
 
-1. `skills/SKILL.md` - パッケージマップ
-2. `skills/core/SKILL.md` - 翻訳機能を正しく起動する
-3. `skills/cli/SKILL.md` - CLIでロケールファイルを生成したり、`bt`でマークされた文字列を抽出したい場合
-4. `skills/react/SKILL.md` - UIがReactまたはExpoの場合
-5. `skills/nextjs/SKILL.md` - アプリがNext.js App Routerの場合
-6. `skills/md/SKILL.md` - コンテンツが `.md` または `.mdx` にある場合
-7. `skills/combined/SKILL.md` - アプリがルーティング、サーバーレンダリング、クライアントフックを混在させている場合
+1. パッケージマップ: `skills/SKILL.md`
+2. トランスレーターの正しい起動: `skills/core/SKILL.md`
+3. CLI でロケールファイル生成や `bt` マーク文字列の抽出: `skills/cli/SKILL.md`
+4. UI が React または Expo: `skills/react/SKILL.md`
+5. アプリが Next.js App Router: `skills/nextjs/SKILL.md`
+6. コンテンツが `.md` または `.mdx`: `skills/md/SKILL.md`
+7. ルーティング・サーバー描画・クライアントフックの併用: `skills/combined/SKILL.md`
 
-## パッケージの簡易選択
+## クイックパッケージ選択
 
-- プレーンなTypeScript、Node.js、API、または共有ライブラリ: `@better-translate/core`
-- React WebまたはExpo: `@better-translate/core` + `@better-translate/react`
+- プレーン TypeScript、Node.js、API、共有ライブラリ: `@better-translate/core`
+- React Web または Expo: `@better-translate/core` + `@better-translate/react`
 - Next.js App Router: `@better-translate/core` + `@better-translate/nextjs`
-- クライアントサイドフックを使うNext.js: `@better-translate/react` を追加
-- TanStack Router: `@better-translate/core` + `@better-translate/tanstack-router`、通常 `@better-translate/react` も
+- Next.js でクライアントフックも必要: `@better-translate/react` を追加
+- TanStack Router: `@better-translate/core` + `@better-translate/tanstack-router`、通常は `@better-translate/react` も
 - Astro: `@better-translate/core` + `@better-translate/astro`
-- ローカライズされたMarkdownまたはMDX: `@better-translate/md` を追加
-- AI生成のロケールファイルまたは自動抽出された文字列: `@better-translate/cli` を追加
+- ローカライズされた markdown または MDX: `@better-translate/md` を追加
+- AI 生成ロケールや自動抽出文字列: `@better-translate/cli` を追加
 
-## Skills のインストール
+## skills のインストール
 
-リポジトリで公開している skills は `npx skills add` で直接インストールできます：
+リポジトリホストの skills は `npx skills add` で直接インストールできます：
 
 ```sh
 npx skills add https://github.com/jralvarenga/better-translate
@@ -49,15 +50,14 @@ npx skills add https://github.com/jralvarenga/better-translate --skill cli
 npx skills add https://github.com/jralvarenga/better-translate --skill combined
 npx skills add https://github.com/jralvarenga/better-translate --skill rtl
 npx skills add https://github.com/jralvarenga/better-translate --skill examples
-npx skills add https://github.com/jralvarenga/better-translate --skill status
 npx skills add https://github.com/jralvarenga/better-translate --skill workspace
 ```
 
 ## ここから始める
 
-- <Link href="/docs/adapters/core">Core guide</Link>
-- <Link href="/docs/adapters/react">React guide</Link>
-- <Link href="/docs/adapters/nextjs">Next.js guide</Link>
-- <Link href="/docs/adapters/md">MD & MDX guide</Link>
-- <Link href="/docs/cli">CLI guide</Link>
-- [GitHub上のExamples](https://github.com/jralvarenga/better-translate/tree/main/examples)
+- <Link href="/docs/adapters/core">Core ガイド</Link>
+- <Link href="/docs/adapters/react">React ガイド</Link>
+- <Link href="/docs/adapters/nextjs">Next.js ガイド</Link>
+- <Link href="/docs/adapters/md">MD & MDX ガイド</Link>
+- <Link href="/docs/cli">CLI ガイド</Link>
+- [Examples on GitHub](https://github.com/jralvarenga/better-translate/tree/main/examples)

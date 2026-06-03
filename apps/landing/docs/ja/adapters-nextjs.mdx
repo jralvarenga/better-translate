@@ -1,14 +1,13 @@
 ---
 title: Next.js
-description: >-
-  @better-translate/nextjs は、Next.js App Router
-  向けにロケールルーティング、リクエストヘルパー、ナビゲーションヘルパー、およびプロキシサポートを追加します。
+description: "@better-translate/nextjs は Next.js App Router 向けにロケールルーティング、リクエストヘルパー、ナビゲーションヘルパー、プロキシサポートを追加します。"
 ---
+
 # Next.js
 
-App Routerでロケール接頭辞付きURL、サーバーサイド翻訳、ロケール対応ナビゲーションが必要な場合は、`@better-translate/nextjs`を使用してください。
+App Router でロケール付き URL、サーバー側翻訳、ロケール対応ナビゲーションが必要なときは `@better-translate/nextjs` を使います。
 
-クライアントサイドのフックも必要な場合は、このセットアップに加えて`@better-translate/react`を追加してください。
+クライアント側フックも必要なら、このセットアップに `@better-translate/react` を追加します。
 
 ## 1. パッケージをインストールする
 
@@ -16,9 +15,9 @@ App Routerでロケール接頭辞付きURL、サーバーサイド翻訳、ロ�
 npm install @better-translate/core @better-translate/nextjs
 ```
 
-## 2. 翻訳機を作成する
+## 2. トランスレーターを作る
 
-`src/lib/i18n/config.ts`を作成します：
+`src/lib/i18n/config.ts` を作成します：
 
 ```ts
 import { configureTranslations } from "@better-translate/core";
@@ -45,21 +44,28 @@ export const translator = await configureTranslations({
 
 ## 3. ルーティングファイルを追加する
 
-`src/lib/i18n/routing.ts`を作成します：
+`src/lib/i18n/routing.ts` を作成します：
 
 ```ts
-import { defineRouting } from "@better-translate/nextjs";
+import {
+  defineRouting,
+  SUPPORTED_NEXTJS_LOCALE_ROUTE_SYNTAXES,
+} from "@better-translate/nextjs";
 
 export const routing = defineRouting({
   defaultLocale: "en",
   locales: ["en", "es"] as const,
   routeTemplate: "/[lang]",
 });
+
+console.log(SUPPORTED_NEXTJS_LOCALE_ROUTE_SYNTAXES);
 ```
+
+Better Translate はロケールパラメータ名を core の共有サポート一覧に制限します。有効な例には `[locale]`、`[lang]`、`[language]`、`[intl]`、`[i18n]`、`[l10n]`、`[localization]` があります。
 
 ## 4. リクエストとサーバーヘルパーを追加する
 
-`src/lib/i18n/request.ts`を作成します：
+`src/lib/i18n/request.ts` を作成します：
 
 ```ts
 import { getRequestConfig } from "@better-translate/nextjs/server";
@@ -71,7 +77,7 @@ export const requestConfig = getRequestConfig(async () => ({
 }));
 ```
 
-`src/lib/i18n/server.ts`を作成します：
+`src/lib/i18n/server.ts` を作成します：
 
 ```ts
 import { createServerHelpers } from "@better-translate/nextjs/server";
@@ -83,7 +89,7 @@ export const { getTranslations } = createServerHelpers(requestConfig);
 
 ## 5. ロケール対応ナビゲーションを追加する
 
-`src/lib/i18n/navigation.ts`を作成します：
+`src/lib/i18n/navigation.ts` を作成します：
 
 ```tsx
 "use client";
@@ -110,7 +116,7 @@ export const {
 
 ## 6. プロキシを追加する
 
-`src/proxy.ts`を作成します：
+`src/proxy.ts` を作成します：
 
 ```ts
 import { createProxy, getProxyMatcher } from "@better-translate/nextjs/proxy";
@@ -124,9 +130,9 @@ export const config = {
 };
 ```
 
-## 7. 翻訳付きページをレンダリングする
+## 7. 翻訳付きページを描画する
 
-`src/app/[lang]/page.tsx`を作成します：
+`src/app/[lang]/page.tsx` を作成します：
 
 ```tsx
 import { setRequestLocale } from "@better-translate/nextjs/server";
@@ -148,9 +154,9 @@ export default async function HomePage({
 }
 ```
 
-## 8. ロケールを保持するリンクを追加する
+## 8. ロケールを維持するリンクを追加する
 
-`src/components/language-links.tsx`を作成します：
+`src/components/language-links.tsx` を作成します：
 
 ```tsx
 "use client";
@@ -172,13 +178,13 @@ export function LanguageLinks() {
 }
 ```
 
-## Reactアダプターを追加するタイミング
+## React アダプターを追加するタイミング
 
-クライアントコンポーネントが`useTranslations()`またはプロバイダーを必要とする場合のみ、`@better-translate/react`を追加してください。
+クライアントコンポーネントで `useTranslations()` やプロバイダーが必要なときだけ `@better-translate/react` を追加します。
 
 ## ロケールファイルを自動生成する
 
-すべての翻訳を手作業で書く代わりに、CLIを使用して文字列を抽出しロケールファイルを生成できます：[CLIガイド](/docs/cli)
+すべての翻訳を手書きする代わりに、CLI で文字列を抽出しロケールファイルを生成できます：[CLI ガイド](/docs/cli)
 
 ## 例
 

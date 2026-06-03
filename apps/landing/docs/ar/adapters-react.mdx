@@ -2,9 +2,10 @@
 title: React
 description: يضيف @better-translate/react مزودًا وخطافات فوق @better-translate/core.
 ---
+
 # React
 
-استخدم `@better-translate/react` عندما تحتاج مكونات React إلى الترجمة وتبديل اللغة.
+استخدم `@better-translate/react` عندما تحتاج مكونات React إلى الترجمة وتبديل الإعداد المحلي.
 
 ## 1. تثبيت الحزم
 
@@ -39,75 +40,48 @@ export const translator = await configureTranslations({
 });
 ```
 
-## 3. تغليف تطبيقك
+## 3. إنشاء زوج مزود + خطاف مكتوب الأنواع
 
-أنشئ أو حدّث `src/main.tsx`:
+إذا أردت أن يُكمل `useTranslations()` المفاتيح والإعدادات المحلية دون
+تكرار الأنواع العامة أو إضافة ملف إعلان، اربط المترجم مرة واحدة:
+
+أنشئ `src/i18n-react.ts`:
+
+```ts
+import { createBetterTranslateReact } from "@better-translate/react";
+
+import { translator } from "./i18n";
+
+export const { BetterTranslateProvider, useTranslations } =
+  createBetterTranslateReact(translator);
+```
+
+## 4. تغليف التطبيق
+
+أنشئ أو حدّث `src/main.tsx` لاستيراد المزود المحلي للتطبيق:
 
 ```tsx
 import React from "react";
 import ReactDOM from "react-dom/client";
 
-import { BetterTranslateProvider } from "@better-translate/react";
-
 import { App } from "./app";
-import { translator } from "./i18n";
+import { BetterTranslateProvider } from "./i18n-react";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <BetterTranslateProvider translator={translator}>
+    <BetterTranslateProvider>
       <App />
     </BetterTranslateProvider>
   </React.StrictMode>,
 );
 ```
 
-## 4. قراءة الترجمات داخل مكون
+## 5. قراءة الترجمات داخل مكون
 
 أنشئ `src/header.tsx`:
 
 ```tsx
-import { useTranslations } from "@better-translate/react";
-
-import { translator } from "./i18n";
-
-export function Header() {
-  const { locale, setLocale, t } = useTranslations<typeof translator>();
-
-  return (
-    <header>
-      <h1>{t("home.title")}</h1>
-      <button onClick={() => setLocale("en")} disabled={locale === "en"}>
-        English
-      </button>
-      <button onClick={() => setLocale("es")} disabled={locale === "es"}>
-        Español
-      </button>
-    </header>
-  );
-}
-```
-
-## اختياري: تعيين نوع `useTranslations()` مرة واحدة للتطبيق كله
-
-إذا أردت أن يُكمل `useTranslations()` تلقائيًا مفاتيح الترجمة دون
-تكرار `<typeof translator>` في كل مكون، أضف ملف إعلان واحد:
-
-أنشئ `src/better-translate.d.ts`:
-
-```ts
-import { translator } from "./i18n";
-
-declare module "@better-translate/react" {
-  interface BetterTranslateReactTypes {
-    translator: typeof translator;
-  }
-}
-```
-
-ثم يمكن لمكوناتك استدعاء الـ hook بدون generic:
-
-```tsx
-import { useTranslations } from "@better-translate/react";
+import { useTranslations } from "./i18n-react";
 
 export function Header() {
   const { locale, setLocale, t } = useTranslations();
@@ -119,15 +93,12 @@ export function Header() {
         English
       </button>
       <button onClick={() => setLocale("es")} disabled={locale === "es"}>
-        Español
+        Espanol
       </button>
     </header>
   );
 }
 ```
-
-المعاملات العامة الصريحة لا تزال تعمل، لذا يمكنك الاستمرار في استخدام `useTranslations<typeof translator>()`
-حيثما يناسب قاعدة الشيفرة الخاصة بك أكثر.
 
 ## متى تستخدم React فقط
 
@@ -135,15 +106,15 @@ export function Header() {
 
 - يكون تطبيقك React SPA
 - يكون تطبيقك تطبيق Expo
-- تحدث تغييرات اللغة في مكونات العميل
+- تحدث تغييرات الإعداد المحلي في مكونات العميل
 
-إذا كنت في Next.js App Router، احتفظ بهذه الحزمة لـ hooks العميل وأضف محول Next.js للتوجيه ومساعدي الخادم.
+إذا كنت في Next.js App Router، احتفظ بهذه الحزمة لخطافات العميل وأضف محول Next.js للتوجيه ومساعدات الخادم.
 
-## توليد ملفات اللغة تلقائيًا
+## توليد ملفات الإعداد المحلي تلقائيًا
 
-بدلاً من كتابة كل ترجمة يدويًا، استخدم CLI لاستخراج النصوص وتوليد ملفات اللغة: [دليل CLI](/docs/cli)
+بدل كتابة كل ترجمة يدويًا، استخدم واجهة سطر الأوامر لاستخراج النصوص وتوليد ملفات الإعداد المحلي: [دليل واجهة سطر الأوامر](/docs/cli)
 
-## استمر مع
+## تابع مع
 
 - <Link href="/docs/adapters/expo">إعداد Expo</Link>
 - <Link href="/docs/adapters/nextjs">إعداد Next.js</Link>

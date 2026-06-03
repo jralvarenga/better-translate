@@ -1,10 +1,5 @@
 import Link from "next/link";
-import {
-  RiGithubLine,
-  RiHeart3Line,
-  RiNpmjsLine,
-  RiTwitterXLine,
-} from "@remixicon/react";
+import { RiGithubLine, RiNpmjsLine, RiTwitterXLine } from "@remixicon/react";
 import { Logo } from "@/components/logo";
 import type { LandingLocale, LandingTranslator } from "@/lib/i18n/config";
 import { siteLinks } from "@/lib/site";
@@ -35,15 +30,6 @@ export function Footer({ locale, t }: FooterProps) {
               aria-label={t("footer.github")}
             >
               <RiGithubLine className="size-4" />
-            </Link>
-            <Link
-              href={siteLinks.sponsor}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-foreground transition-colors"
-              aria-label={t("footer.sponsor")}
-            >
-              <RiHeart3Line className="size-4" />
             </Link>
             <Link
               href={siteLinks.npm}

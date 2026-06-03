@@ -1,14 +1,15 @@
 ---
 title: Next.js
 description: >-
-  يضيف @better-translate/nextjs توجيه اللغة، ومساعدي الطلب، ومساعدي التنقل، ودعم
-  الوكيل لـ Next.js App Router.
+  يضيف @better-translate/nextjs التوجيه المدرك للإعدادات المحلية ومساعدات
+  الطلب والتنقل ودعم الوكيل لـ Next.js App Router.
 ---
+
 # Next.js
 
-استخدم `@better-translate/nextjs` عندما تريد روابط مسبوقة بمعرف اللغة، وترجمات من جانب الخادم، وتنقل مدرك للغة في App Router.
+استخدم `@better-translate/nextjs` عندما تريد عناوين URL ببادئة إعداد محلي، وترجمات من جانب الخادم، وتنقلًا مدركًا للإعداد المحلي في App Router.
 
-إذا كنت تحتاج أيضًا إلى hooks من جانب العميل، أضف `@better-translate/react` فوق هذا الإعداد.
+إذا احتجت أيضًا خطافات على العميل، أضف `@better-translate/react` فوق هذا الإعداد.
 
 ## 1. تثبيت الحزم
 
@@ -48,16 +49,23 @@ export const translator = await configureTranslations({
 أنشئ `src/lib/i18n/routing.ts`:
 
 ```ts
-import { defineRouting } from "@better-translate/nextjs";
+import {
+  defineRouting,
+  SUPPORTED_NEXTJS_LOCALE_ROUTE_SYNTAXES,
+} from "@better-translate/nextjs";
 
 export const routing = defineRouting({
   defaultLocale: "en",
   locales: ["en", "es"] as const,
   routeTemplate: "/[lang]",
 });
+
+console.log(SUPPORTED_NEXTJS_LOCALE_ROUTE_SYNTAXES);
 ```
 
-## 4. إضافة مساعدي الطلب والخادم
+Better Translate يقيّد اسم معامل الإعداد المحلي بالقائمة المشتركة المدعومة من الأساس. أمثلة صالحة تشمل `[locale]` و`[lang]` و`[language]` و`[intl]` و`[i18n]` و`[l10n]` و`[localization]`.
+
+## 4. إضافة مساعدات الطلب والخادم
 
 أنشئ `src/lib/i18n/request.ts`:
 
@@ -81,7 +89,7 @@ import { requestConfig } from "./request";
 export const { getTranslations } = createServerHelpers(requestConfig);
 ```
 
-## 5. إضافة تنقل مدرك للغة
+## 5. إضافة تنقل مدرك للإعداد المحلي
 
 أنشئ `src/lib/i18n/navigation.ts`:
 
@@ -148,7 +156,7 @@ export default async function HomePage({
 }
 ```
 
-## 8. إضافة روابط تحتفظ باللغة
+## 8. إضافة روابط تحافظ على الإعداد المحلي
 
 أنشئ `src/components/language-links.tsx`:
 
@@ -165,7 +173,7 @@ export function LanguageLinks() {
       </I18nLink>
       {" | "}
       <I18nLink href="/" locale="es">
-        Español
+        Espanol
       </I18nLink>
     </nav>
   );
@@ -174,11 +182,11 @@ export function LanguageLinks() {
 
 ## متى تضيف محول React
 
-أضف `@better-translate/react` فقط عندما تحتاج المكونات من جانب العميل إلى `useTranslations()` أو موفر.
+أضف `@better-translate/react` فقط عندما تحتاج مكونات العميل إلى `useTranslations()` أو مزود.
 
-## توليد ملفات اللغة تلقائيًا
+## توليد ملفات الإعداد المحلي تلقائيًا
 
-بدلاً من كتابة كل الترجمة يدويًا، استخدم CLI لاستخراج السلاسل وتوليد ملفات اللغة: [دليل CLI](/docs/cli)
+بدل كتابة كل ترجمة يدويًا، استخدم واجهة سطر الأوامر لاستخراج النصوص وتوليد ملفات الإعداد المحلي: [دليل واجهة سطر الأوامر](/docs/cli)
 
 ## أمثلة
 

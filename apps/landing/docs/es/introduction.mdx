@@ -1,14 +1,13 @@
 ---
 title: Introducción
-description: >-
-  Better Translate es una biblioteca de traducción con seguridad de tipos para
-  TypeScript, configura una vez, usa en todas partes.
+description: Better Translate es una biblioteca de traducción con seguridad de tipos para TypeScript — configura una vez, úsala en todas partes.
 ---
+
 # ¿Qué es Better Translate?
 
-La mayoría de las configuraciones de traducción comienzan simples, luego pierden seguridad poco a poco, conectas las cosas entre sí, y más tarde intentas recuperar la seguridad de tipos con declaraciones extra, tipado manual, o soluciones específicas de frameworks. Funciona, pero nunca se siente completamente confiable.
+La mayoría de las configuraciones de traducción empiezan siendo simples y luego pierden seguridad poco a poco: conectas piezas entre sí y más tarde intentas recuperar la seguridad de tipos con declaraciones extra, tipado manual o parches específicos del framework. Funciona, pero nunca se siente del todo fiable.
 
-Better Translate invierte ese enfoque, la seguridad de tipos está integrada desde el inicio, no se añade después, defines tus traducciones una vez y las usas en todas partes con total confianza.
+Better Translate invierte ese enfoque: la seguridad de tipos está integrada desde el principio, no se añade después. Defines tus traducciones una vez y las usas en todas partes con total confianza.
 
 ## Por qué existe
 
@@ -18,39 +17,39 @@ Las herramientas de traducción suelen ser:
 - débilmente tipadas (o sin tipos)
 - difíciles de compartir entre frontend y backend
 
-Y cada vez que comienzas un proyecto nuevo, terminas aprendiendo una nueva herramienta de traducción, Better Translate existe para detener ese ciclo.
+Y cada vez que empiezas un proyecto nuevo acabas aprendiendo otra herramienta de traducción. Better Translate existe para romper ese ciclo.
 
 - Si una clave está mal, deberías saberlo mientras escribes
-- Si un mensaje requiere parámetros, deberían ser obligatorios
-- Si las traducciones son compartidas, deberían comportarse como un solo sistema
+- Si un mensaje requiere parámetros, deberían exigirse en tipos
+- Si las traducciones se comparten, deberían comportarse como un solo sistema
 
-Sin conjeturas. Sin fallos silenciosos. Sin "¿me olvidé de algo?"
+Sin conjeturas. Sin fallos silenciosos. Sin «¿me dejé algo?».
 
-## La idea detrás de esto
+## La idea detrás
 
-El objetivo es simple: **Una forma de hacer traducciones. En todas partes. Totalmente tipado.**
+El objetivo es simple: **una sola forma de traducir. En todas partes. Con tipos completos.**
 
-Comienza un proyecto nuevo, cambia de stack, construye web, backend o móvil, no necesitas re-aprender nada, Better Translate funciona en cualquier proyecto de TypeScript. Sin excepciones.
+Empiezas un proyecto nuevo, cambias de stack, construyes web, backend o móvil: no tienes que reaprender nada. Better Translate funciona en cualquier proyecto TypeScript. Sin excepciones.
 
-No es una colección de herramientas o patrones por framework, solo un modelo único y consistente que te acompaña en todo tu stack.
+No es una colección de herramientas ni patrones por framework, sino un único modelo coherente que te acompaña en todo el stack.
 
-## Lo que esto significa
+## Qué implica
 
-Better Translate está diseñado para equipos que quieren:
+Better Translate está pensado para equipos que quieren:
 
 - claves de traducción totalmente tipadas
 - parámetros de mensaje obligatorios
-- un sistema de traducción unificado entre aplicaciones
+- un sistema de traducción unificado entre apps
 - configuración mínima con control máximo
 - comportamiento predecible en cada entorno
 
-No se trata de añadir más herramientas, se trata de eliminar la incertidumbre.
+No va de añadir más herramientas, sino de quitar incertidumbre.
 
-## A dónde ir ahora
+## Por dónde seguir
 
-- **¿Quieres entender la dirección?** → [Mission](/docs/mission)
-- **¿Usas TypeScript o un servidor?** → [Adapters → Core](/docs/adapters/core)
-- **¿Estás construyendo una app de React?** → [Adapters → React](/docs/adapters/react)
-- **¿Usas Next.js App Router?** → [Adapters → Next.js](/docs/adapters/nextjs)
-- **¿Quieres que la IA genere tus archivos de idioma?** → [CLI](/docs/cli)
-- **¿Quieres copiar un proyecto funcional?** → [Examples on GitHub](https://github.com/jralvarenga/better-translate/tree/main/examples)
+- **¿Quieres entender la dirección del proyecto?** → [Misión](/docs/mission)
+- **¿Usas TypeScript o un servidor?** → [Adaptadores → Core](/docs/adapters/core)
+- **¿Construyes una app React?** → [Adaptadores → React](/docs/adapters/react)
+- **¿Usas Next.js App Router?** → [Adaptadores → Next.js](/docs/adapters/nextjs)
+- **¿Quieres que la IA genere tus archivos de locale?** → [CLI](/docs/cli)
+- **¿Prefieres copiar un proyecto que ya funcione?** → [Ejemplos en GitHub](https://github.com/jralvarenga/better-translate/tree/main/examples)

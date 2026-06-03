@@ -1,24 +1,21 @@
 ---
 title: RTL
-description: >-
-  @better-translate/coreにはRTLサポートが組み込まれています。ロケールごとに方向を宣言し、実行時にクエリし、呼び出しごとに上書きできます。
+description: "@better-translate/core には RTL サポートが組み込まれています。ロケールごとに方向を宣言し、ランタイムで問い合わせ、呼び出しごとに上書きできます。"
 ---
+
 # RTL
 
-`@better-translate/core`にはRTLサポートが組み込まれています。
-configで右から左に書くロケールを宣言し、`getDirection`または`isRtl`を使用して
-実行時に方向をクエリします。
+`@better-translate/core` には RTL サポートが組み込まれています。
+設定で右から左のロケールを宣言し、`getDirection` や `isRtl` でランタイムに方向を問い合わせます。
 
-## 使用するタイミング
+## 使うタイミング
 
-アプリがアラビア語、ヘブライ語、ペルシア語、ウルドゥー語などの言語をサポートする必要がある場合にRTLサポートを使用します。
-directionヘルパーを使用すると、別のルックアップテーブルを管理せずに、
-HTML要素の`dir`属性を型安全に設定できます。
+アラビア語、ヘブライ語、ペルシア語、ウルドゥー語などの言語をサポートする必要があるときに RTL サポートを使います。
+方向ヘルパーにより、別のルックアップ表なしで HTML 要素の `dir` 属性を型安全に設定できます。
 
 ## 方向の宣言
 
-`configureTranslations`の呼び出しに`directions`キーを追加します。
-省略したロケールはデフォルトで`"ltr"`になります。
+`configureTranslations` に `directions` キーを追加します。省略したロケールは `"ltr"` がデフォルトです。
 
 ```tsx showLineNumbers
 import { configureTranslations } from "@better-translate/core";
@@ -33,10 +30,10 @@ const translator = await configureTranslations({
 });
 ```
 
-## 方向のクエリ
+## 方向の問い合わせ
 
-`getDirection`を呼び出すと、任意のロケールに対して`"ltr"`または`"rtl"`が取得できます。
-`isRtl`を呼び出すと、真偽値の省略形が取得できます。
+`getDirection` で任意のロケールの `"ltr"` または `"rtl"` を取得します。
+`isRtl` は真偽値のショートハンドです。
 
 ```tsx showLineNumbers
 translator.getDirection({ locale: "ar" }); // "rtl"
@@ -48,32 +45,32 @@ translator.isRtl({ locale: "en" }); // false
 
 ## 呼び出しごとの上書き
 
-`config.rtl`を渡すと、設定された方向を単一の呼び出しで上書きできます。
-これはメッセージの検索には影響せず、解決される方向のみ変更されます。
+`config.rtl` を渡すと、単一の呼び出しだけ設定済みの方向を上書きできます。
+メッセージのルックアップには影響せず、解決される方向だけが変わります。
 
 ```tsx showLineNumbers
-// RTLロケールでもLTRを強制
+// RTL ロケールでも LTR を強制
 translator.t("greeting", {
   locale: "ar",
   config: { rtl: false },
 });
 
-// LTRロケールでもRTLを強制
+// LTR ロケールでも RTL を強制
 translator.t("greeting", {
   locale: "en",
   config: { rtl: true },
 });
 ```
 
-## HTMLへの適用
+## HTML への適用
 
-ルート要素の`dir`属性をレンダリングする際に`getDirection`を使用します。
+ルート要素の `dir` 属性を描画するときは `getDirection` を使います。
 
 ```tsx showLineNumbers
-// html要素で（例：Next.jsのレイアウト内）
+// html 要素（例: Next.js のレイアウト）
 <html lang={locale} dir={translator.getDirection({ locale })}>
 
-// 特定のコンテナで
+// 特定のコンテナ
 <div dir={translator.getDirection({ locale })}>
   {t("greeting")}
 </div>
@@ -85,13 +82,13 @@ translator.t("greeting", {
 - `packages/core/src/create-configured-translator.ts`
 - `packages/core/src/normalize-config.ts`
 
-## 続きはこちら
+## 次に読む
 
 <div className="mt-6 flex flex-wrap gap-3">
   <Button asChild variant="outline" size="lg">
-    <Link href="/docs/adapters/core">Coreアダプターを見る</Link>
+    <Link href="/docs/adapters/core">Core アダプターを見る</Link>
   </Button>
   <Button asChild size="lg">
-    <Link href="/docs/adapters/nextjs">Next.jsアダプターを見る</Link>
+    <Link href="/docs/adapters/nextjs">Next.js アダプターを見る</Link>
   </Button>
 </div>

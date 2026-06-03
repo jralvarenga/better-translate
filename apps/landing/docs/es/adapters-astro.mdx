@@ -1,12 +1,11 @@
 ---
 title: Astro
-description: >-
-  @better-translate/astro agrega helpers de solicitud y middleware sobre
-  @better-translate/core.
+description: "@better-translate/astro añade helpers de petición y middleware sobre @better-translate/core."
 ---
+
 # Astro
 
-Usa `@better-translate/astro` cuando tu aplicación de Astro necesite traducciones conscientes de la solicitud.
+Usa `@better-translate/astro` cuando tu app Astro necesite traducciones conscientes de la petición.
 
 ## 1. Instalar los paquetes
 
@@ -41,7 +40,7 @@ export const translator = await configureTranslations({
 });
 ```
 
-## 3. Exponer la configuración de la solicitud
+## 3. Exponer la configuración de petición
 
 Crea `src/lib/request.ts`:
 
@@ -55,7 +54,7 @@ export const requestConfig = getRequestConfig(async () => ({
 }));
 ```
 
-## 4. Establecer el idioma de la solicitud en el middleware
+## 4. Establecer el locale de la petición en middleware
 
 Crea `src/middleware.ts`:
 
@@ -69,7 +68,9 @@ export const onRequest = createBetterTranslateMiddleware(requestConfig, {
 });
 ```
 
-## 5. Leer las traducciones en una página
+Si quieres la lista compartida en forma de corchetes, importa `SUPPORTED_ASTRO_LOCALE_ROUTE_SYNTAXES` desde `@better-translate/astro`. Incluye `[locale]`, `[lang]`, `[language]`, `[intl]`, `[i18n]`, `[l10n]` y `[localization]`.
+
+## 5. Leer traducciones en una página
 
 Crea `src/lib/server.ts`:
 
@@ -99,13 +100,13 @@ const t = await getTranslations();
 </html>
 ```
 
-## Paso siguiente opcional
+## Paso opcional siguiente
 
-Si tu documentación o publicaciones de blog de Astro viven en colecciones de contenido localizadas, agrega los helpers de contenido de Astro o el adaptador de MDX después de que esta configuración básica funcione.
+Si la documentación o el blog de Astro viven en colecciones de contenido localizadas, añade helpers de contenido de Astro o el adaptador MDX cuando esta configuración básica funcione.
 
-## Generar archivos de idioma automáticamente
+## Generar archivos de locale automáticamente
 
-En lugar de escribir cada traducción a mano, usa la CLI para extraer cadenas y generar archivos de idioma: [Guía de la CLI](/docs/cli)
+En lugar de escribir cada traducción a mano, usa la CLI para extraer cadenas y generar archivos de locale: [Guía de la CLI](/docs/cli)
 
 ## Ejemplos
 
