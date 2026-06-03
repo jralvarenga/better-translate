@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { hasLocale } from "@better-translate/nextjs";
@@ -12,6 +13,17 @@ import { ResponsiveParticles } from "@/components/ui/responsive-particles";
 import type { LandingLocale } from "@/lib/i18n/config";
 import { routing } from "@/lib/i18n/routing";
 import { getTranslations } from "@/lib/i18n/server";
+import { createHomeMetadata, resolveLandingLocale } from "@/lib/seo";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ lang: string }>;
+}): Promise<Metadata> {
+  const { lang } = await params;
+
+  return createHomeMetadata(resolveLandingLocale(lang));
+}
 
 export default async function LocalizedHomePage({
   params,

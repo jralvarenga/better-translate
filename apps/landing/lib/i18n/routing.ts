@@ -1,6 +1,6 @@
 import { defineRouting } from "@better-translate/nextjs";
 
-import { landingDefaultLocale, landingLocales } from "./config";
+import { landingDefaultLocale, landingLocales } from "./shared";
 
 export const routing = defineRouting({
   defaultLocale: landingDefaultLocale,

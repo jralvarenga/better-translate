@@ -1,7 +1,8 @@
 import type { MetadataRoute } from "next";
 
-import { landingLocales } from "@/lib/i18n/config";
+import { landingLocales } from "@/lib/i18n/shared";
 import {
+  buildLanguageAlternates,
   getLocalizedRoutePath,
   indexableDocRoutes,
   indexableMarketingRoutes,
@@ -14,15 +15,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return routes.flatMap((route) =>
     landingLocales.map((locale) => ({
       alternates: {
-        languages: Object.fromEntries(
-          landingLocales.map((alternateLocale) => [
-            alternateLocale,
-            new URL(
-              getLocalizedRoutePath(route.routePath, alternateLocale),
-              siteUrl,
-            ).toString(),
-          ]),
-        ),
+        languages: buildLanguageAlternates(route.routePath),
       },
       changeFrequency: route.changeFrequency,
       priority: route.priority,
