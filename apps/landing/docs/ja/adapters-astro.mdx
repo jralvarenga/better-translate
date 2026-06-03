@@ -1,10 +1,11 @@
 ---
 title: Astro
-description: '@better-translate/astroは、@better-translate/coreの上にリクエストヘルパーとミドルウェアを追加します。'
+description: "@better-translate/astro は @better-translate/core の上にリクエストヘルパーとミドルウェアを追加します。"
 ---
+
 # Astro
 
-Astroアプリでリクエストに応じた翻訳が必要な場合は、`@better-translate/astro`を使用してください。
+Astro アプリでリクエストを意識した翻訳が必要なときは `@better-translate/astro` を使います。
 
 ## 1. パッケージをインストールする
 
@@ -12,9 +13,9 @@ Astroアプリでリクエストに応じた翻訳が必要な場合は、`@bett
 npm install @better-translate/core @better-translate/astro astro
 ```
 
-## 2. 翻訳エンジンを作成する
+## 2. トランスレーターを作る
 
-`src/lib/i18n.ts`を作成してください：
+`src/lib/i18n.ts` を作成します：
 
 ```ts
 import { configureTranslations } from "@better-translate/core";
@@ -41,7 +42,7 @@ export const translator = await configureTranslations({
 
 ## 3. リクエスト設定を公開する
 
-`src/lib/request.ts`を作成してください：
+`src/lib/request.ts` を作成します：
 
 ```ts
 import { getRequestConfig } from "@better-translate/astro";
@@ -53,9 +54,9 @@ export const requestConfig = getRequestConfig(async () => ({
 }));
 ```
 
-## 4. ミドルウェアでリクエストのロケールを設定する
+## 4. ミドルウェアでリクエストロケールを設定する
 
-`src/middleware.ts`を作成してください：
+`src/middleware.ts` を作成します：
 
 ```ts
 import { createBetterTranslateMiddleware } from "@better-translate/astro/middleware";
@@ -67,9 +68,11 @@ export const onRequest = createBetterTranslateMiddleware(requestConfig, {
 });
 ```
 
-## 5. ページで翻訳を読み込む
+共有のブラケット形式一覧が必要なら、`@better-translate/astro` から `SUPPORTED_ASTRO_LOCALE_ROUTE_SYNTAXES` を import します。`[locale]`、`[lang]`、`[language]`、`[intl]`、`[i18n]`、`[l10n]`、`[localization]` が含まれます。
 
-`src/lib/server.ts`を作成してください：
+## 5. ページで翻訳を読む
+
+`src/lib/server.ts` を作成します：
 
 ```ts
 import { createServerHelpers } from "@better-translate/astro";
@@ -80,7 +83,7 @@ export const { getLocale, getTranslations } =
   createServerHelpers(requestConfig);
 ```
 
-`src/pages/[lang]/index.astro`を作成してください：
+`src/pages/[lang]/index.astro` を作成します：
 
 ```astro
 ---
@@ -97,13 +100,13 @@ const t = await getTranslations();
 </html>
 ```
 
-## オプションの次のステップ
+## 任意の次のステップ
 
-Astroのドキュメントやブログ投稿がローカライズされたコンテンツコレクションにある場合は、この基本的なセットアップが動作した後に、AstroコンテンツヘルパーまたはMDXアダプターを追加してください。
+Astro のドキュメントやブログがローカライズされたコンテンツコレクションにある場合は、基本セットアップが動いたあとに Astro コンテンツヘルパーや MDX アダプターを追加します。
 
 ## ロケールファイルを自動生成する
 
-すべての翻訳を手動で書く代わりに、CLIを使用して文字列を抽出し、ロケールファイルを生成できます：[CLIガイド](/docs/cli)
+すべての翻訳を手書きする代わりに、CLI で文字列を抽出しロケールファイルを生成できます：[CLI ガイド](/docs/cli)
 
 ## 例
 

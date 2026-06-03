@@ -50,7 +50,7 @@ export const landingMessages = {
   ja,
 } satisfies Record<LandingLocale, DeepStringify<typeof en>>;
 
-export const landingTranslationsConfig = {
+export const config = {
   availableLocales: landingLocales,
   defaultLocale: landingDefaultLocale,
   fallbackLocale: landingDefaultLocale,
@@ -64,14 +64,14 @@ export const landingTranslationsConfig = {
   typeof landingDefaultLocale
 >;
 
-export type LandingTranslationsConfig = typeof landingTranslationsConfig;
+export type config = typeof config;
 
 export function getLandingLanguages() {
-  return [...landingTranslationsConfig.languages];
+  return [...config.languages];
 }
 
 export function createLandingTranslator() {
-  return configureTranslations(landingTranslationsConfig);
+  return configureTranslations(config);
 }
 
 export type LandingTranslator = Awaited<

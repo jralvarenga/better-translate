@@ -1,14 +1,15 @@
 ---
-title: MD & MDX
+title: MD وMDX
 description: >-
-  @better-translate/md تحمل ملفات Markdown و MDX المُعَرَّفة حسب اللغة فوق
+  يحمّل @better-translate/md ملفات Markdown وMDX المترجمة فوق
   @better-translate/core.
 ---
-# MD & MDX
 
-استخدم `@better-translate/md` عندما تكون مستنداتك أو منشورات مدونتك أو صفحات محتواك في ملفات `.md` أو `.mdx` مُعَرَّفة حسب اللغة.
+# MD وMDX
 
-هذه الحزمة لا تستبدل المترجم الأساسي. إنها تقرأ قواعد اللغة من المترجم الذي أنشأته مسبقًا.
+استخدم `@better-translate/md` عندما تعيش الوثائق أو مقالات المدونة أو صفحات المحتوى في ملفات `.md` أو `.mdx` مترجمة.
+
+لا تحل هذه الحزمة محل المترجم الأساسي. تقرأ قواعد الإعداد المحلي من المترجم الذي أنشأته مسبقًا.
 
 ## 1. تثبيت الحزم
 
@@ -45,7 +46,7 @@ export const translator = await configureTranslations({
 
 ## 3. إنشاء مجلدات المحتوى
 
-ضع مجلدًا واحدًا لكل لغة تحت نفس الجذر:
+ضع مجلدًا لكل إعداد محلي تحت نفس الجذر:
 
 ```txt
 content/docs/
@@ -55,7 +56,7 @@ content/docs/
     getting-started.mdx
 ```
 
-## 4. إنشاء مساعدات Markdown
+## 4. إنشاء مساعدات markdown
 
 أنشئ `src/docs.ts`:
 
@@ -83,25 +84,25 @@ const spanishDoc = await docs.getDocument("getting-started", {
 });
 ```
 
-## 6. تجميعه عندما تحتاج إلى المخرجات
+## 6. التجميع عند الحاجة للمخرجات
 
 ```ts
 const compiled = await docs.compileDocument("getting-started", {
   locale: "en",
 });
 
-compiled.kind; // "md" أو "mdx"
+compiled.kind; // "md" or "mdx"
 compiled.path;
 compiled.usedFallback;
 ```
 
 ## متى تستخدم مساعدات الخادم
 
-إذا كان تطبيقك يحل لغة الطلب بالفعل على الخادم، استخدم `@better-translate/md/server` بحيث يتبع تحميل Markdown نفس لغة الطلب تلقائيًا.
+إذا كان تطبيقك يحلّ إعداد الطلب المحلي على الخادم مسبقًا، استخدم `@better-translate/md/server` ليتبع تحميل markdown نفس إعداد الطلب المحلي تلقائيًا.
 
-## إنشاء Markdown مُعَرَّف حسب اللغة تلقائيًا
+## توليد markdown مترجم تلقائيًا
 
-استخدم خيار `markdown.rootDir` في واجهة سطر الأوامر لجعل المولد يترجم ملفات Markdown الخاصة بك: [دليل واجهة سطر الأوامر](/docs/cli)
+استخدم خيار `markdown.rootDir` في واجهة سطر الأوامر لترجمة ملفات markdown: [دليل واجهة سطر الأوامر](/docs/cli)
 
 ## أمثلة
 

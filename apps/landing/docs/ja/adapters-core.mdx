@@ -1,18 +1,17 @@
 ---
 title: Core
-description: >-
-  @better-translate/core はあらゆる TypeScript
-  プロジェクトで動作します。フレームワークやランタイムに関わらず、同じ設定、同じ API です。
+description: "@better-translate/core はあらゆる TypeScript プロジェクトで動作します。フレームワークやランタイムに関わらず、同じ設定と同じ API です。"
 ---
+
 # Core
 
-`@better-translate/core` はあらゆる TypeScript プロジェクトで動作します。フレームワークの依存も、ランタイムの要件もありません。Next.js、Astro、React、Bun、Node.js、スクリプト、またはその他の TypeScript 環境であっても、同じ設定と同じ API を使用できます。
+`@better-translate/core` はあらゆる TypeScript プロジェクトで動作します。フレームワーク依存もランタイム要件もありません。Next.js、Astro、React、Bun、Node.js、スクリプト、その他の TypeScript 環境でも、同じ設定と同じ API です。
 
-**アダプター**は、フレームワーク固有のヘルパー（ロケール対応ルーティング、React コンテキスト、リクエストごとのヘルパーなど）を追加するコアの拡張機能です。ただし、すべては同じコアの上に構築されています。
+**アダプター**は、ロケール対応ルーティング、React コンテキスト、リクエスト単位のヘルパーなど、フレームワーク固有のヘルパーをコアに追加する拡張です。すべては同じコアの上に構築されています。
 
-## コアを直接使用する場合
+## コアを直接使う場合
 
-フレームワーク固有のヘルパーが不要な場合は、アダプターなしでコアを使用します。これには、サーバー、API、スクリプト、共有ライブラリ、またはセットアップにアダプターが存在しない TypeScript 環境が含まれます。
+フレームワーク固有のヘルパーが不要なときは、アダプターなしでコアを使います。サーバー、API、スクリプト、共有ライブラリ、またはセットアップ用アダプターがない TypeScript 環境が該当します。
 
 ## 1. パッケージをインストールする
 
@@ -20,7 +19,7 @@ description: >-
 npm install @better-translate/core
 ```
 
-## 2. 翻訳ファイルを1つ作成する
+## 2. トランスレーターファイルを1つ作る
 
 `src/i18n.ts` を作成します：
 
@@ -49,9 +48,7 @@ export const translator = await configureTranslations({
 });
 ```
 
-トップレベル await をサポートしない TypeScript 環境（たとえば CommonJS）では、この初期化を async な起動関数の中に移動して、解決済みの translator をそこから公開してください。
-
-## 3. どこでも翻訳機能を使用する
+## 3. どこでもトランスレーターを使う
 
 ```ts
 import { translator } from "./i18n";
@@ -61,7 +58,7 @@ translator.t("home.title", { locale: "es" }); // "Hola"
 translator.t("home.description", { locale: "es" });
 ```
 
-## 4. 後で別のロケールを追加する
+## 4. あとからロケールを追加する
 
 ```ts
 const fr = {
@@ -79,17 +76,17 @@ export const translator = await configureTranslations({
 });
 ```
 
-## フォールバック動作
+## フォールバックの挙動
 
-アクティブなロケールにキーが存在しない場合、better-translate はフォールバックロケールを試します。
-フォールバックにも存在しない場合、キー文字列そのものを返します。
+アクティブなロケールにキーがなければ、better-translate はフォールバックロケールを試します。
+フォールバックにもなければ、キー文字列そのものを返します。
 
-- → ロケール値が見つからない → フォールバックロケール値
-- → フォールバック値も見つからない → キー文字列
+- → ロケールの値がない → フォールバックロケールの値
+- → フォールバックの値もない → キー文字列
 
 ## 非同期ローダー
 
-プリロードしたくない言語のロケールローダーを登録します。ロードされたロケールは、最初の成功した読み込み後にキャッシュされます。
+プリロードしたくない言語用にロケールローダーを登録します。初回の読み込み成功後、ロード済みロケールはキャッシュされます。
 
 ```ts
 const translator = await configureTranslations({
@@ -101,29 +98,29 @@ const translator = await configureTranslations({
   },
 });
 
-// 必要に応じて fr をロードし、キャッシュする
+// 必要時に fr を読み込みキャッシュ
 await translator.loadLocale("fr");
 ```
 
 ## 5. CLI で文字列を自動抽出する
 
-手動でキーを命名する代わりに、`{ bt: true }` で文字列をマークし、CLI に自動的に抽出・キー化させます：
+キーを手で命名する代わりに、`{ bt: true }` で文字列をマークし、CLI に抽出とキー付けを任せます：
 
 ```ts
 import { t } from "@better-translate/core";
 
-// ソース文字列を直接記述 — CLI が適切なキーに変換します
+// ソース文字列をそのまま書く — CLI が適切なキーに変換
 t("Hello world", { bt: true });
 ```
 
-`npx bt extract` を実行して、文字列をソースロケールファイルに同期し、呼び出しを適切なキーに書き換えます。完全なセットアップについては [CLI ドキュメント](/docs/cli) を参照してください。
+`npx bt extract` で文字列をソースロケールファイルに同期し、呼び出しを適切なキーに書き換えます。完全なセットアップは [CLI ドキュメント](/docs/cli) を参照してください。
 
-## 次のステップ
+## 次に読む
 
 - <Link href="/docs/adapters/react">React プロバイダーとフック</Link>
-- <Link href="/docs/adapters/nextjs">Next.js App Router セットアップ</Link>
+- <Link href="/docs/adapters/nextjs">Next.js App Router のセットアップ</Link>
 - <Link href="/docs/adapters/astro">Astro リクエストヘルパー</Link>
 
 ## 例
 
-- [core-elysia-example](https://github.com/jralvarenga/better-translate/tree/main/examples/core-elysia-example) — シンプルな TypeScript/Node.js セットアップ
+- [core-elysia-example](https://github.com/jralvarenga/better-translate/tree/main/examples/core-elysia-example) — プレーン TypeScript/Node.js のセットアップ

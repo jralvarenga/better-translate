@@ -1,44 +1,43 @@
 ---
 title: Skills
-description: >-
-  Usa las guías de skills para elegir la combinación correcta de paquetes de
-  Better Translate para tu aplicación.
+description: Usa las guías de skills para elegir la combinación correcta de paquetes de Better Translate en tu app.
 ---
+
 # Skills
 
-La carpeta `skills/` explica cómo integrar los paquetes de la manera correcta sin leer todo el código base primero.
+La carpeta `skills/` explica cómo integrar los paquetes de la forma correcta sin leer todo el código primero.
 
-Úsala cuando quieras una respuesta simple a preguntas como:
+Úsala cuando quieras una respuesta clara a preguntas como:
 
 - ¿Con qué paquete empiezo?
-- ¿Necesito React también, o solo Next.js?
+- ¿Necesito React también o solo Next.js?
 - ¿Cómo encaja MDX en la configuración?
-- ¿Cuál es la combinación de paquetes más pequeña para mi aplicación?
+- ¿Cuál es la combinación mínima de paquetes para mi app?
 
 ## Mejor orden de lectura
 
 1. `skills/SKILL.md` para el mapa de paquetes
-2. `skills/core/SKILL.md` para iniciar el traductor correctamente
+2. `skills/core/SKILL.md` para configurar bien el traductor
 3. `skills/cli/SKILL.md` si quieres que la CLI genere archivos de locale o extraiga cadenas marcadas con `bt`
 4. `skills/react/SKILL.md` si la UI es React o Expo
-5. `skills/nextjs/SKILL.md` si la aplicación es Next.js App Router
+5. `skills/nextjs/SKILL.md` si la app usa Next.js App Router
 6. `skills/md/SKILL.md` si el contenido está en `.md` o `.mdx`
-7. `skills/combined/SKILL.md` si la aplicación mezcla enrutamiento, renderizado en servidor y hooks de cliente
+7. `skills/combined/SKILL.md` si la app mezcla enrutamiento, render en servidor y hooks en cliente
 
 ## Selector rápido de paquetes
 
 - TypeScript plano, Node.js, APIs o bibliotecas compartidas: `@better-translate/core`
 - Web React o Expo: `@better-translate/core` + `@better-translate/react`
 - Next.js App Router: `@better-translate/core` + `@better-translate/nextjs`
-- Next.js con hooks de lado del cliente: agrega `@better-translate/react`
-- TanStack Router: `@better-translate/core` + `@better-translate/tanstack-router`, y usualmente `@better-translate/react`
+- Next.js con hooks en cliente: añade `@better-translate/react`
+- TanStack Router: `@better-translate/core` + `@better-translate/tanstack-router`, y normalmente `@better-translate/react`
 - Astro: `@better-translate/core` + `@better-translate/astro`
-- Markdown localizado o MDX: agrega `@better-translate/md`
-- Archivos de locale generados por IA o cadenas extraídas automáticamente: agrega `@better-translate/cli`
+- Markdown o MDX localizado: añade `@better-translate/md`
+- Archivos de locale generados por IA o cadenas extraídas automáticamente: añade `@better-translate/cli`
 
-## Instala los skills
+## Instalar las skills
 
-Puedes instalar los skills alojados en el repositorio directamente con `npx skills add`:
+Puedes instalar las skills del repositorio directamente con `npx skills add`:
 
 ```sh
 npx skills add https://github.com/jralvarenga/better-translate
@@ -55,11 +54,11 @@ npx skills add https://github.com/jralvarenga/better-translate --skill status
 npx skills add https://github.com/jralvarenga/better-translate --skill workspace
 ```
 
-## Empieza aquí
+## Empezar aquí
 
 - <Link href="/docs/adapters/core">Guía de Core</Link>
 - <Link href="/docs/adapters/react">Guía de React</Link>
 - <Link href="/docs/adapters/nextjs">Guía de Next.js</Link>
 - <Link href="/docs/adapters/md">Guía de MD y MDX</Link>
-- <Link href="/docs/cli">Guía de CLI</Link>
+- <Link href="/docs/cli">Guía de la CLI</Link>
 - [Ejemplos en GitHub](https://github.com/jralvarenga/better-translate/tree/main/examples)

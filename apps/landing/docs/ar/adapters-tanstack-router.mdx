@@ -1,14 +1,15 @@
 ---
 title: TanStack Router
 description: >-
-  @better-translate/tanstack-router يضيف التوجيه والتنقل الذي يدعم اللغة لـ
-  TanStack Router و TanStack Start.
+  يضيف @better-translate/tanstack-router التوجيه والتنقل المدركين للإعداد
+  المحلي لـ TanStack Router وTanStack Start.
 ---
+
 # TanStack Router
 
-استخدم `@better-translate/tanstack-router` عندما يستخدم تطبيقك TanStack Router أو TanStack Start وتريد عناوين URL التي تدعم اللغة.
+استخدم `@better-translate/tanstack-router` عندما يستخدم تطبيقك TanStack Router أو TanStack Start وتريد عناوين URL مدركة للإعداد المحلي.
 
-في معظم التطبيقات الحقيقية، ستقوم بربطه مع:
+في معظم التطبيقات الحقيقية ستُقرنه مع:
 
 - `@better-translate/core` للمترجم
 - `@better-translate/react` للخطافات داخل مكونات React
@@ -46,21 +47,26 @@ export const translator = await configureTranslations({
 });
 ```
 
-## 3. إضافة إعداد التوجيه للغة
+## 3. إضافة إعداد التوجيه للإعداد المحلي
 
 أنشئ `src/lib/routing.ts`:
 
 ```ts
-import { defineRouting } from "@better-translate/tanstack-router";
+import {
+  defineRouting,
+  SUPPORTED_TANSTACK_LOCALE_ROUTE_SYNTAXES,
+} from "@better-translate/tanstack-router";
 
 export const routing = defineRouting({
   defaultLocale: "en",
   locales: ["en", "es"] as const,
   routeTemplate: "/$lang",
 });
+
+console.log(SUPPORTED_TANSTACK_LOCALE_ROUTE_SYNTAXES);
 ```
 
-## 4. إنشاء مساعدين التنقل المحليين
+## 4. إنشاء مساعدات تنقل مترجمة
 
 أنشئ `src/lib/navigation.tsx`:
 
@@ -90,9 +96,11 @@ export const {
 });
 ```
 
-استخدم `routeTemplate: "/$lang"` أو `routeTemplate: "/{$lang}"` للمسارات التي تتطلب locale دائماً. استخدم `"/{-$lang}"` عندما يجب إخفاء locale الافتراضي من الرابط.
+استخدم `routeTemplate: "/$lang"` أو `routeTemplate: "/{$lang}"` لقطاعات إعداد محلي إلزامية. استخدم `"/{-$lang}"` عندما يجب أن يحذف الإعداد المحلي الافتراضي القطعة.
 
-## 5. تغليف التطبيق بموفر React
+أسماء معاملات الإعداد المحلي المدعومة تأتي من `@better-translate/core` وتُعرض هنا كـ `SUPPORTED_TANSTACK_LOCALE_ROUTE_SYNTAXES` مع المجموعات الإلزامية والاختيارية.
+
+## 5. تغليف التطبيق بمزود React
 
 أنشئ `src/app.tsx`:
 
@@ -113,7 +121,7 @@ export function App() {
 }
 ```
 
-## 6. استخدام الروابط والترجمات التي تدعم اللغة
+## 6. استخدام روابط وترجمات مدركة للإعداد المحلي
 
 أنشئ `src/components/header.tsx`:
 
@@ -140,47 +148,11 @@ export function Header() {
 
 ## TanStack Start
 
-إذا كنت تستخدم TanStack Start، احتفظ بنفس إعداد التوجيه والتنقل. بعد ذلك، استورد `getRequestConfig` و`setRequestLocale` و`createServerHelpers` من `@better-translate/tanstack-router/server` داخل طبقة الخادم:
+إذا كنت تستخدم TanStack Start، احتفظ بنفس إعداد التوجيه والتنقل. ثم أضف مساعدات الخادم من `@better-translate/tanstack-router/server` كما تضيف مساعدات الطلب في Next.js.
 
-```ts
-import { configureTranslations } from "@better-translate/core";
-import {
-  createServerHelpers,
-  getRequestConfig,
-  setRequestLocale,
-} from "@better-translate/tanstack-router/server";
-import { createServerFn } from "@tanstack/react-start";
+## توليد ملفات الإعداد المحلي تلقائيًا
 
-import { en } from "./messages/en";
-import { es } from "./messages/es";
-
-export const requestConfig = getRequestConfig(async () => ({
-  locale: "en",
-  translator: await configureTranslations({
-    availableLocales: ["en", "es"] as const,
-    defaultLocale: "en",
-    fallbackLocale: "en",
-    messages: { en, es },
-  }),
-}));
-
-const { getTranslations } = createServerHelpers(requestConfig);
-
-export const getHomeCopy = createServerFn({ method: "GET" }).handler(
-  async () => {
-    setRequestLocale("en");
-    const t = await getTranslations({ locale: "en" });
-
-    return { title: t("home.title") };
-  },
-);
-```
-
-استخدم `getRequestConfig` لاشتقاق إعدادات كل طلب، واستدعِ `setRequestLocale` مبكرًا داخل مسار التنفيذ الخادمي، ثم ابنِ مساعدين خادميين عبر `createServerHelpers` لاستخدامهم في loaders أو دوال الخادم.
-
-## توليد ملفات اللغة تلقائياً
-
-بدلاً من كتابة كل الترجمات يدوياً، استخدم CLI لاستخراج النصوص وتوليد ملفات اللغة: [دليل CLI](/docs/cli)
+بدل كتابة كل ترجمة يدويًا، استخدم واجهة سطر الأوامر لاستخراج النصوص وتوليد ملفات الإعداد المحلي: [دليل واجهة سطر الأوامر](/docs/cli)
 
 ## أمثلة
 

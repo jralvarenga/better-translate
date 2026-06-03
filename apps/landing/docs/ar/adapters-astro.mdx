@@ -1,10 +1,13 @@
 ---
 title: Astro
-description: يضيف @better-translate/astro مساعدين للطلب ووسيط فوق @better-translate/core.
+description: >-
+  يضيف @better-translate/astro مساعدات الطلب والوسيط فوق
+  @better-translate/core.
 ---
+
 # Astro
 
-استخدم `@better-translate/astro` عندما يحتاج تطبيق Astro إلى ترجمات مرتبطة بالطلب.
+استخدم `@better-translate/astro` عندما يحتاج تطبيق Astro إلى ترجمات مدركة للطلب.
 
 ## 1. تثبيت الحزم
 
@@ -39,7 +42,7 @@ export const translator = await configureTranslations({
 });
 ```
 
-## 3. تعريض إعدادات الطلب
+## 3. تعريض إعداد الطلب
 
 أنشئ `src/lib/request.ts`:
 
@@ -53,7 +56,7 @@ export const requestConfig = getRequestConfig(async () => ({
 }));
 ```
 
-## 4. تعيين لغة الطلب في الوسيط
+## 4. تعيين إعداد الطلب المحلي في الوسيط
 
 أنشئ `src/middleware.ts`:
 
@@ -67,7 +70,9 @@ export const onRequest = createBetterTranslateMiddleware(requestConfig, {
 });
 ```
 
-## 5. قراءة الترجمات في الصفحة
+إذا أردت القائمة المشتركة بصيغة الأقواس، استورد `SUPPORTED_ASTRO_LOCALE_ROUTE_SYNTAXES` من `@better-translate/astro`. تتضمن `[locale]` و`[lang]` و`[language]` و`[intl]` و`[i18n]` و`[l10n]` و`[localization]`.
+
+## 5. قراءة الترجمات في صفحة
 
 أنشئ `src/lib/server.ts`:
 
@@ -97,13 +102,13 @@ const t = await getTranslations();
 </html>
 ```
 
-## الخطوة التالية الاختيارية
+## خطوة اختيارية تالية
 
-إذا كانت مستندات Astro أو منشورات المدونة الخاصة بك موجودة في مجموعات محتوى مترجمة، أضف مساعدي محتوى Astro أو محول MDX بعد أن يعمل هذا الإعداد الأساسي.
+إذا كانت وثائق Astro أو مقالات المدونة في مجموعات محتوى مترجمة، أضف مساعدات محتوى Astro أو محول MDX بعد أن يعمل هذا الإعداد الأساسي.
 
-## إنشاء ملفات اللغة تلقائيًا
+## توليد ملفات الإعداد المحلي تلقائيًا
 
-بدلاً من كتابة كل ترجمة يدويًا، استخدم CLI لاستخراج السلاسل وإنشاء ملفات اللغة: [دليل CLI](/docs/cli)
+بدل كتابة كل ترجمة يدويًا، استخدم واجهة سطر الأوامر لاستخراج النصوص وتوليد ملفات الإعداد المحلي: [دليل واجهة سطر الأوامر](/docs/cli)
 
 ## أمثلة
 

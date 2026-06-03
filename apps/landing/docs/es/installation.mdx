@@ -1,12 +1,11 @@
 ---
 title: Instalación
-description: >-
-  El paquete core funciona en cualquier proyecto TypeScript. Los adaptadores son
-  extensiones opcionales para frameworks específicos.
+description: El paquete core funciona en cualquier proyecto TypeScript. Los adaptadores son extensiones opcionales para frameworks concretos.
 ---
+
 # Instalación
 
-El paquete core funciona en cualquier proyecto TypeScript, sin importar el framework o el entorno de ejecución. Si utilizas un framework como Next.js, React o Astro, puedes añadir el adaptador correspondiente sobre core.
+El paquete core funciona en cualquier proyecto TypeScript, sin importar el framework ni el runtime. Si usas un framework como Next.js, React o Astro, puedes añadir el adaptador correspondiente encima de core.
 
 ## Core
 
@@ -14,45 +13,34 @@ El paquete core funciona en cualquier proyecto TypeScript, sin importar el frame
 npm install @better-translate/core
 ```
 
-Eso es todo lo que necesitas en la mayoría de los casos. Funciona en Next.js, Astro, React, Bun, Node.js, scripts, APIs o cualquier entorno TypeScript.
+Con eso basta en la mayoría de los casos. Funciona en cualquier entorno TypeScript. Lee la documentación aquí: [Guía de Core](/docs/adapters/core)
 
 ## Adaptadores
 
-Los adaptadores son extensiones de core que añaden ayudantes específicos del framework: enrutamiento consciente de la configuración regional, contexto y hooks de React, ayudantes por petición, etc. No reemplazan core, lo extienden.
+Los adaptadores son extensiones de core que añaden utilidades específicas del framework: enrutamiento con locale, contexto y hooks de React, helpers por petición, etc. No sustituyen a core; lo amplían.
 
-Puedes consultar los adaptadores disponibles aquí:
+Por eso la mayoría de las guías de implementación se parecen entre paquetes: todas parten del mismo traductor core y añaden una capa fina de ergonomía del framework.
 
-<div className="mt-4 flex flex-wrap gap-3">
-  <Button asChild variant="outline" size="lg">
-    <Link href="/docs/adapters/react">React</Link>
-  </Button>
-  <Button asChild variant="outline" size="lg">
-    <Link href="/docs/adapters/nextjs">Next.js</Link>
-  </Button>
-  <Button asChild variant="outline" size="lg">
-    <Link href="/docs/adapters/astro">Astro</Link>
-  </Button>
-  <Button asChild variant="outline" size="lg">
-    <Link href="/docs/adapters/tanstack-router">TanStack Router</Link>
-  </Button>
-</div>
+Si prefieres control total, puedes omitir los adaptadores y usar `@better-translate/core` directamente. Obtendrás el mismo comportamiento de traducción y, en algunos proyectos, la ruta solo con core puede ser la más limpia.
+
+Puedes ver los adaptadores disponibles aquí: [Adaptadores](/adapters)
 
 ## CLI
 
-La CLI es una herramienta de desarrollo opcional que elimina el trabajo manual de gestionar los archivos de configuración regional.
+La CLI es una herramienta de desarrollo opcional que elimina el trabajo manual de gestionar archivos de locale.
 
 Hace dos cosas:
 
-- **Extract** — escanea tu código en busca de cadenas marcadas con `{ bt: true }`, las añade a tu archivo de configuración regional fuente con claves generadas automáticamente y reescribe las llamadas en su lugar
-- **Generate** — lee tu archivo de configuración regional fuente y utiliza un modelo de IA para producir versiones traducidas para cada otra configuración regional
+- **Extract** — escanea tu código en busca de cadenas marcadas con `{ bt: true }`, las añade al archivo de locale fuente con claves generadas automáticamente y reescribe las llamadas en su lugar
+- **Generate** — lee tu archivo de locale fuente y usa un modelo de IA para producir versiones traducidas para cada otro locale
 
 ```sh
 npm install -D @better-translate/cli
 ```
 
-Para configuraciones basadas en gateway, `@better-translate/cli` es suficiente. Si tu `better-translate.config.ts` importa un proveedor de modelo directo como Ollama, instala también ese paquete, por ejemplo `npm install -D ollama-ai-provider-v2`.
+Para configuraciones basadas en gateway, basta con `@better-translate/cli`. Si tu `better-translate.config.ts` importa un proveedor de modelo directo como Ollama, instala también ese paquete, por ejemplo `npm install -D ollama-ai-provider-v2`.
 
-Antes de ejecutar `npx bt extract` o `npx bt generate`, crea `better-translate.config.ts`. Después de eso, la CLI funciona con cualquier modelo de proveedor de AI SDK, incluyendo modelos locales de Ollama.
+Antes de ejecutar `npx bt extract` o `npx bt generate`, crea `better-translate.config.ts`. Después, la CLI funciona con cualquier modelo de proveedor del AI SDK, incluidos modelos locales de Ollama.
 
 <div className="mt-4 flex flex-wrap gap-3">
   <Button asChild variant="outline" size="lg">

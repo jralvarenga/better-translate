@@ -1,22 +1,21 @@
 ---
 title: Next.js
-description: >-
-  @better-translate/nextjs añade enrutamiento de locale, helpers de solicitud,
-  helpers de navegación y soporte de proxy para Next.js App Router.
+description: "@better-translate/nextjs añade enrutamiento por locale, helpers de petición, navegación con locale y soporte de proxy para Next.js App Router."
 ---
+
 # Next.js
 
-Usa `@better-translate/nextjs` cuando quieras URLs con prefijo de locale, traducciones del lado del servidor y navegación consciente del locale en App Router.
+Usa `@better-translate/nextjs` cuando quieras URLs con prefijo de locale, traducciones en servidor y navegación consciente del locale en App Router.
 
-Si también necesitas hooks del lado del cliente, añade `@better-translate/react` sobre esta configuración.
+Si también necesitas hooks en cliente, añade `@better-translate/react` encima de esta configuración.
 
-## 1. Instala los paquetes
+## 1. Instalar los paquetes
 
 ```sh
 npm install @better-translate/core @better-translate/nextjs
 ```
 
-## 2. Crea el traductor
+## 2. Crear el traductor
 
 Crea `src/lib/i18n/config.ts`:
 
@@ -43,7 +42,7 @@ export const translator = await configureTranslations({
 });
 ```
 
-## 3. Añade el archivo de enrutamiento
+## 3. Añadir el archivo de enrutamiento
 
 Crea `src/lib/i18n/routing.ts`:
 
@@ -57,7 +56,9 @@ export const routing = defineRouting({
 });
 ```
 
-## 4. Añade los helpers de solicitud y servidor
+Better Translate limita el nombre del parámetro de locale a la lista compartida admitida desde core. Ejemplos válidos: `[locale]`, `[lang]`, `[language]`, `[intl]`, `[i18n]`, `[l10n]` y `[localization]`.
+
+## 4. Añadir helpers de petición y servidor
 
 Crea `src/lib/i18n/request.ts`:
 
@@ -81,7 +82,7 @@ import { requestConfig } from "./request";
 export const { getTranslations } = createServerHelpers(requestConfig);
 ```
 
-## 5. Añade la navegación consciente del locale
+## 5. Añadir navegación con locale
 
 Crea `src/lib/i18n/navigation.ts`:
 
@@ -108,7 +109,7 @@ export const {
 });
 ```
 
-## 6. Añade el proxy
+## 6. Añadir el proxy
 
 Crea `src/proxy.ts`:
 
@@ -124,7 +125,7 @@ export const config = {
 };
 ```
 
-## 7. Renderiza una página traducida
+## 7. Renderizar una página traducida
 
 Crea `src/app/[lang]/page.tsx`:
 
@@ -148,7 +149,7 @@ export default async function HomePage({
 }
 ```
 
-## 8. Añade enlaces que conservan el locale
+## 8. Añadir enlaces que conserven el locale
 
 Crea `src/components/language-links.tsx`:
 
@@ -172,13 +173,13 @@ export function LanguageLinks() {
 }
 ```
 
-## Cuándo añadir el adaptador de React
+## Cuándo añadir el adaptador React
 
-Añade `@better-translate/react` solo cuando los componentes del cliente necesiten `useTranslations()` o un proveedor.
+Añade `@better-translate/react` solo cuando los componentes de cliente necesiten `useTranslations()` o un provider.
 
-## Genera archivos de locale automáticamente
+## Generar archivos de locale automáticamente
 
-En lugar de escribir cada traducción a mano, usa el CLI para extraer cadenas y generar archivos de locale: [Guía del CLI](/docs/cli)
+En lugar de escribir cada traducción a mano, usa la CLI para extraer cadenas y generar archivos de locale: [Guía de la CLI](/docs/cli)
 
 ## Ejemplos
 

@@ -1,27 +1,25 @@
 ---
 title: Core
-description: >-
-  @better-translate/core funciona en cualquier proyecto TypeScript. Misma
-  configuración, misma API, independientemente del framework o tiempo de
-  ejecución.
+description: "@better-translate/core funciona en cualquier proyecto TypeScript. Misma configuración, misma API, sin importar el framework o el runtime."
 ---
+
 # Core
 
-`@better-translate/core` funciona en cualquier proyecto TypeScript. Sin dependencias de framework, sin requisitos de tiempo de ejecución. La misma configuración y la misma API se aplican tanto si estás en Next.js, Astro, React, Bun, Node.js, un script, o cualquier otro entorno TypeScript.
+`@better-translate/core` funciona en cualquier proyecto TypeScript. Sin dependencia de framework ni requisito de runtime concreto. La misma configuración y la misma API aplican en Next.js, Astro, React, Bun, Node.js, un script o cualquier otro entorno TypeScript.
 
-**Adapters** son extensiones del core que añaden helpers específicos del framework: enrutamiento consciente de locale, contexto de React, helpers por solicitud, etc. Pero todo se construye sobre el mismo core.
+Los **adaptadores** son extensiones de core que añaden utilidades específicas del framework: enrutamiento con locale, contexto de React, helpers por petición, etc. Pero todo se construye sobre el mismo core.
 
-## Cuándo usar el core directamente
+## Cuándo usar core directamente
 
-Usa el core sin un adapter cuando no necesites helpers específicos del framework. Esto incluye servidores, APIs, scripts, bibliotecas compartidas, o cualquier entorno TypeScript donde no exista un adapter para tu configuración.
+Usa core sin adaptador cuando no necesites utilidades del framework. Incluye servidores, APIs, scripts, bibliotecas compartidas o cualquier entorno TypeScript donde no exista adaptador para tu stack.
 
-## 1. Instala el paquete
+## 1. Instalar el paquete
 
 ```sh
 npm install @better-translate/core
 ```
 
-## 2. Crea un archivo de traductor
+## 2. Crear un archivo de traductor
 
 Crea `src/i18n.ts`:
 
@@ -50,7 +48,7 @@ export const translator = await configureTranslations({
 });
 ```
 
-## 3. Usa el traductor en cualquier lugar
+## 3. Usar el traductor en cualquier sitio
 
 ```ts
 import { translator } from "./i18n";
@@ -60,7 +58,7 @@ translator.t("home.title", { locale: "es" }); // "Hola"
 translator.t("home.description", { locale: "es" });
 ```
 
-## 4. Añade otro locale más tarde
+## 4. Añadir otro locale más tarde
 
 ```ts
 const fr = {
@@ -80,15 +78,15 @@ export const translator = await configureTranslations({
 
 ## Comportamiento de fallback
 
-Si el locale activo no tiene una clave, better-translate intenta con el locale de fallback.
-Si el fallback tampoco la tiene, devuelve la cadena de la clave misma.
+Si el locale activo no tiene una clave, better-translate prueba el locale de fallback.
+Si el fallback tampoco la tiene, devuelve la cadena de la clave.
 
-- → Valor de locale faltante → valor de locale de fallback
-- → Valor de fallback faltante → cadena de la clave
+- → Falta el valor en el locale → valor del locale de fallback
+- → Falta también en el fallback → cadena de la clave
 
 ## Loaders asíncronos
 
-Registra loaders de locale para idiomas que no quieras precargar. Los locales cargados se almacenan en caché después de la primera carga exitosa.
+Registra loaders de locale para idiomas que no quieras precargar. Los locales cargados se cachean tras la primera carga correcta.
 
 ```ts
 const translator = await configureTranslations({
@@ -100,29 +98,29 @@ const translator = await configureTranslations({
   },
 });
 
-// carga fr bajo demanda y lo almacena en caché
+// carga fr bajo demanda y lo cachea
 await translator.loadLocale("fr");
 ```
 
-## 5. Extrae cadenas automáticamente con el CLI
+## 5. Extraer cadenas automáticamente con la CLI
 
-En lugar de nombrar las claves manualmente, marca las cadenas con `{ bt: true }` y deja que el CLI las extraiga y genere las claves automáticamente:
+En lugar de nombrar claves a mano, marca cadenas con `{ bt: true }` y deja que la CLI las extraiga y les asigne clave:
 
 ```ts
 import { t } from "@better-translate/core";
 
-// Escribe la cadena fuente directamente — el CLI la convierte en una clave apropiada
+// Escribe la cadena fuente directamente — la CLI la convierte en clave correcta
 t("Hello world", { bt: true });
 ```
 
-Ejecuta `npx bt extract` para sincronizar las cadenas en tu archivo de locale fuente y reescribir las llamadas a claves apropiadas. Consulta la [documentación del CLI](/docs/cli) para la configuración completa.
+Ejecuta `npx bt extract` para sincronizar las cadenas en tu archivo de locale fuente y reescribir las llamadas a claves correctas. Consulta la [documentación de la CLI](/docs/cli) para la configuración completa.
 
-## Continúa con
+## Continuar con
 
-- <Link href="/docs/adapters/react">Proveedor de React y hooks</Link>
+- <Link href="/docs/adapters/react">Provider y hooks de React</Link>
 - <Link href="/docs/adapters/nextjs">Configuración de Next.js App Router</Link>
-- <Link href="/docs/adapters/astro">Helpers de solicitud de Astro</Link>
+- <Link href="/docs/adapters/astro">Helpers de petición en Astro</Link>
 
 ## Ejemplos
 
-- [core-elysia-example](https://github.com/jralvarenga/better-translate/tree/main/examples/core-elysia-example) — configuración simple de TypeScript/Node.js
+- [core-elysia-example](https://github.com/jralvarenga/better-translate/tree/main/examples/core-elysia-example) — configuración TypeScript/Node.js plana

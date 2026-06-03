@@ -1,44 +1,44 @@
 ---
 title: المهارات
 description: >-
-  استخدم أدلة المهارات لاختيار مجموعة الحزم المناسبة من Better Translate
-  لتطبيقك.
+  استخدم أدلة المهارات لاختيار مجموعة حزم Better Translate المناسبة لتطبيقك.
 ---
+
 # المهارات
 
-يشرح مجلد `skills/` كيفية دمج الحزم بالطريقة الصحيحة دون قراءة قاعدة الشيفرة بأكملها أولاً.
+يشرح مجلد `skills/` كيفية دمج الحزم بالطريقة الصحيحة دون قراءة قاعدة الشيفرة كاملة أولًا.
 
 استخدمه عندما تريد إجابة بسيطة على أسئلة مثل:
 
 - بأي حزمة أبدأ؟
-- هل أحتاج React أيضاً، أم Next.js فقط؟
-- كيف يتناسب MDX مع الإعداد؟
-- ما هو أصغر مجموعة حزم لتطبيقي؟
+- هل أحتاج React أيضًا، أم Next.js فقط؟
+- كيف يدخل MDX في الإعداد؟
+- ما أصغر مجموعة حزم لتطبيقي؟
 
 ## أفضل ترتيب للقراءة
 
 1. `skills/SKILL.md` لخريطة الحزم
 2. `skills/core/SKILL.md` لبدء المترجم بشكل صحيح
-3. `skills/cli/SKILL.md` إذا أردت أن يُنشئ CLI ملفات locales أو يستخرج النصوص المُعلَّمة بـ `bt`
-4. `skills/react/SKILL.md` إذا كانت واجهة المستخدم React أو Expo
+3. `skills/cli/SKILL.md` إذا أردت أن تولّد واجهة سطر الأوامر ملفات الإعداد المحلي أو تستخرج نصوصًا معلّمة بـ `bt`
+4. `skills/react/SKILL.md` إذا كانت الواجهة React أو Expo
 5. `skills/nextjs/SKILL.md` إذا كان التطبيق Next.js App Router
 6. `skills/md/SKILL.md` إذا كان المحتوى في `.md` أو `.mdx`
-7. `skills/combined/SKILL.md` إذا كان التطبيق يمزج routing و server rendering و client hooks
+7. `skills/combined/SKILL.md` إذا كان التطبيق يمزج التوجيه والعرض من الخادم وخطافات العميل
 
 ## اختيار الحزم السريع
 
-- TypeScript عادي، Node.js، APIs، أو المكتبات المشتركة: `@better-translate/core`
-- React web أو Expo: `@better-translate/core` + `@better-translate/react`
+- TypeScript عادي، Node.js، واجهات API، أو مكتبات مشتركة: `@better-translate/core`
+- React ويب أو Expo: `@better-translate/core` + `@better-translate/react`
 - Next.js App Router: `@better-translate/core` + `@better-translate/nextjs`
-- Next.js مع hooks من جانب العميل: أضف `@better-translate/react`
-- TanStack Router: `@better-translate/core` + `@better-translate/tanstack-router`، وعادةً `@better-translate/react`
+- Next.js مع خطافات على العميل: أضف `@better-translate/react`
+- TanStack Router: `@better-translate/core` + `@better-translate/tanstack-router`، وعادة `@better-translate/react`
 - Astro: `@better-translate/core` + `@better-translate/astro`
-- Markdown أو MDX مُعَرَّب: أضف `@better-translate/md`
-- ملفات locales مُنشأة بالذكاء الاصطناعي أو نصوص مُستخرجة تلقائياً: أضف `@better-translate/cli`
+- markdown أو MDX مترجم: أضف `@better-translate/md`
+- ملفات إعداد محلي مُولَّدة بالذكاء الاصطناعي أو نصوص مستخرجة تلقائيًا: أضف `@better-translate/cli`
 
-## ثبّت المهارات
+## تثبيت المهارات
 
-يمكنك تثبيت المهارات المستضافة في المستودع مباشرة باستخدام `npx skills add`:
+يمكنك تثبيت مهارات المستودع مباشرة بـ `npx skills add`:
 
 ```sh
 npx skills add https://github.com/jralvarenga/better-translate
@@ -57,9 +57,9 @@ npx skills add https://github.com/jralvarenga/better-translate --skill workspace
 
 ## ابدأ هنا
 
-- <Link href="/docs/adapters/core">دليل Core</Link>
+- <Link href="/docs/adapters/core">دليل الأساس</Link>
 - <Link href="/docs/adapters/react">دليل React</Link>
 - <Link href="/docs/adapters/nextjs">دليل Next.js</Link>
-- <Link href="/docs/adapters/md">دليل MD & MDX</Link>
-- <Link href="/docs/cli">دليل CLI</Link>
+- <Link href="/docs/adapters/md">دليل MD وMDX</Link>
+- <Link href="/docs/cli">دليل واجهة سطر الأوامر</Link>
 - [أمثلة على GitHub](https://github.com/jralvarenga/better-translate/tree/main/examples)
