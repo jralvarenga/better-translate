@@ -1,4 +1,6 @@
-import type { FailureTranslator } from "./i18n.ts";
+import { useEffect } from "react";
+
+import { type FailureTranslator, useTranslations } from "./i18n.ts";
 
 import { FeatureGrid } from "./components/feature-grid.tsx";
 import { GreetingPanel } from "./components/greeting-panel.tsx";
@@ -14,9 +16,21 @@ interface AppProps {
   failureTranslator: FailureTranslator;
 }
 
+function DocumentDirectionBridge() {
+  const { direction, locale } = useTranslations();
+
+  useEffect(() => {
+    document.documentElement.lang = locale;
+    document.documentElement.dir = direction;
+  }, [direction, locale]);
+
+  return null;
+}
+
 function App({ failureTranslator }: AppProps) {
   return (
     <>
+      <DocumentDirectionBridge />
       <SiteHeader />
       <main className="app-shell">
         <HeaderPanel />

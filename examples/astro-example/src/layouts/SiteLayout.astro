@@ -2,7 +2,7 @@
 import { getRelativeLocaleUrl } from "astro:i18n";
 
 import LocaleSwitcher from "../components/LocaleSwitcher.astro";
-import { getLocale, getTranslations } from "../lib/i18n/server";
+import { getDirection, getLocale, getTranslations } from "../lib/i18n/server";
 import { appLocales, defaultLocale } from "../lib/i18n/request";
 import "../styles/global.css";
 
@@ -13,11 +13,15 @@ interface Props {
 }
 
 const { currentPath, description, title } = Astro.props;
-const [locale, t] = await Promise.all([getLocale(), getTranslations()]);
+const [locale, dir, t] = await Promise.all([
+  getLocale(),
+  getDirection(),
+  getTranslations(),
+]);
 ---
 
 <!doctype html>
-<html lang={locale}>
+<html lang={locale} dir={dir}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
