@@ -9,10 +9,31 @@ import { LocalizedHeader } from "@/app/components/localized-header";
 import { routing } from "@/lib/i18n/routing";
 import { getTranslations, getTranslator } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  description: "Scoped locale routing with Better Translate and Next.js.",
-  title: "Better Translate Next.js Example",
-};
+const localizedMetadata = {
+  en: {
+    description: "Scoped locale routing with Better Translate and Next.js.",
+    title: "Better Translate Next.js Example",
+  },
+  es: {
+    description:
+      "Enrutamiento de locales acotado con Better Translate y Next.js.",
+    title: "Ejemplo Next.js de Better Translate",
+  },
+} satisfies Record<(typeof routing.locales)[number], Metadata>;
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ lang: string }>;
+}): Promise<Metadata> {
+  const { lang } = await params;
+
+  if (!hasLocale(routing.locales, lang)) {
+    notFound();
+  }
+
+  return localizedMetadata[lang];
+}
 
 export async function generateStaticParams() {
   return routing.locales.map((lang) => ({ lang }));
