@@ -1,5 +1,11 @@
-import { HeadContent, Scripts, createRootRoute } from "@tanstack/react-router";
+import {
+  HeadContent,
+  Scripts,
+  createRootRoute,
+  useRouterState,
+} from "@tanstack/react-router";
 
+import { routing } from "#/lib/i18n/routing";
 import appCss from "../styles.css?url";
 
 export const Route = createRootRoute({
@@ -27,8 +33,18 @@ export const Route = createRootRoute({
 });
 
 function RootDocument({ children }: { children: React.ReactNode }) {
+  const pathname = useRouterState({
+    select: (state) => state.location.pathname,
+  });
+  const firstPathSegment = pathname.split("/").filter(Boolean)[0];
+  const locale = routing.locales.includes(
+    firstPathSegment as (typeof routing.locales)[number],
+  )
+    ? firstPathSegment
+    : routing.defaultLocale;
+
   return (
-    <html lang="en">
+    <html lang={locale} dir="ltr">
       <head>
         <HeadContent />
       </head>

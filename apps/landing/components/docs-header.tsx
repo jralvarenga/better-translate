@@ -1,11 +1,11 @@
-import Link from "next/link";
-import { RiArrowLeftLine, RiGithubLine } from "@remixicon/react";
+import { HeaderLanguageSwitcher } from "@/components/header-language-switcher";
 import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
-import { HeaderLanguageSwitcher } from "@/components/header-language-switcher";
-import { getLandingLanguages, type LandingLocale } from "@/lib/i18n/config";
 import { I18nLink } from "@/lib/i18n/navigation";
+import { type LandingLocale, getLandingLanguages } from "@/lib/i18n/shared";
 import { siteLinks } from "@/lib/site";
+import { RiArrowLeftLine, RiGithubLine } from "@remixicon/react";
+import Link from "next/link";
 
 interface DocsHeaderProps {
   currentLocale: LandingLocale;

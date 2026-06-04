@@ -1,12 +1,12 @@
 import type { Metadata, MetadataRoute } from "next";
 
+import { docPageRoutes, getDocFrontmatter } from "@/lib/docs";
 import {
+  type LandingLocale,
   landingDefaultLocale,
   landingLocales,
   landingMessages,
-  type LandingLocale,
 } from "@/lib/i18n/config";
-import { docPageRoutes, getDocFrontmatter } from "@/lib/docs";
 
 export const siteName = "better-translate";
 export const siteUrl = "https://better-translate.com";
@@ -175,7 +175,7 @@ export function resolveLandingLocale(locale: string): LandingLocale {
   return landingDefaultLocale;
 }
 
-function buildLanguageAlternates(routePath: string) {
+export function buildLanguageAlternates(routePath: string) {
   return Object.fromEntries([
     ...landingLocales.map((locale) => [
       locale,

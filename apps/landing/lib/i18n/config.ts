@@ -1,47 +1,30 @@
 import {
   type DeepStringify,
-  configureTranslations,
-  type TranslationLanguageMetadata,
   type TranslationConfigOptions,
+  configureTranslations,
 } from "@better-translate/core";
 
 import { ar } from "./messages/ar";
 import { en } from "./messages/en";
 import { es } from "./messages/es";
 import { ja } from "./messages/ja";
+import {
+  type LandingLocale,
+  landingDefaultLocale,
+  landingDirections,
+  landingLanguages,
+  landingLocales,
+} from "./shared";
 
-export const landingLocales = ["en", "es", "ar", "ja"] as const;
-
-export type LandingLocale = (typeof landingLocales)[number];
-
-export const landingDefaultLocale = "en" as const;
-
-export const landingLanguages = [
-  {
-    icon: "🇺🇸",
-    locale: "en",
-    nativeLabel: "English",
-    shortLabel: "EN",
-  },
-  {
-    icon: "🇪🇸",
-    locale: "es",
-    nativeLabel: "Español",
-    shortLabel: "ES",
-  },
-  {
-    icon: "🇸🇦",
-    locale: "ar",
-    nativeLabel: "العربية",
-    shortLabel: "AR",
-  },
-  {
-    icon: "🇯🇵",
-    locale: "ja",
-    nativeLabel: "日本語",
-    shortLabel: "JA",
-  },
-] as const satisfies readonly TranslationLanguageMetadata<LandingLocale>[];
+export {
+  getLandingDirection,
+  getLandingLanguages,
+  landingDefaultLocale,
+  landingDirections,
+  landingLanguages,
+  landingLocales,
+  type LandingLocale,
+} from "./shared";
 
 export const landingMessages = {
   en,
@@ -54,7 +37,7 @@ export const config = {
   availableLocales: landingLocales,
   defaultLocale: landingDefaultLocale,
   fallbackLocale: landingDefaultLocale,
-  directions: { ar: "rtl" },
+  directions: landingDirections,
   languages: landingLanguages,
   messages: landingMessages,
 } satisfies TranslationConfigOptions<
@@ -65,10 +48,6 @@ export const config = {
 >;
 
 export type config = typeof config;
-
-export function getLandingLanguages() {
-  return [...config.languages];
-}
 
 export function createLandingTranslator() {
   return configureTranslations(config);
