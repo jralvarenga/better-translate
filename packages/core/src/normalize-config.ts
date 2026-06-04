@@ -63,12 +63,55 @@ function createNormalizedLanguages(
   return normalizedLanguages;
 }
 
+function createOptionalLocaleSet(
+  locales: readonly string[],
+  defaultLocale: string,
+  languages?: readonly TranslationLanguageMetadata<string>[],
+  optionalLocales?: readonly string[],
+): Set<string> {
+  const supportedLocaleSet = new Set(locales);
+  const optionalLocaleSet = new Set<string>();
+
+  for (const locale of optionalLocales ?? []) {
+    if (!supportedLocaleSet.has(locale)) {
+      throw new Error(
+        `The locale "${locale}" is present in optionalLocales but not in availableLocales.`,
+      );
+    }
+
+    if (locale === defaultLocale) {
+      throw new Error(
+        `The default locale "${locale}" cannot be marked as optional.`,
+      );
+    }
+
+    optionalLocaleSet.add(locale);
+  }
+
+  for (const language of languages ?? []) {
+    if (language.optional !== true) {
+      continue;
+    }
+
+    if (language.locale === defaultLocale) {
+      throw new Error(
+        `The default locale "${language.locale}" cannot be marked as optional.`,
+      );
+    }
+
+    optionalLocaleSet.add(language.locale);
+  }
+
+  return optionalLocaleSet;
+}
+
 /**
  * Normalizes either supported configuration form into one internal runtime
  * shape used by the translator implementation.
  *
- * It also validates locale declarations, required source messages, and that
- * message/loader locales are included in `availableLocales`.
+ * It also validates locale declarations, required source messages, optional
+ * locale declarations, and that message/loader locales are included in
+ * `availableLocales`.
  */
 export function normalizeConfig(
   input: RuntimeConfigInput,
@@ -82,7 +125,7 @@ export function normalizeConfig(
       );
     }
 
-    const defaultLocale = locales[0]!;
+    const [defaultLocale] = locales as [string, ...string[]];
 
     return {
       defaultLocale,
@@ -90,6 +133,7 @@ export function normalizeConfig(
       supportedLocales: locales,
       directions: createNormalizedDirections(locales),
       languages: createNormalizedLanguages(locales),
+      optionalLocales: [],
       messages: input,
       loaders: {},
     };
@@ -122,6 +166,13 @@ export function normalizeConfig(
     );
   }
 
+  const optionalLocaleSet = createOptionalLocaleSet(
+    supportedLocales,
+    input.defaultLocale,
+    input.languages,
+    input.optionalLocales,
+  );
+
   for (const locale of Object.keys(input.messages)) {
     if (!supportedLocales.includes(locale)) {
       throw new Error(
@@ -146,12 +197,32 @@ export function normalizeConfig(
     }
   }
 
+  const configuredLocales = new Set([
+    ...Object.keys(input.messages),
+    ...Object.keys(input.loaders ?? {}),
+  ]);
+
+  for (const locale of supportedLocales) {
+    if (
+      locale === input.defaultLocale ||
+      optionalLocaleSet.has(locale) ||
+      configuredLocales.has(locale)
+    ) {
+      continue;
+    }
+
+    throw new Error(
+      `Missing messages or loader for locale "${locale}". Mark it optional with optionalLocales if translations are intentionally unavailable.`,
+    );
+  }
+
   return {
     defaultLocale: input.defaultLocale,
     fallbackLocale: input.fallbackLocale ?? input.defaultLocale,
     supportedLocales,
     directions: createNormalizedDirections(supportedLocales, input.directions),
     languages: createNormalizedLanguages(supportedLocales, input.languages),
+    optionalLocales: [...optionalLocaleSet],
     messages: input.messages,
     loaders: input.loaders ?? {},
   };
