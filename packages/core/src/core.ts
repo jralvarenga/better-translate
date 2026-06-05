@@ -1,10 +1,10 @@
-import { createTranslationJsonSchema } from "./create-translation-json-schema.js";
 import { createConfiguredTranslator } from "./create-configured-translator.js";
+import { createTranslationJsonSchema } from "./create-translation-json-schema.js";
 import { getGlobalStore } from "./global-store.js";
 import { normalizeConfig } from "./normalize-config.js";
 import type {
-  AnyTranslationHelpers,
   AnyConfiguredTranslator,
+  AnyTranslationHelpers,
   BtTranslateOptions,
   ConfiguredTranslator,
   OptionsFormTranslator,
@@ -12,9 +12,9 @@ import type {
   ShortFormTranslator,
   StrictTranslationLocaleMap,
   TranslateOptions,
+  TranslationConfigOptions,
   TranslationHelpers,
   TranslationLanguageMetadata,
-  TranslationConfigOptions,
   TranslationLoader,
   TranslationMessages,
 } from "./types.js";
@@ -96,12 +96,16 @@ export async function configureTranslations<
     | Partial<Record<TLocales[number], TranslationLoader<unknown>>>
     | undefined = undefined,
   const TDefaultLocale extends TLocales[number] = TLocales[number],
+  const TOptionalLocales extends
+    | readonly TLocales[number][]
+    | undefined = undefined,
 >(
   config: TranslationConfigOptions<
     TLocales,
     TMessages,
     TLoaders,
-    TDefaultLocale
+    TDefaultLocale,
+    TOptionalLocales
   >,
 ): Promise<OptionsFormTranslator<TLocales, TMessages, TDefaultLocale>>;
 
@@ -140,7 +144,7 @@ export function createTranslationHelpers<
   TranslationHelpers<
     Extract<keyof TMessages, string>,
     ShortFormTranslator<TMessages> extends ConfiguredTranslator<
-      any,
+      string,
       infer TSourceMessages
     >
       ? TSourceMessages
@@ -156,12 +160,16 @@ export function createTranslationHelpers<
     | Partial<Record<TLocales[number], TranslationLoader<unknown>>>
     | undefined = undefined,
   const TDefaultLocale extends TLocales[number] = TLocales[number],
+  const TOptionalLocales extends
+    | readonly TLocales[number][]
+    | undefined = undefined,
 >(
   config: TranslationConfigOptions<
     TLocales,
     TMessages,
     TLoaders,
-    TDefaultLocale
+    TDefaultLocale,
+    TOptionalLocales
   >,
 ): Promise<
   TranslationHelpers<
@@ -203,7 +211,11 @@ export function createTranslationHelpers(
     };
   }
 
-  return configureTranslations(input).then((translator) =>
+  const configureRuntimeTranslations = configureTranslations as (
+    config: RuntimeConfigInput,
+  ) => Promise<AnyConfiguredTranslator>;
+
+  return configureRuntimeTranslations(input).then((translator) =>
     createTranslationHelpers(translator),
   );
 }

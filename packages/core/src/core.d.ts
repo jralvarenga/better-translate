@@ -11,8 +11,8 @@ import type {
   TranslateOptions,
   TranslationConfigOptions,
   TranslationHelpers,
-  TranslationLanguageMetadata,
   TranslationJsonSchema,
+  TranslationLanguageMetadata,
   TranslationLoader,
   TranslationMessages,
 } from "./types.js";
@@ -82,25 +82,18 @@ export declare function configureTranslations<
     | Partial<Record<TLocales[number], TranslationLoader<unknown>>>
     | undefined = undefined,
   const TDefaultLocale extends TLocales[number] = TLocales[number],
+  const TOptionalLocales extends
+    | readonly TLocales[number][]
+    | undefined = undefined,
 >(
   config: TranslationConfigOptions<
     TLocales,
     TMessages,
     TLoaders,
-    TDefaultLocale
+    TDefaultLocale,
+    TOptionalLocales
   >,
 ): Promise<OptionsFormTranslator<TLocales, TMessages, TDefaultLocale>>;
-
-export declare function configureTranslations(
-  config:
-    | Record<string, TranslationMessages>
-    | TranslationConfigOptions<
-        readonly string[],
-        Partial<Record<string, TranslationMessages>>,
-        Partial<Record<string, TranslationLoader<unknown>>> | undefined,
-        string
-      >,
-): Promise<AnyConfiguredTranslator>;
 
 export declare function createTranslationHelpers<
   TLocale extends string,
@@ -117,7 +110,7 @@ export declare function createTranslationHelpers<
   TranslationHelpers<
     Extract<keyof TMessages, string>,
     ShortFormTranslator<TMessages> extends ConfiguredTranslator<
-      any,
+      string,
       infer TSourceMessages
     >
       ? TSourceMessages
@@ -134,12 +127,16 @@ export declare function createTranslationHelpers<
     | Partial<Record<TLocales[number], TranslationLoader<unknown>>>
     | undefined = undefined,
   const TDefaultLocale extends TLocales[number] = TLocales[number],
+  const TOptionalLocales extends
+    | readonly TLocales[number][]
+    | undefined = undefined,
 >(
   config: TranslationConfigOptions<
     TLocales,
     TMessages,
     TLoaders,
-    TDefaultLocale
+    TDefaultLocale,
+    TOptionalLocales
   >,
 ): Promise<
   TranslationHelpers<
