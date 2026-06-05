@@ -133,7 +133,6 @@ export function normalizeConfig(
       supportedLocales: locales,
       directions: createNormalizedDirections(locales),
       languages: createNormalizedLanguages(locales),
-      optionalLocales: [],
       messages: input,
       loaders: {},
     };
@@ -222,7 +221,6 @@ export function normalizeConfig(
     supportedLocales,
     directions: createNormalizedDirections(supportedLocales, input.directions),
     languages: createNormalizedLanguages(supportedLocales, input.languages),
-    optionalLocales: [...optionalLocaleSet],
     messages: input.messages,
     loaders: input.loaders ?? {},
   };

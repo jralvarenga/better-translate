@@ -152,7 +152,7 @@ describe("better-translate internals", () => {
         },
       } as const),
     ).toThrow('The default locale "en" cannot be marked as optional.');
-    expect(
+    expect(() =>
       normalizeConfig({
         availableLocales: ["en", "es"] as const,
         defaultLocale: "en",
@@ -160,8 +160,8 @@ describe("better-translate internals", () => {
         messages: {
           en,
         },
-      }).optionalLocales,
-    ).toEqual(["es"]);
+      }),
+    ).not.toThrow();
     expect(() =>
       normalizeConfig({
         availableLocales: ["en"] as const,

@@ -540,7 +540,6 @@ export interface InternalNormalizedConfig {
   supportedLocales: readonly string[];
   directions: Readonly<Record<string, TranslationDirection>>;
   languages: readonly TranslationLanguageMetadata<string>[];
-  optionalLocales: readonly string[];
   messages: Partial<Record<string, InternalTranslationMessages>>;
   loaders: Partial<Record<string, TranslationLoader<unknown>>>;
 }
