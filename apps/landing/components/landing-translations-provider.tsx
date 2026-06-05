@@ -32,6 +32,9 @@ function createClientTranslator(
   const currentLocaleMessages: Record<string, LandingMessages> = {
     [locale]: messages,
   };
+  const optionalLocales = landingLocales.filter(
+    (availableLocale) => availableLocale !== locale,
+  );
   const configureClientTranslations = configureTranslations as unknown as (
     config: unknown,
   ) => Promise<LandingTranslator>;
@@ -42,6 +45,7 @@ function createClientTranslator(
     fallbackLocale: locale,
     directions: landingDirections,
     languages: landingLanguages,
+    optionalLocales,
     messages: currentLocaleMessages,
   });
 }

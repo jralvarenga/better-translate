@@ -8,6 +8,7 @@ export const landingLocales = ["en", "es", "ar", "ja"] as const;
 export type LandingLocale = (typeof landingLocales)[number];
 
 export const landingDefaultLocale = "en" as const;
+export const landingOptionalLocales = ["es", "ar", "ja"] as const;
 
 export const landingDirections: Partial<
   Record<LandingLocale, TranslationDirection>
