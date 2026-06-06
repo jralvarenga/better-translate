@@ -120,7 +120,7 @@ export const translator = await configureTranslations({
   languages: [
     {
       locale: "es",
-      nativeLabel: "Espanol",
+      nativeLabel: "Español",
       optional: true,
       shortLabel: "ES",
     },

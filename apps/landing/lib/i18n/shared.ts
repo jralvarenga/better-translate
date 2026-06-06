@@ -8,7 +8,29 @@ export const landingLocales = ["en", "es", "ar", "ja"] as const;
 export type LandingLocale = (typeof landingLocales)[number];
 
 export const landingDefaultLocale = "en" as const;
-export const landingOptionalLocales = ["es", "ar", "ja"] as const;
+
+type TupleWithout<
+  TTuple extends readonly unknown[],
+  TExcluded,
+> = TTuple extends readonly [infer THead, ...infer TTail]
+  ? THead extends TExcluded
+    ? TupleWithout<TTail, TExcluded>
+    : readonly [THead, ...TupleWithout<TTail, TExcluded>]
+  : readonly [];
+
+function tupleWithout<
+  const TTuple extends readonly string[],
+  const TExcluded extends TTuple[number],
+>(items: TTuple, excluded: TExcluded) {
+  return items.filter(
+    (item): item is Exclude<TTuple[number], TExcluded> => item !== excluded,
+  ) as unknown as TupleWithout<TTuple, TExcluded>;
+}
+
+export const landingOptionalLocales = tupleWithout(
+  landingLocales,
+  landingDefaultLocale,
+);
 
 export const landingDirections: Partial<
   Record<LandingLocale, TranslationDirection>
