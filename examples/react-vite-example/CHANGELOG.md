@@ -1,5 +1,20 @@
 # react-vite-example
 
+## 1.2.0
+
+### Minor Changes
+
+- 5f31895: feat(react): add createBetterTranslateReact typed hook factory
+
+### Patch Changes
+
+- 5f31895: enhance local handler for translation import and code format
+- Updated dependencies [5f31895]
+- Updated dependencies [5f31895]
+- Updated dependencies [5f31895]
+  - @better-translate/react@1.4.0
+  - @better-translate/core@1.4.0
+
 ## 1.1.0
 
 ### Minor Changes

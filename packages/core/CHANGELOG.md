@@ -1,5 +1,15 @@
 # @better-translate/core
 
+## 1.4.0
+
+### Minor Changes
+
+- 5f31895: Add optional locale configuration for incomplete or unavailable translations in core.
+
+### Patch Changes
+
+- 5f31895: enhance local handler for translation import and code format
+
 ## 1.3.0
 
 ### Minor Changes

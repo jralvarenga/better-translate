@@ -1,5 +1,22 @@
 # landing
 
+## 2.1.2
+
+### Patch Changes
+
+- 5f31895: new page for adapters
+- 5f31895: Improving readme file and social links
+- 5f31895: enhance local handler for translation import and code format
+- Updated dependencies [5f31895]
+- Updated dependencies [5f31895]
+- Updated dependencies [5f31895]
+- Updated dependencies [5f31895]
+  - @better-translate/react@1.4.0
+  - @better-translate/core@1.4.0
+  - @better-translate/cli@1.4.0
+  - @better-translate/nextjs@1.2.1
+  - @better-translate/md@1.2.1
+
 ## 2.1.1
 
 ### Patch Changes
