@@ -1,18 +1,18 @@
 import { describe, expect, it } from "bun:test";
 
+import { SUPPORTED_LOCALE_ROUTE_SYNTAXES } from "../../src/core.js";
 import { createConfiguredTranslator } from "../../src/create-configured-translator.js";
 import { createTranslationJsonSchema } from "../../src/create-translation-json-schema.js";
 import { interpolateMessage } from "../../src/interpolate-message.js";
 import { normalizeConfig } from "../../src/normalize-config.js";
 import { resolveMessageValue } from "../../src/resolve-message-value.js";
-import { snapshotLanguages } from "../../src/snapshot-languages.js";
 import {
   getRequestLocale,
   resolveRequestLocale,
   setRequestLocale,
 } from "../../src/server.js";
+import { snapshotLanguages } from "../../src/snapshot-languages.js";
 import { snapshotMessages } from "../../src/snapshot-messages.js";
-import { SUPPORTED_LOCALE_ROUTE_SYNTAXES } from "../../src/core.js";
 import {
   isTranslationConfigOptions,
   isTranslationMessages,
@@ -119,6 +119,49 @@ describe("better-translate internals", () => {
         messages: {},
       }),
     ).toThrow('Missing source messages for default locale "en".');
+    expect(() =>
+      normalizeConfig({
+        availableLocales: ["en", "es"] as const,
+        defaultLocale: "en",
+        messages: {
+          en,
+        },
+      }),
+    ).toThrow(
+      'Missing messages or loader for locale "es". Mark it optional with optionalLocales if translations are intentionally unavailable.',
+    );
+    expect(() =>
+      normalizeConfig({
+        availableLocales: ["en", "es"] as const,
+        defaultLocale: "en",
+        optionalLocales: ["fr"],
+        messages: {
+          en,
+        },
+      } as const),
+    ).toThrow(
+      'The locale "fr" is present in optionalLocales but not in availableLocales.',
+    );
+    expect(() =>
+      normalizeConfig({
+        availableLocales: ["en", "es"] as const,
+        defaultLocale: "en",
+        optionalLocales: ["en"],
+        messages: {
+          en,
+        },
+      } as const),
+    ).toThrow('The default locale "en" cannot be marked as optional.');
+    expect(() =>
+      normalizeConfig({
+        availableLocales: ["en", "es"] as const,
+        defaultLocale: "en",
+        optionalLocales: ["es"],
+        messages: {
+          en,
+        },
+      }),
+    ).not.toThrow();
     expect(() =>
       normalizeConfig({
         availableLocales: ["en"] as const,

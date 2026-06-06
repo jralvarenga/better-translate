@@ -14,6 +14,7 @@ import {
   landingDirections,
   landingLanguages,
   landingLocales,
+  landingOptionalLocales,
 } from "./shared";
 
 export {
@@ -23,6 +24,7 @@ export {
   landingDirections,
   landingLanguages,
   landingLocales,
+  landingOptionalLocales,
   type LandingLocale,
 } from "./shared";
 
@@ -39,12 +41,14 @@ export const config = {
   fallbackLocale: landingDefaultLocale,
   directions: landingDirections,
   languages: landingLanguages,
+  optionalLocales: landingOptionalLocales,
   messages: landingMessages,
 } satisfies TranslationConfigOptions<
   typeof landingLocales,
   typeof landingMessages,
   undefined,
-  typeof landingDefaultLocale
+  typeof landingDefaultLocale,
+  typeof landingOptionalLocales
 >;
 
 export type config = typeof config;

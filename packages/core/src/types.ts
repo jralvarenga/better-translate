@@ -92,6 +92,33 @@ type ExactMessageShape<
   ? TCandidate
   : never;
 
+type IsPartialMessageShape<TReference, TCandidate> = [TCandidate] extends [
+  string,
+]
+  ? [TReference] extends [string]
+    ? true
+    : false
+  : [TCandidate] extends [TranslationMessages]
+    ? [TReference] extends [TranslationMessages]
+      ? Exclude<keyof TCandidate, keyof TReference> extends never
+        ? AllTrue<
+            {
+              [K in keyof TCandidate]: K extends keyof TReference
+                ? IsPartialMessageShape<TReference[K], TCandidate[K]>
+                : false;
+            }[keyof TCandidate]
+          >
+        : false
+      : false
+    : false;
+
+type PartialMessageShape<
+  TReference,
+  TCandidate extends TranslationMessages,
+> = IsPartialMessageShape<TReference, TCandidate> extends true
+  ? TCandidate
+  : never;
+
 type EnforceLocaleMapShapeParity<
   TMessages extends Record<string, TranslationMessages>,
 > = {
@@ -110,24 +137,38 @@ type EnforceLocaleMapShapeParity<
 type EnforceReferenceMessageShape<
   TMessages extends Partial<Record<string, TranslationMessages>>,
   TReference extends TranslationMessages,
+  TDefaultLocale extends string,
+  TOptionalLocale extends PropertyKey = never,
 > = {
   [TLocale in keyof TMessages]: TMessages[TLocale] extends TranslationMessages
-    ? ExactMessageShape<DeepStringify<TReference>, TMessages[TLocale]>
+    ? TLocale extends TDefaultLocale
+      ? ExactMessageShape<DeepStringify<TReference>, TMessages[TLocale]>
+      : TLocale extends TOptionalLocale
+        ? PartialMessageShape<DeepStringify<TReference>, TMessages[TLocale]>
+        : ExactMessageShape<DeepStringify<TReference>, TMessages[TLocale]>
     : never;
 };
 
 type StrictOptionsMessages<
   TMessages extends Partial<Record<string, TranslationMessages>>,
   TDefaultLocale extends string,
+  TOptionalLocale extends PropertyKey = never,
 > = TMessages[TDefaultLocale] extends TranslationMessages
   ? Simplify<
       TMessages &
         EnforceReferenceMessageShape<
           TMessages,
-          Extract<TMessages[TDefaultLocale], TranslationMessages>
+          Extract<TMessages[TDefaultLocale], TranslationMessages>,
+          TDefaultLocale,
+          TOptionalLocale
         >
     >
   : never;
+
+type OptionalLocalesFromList<TOptionalLocales> =
+  TOptionalLocales extends readonly (infer TLocale extends string)[]
+    ? TLocale
+    : never;
 
 export type TranslationKey<TMessages extends TranslationMessages> =
   string extends keyof TMessages ? string : DotKeys<TMessages>;
@@ -147,6 +188,13 @@ export interface TranslationLanguageMetadata<TLocale extends string> {
   icon?: string;
   locale: TLocale;
   nativeLabel: string;
+  /**
+   * Marks this locale as optional.
+   *
+   * Optional locales may omit some or all translations and will fall back to
+   * the configured fallback locale at runtime.
+   */
+  optional?: boolean;
   shortLabel: string;
 }
 
@@ -430,13 +478,25 @@ export type TranslationConfigOptions<
     | Partial<Record<TLocales[number], TranslationLoader<unknown>>>
     | undefined = undefined,
   TDefaultLocale extends TLocales[number] = TLocales[number],
+  TOptionalLocales extends readonly TLocales[number][] | undefined = undefined,
 > = {
   availableLocales: TLocales;
   defaultLocale: TDefaultLocale;
   fallbackLocale?: TLocales[number];
   directions?: Partial<Record<TLocales[number], TranslationDirection>>;
+  /**
+   * Locales that are intentionally incomplete or unavailable.
+   *
+   * Optional locales may be omitted from `messages`/`loaders`, or may provide a
+   * partial message tree. Missing keys fall back to `fallbackLocale` at runtime.
+   */
+  optionalLocales?: TOptionalLocales;
   languages?: readonly TranslationLanguageMetadata<TLocales[number]>[];
-  messages: StrictOptionsMessages<TMessages, TDefaultLocale>;
+  messages: StrictOptionsMessages<
+    TMessages,
+    TDefaultLocale,
+    OptionalLocalesFromList<TOptionalLocales>
+  >;
   loaders?: TLoaders;
 };
 
@@ -459,14 +519,20 @@ export type InternalTranslationMessages = {
   readonly [key: string]: InternalTranslationNode;
 };
 
+export interface RuntimeTranslationConfigOptions {
+  availableLocales: readonly string[];
+  defaultLocale: string;
+  fallbackLocale?: string;
+  directions?: Partial<Record<string, TranslationDirection>>;
+  optionalLocales?: readonly string[];
+  languages?: readonly TranslationLanguageMetadata<string>[];
+  messages: Partial<Record<string, TranslationMessages>>;
+  loaders?: Partial<Record<string, TranslationLoader<unknown>>>;
+}
+
 export type RuntimeConfigInput =
   | Record<string, TranslationMessages>
-  | TranslationConfigOptions<
-      readonly string[],
-      Partial<Record<string, TranslationMessages>>,
-      Partial<Record<string, TranslationLoader<unknown>>> | undefined,
-      string
-    >;
+  | RuntimeTranslationConfigOptions;
 
 export interface InternalNormalizedConfig {
   defaultLocale: string;
