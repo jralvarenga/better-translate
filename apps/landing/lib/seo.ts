@@ -1,12 +1,12 @@
 import type { Metadata, MetadataRoute } from "next";
 
+import { docPageRoutes, getDocFrontmatter } from "@/lib/docs";
 import {
+  type LandingLocale,
   landingDefaultLocale,
   landingLocales,
   landingMessages,
-  type LandingLocale,
 } from "@/lib/i18n/config";
-import { docPageRoutes, getDocFrontmatter } from "@/lib/docs";
 
 export const siteName = "better-translate";
 export const siteUrl = "https://better-translate.com";
@@ -44,6 +44,11 @@ export const indexableMarketingRoutes = [
     priority: 1,
     routePath: "/",
   },
+  {
+    changeFrequency: "monthly",
+    priority: 0.7,
+    routePath: "/adapters",
+  },
 ] as const satisfies readonly IndexableRoute[];
 
 export const indexableDocRoutes = docPageRoutes.map((route) => ({
@@ -58,18 +63,6 @@ export function createHomeMetadata(locale: LandingLocale): Metadata {
   return createRouteMetadata(locale, "/", {
     description: messages.hero.description,
     title: messages.hero.title,
-  });
-}
-
-export function createThanksForSupportMetadata(
-  locale: LandingLocale,
-): Metadata {
-  const messages = landingMessages[locale];
-
-  return createRouteMetadata(locale, "/thanks-for-support", {
-    description: messages.thanksForSupport.description,
-    noIndex: true,
-    title: messages.thanksForSupport.title,
   });
 }
 
@@ -182,7 +175,7 @@ export function resolveLandingLocale(locale: string): LandingLocale {
   return landingDefaultLocale;
 }
 
-function buildLanguageAlternates(routePath: string) {
+export function buildLanguageAlternates(routePath: string) {
   return Object.fromEntries([
     ...landingLocales.map((locale) => [
       locale,

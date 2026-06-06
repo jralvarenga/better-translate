@@ -5,8 +5,8 @@ import { notFound } from "next/navigation";
 import { hasLocale } from "@better-translate/nextjs";
 
 import { I18nLink } from "@/lib/i18n/navigation";
-import { getTranslations } from "@/lib/i18n/server";
 import { routing } from "@/lib/i18n/routing";
+import { getTranslations } from "@/lib/i18n/server";
 
 export default async function LocalizedHomePage({
   params,

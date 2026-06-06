@@ -1,20 +1,21 @@
 ---
 title: React
-description: '@better-translate/reactは@better-translate/coreの上にプロバイダーとフックを追加します。'
+description: "@better-translate/react は @better-translate/core の上にプロバイダーとフックを追加します。"
 ---
+
 # React
 
-Reactコンポーネントで翻訳やロケール切り替えが必要な場合は、`@better-translate/react`を使用してください。
+React コンポーネントで翻訳やロケール切り替えが必要なときは `@better-translate/react` を使います。
 
-## 1. パッケージのインストール
+## 1. パッケージをインストールする
 
 ```sh
 npm install @better-translate/core @better-translate/react
 ```
 
-## 2. 共有トランスレーターの作成
+## 2. 共有トランスレーターを作る
 
-`src/i18n.ts`を作成してください：
+`src/i18n.ts` を作成します：
 
 ```ts
 import { configureTranslations } from "@better-translate/core";
@@ -39,75 +40,48 @@ export const translator = await configureTranslations({
 });
 ```
 
-## 3. アプリをラップする
+## 3. 型付きプロバイダー + フックのペアを作る
 
-`src/main.tsx`を作成または更新してください：
+`useTranslations()` でキーとロケールの自動補完を得たいが、
+ジェネリックの繰り返しや宣言ファイルを避けたい場合は、トランスレーターを一度だけ束ねます：
+
+`src/i18n-react.ts` を作成します：
+
+```ts
+import { createBetterTranslateReact } from "@better-translate/react";
+
+import { translator } from "./i18n";
+
+export const { BetterTranslateProvider, useTranslations } =
+  createBetterTranslateReact(translator);
+```
+
+## 4. アプリをラップする
+
+`src/main.tsx` を作成または更新し、アプリローカルのプロバイダーを import します：
 
 ```tsx
 import React from "react";
 import ReactDOM from "react-dom/client";
 
-import { BetterTranslateProvider } from "@better-translate/react";
-
 import { App } from "./app";
-import { translator } from "./i18n";
+import { BetterTranslateProvider } from "./i18n-react";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <BetterTranslateProvider translator={translator}>
+    <BetterTranslateProvider>
       <App />
     </BetterTranslateProvider>
   </React.StrictMode>,
 );
 ```
 
-## 4. コンポーネント内で翻訳を読み取る
+## 5. コンポーネント内で翻訳を読む
 
-`src/header.tsx`を作成してください：
-
-```tsx
-import { useTranslations } from "@better-translate/react";
-
-import { translator } from "./i18n";
-
-export function Header() {
-  const { locale, setLocale, t } = useTranslations<typeof translator>();
-
-  return (
-    <header>
-      <h1>{t("home.title")}</h1>
-      <button onClick={() => setLocale("en")} disabled={locale === "en"}>
-        English
-      </button>
-      <button onClick={() => setLocale("es")} disabled={locale === "es"}>
-        Español
-      </button>
-    </header>
-  );
-}
-```
-
-## オプション: アプリ全体で`useTranslations()`を一度だけ型付けする
-
-プレーンな`useTranslations()`で翻訳キーの自動補完を行い、
-各コンポーネントで`<typeof translator>`を繰り返し記述したくない場合は、宣言ファイルを1つ追加してください：
-
-`src/better-translate.d.ts`を作成してください：
-
-```ts
-import { translator } from "./i18n";
-
-declare module "@better-translate/react" {
-  interface BetterTranslateReactTypes {
-    translator: typeof translator;
-  }
-}
-```
-
-これにより、コンポーネントではジェネリックなしでフックを呼び出せます：
+`src/header.tsx` を作成します：
 
 ```tsx
-import { useTranslations } from "@better-translate/react";
+import { useTranslations } from "./i18n-react";
 
 export function Header() {
   const { locale, setLocale, t } = useTranslations();
@@ -126,28 +100,26 @@ export function Header() {
 }
 ```
 
-明示的なジェネリックも引き続き機能するため、コードベースに適合する場合は`useTranslations<typeof translator>()`を使い続けることもできます。
+## React のみを使う場合
 
-## Reactのみを使用する場合
+次の場合は `@better-translate/core` + `@better-translate/react` のみで足ります。
 
-以下の場合は、`@better-translate/core` + `@better-translate/react`のみを使用してください：
+- React SPA
+- Expo アプリ
+- ロケール変更がクライアントコンポーネントで行われる
 
-- アプリがReact SPAの場合
-- アプリがExpoアプリの場合
-- ロケールの変更がクライアントコンポーネントで行われる場合
+Next.js App Router の場合は、クライアントフック用にこのパッケージを残し、ルーティングとサーバーヘルパー用に Next.js アダプターを追加します。
 
-Next.js App Routerを使用している場合は、このパッケージをクライアントフック用に保持し、ルーティングとサーバーヘルパー用にNext.jsアダプターを追加してください。
+## ロケールファイルを自動生成する
 
-## ロケールファイルの自動生成
+すべての翻訳を手書きする代わりに、CLI で文字列を抽出しロケールファイルを生成できます：[CLI ガイド](/docs/cli)
 
-すべての翻訳を手動で書く代わりに、CLIを使用して文字列を抽出し、ロケールファイルを生成してください：[CLIガイド](/docs/cli)
+## 次に読む
 
-## 次のステップ
+- <Link href="/docs/adapters/expo">Expo のセットアップ</Link>
+- <Link href="/docs/adapters/nextjs">Next.js のセットアップ</Link>
 
-- <Link href="/docs/adapters/expo">Expoのセットアップ</Link>
-- <Link href="/docs/adapters/nextjs">Next.jsのセットアップ</Link>
-
-## サンプル
+## 例
 
 - [react-vite-example](https://github.com/jralvarenga/better-translate/tree/main/examples/react-vite-example)
 - [expo-example](https://github.com/jralvarenga/better-translate/tree/main/examples/expo-example)

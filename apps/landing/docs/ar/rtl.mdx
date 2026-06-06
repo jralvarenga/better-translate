@@ -1,24 +1,25 @@
 ---
 title: RTL
 description: >-
-  يحتوي @better-translate/core على دعم مدمج للغات من اليمين لليسار. أعلن
-  الاتجاهات لكل لغة، استعلم عنها في وقت التشغيل، واجتزها لكل استدعاء.
+  يتضمن @better-translate/core دعم RTL مدمجًا. أعلن الاتجاهات لكل إعداد محلي،
+  واستعلم عنها في وقت التشغيل، وعدّلها لكل استدعاء.
 ---
+
 # RTL
 
-يحتوي `@better-translate/core` على دعم مدمج للغات من اليمين لليسار.
-تُعلن في الإعدادات عن اللغات التي تُكتب من اليمين لليسار، ثم تستعلم عن الاتجاه في وقت التشغيل
-باستخدام `getDirection` أو `isRtl`.
+يتضمن `@better-translate/core` دعم RTL مدمجًا.
+تُعلن في الإعداد أي الإعدادات المحلية من اليمين إلى اليسار، ثم تستعلم عن الاتجاه
+في وقت التشغيل باستخدام `getDirection` أو `isRtl`.
 
 ## متى تستخدمه
 
-استخدم دعم الاتجاه من اليمين لليسار عندما يحتاج تطبيقك إلى دعم لغات مثل العربية، العبرية، الفارسية، أو الأردوية.
-توفر لك دوال الاتجاه طريقة مكتوبة لتعيين سمة `dir` على عناصر HTML
-من دون إدارة جدول بحث منفصل.
+استخدم دعم RTL عندما يحتاج تطبيقك لغات مثل العربية أو العبرية أو الفارسية أو الأردية.
+تمنحك مساعدات الاتجاه طريقة مكتوبة الأنواع لتعيين سمة `dir` على عناصر HTML
+دون إدارة جدول بحث منفصل.
 
 ## إعلان الاتجاهات
 
-أضف مفتاح `directions` إلى استدعاء `configureTranslations`. أي لغة تُحذف تُعين افتراضيًا إلى `"ltr"`.
+أضف مفتاح `directions` إلى استدعاء `configureTranslations`. أي إعداد محلي تُهمله يكون افتراضيًا `"ltr"`.
 
 ```tsx showLineNumbers
 import { configureTranslations } from "@better-translate/core";
@@ -35,7 +36,7 @@ const translator = await configureTranslations({
 
 ## الاستعلام عن الاتجاه
 
-استدعِ `getDirection` للحصول على `"ltr"` أو `"rtl"` لأي لغة.
+استدعِ `getDirection` للحصول على `"ltr"` أو `"rtl"` لأي إعداد محلي.
 استدعِ `isRtl` للحصول على اختصار منطقي.
 
 ```tsx showLineNumbers
@@ -46,19 +47,19 @@ translator.isRtl({ locale: "ar" }); // true
 translator.isRtl({ locale: "en" }); // false
 ```
 
-## التجاوز لكل استدعاء
+## تجاوز لكل استدعاء
 
-مرر `config.rtl` لتجاوز الاتجاه المُعين لاستدعاء واحد.
-هذا لا يؤثر على البحث عن الرسالة، بل يغير فقط الاتجاه الذي يُحل.
+مرّر `config.rtl` لتجاوز الاتجاه المُعدّ لاستدعاء واحد.
+لا يؤثر ذلك على البحث عن الرسالة، بل يغيّر فقط الاتجاه المُحلَّ.
 
 ```tsx showLineNumbers
-// إجبار LTR حتى للغة RTL
+// فرض LTR حتى لإعداد محلي RTL
 translator.t("greeting", {
   locale: "ar",
   config: { rtl: false },
 });
 
-// إجبار RTL حتى للغة LTR
+// فرض RTL حتى لإعداد محلي LTR
 translator.t("greeting", {
   locale: "en",
   config: { rtl: true },
@@ -70,7 +71,7 @@ translator.t("greeting", {
 استخدم `getDirection` عند عرض سمة `dir` على العناصر الجذرية.
 
 ```tsx showLineNumbers
-// على عنصر html (مثلاً في تخطيط Next.js)
+// على عنصر html (مثلًا في تخطيط Next.js)
 <html lang={locale} dir={translator.getDirection({ locale })}>
 
 // على حاوية محددة
@@ -85,13 +86,13 @@ translator.t("greeting", {
 - `packages/core/src/create-configured-translator.ts`
 - `packages/core/src/normalize-config.ts`
 
-## المتابعة مع
+## تابع مع
 
 <div className="mt-6 flex flex-wrap gap-3">
   <Button asChild variant="outline" size="lg">
-    <Link href="/docs/adapters/core">اطلع على محول Core</Link>
+    <Link href="/docs/adapters/core">محول الأساس</Link>
   </Button>
   <Button asChild size="lg">
-    <Link href="/docs/adapters/nextjs">اطلع على محول Next.js</Link>
+    <Link href="/docs/adapters/nextjs">محول Next.js</Link>
   </Button>
 </div>

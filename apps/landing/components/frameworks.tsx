@@ -1,5 +1,7 @@
 import { getCatalogItems, type FrameworkId } from "@/lib/catalog";
 import type { LandingTranslator } from "@/lib/i18n/config";
+import { I18nLink } from "@/lib/i18n/navigation";
+import { RiArrowRightLine } from "@remixicon/react";
 
 interface FrameworksProps {
   t: LandingTranslator["t"];
@@ -49,6 +51,15 @@ export function Frameworks({ t }: FrameworksProps) {
             </div>
           ))}
         </div>
+      </div>
+      <div className="mt-12 flex justify-center">
+        <I18nLink
+          href="/adapters"
+          className="group inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-5 py-2.5 text-sm font-medium text-foreground transition-all duration-200 hover:border-white/20 hover:bg-white/8"
+        >
+          <span>{t("adapters.viewAll")}</span>
+          <RiArrowRightLine className="size-4 transition-transform duration-200 group-hover:translate-x-0.5 rtl:rotate-180 rtl:group-hover:-translate-x-0.5" />
+        </I18nLink>
       </div>
     </section>
   );

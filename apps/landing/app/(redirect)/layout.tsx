@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Noto_Sans_Arabic } from "next/font/google";
-import "./globals.css";
-import { cn } from "@/lib/utils";
+import "../globals.css";
 import {
   siteName,
   siteUrl,
@@ -9,6 +8,7 @@ import {
   socialImagePath,
   socialImageWidth,
 } from "@/lib/seo";
+import { cn } from "@/lib/utils";
 
 const fontMono = Geist_Mono({ subsets: ["latin"], variable: "--font-mono" });
 const fontSans = Geist({ subsets: ["latin"], variable: "--font-sans" });
@@ -69,7 +69,7 @@ export const viewport: Viewport = {
   width: "device-width",
 };
 
-export default function RootLayout({
+export default function RedirectLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -77,6 +77,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      dir="ltr"
       className={cn(
         "dark font-sans",
         fontMono.variable,

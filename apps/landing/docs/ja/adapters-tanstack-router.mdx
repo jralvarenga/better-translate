@@ -1,17 +1,16 @@
 ---
 title: TanStack Router
-description: >-
-  @better-translate/tanstack-router は、TanStack Router および TanStack Start
-  向けにロケール対応のルーティングとナビゲーションを追加します。
+description: "@better-translate/tanstack-router は TanStack Router と TanStack Start 向けにロケール対応ルーティングとナビゲーションを追加します。"
 ---
+
 # TanStack Router
 
-アプリで TanStack Router または TanStack Start を使用していて、ロケール対応の URL が必要な場合は、`@better-translate/tanstack-router` を使用します。
+TanStack Router または TanStack Start でロケール対応 URL が必要なときは `@better-translate/tanstack-router` を使います。
 
-ほとんどの実際のアプリでは、以下と組み合わせて使用します：
+実際のアプリでは、多くの場合次と組み合わせます。
 
-- `@better-translate/core` — 翻訳機能用
-- `@better-translate/react` — React コンポーネント内のフック用
+- トランスレーター用 `@better-translate/core`
+- React コンポーネント内フック用 `@better-translate/react`
 
 ## 1. パッケージをインストールする
 
@@ -19,7 +18,7 @@ description: >-
 npm install @better-translate/core @better-translate/react @better-translate/tanstack-router
 ```
 
-## 2. 共有翻訳機能を作成する
+## 2. 共有トランスレーターを作る
 
 `src/lib/i18n.ts` を作成します：
 
@@ -51,16 +50,21 @@ export const translator = await configureTranslations({
 `src/lib/routing.ts` を作成します：
 
 ```ts
-import { defineRouting } from "@better-translate/tanstack-router";
+import {
+  defineRouting,
+  SUPPORTED_TANSTACK_LOCALE_ROUTE_SYNTAXES,
+} from "@better-translate/tanstack-router";
 
 export const routing = defineRouting({
   defaultLocale: "en",
   locales: ["en", "es"] as const,
   routeTemplate: "/$lang",
 });
+
+console.log(SUPPORTED_TANSTACK_LOCALE_ROUTE_SYNTAXES);
 ```
 
-## 4. ローカライズされたナビゲーションヘルパーを作成する
+## 4. ローカライズされたナビゲーションヘルパーを作る
 
 `src/lib/navigation.tsx` を作成します：
 
@@ -90,7 +94,9 @@ export const {
 });
 ```
 
-必須ロケール区間には `routeTemplate: "/$lang"` または `routeTemplate: "/{$lang}"` を使います。デフォルトロケールの区間を省略したい場合は `"/{-$lang}"` を使います。
+必須のロケールセグメントには `routeTemplate: "/$lang"` または `routeTemplate: "/{$lang}"` を使います。デフォルトロケールでセグメントを省略する場合は `"/{-$lang}"` を使います。
+
+サポートされるロケールパラメータ名は `@better-translate/core` 由来で、ここでは `SUPPORTED_TANSTACK_LOCALE_ROUTE_SYNTAXES` と必須・任意のサブセットとして公開されています。
 
 ## 5. React プロバイダーでアプリをラップする
 
@@ -113,7 +119,7 @@ export function App() {
 }
 ```
 
-## 6. ロケール対応のリンクと翻訳を使用する
+## 6. ロケール対応リンクと翻訳を使う
 
 `src/components/header.tsx` を作成します：
 
@@ -140,12 +146,12 @@ export function Header() {
 
 ## TanStack Start
 
-TanStack Start を使用している場合は、同じルーティングとナビゲーションの設定を維持してください。次に、`@better-translate/tanstack-router/server` からサーバーヘルパーを追加します。これは Next.js でリクエストヘルパーを追加するのと同じ方法です。
+TanStack Start を使う場合も、同じルーティングとナビゲーション設定を維持します。Next.js でリクエストヘルパーを追加するのと同様に、`@better-translate/tanstack-router/server` のサーバーヘルパーを追加します。
 
 ## ロケールファイルを自動生成する
 
-すべての翻訳を手作業で書く代わりに、CLI を使用して文字列を抽出し、ロケールファイルを生成できます：[CLI ガイド](/docs/cli)
+すべての翻訳を手書きする代わりに、CLI で文字列を抽出しロケールファイルを生成できます：[CLI ガイド](/docs/cli)
 
-## サンプル
+## 例
 
 - [tanstack-start-example](https://github.com/jralvarenga/better-translate/tree/main/examples/tanstack-start-example)

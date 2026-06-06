@@ -79,6 +79,61 @@ If the fallback doesn't have it either, it returns the key string itself.
 - Missing locale value -> fallback locale value
 - Missing fallback value -> key string
 
+## Optional locales
+
+By default, every locale in `availableLocales` must either have messages or an
+async loader. Preloaded locale messages are type-checked against the default
+locale so missing keys fail during TypeScript checks.
+
+If a locale is intentionally incomplete, mark it optional:
+
+```ts
+export const translator = await configureTranslations({
+  availableLocales: ["en", "es", "fr"] as const,
+  defaultLocale: "en",
+  fallbackLocale: "en",
+  optionalLocales: ["fr"],
+  messages: {
+    en,
+    es,
+    fr: {
+      home: {
+        title: "Bonjour",
+      },
+    },
+  },
+});
+```
+
+Optional locales may be omitted from `messages` and `loaders`, or may provide a
+partial message tree. Missing keys use the configured fallback locale at
+runtime.
+
+You can also mark a locale optional in its language metadata when the locale has
+no preloaded messages or loader yet:
+
+```ts
+export const translator = await configureTranslations({
+  availableLocales: ["en", "es"] as const,
+  defaultLocale: "en",
+  fallbackLocale: "en",
+  languages: [
+    {
+      locale: "es",
+      nativeLabel: "Español",
+      optional: true,
+      shortLabel: "ES",
+    },
+  ],
+  messages: { en },
+});
+```
+
+Use `optionalLocales` when you provide a partial message object and want
+TypeScript to allow missing nested keys. Do not mark the default locale
+optional. The default locale remains the source for translation key and
+placeholder inference.
+
 ## Async loaders
 
 Register locale loaders for languages you don't want to preload. Loaded locales are cached after the first successful load.

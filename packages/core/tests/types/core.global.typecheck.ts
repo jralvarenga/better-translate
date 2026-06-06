@@ -142,9 +142,9 @@ translate("account.balance.total");
 // @ts-expect-error missing params should fail for the configured helpers
 translate("common.greeting");
 
+// @ts-expect-error inferred params should reject unknown placeholder names
 translate("common.greeting", {
   params: {
-    // @ts-expect-error inferred params should reject unknown placeholder names
     user: "Ada",
   },
 });

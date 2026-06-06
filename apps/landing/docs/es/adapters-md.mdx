@@ -1,22 +1,21 @@
 ---
-title: MD & MDX
-description: >-
-  @better-translate/md carga archivos Markdown y MDX localizados sobre
-  @better-translate/core.
+title: MD y MDX
+description: "@better-translate/md carga archivos Markdown y MDX localizados sobre @better-translate/core."
 ---
-# MD & MDX
 
-Usa `@better-translate/md` cuando tus documentos, publicaciones de blog o páginas de contenido residan en archivos `.md` o `.mdx` localizados.
+# MD y MDX
 
-Este paquete no reemplaza el traductor principal. Lee las reglas de configuración regional del traductor que ya creaste.
+Usa `@better-translate/md` cuando tu documentación, entradas de blog o páginas de contenido vivan en archivos `.md` o `.mdx` localizados.
 
-## 1. Instala los paquetes
+Este paquete no sustituye al traductor core. Lee las reglas de locale del traductor que ya creaste.
+
+## 1. Instalar los paquetes
 
 ```sh
 npm install @better-translate/core @better-translate/md
 ```
 
-## 2. Crea el traductor
+## 2. Crear el traductor
 
 Crea `src/i18n.ts`:
 
@@ -43,9 +42,9 @@ export const translator = await configureTranslations({
 });
 ```
 
-## 3. Crea las carpetas de contenido
+## 3. Crear las carpetas de contenido
 
-Coloca una carpeta por configuración regional bajo la misma raíz:
+Coloca una carpeta por locale bajo la misma raíz:
 
 ```txt
 content/docs/
@@ -55,7 +54,7 @@ content/docs/
     getting-started.mdx
 ```
 
-## 4. Crea los ayudantes de markdown
+## 4. Crear los helpers de markdown
 
 Crea `src/docs.ts`:
 
@@ -69,7 +68,7 @@ export const docs = createMarkdownHelpers(translator, {
 });
 ```
 
-## 5. Lee un documento
+## 5. Leer un documento
 
 ```ts
 import { docs } from "./docs";
@@ -83,25 +82,25 @@ const spanishDoc = await docs.getDocument("getting-started", {
 });
 ```
 
-## 6. Compílalo cuando necesites el resultado
+## 6. Compilar cuando necesites salida
 
 ```ts
 const compiled = await docs.compileDocument("getting-started", {
   locale: "en",
 });
 
-compiled.kind; // "md" o "mdx"
+compiled.kind; // "md" or "mdx"
 compiled.path;
 compiled.usedFallback;
 ```
 
-## Cuándo usar los ayudantes del servidor
+## Cuándo usar los helpers de servidor
 
-Si tu aplicación ya resuelve la configuración regional de la solicitud en el servidor, usa `@better-translate/md/server` para que la carga de markdown siga automáticamente la misma configuración regional de la solicitud.
+Si tu app ya resuelve el locale de la petición en el servidor, usa `@better-translate/md/server` para que la carga de markdown siga el mismo locale de la petición automáticamente.
 
-## Genera markdown localizado automáticamente
+## Generar markdown localizado automáticamente
 
-Usa la opción `markdown.rootDir` del CLI para que el generador traduzca tus archivos markdown: [Guía del CLI](/docs/cli)
+Usa la opción `markdown.rootDir` de la CLI para que el generador traduzca tus archivos markdown: [Guía de la CLI](/docs/cli)
 
 ## Ejemplos
 

@@ -2,8 +2,8 @@
 
 import * as React from "react";
 
-import { useTranslations } from "@better-translate/react";
 import type { TranslationLanguageMetadata } from "@better-translate/core";
+import { useTranslations } from "@better-translate/react";
 
 import {
   Select,
@@ -12,8 +12,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { LandingLocale, LandingTranslator } from "@/lib/i18n/config";
+import type { LandingTranslator } from "@/lib/i18n/config";
 import { useI18nPathname, useI18nRouter } from "@/lib/i18n/navigation";
+import type { LandingLocale } from "@/lib/i18n/shared";
 
 interface HeaderLanguageSwitcherProps {
   className?: string;
@@ -56,20 +57,10 @@ export function HeaderLanguageSwitcher({
   languages,
   onSelect,
 }: HeaderLanguageSwitcherProps) {
-  const { availableLanguages, locale, supportedLocales, t } =
-    useTranslations<LandingTranslator>();
+  const { locale, t } = useTranslations<LandingTranslator>();
   const pathname = useI18nPathname();
   const router = useI18nRouter();
   const [isPending, startTransition] = React.useTransition();
-  const fallbackLanguageMap = new Map(
-    languages.map((language) => [language.locale, language] as const),
-  );
-  const languageItems = availableLanguages
-    .filter((item) => supportedLocales.includes(item.locale))
-    .map((item) => ({
-      ...item,
-      ...fallbackLanguageMap.get(item.locale as LandingLocale),
-    }));
   const selectedLocale = locale ?? currentLocale;
 
   return (
@@ -100,7 +91,7 @@ export function HeaderLanguageSwitcher({
         <SelectValue />
       </SelectTrigger>
       <SelectContent>
-        {languageItems.map((item) => (
+        {languages.map((item) => (
           <SelectItem key={item.locale} value={item.locale}>
             <span aria-hidden="true">{item.icon}</span>
             <span>{item.nativeLabel}</span>

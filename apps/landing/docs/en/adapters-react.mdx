@@ -40,29 +40,7 @@ export const translator = await configureTranslations({
 });
 ```
 
-## 3. Wrap your app
-
-Create or update `src/main.tsx`:
-
-```tsx
-import React from "react";
-import ReactDOM from "react-dom/client";
-
-import { BetterTranslateProvider } from "@better-translate/react";
-
-import { App } from "./app";
-import { translator } from "./i18n";
-
-ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
-    <BetterTranslateProvider translator={translator}>
-      <App />
-    </BetterTranslateProvider>
-  </React.StrictMode>,
-);
-```
-
-## 4. Create a typed provider + hook pair
+## 3. Create a typed provider + hook pair
 
 If you want `useTranslations()` to autocomplete keys and locales without
 repeating generics or adding a declaration file, bind your translator once:
@@ -78,7 +56,9 @@ export const { BetterTranslateProvider, useTranslations } =
   createBetterTranslateReact(translator);
 ```
 
-Then update `src/main.tsx` to import the app-local provider:
+## 4. Wrap your app
+
+Create or update `src/main.tsx` to import the app-local provider:
 
 ```tsx
 import React from "react";
@@ -98,7 +78,8 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
 
 ## 5. Read translations inside a component
 
-Create `src/header.tsx`:
+If you want `useTranslations()` to autocomplete keys and locales without
+repeating generics or adding a declaration file, bind your translator once:
 
 ```tsx
 import { useTranslations } from "./i18n-react";
@@ -113,38 +94,10 @@ export function Header() {
         English
       </button>
       <button onClick={() => setLocale("es")} disabled={locale === "es"}>
-        Espanol
+        Español
       </button>
     </header>
   );
-}
-```
-
-Explicit generics still work, so you can keep using `useTranslations<typeof translator>()`
-where that fits your codebase better:
-
-```tsx
-import { useTranslations } from "@better-translate/react";
-
-import { translator } from "./i18n";
-
-export function Header() {
-  const { t } = useTranslations<typeof translator>();
-
-  return <h1>{t("home.title")}</h1>;
-}
-```
-
-If you prefer to keep importing directly from `@better-translate/react`, module
-augmentation is still supported:
-
-```ts
-import { translator } from "./i18n";
-
-declare module "@better-translate/react" {
-  interface BetterTranslateReactTypes {
-    translator: typeof translator;
-  }
 }
 ```
 

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { RiBook2Line, RiGithubLine, RiHeart3Line } from "@remixicon/react";
+import { RiBook2Line, RiGithubLine } from "@remixicon/react";
 import { Button } from "@/components/ui/button";
 import { TextEffect } from "@/components/ui/text-effect";
 import { AnimatedGroup } from "@/components/ui/animated-group";
@@ -155,24 +155,6 @@ export default function HeroSection({ locale, t }: HeroSectionProps) {
                       </Link>
                     </Button>
                   </AnimatedGroup>
-
-                  <div className="mt-4 flex justify-center md:justify-start">
-                    <Button
-                      asChild
-                      size="lg"
-                      variant="ghost"
-                      className="group rounded-xl px-5 transition-colors hover:text-pink-400"
-                    >
-                      <Link
-                        href={siteLinks.sponsor}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <RiHeart3Line className="size-3.5 text-pink-500/60 transition-colors group-hover:text-pink-400" />
-                        <span>{t("hero.sponsorCta")}</span>
-                      </Link>
-                    </Button>
-                  </div>
                 </div>
 
                 {/* Right: code snippet */}
@@ -193,14 +175,14 @@ export default function HeroSection({ locale, t }: HeroSectionProps) {
                   <div className="overflow-hidden rounded-2xl font-mono border border-white/10 p-px">
                     <CodeBlock
                       filename="translate.ts"
-                      code={`export const landingTranslationsConfig = {
+                      code={`export const config = {
   availableLocales: ["en", "es"] as const,
   defaultLocale: "en",
   fallbackLocale: "en",
   messages: { en, es },
 } as const;
 
-const translator = await configureTranslations(landingTranslationsConfig);
+const translator = await configureTranslations(config);
 
 const { t } = createTranslationHelpers(translator);
 

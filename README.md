@@ -123,7 +123,6 @@ Better Translate is free and open source under the [MIT License](./LICENSE). Con
 
 - [Contributing guide](./CONTRIBUTING.md)
 - [Report an issue](https://github.com/jralvarenga/better-translate/issues)
-- [Sponsor the project](https://buy.polar.sh/polar_cl_kTi5esQphv7mygLZoq74PHArxF34gCvILfhMc3sx1gq)
 
 ## Security
 

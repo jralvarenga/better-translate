@@ -1,15 +1,15 @@
 "use client";
 
-import Link from "next/link";
-import { Logo } from "@/components/logo";
-import { RiCloseLine, RiGithubLine, RiMenuLine } from "@remixicon/react";
-import { Button } from "@/components/ui/button";
-import React from "react";
-import { cn } from "@/lib/utils";
-import { siteLinks } from "@/lib/site";
-import { getLandingLanguages, type LandingLocale } from "@/lib/i18n/config";
-import { I18nLink } from "@/lib/i18n/navigation";
 import { HeaderLanguageSwitcher } from "@/components/header-language-switcher";
+import { Logo } from "@/components/logo";
+import { Button } from "@/components/ui/button";
+import { I18nLink } from "@/lib/i18n/navigation";
+import { type LandingLocale, getLandingLanguages } from "@/lib/i18n/shared";
+import { siteLinks } from "@/lib/site";
+import { cn } from "@/lib/utils";
+import { RiCloseLine, RiGithubLine, RiMenuLine } from "@remixicon/react";
+import Link from "next/link";
+import React from "react";
 
 interface HeroHeaderProps {
   changelogLabel: string;

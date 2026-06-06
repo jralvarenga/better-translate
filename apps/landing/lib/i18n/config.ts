@@ -1,47 +1,32 @@
 import {
   type DeepStringify,
-  configureTranslations,
-  type TranslationLanguageMetadata,
   type TranslationConfigOptions,
+  configureTranslations,
 } from "@better-translate/core";
 
 import { ar } from "./messages/ar";
 import { en } from "./messages/en";
 import { es } from "./messages/es";
 import { ja } from "./messages/ja";
+import {
+  type LandingLocale,
+  landingDefaultLocale,
+  landingDirections,
+  landingLanguages,
+  landingLocales,
+  landingOptionalLocales,
+} from "./shared";
 
-export const landingLocales = ["en", "es", "ar", "ja"] as const;
-
-export type LandingLocale = (typeof landingLocales)[number];
-
-export const landingDefaultLocale = "en" as const;
-
-export const landingLanguages = [
-  {
-    icon: "🇺🇸",
-    locale: "en",
-    nativeLabel: "English",
-    shortLabel: "EN",
-  },
-  {
-    icon: "🇪🇸",
-    locale: "es",
-    nativeLabel: "Español",
-    shortLabel: "ES",
-  },
-  {
-    icon: "🇸🇦",
-    locale: "ar",
-    nativeLabel: "العربية",
-    shortLabel: "AR",
-  },
-  {
-    icon: "🇯🇵",
-    locale: "ja",
-    nativeLabel: "日本語",
-    shortLabel: "JA",
-  },
-] as const satisfies readonly TranslationLanguageMetadata<LandingLocale>[];
+export {
+  getLandingDirection,
+  getLandingLanguages,
+  landingDefaultLocale,
+  landingDirections,
+  landingLanguages,
+  landingLocales,
+  landingOptionalLocales,
+  type LandingLocale,
+} from "./shared";
 
 export const landingMessages = {
   en,
@@ -50,28 +35,26 @@ export const landingMessages = {
   ja,
 } satisfies Record<LandingLocale, DeepStringify<typeof en>>;
 
-export const landingTranslationsConfig = {
+export const config = {
   availableLocales: landingLocales,
   defaultLocale: landingDefaultLocale,
   fallbackLocale: landingDefaultLocale,
-  directions: { ar: "rtl" },
+  directions: landingDirections,
   languages: landingLanguages,
+  optionalLocales: landingOptionalLocales,
   messages: landingMessages,
 } satisfies TranslationConfigOptions<
   typeof landingLocales,
   typeof landingMessages,
   undefined,
-  typeof landingDefaultLocale
+  typeof landingDefaultLocale,
+  typeof landingOptionalLocales
 >;
 
-export type LandingTranslationsConfig = typeof landingTranslationsConfig;
-
-export function getLandingLanguages() {
-  return [...landingTranslationsConfig.languages];
-}
+export type config = typeof config;
 
 export function createLandingTranslator() {
-  return configureTranslations(landingTranslationsConfig);
+  return configureTranslations(config);
 }
 
 export type LandingTranslator = Awaited<

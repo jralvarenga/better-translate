@@ -134,6 +134,51 @@ describe("better-translate core", () => {
     );
   });
 
+  it("allows optional locales to be partially translated or omitted", async () => {
+    const translator = await configureTranslations({
+      availableLocales: ["en", "es", "ja"] as const,
+      defaultLocale: "en",
+      fallbackLocale: "en",
+      optionalLocales: ["es"],
+      languages: [
+        {
+          ...jaLanguage,
+          optional: true,
+        },
+      ],
+      messages: {
+        en,
+        es: {
+          common: {
+            hello: "Hola",
+          },
+        },
+      },
+    });
+
+    expect(translator.getSupportedLocales()).toEqual(["en", "es", "ja"]);
+    expect(translator.t("common.hello", { locale: "es" })).toBe("Hola");
+    expect(translator.t("common.goodbye", { locale: "es" })).toBe("Goodbye");
+    expect(translator.t("common.hello", { locale: "ja" })).toBe("Hello");
+    expect(await translator.loadLocale("ja")).toBeUndefined();
+    expect(translator.getAvailableLanguages()).toEqual([
+      {
+        ...jaLanguage,
+        optional: true,
+      },
+      {
+        locale: "en",
+        nativeLabel: "en",
+        shortLabel: "EN",
+      },
+      {
+        locale: "es",
+        nativeLabel: "es",
+        shortLabel: "ES",
+      },
+    ]);
+  });
+
   it("defaults locale directions to ltr when directions are omitted", async () => {
     const translator = await configureTranslations({
       availableLocales: ["en", "es"] as const,
@@ -370,6 +415,7 @@ describe("better-translate core", () => {
         es: "rtl",
       },
       languages: [jaLanguage],
+      optionalLocales: ["ja"],
       messages: { en, es },
     });
 
@@ -470,8 +516,14 @@ describe("better-translate core", () => {
         shortLabel: "ES",
       });
     }).toThrow();
+    const firstLanguage = languages[0];
+    expect(firstLanguage).toBeDefined();
     expect(() => {
-      languages[0]!.nativeLabel = "Japanese";
+      if (!firstLanguage) {
+        throw new Error("Expected at least one language.");
+      }
+
+      firstLanguage.nativeLabel = "Japanese";
     }).toThrow();
     expect(translator.getAvailableLanguages()).toEqual([
       jaLanguage,

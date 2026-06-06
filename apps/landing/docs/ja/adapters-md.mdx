@@ -1,14 +1,13 @@
 ---
 title: MD & MDX
-description: >-
-  @better-translate/md は @better-translate/core の上にローカライズされた Markdown および MDX
-  ファイルを読み込みます。
+description: "@better-translate/md は @better-translate/core の上でローカライズされた Markdown と MDX ファイルを読み込みます。"
 ---
+
 # MD & MDX
 
-ドキュメント、ブログ記事、コンテンツページがローカライズされた `.md` または `.mdx` ファイルにある場合は、`@better-translate/md` を使用します。
+ドキュメント、ブログ、コンテンツページがローカライズされた `.md` や `.mdx` にあるときは `@better-translate/md` を使います。
 
-このパッケージはコア翻訳機能を置き換えるものではありません。すでに作成した翻訳機能からロケールルールを読み取ります。
+このパッケージはコアトランスレーターを置き換えません。すでに作ったトランスレーターのロケールルールを読み込みます。
 
 ## 1. パッケージをインストールする
 
@@ -16,7 +15,7 @@ description: >-
 npm install @better-translate/core @better-translate/md
 ```
 
-## 2. 翻訳機能を作成する
+## 2. トランスレーターを作る
 
 `src/i18n.ts` を作成します：
 
@@ -43,9 +42,9 @@ export const translator = await configureTranslations({
 });
 ```
 
-## 3. コンテンツフォルダを作成する
+## 3. コンテンツフォルダを作る
 
-同じルート配下にロケールごとに1つのフォルダを配置します：
+同じルートの下にロケールごとのフォルダを置きます：
 
 ```txt
 content/docs/
@@ -55,7 +54,7 @@ content/docs/
     getting-started.mdx
 ```
 
-## 4. Markdownヘルパーを作成する
+## 4. Markdown ヘルパーを作る
 
 `src/docs.ts` を作成します：
 
@@ -69,7 +68,7 @@ export const docs = createMarkdownHelpers(translator, {
 });
 ```
 
-## 5. ドキュメントを読み込む
+## 5. 1つのドキュメントを読む
 
 ```ts
 import { docs } from "./docs";
@@ -83,25 +82,25 @@ const spanishDoc = await docs.getDocument("getting-started", {
 });
 ```
 
-## 6. 出力が必要なときにコンパイルする
+## 6. 出力が必要ならコンパイルする
 
 ```ts
 const compiled = await docs.compileDocument("getting-started", {
   locale: "en",
 });
 
-compiled.kind; // "md" または "mdx"
+compiled.kind; // "md" or "mdx"
 compiled.path;
 compiled.usedFallback;
 ```
 
-## サーバーヘルパーを使用するタイミング
+## サーバーヘルパーを使うタイミング
 
-アプリですでにサーバー上でリクエストロケールを解決している場合は、`@better-translate/md/server` を使用して、Markdownの読み込みが同じリクエストロケールに自動的に従うようにします。
+アプリがすでにサーバーでリクエストロケールを解決している場合は、`@better-translate/md/server` を使うと Markdown の読み込みが同じリクエストロケールに自動で従います。
 
-## ローカライズされたMarkdownを自動生成する
+## ローカライズ Markdown を自動生成する
 
-CLIの `markdown.rootDir` オプションを使用して、ジェネレーターでMarkdownファイルを翻訳します：[CLIガイド](/docs/cli)
+CLI の `markdown.rootDir` オプションで Markdown ファイルの翻訳を生成できます：[CLI ガイド](/docs/cli)
 
 ## 例
 
