@@ -1,5 +1,11 @@
 # @better-translate/cli
 
+## 1.3.0
+
+### Minor Changes
+
+- 8f81b55: bt purge command added to cli
+
 ## 1.2.0
 
 ### Minor Changes

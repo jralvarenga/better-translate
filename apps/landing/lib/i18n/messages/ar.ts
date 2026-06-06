@@ -15,32 +15,26 @@ export const ar = {
     viewDocs: "عرض المستندات",
   },
   codeDemo: {
-    description:
-      "أنشئ ملفات الإعدادات المحلية باستخدام نفس CLI سواء كنت تستخدم AI Gateway أو نماذج Ollama المحلية.",
+    description: "أنشئ ملفات الإعدادات المحلية باستخدام نفس CLI سواء كنت تستخدم AI Gateway أو نماذج Ollama المحلية.",
     title: "مستضافة أو محلية. نفس CLI",
   },
   features: {
-    description:
-      "نفس الإعداد، نفس API، نفس التجربة، بغض النظر عن بيئة TypeScript التي تستخدمها.",
+    description: "نفس الإعداد، نفس API، نفس التجربة، بغض النظر عن بيئة TypeScript التي تستخدمها.",
     items: {
       autocomplete: {
-        description:
-          'محررك يعرف كل مفتاح في كائن رسائلك. لا مزيد من التخمين لأن `t("home.` يبدأ الإكمال فوراً.',
+        description: "محررك يعرف كل مفتاح في كائن رسائلك. لا مزيد من التخمين لأن `t(\"home.` يبدأ الإكمال فوراً.",
         title: "الإكمال التلقائي في كل مكان",
       },
       frameworkAgnostic: {
-        description:
-          "اكتب إعداد الترجمة مرة واحدة. يعمل بنفس الطريقة في Next.js وAstro وReact وTanStack Router وNode العادي. بدّل البيئات، احتفظ بإعدادك.",
+        description: "اكتب إعداد الترجمة مرة واحدة. يعمل بنفس الطريقة في Next.js وAstro وReact وTanStack Router وNode العادي. بدّل البيئات، احتفظ بإعدادك.",
         title: "نفس الإعداد، كل بيئة",
       },
       localeSwitching: {
-        description:
-          "بدّل اللغات أثناء التشغيل دون إعادة تحميل الصفحة. التجاوزات لكل استدعاء تتيح لك عرض أي لغة عند الطلب.",
+        description: "بدّل اللغات أثناء التشغيل دون إعادة تحميل الصفحة. التجاوزات لكل استدعاء تتيح لك عرض أي لغة عند الطلب.",
         title: "تبديل اللغة",
       },
       typeSafe: {
-        description:
-          "استدلال TypeScript كامل لمفاتيح الترجمة ومتغيرات الاستيفاء. الأخطاء المطبعية والمفاتيح المفقودة تصبح أخطاء ترجمة.",
+        description: "استدلال TypeScript كامل لمفاتيح الترجمة ومتغيرات الاستيفاء. الأخطاء المطبعية والمفاتيح المفقودة تصبح أخطاء ترجمة.",
         title: "آمن النوع افتراضياً",
       },
     },
@@ -54,14 +48,12 @@ export const ar = {
     twitter: "تابع للتحديثات",
   },
   frameworks: {
-    description:
-      "إعداد الترجمة الخاص بك يعمل بنفس الطريقة في كل بيئة TypeScript. محولات أصلية، API متطابق.",
+    description: "إعداد الترجمة الخاص بك يعمل بنفس الطريقة في كل بيئة TypeScript. محولات أصلية، API متطابق.",
     heroDescription: "بدّل أطر العمل دون إعادة كتابة إعداد i18n الخاص بك",
     heroTitle: "نفس الإعداد في كل مكان",
     items: {
       astro: {
-        description:
-          "مساعدات محددة بالطلب ومجموعات محتوى Astro المحلية لـ .md و.mdx.",
+        description: "مساعدات محددة بالطلب ومجموعات محتوى Astro المحلية لـ .md و.mdx.",
       },
       bun: {
         description: "دعم أصلي لوقت تشغيل Bun بدون إعداد إضافي.",
@@ -73,16 +65,13 @@ export const ar = {
         description: "الأساس بدون تبعيات للنصوص والخوادم والمهام الخلفية.",
       },
       react: {
-        description:
-          "السياق والخطافات والعرض العميل المدرك للغة لتطبيقات React.",
+        description: "السياق والخطافات والعرض العميل المدرك للغة لتطبيقات React.",
       },
       tanstack: {
-        description:
-          "دعم التوجيه الآمن النوعياً لمشاريع TanStack Router، بما في ذلك تطبيقات TanStack Start.",
+        description: "دعم التوجيه الآمن النوعياً لمشاريع TanStack Router، بما في ذلك تطبيقات TanStack Start.",
       },
       typescript: {
-        description:
-          "أنواع قوية، إكمال تلقائي، وردود فعل وقت الترجمة من رسائلك.",
+        description: "أنواع قوية، إكمال تلقائي، وردود فعل وقت الترجمة من رسائلك.",
       },
     },
     title: "إطار عملك، اختيارك",
@@ -106,8 +95,7 @@ export const ar = {
       localeSwitching: "تبديل اللغة بدون إعادة تحميل الصفحة",
       generateLocales: "أنشئ لغات باستخدام AI أو Ollama المحلي",
     },
-    description:
-      "اضبط مرة واحدة. ترجم في كل مكان. i18n آمن من حيث الأنواع لـ Next.js وAstro وReact وTanStack Router وأي بيئة TypeScript.",
+    description: "اضبط مرة واحدة. ترجم في كل مكان. i18n آمن من حيث الأنواع لـ Next.js وAstro وReact وTanStack Router وأي بيئة TypeScript.",
     primaryCta: "عرض التوثيق",
     secondaryCta: "عرض على GitHub",
     title: "إعداد i18n واحد لأي مشروع TypeScript",
